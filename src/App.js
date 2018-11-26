@@ -13,9 +13,10 @@ import { AppNavigator } from './navigation';
 
 type Props = {};
 export default class App extends Component<Props> {
+  
   render() {
     return (
-      <AppNavigator />
+      <AppNavigator isAuth />
     );
   }
 }
