@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import HomeScene from '../scene/Home';
+import HomeScene from '../scenes/Home';
 import AuthScene from '../scenes/Auth';
 import { HomeSceneName, AuthSceneName } from '../navigation/scenes';
 
