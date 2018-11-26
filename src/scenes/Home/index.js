@@ -18,6 +18,10 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class HomeScene extends Component<Props> {
+    static navigationOptions = {
+        header: null
+    }
+
   render() {
     return (
       <View style={styles.container}>
