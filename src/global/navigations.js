@@ -1,4 +1,3 @@
-import React from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import HomeScene from '../scenes/Home';
@@ -26,7 +25,7 @@ const authConfig = {
   navigationOptions: { gesturesEnabled: false },
 };
 
-let navigators = {};
+const navigators = {};
 
 export function setNavigatior(routeName, navigator) {
   if (navigator) {
@@ -40,6 +39,7 @@ export function setNavigatior(routeName, navigator) {
 
 const generateStack = (RouteConfigs, StackNavigatorConfig) =>
   createStackNavigator(RouteConfigs, StackNavigatorConfig);
+
 const generateAppContainer = navigator => createAppContainer(navigator);
 
 const rootNavigator = generateStack(rootStack, {
