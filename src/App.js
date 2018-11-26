@@ -6,14 +6,11 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-
+import React from 'react';
 import { AppNavigator } from './navigation';
 
 type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return <AppNavigator isAuth />;
-  }
-}
+
+const App = (): Props => <AppNavigator isAuth />;
+
+export default React.memo(App);
