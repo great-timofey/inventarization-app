@@ -1,9 +1,8 @@
 import React from 'react';
-import { Alert, View, Text } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import HomeScene from '../scenes/Home'
-import AuthScene from '../scenes/Auth'
+import HomeScene from '../scene/Home';
+import AuthScene from '../scenes/Auth';
 import { HomeSceneName, AuthSceneName } from '../navigation/scenes';
 
 const rootStack = {
@@ -15,8 +14,8 @@ const rootStack = {
 const authStack = {
   [AuthSceneName]: {
     screen: AuthScene,
-  }
-}
+  },
+};
 
 const authConfig = {
   mode: 'modal',
@@ -25,7 +24,7 @@ const authConfig = {
     backgroundColor: 'white',
   },
   navigationOptions: { gesturesEnabled: false },
-}
+};
 
 let navigators = {};
 
@@ -39,7 +38,8 @@ export function setNavigatior(routeName, navigator) {
   }
 }
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) => createStackNavigator(RouteConfigs, StackNavigatorConfig);
+const generateStack = (RouteConfigs, StackNavigatorConfig) =>
+  createStackNavigator(RouteConfigs, StackNavigatorConfig);
 const generateAppContainer = navigator => createAppContainer(navigator);
 
 const rootNavigator = generateStack(rootStack, {
