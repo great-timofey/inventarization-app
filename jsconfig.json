@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "src/*"
+      ],
+      "~global/*": [
+        "./src/global/*"
+      ],
+      "~scenes/*": [
+        "./src/scenes/*"
+      ],
+      "~navigation/*": [
+        "./src/navigation/*"
+      ],
+      "~": [
+        "./"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
