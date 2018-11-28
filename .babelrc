@@ -10,9 +10,9 @@
         "./src"
       ],
       "alias": {
-        "global": "./global",
-        "scenes": "./scenes",
-        "navigation": "./navigation"
+        "src": "./src",
+        "scenes": "./src/scenes",
+        "navigation": "./src/navigation"
       }
     }]
   ]

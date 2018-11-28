@@ -2,8 +2,8 @@
   "compilerOptions": {
     "baseUrl": "src/",
     "paths": {
-      "global/": [
-        "src/global/*"
+      "src/": [
+        "*"
       ],
       "scenes/": [
         "src/scenes/*"
