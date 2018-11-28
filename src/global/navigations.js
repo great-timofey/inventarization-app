@@ -9,7 +9,7 @@ import ItemsScene from 'scenes/Items';
 import PeopleScene from 'scenes/People';
 import PlacesScene from 'scenes/Places';
 import ProfileScene from 'scenes/Profile';
-import * as SceneNames from 'navigation/scenes';
+import * as SCENE_NAMES from 'navigation/scenes';
 
 const generateStack = (RouteConfigs, StackNavigatorConfig) =>
   createStackNavigator(RouteConfigs, StackNavigatorConfig);
@@ -20,22 +20,22 @@ const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) =>
 const generateAppContainer = navigator => createAppContainer(navigator);
 
 const rootTabs = {
-  [SceneNames.ItemsSceneName]: generateStack({
-    [SceneNames.ItemsSceneName]: ItemsScene,
+  [SCENE_NAMES.ItemsSceneName]: generateStack({
+    [SCENE_NAMES.ItemsSceneName]: ItemsScene,
   }),
-  [SceneNames.PeopleSceneName]: generateStack({
-    [SceneNames.PeopleSceneName]: PeopleScene,
+  [SCENE_NAMES.PeopleSceneName]: generateStack({
+    [SCENE_NAMES.PeopleSceneName]: PeopleScene,
   }),
-  [SceneNames.PlacesSceneName]: generateStack({
-    [SceneNames.PlacesSceneName]: PlacesScene,
+  [SCENE_NAMES.PlacesSceneName]: generateStack({
+    [SCENE_NAMES.PlacesSceneName]: PlacesScene,
   }),
-  [SceneNames.ProfileSceneName]: generateStack({
-    [SceneNames.ProfileSceneName]: ProfileScene,
+  [SCENE_NAMES.ProfileSceneName]: generateStack({
+    [SCENE_NAMES.ProfileSceneName]: ProfileScene,
   }),
 };
 
 const authStack = {
-  [SceneNames.AuthSceneName]: {
+  [SCENE_NAMES.AuthSceneName]: {
     screen: AuthScene,
   },
 };
