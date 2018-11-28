@@ -4,6 +4,6 @@ import AppNavigator from 'navigation';
 
 type Props = {};
 
-const App = (): Props => <AppNavigator />;
+const App = (): Props => <AppNavigator isAuth />;
 
 export default App;

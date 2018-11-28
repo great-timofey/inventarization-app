@@ -1,18 +1,117 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import React from 'react';
+import { Image } from 'react-native';
+import {
+  createAppContainer,
+  createStackNavigator,
+  createBottomTabNavigator,
+} from 'react-navigation';
 
-import HomeScene from 'scenes/Home';
 import AuthScene from 'scenes/Auth';
-import { HomeSceneName, AuthSceneName } from 'navigation/scenes';
+import ItemsScene from 'scenes/Items';
+import PeopleScene from 'scenes/People';
+import PlacesScene from 'scenes/Places';
+import ProfileScene from 'scenes/Profile';
+import AddItemScene from 'scenes/AddItem';
+import * as SCENE_NAMES from 'navigation/scenes';
 
-const rootStack = {
-  [HomeSceneName]: {
-    screen: HomeScene,
+const generateStack = (RouteConfigs, StackNavigatorConfig) =>
+  createStackNavigator(RouteConfigs, StackNavigatorConfig);
+
+const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) =>
+  createBottomTabNavigator(RouteConfigs, StackNavigatorConfig);
+
+const generateAppContainer = navigator => createAppContainer(navigator);
+
+const itemsStack = generateStack({
+  [SCENE_NAMES.ItemsSceneName]: ItemsScene,
+});
+const peopleStack = generateStack({
+  [SCENE_NAMES.PeopleSceneName]: PeopleScene,
+});
+const placesStack = generateStack({
+  [SCENE_NAMES.PlacesSceneName]: PlacesScene,
+});
+const profileStack = generateStack({
+  [SCENE_NAMES.ProfileSceneName]: ProfileScene,
+});
+const addItemStack = generateStack({
+  [SCENE_NAMES.AddItemSceneName]: AddItemScene,
+});
+
+const rootTabs = {
+  [SCENE_NAMES.ItemsSceneName]: {
+    screen: itemsStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/chair.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.PlacesSceneName]: {
+    screen: placesStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/location.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.AddItemSceneName]: {
+    screen: addItemStack,
+    navigationOptions: {
+      tabBarIcon: () => (
+        <Image
+          style={{
+            height: 36,
+            width: 41,
+            resizeMode: 'contain',
+          }}
+          source={require('src/assets/logo.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.PeopleSceneName]: {
+    screen: peopleStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/people.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.ProfileSceneName]: {
+    screen: profileStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/user.png')}
+        />
+      ),
+    },
   },
 };
 
 const authStack = {
-  [AuthSceneName]: {
+  [SCENE_NAMES.AuthSceneName]: {
     screen: AuthScene,
+  },
+};
+
+const rootConfig = {
+  tabBarPosition: 'bottom',
+  animationEnabled: false,
+  swipeEnabled: false,
+  tabBarOptions: {
+    showLabel: false,
   },
 };
 
@@ -37,15 +136,7 @@ export function setNavigatior(routeName, navigator) {
   }
 }
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) =>
-  createStackNavigator(RouteConfigs, StackNavigatorConfig);
-
-const generateAppContainer = navigator => createAppContainer(navigator);
-
-const rootNavigator = generateStack(rootStack, {
-  navigationOptions: { gesturesEnabled: false },
-});
-
+const rootNavigator = generateBottomTabNav(rootTabs, rootConfig);
 const authNavigator = generateStack(authStack, authConfig);
 
 export const RootNavigator = generateAppContainer(rootNavigator);
