@@ -13,6 +13,7 @@ export default StyleSheet.create({
     margin: 10,
   },
   instructions: {
+    fontSize: 50,
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,

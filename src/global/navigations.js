@@ -1,19 +1,49 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import {
+  createStackNavigator,
+  createAppContainer,
+  createBottomTabNavigator,
+} from 'react-navigation';
 
-import HomeScene from 'scenes/Home';
 import AuthScene from 'scenes/Auth';
-import { HomeSceneName, AuthSceneName } from 'navigation/scenes';
+import ItemsScene from 'scenes/Items';
+import PeopleScene from 'scenes/People';
+import PlacesScene from 'scenes/Places';
+import ProfileScene from 'scenes/Profile';
+import * as SceneNames from 'navigation/scenes';
 
-const rootStack = {
-  [HomeSceneName]: {
-    screen: HomeScene,
-  },
+const generateStack = (RouteConfigs, StackNavigatorConfig) =>
+  createStackNavigator(RouteConfigs, StackNavigatorConfig);
+
+const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) =>
+  createBottomTabNavigator(RouteConfigs, StackNavigatorConfig);
+
+const generateAppContainer = navigator => createAppContainer(navigator);
+
+const rootTabs = {
+  [SceneNames.ItemsSceneName]: generateStack({
+    [SceneNames.ItemsSceneName]: ItemsScene,
+  }),
+  [SceneNames.PeopleSceneName]: generateStack({
+    [SceneNames.PeopleSceneName]: PeopleScene,
+  }),
+  [SceneNames.PlacesSceneName]: generateStack({
+    [SceneNames.PlacesSceneName]: PlacesScene,
+  }),
+  [SceneNames.ProfileSceneName]: generateStack({
+    [SceneNames.ProfileSceneName]: ProfileScene,
+  }),
 };
 
 const authStack = {
-  [AuthSceneName]: {
+  [SceneNames.AuthSceneName]: {
     screen: AuthScene,
   },
+};
+
+const rootConfig = {
+  tabBarPosition: 'bottom',
+  animationEnabled: false,
+  swipeEnabled: false,
 };
 
 const authConfig = {
@@ -37,15 +67,7 @@ export function setNavigatior(routeName, navigator) {
   }
 }
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) =>
-  createStackNavigator(RouteConfigs, StackNavigatorConfig);
-
-const generateAppContainer = navigator => createAppContainer(navigator);
-
-const rootNavigator = generateStack(rootStack, {
-  navigationOptions: { gesturesEnabled: false },
-});
-
+const rootNavigator = generateBottomTabNav(rootTabs, rootConfig);
 const authNavigator = generateStack(authStack, authConfig);
 
 export const RootNavigator = generateAppContainer(rootNavigator);
