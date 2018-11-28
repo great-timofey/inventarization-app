@@ -1,23 +1,16 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
+    "baseUrl": "src/",
     "paths": {
-      "*": [
-        "src/*"
+      "global/": [
+        "src/global/*"
       ],
-      "~global/*": [
-        "./src/global/*"
+      "scenes/": [
+        "src/scenes/*"
       ],
-      "~scenes/*": [
-        "./src/scenes/*"
+      "navigation/": [
+        "src/navigation/*"
       ],
-      "~navigation/*": [
-        "./src/navigation/*"
-      ],
-      "~": [
-        "./"
-      ]
     }
   },
   "exclude": [

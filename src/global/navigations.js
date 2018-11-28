@@ -1,8 +1,8 @@
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import HomeScene from '~scenes/Home';
-import AuthScene from '~scenes/Auth';
-import { HomeSceneName, AuthSceneName } from '~navigation/scenes';
+import HomeScene from 'scenes/Home';
+import AuthScene from 'scenes/Auth';
+import { HomeSceneName, AuthSceneName } from 'navigation/scenes';
 
 const rootStack = {
   [HomeSceneName]: {
