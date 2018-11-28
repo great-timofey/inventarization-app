@@ -1,6 +1,6 @@
 // @flow
 
-export type ButtonProps = {
+export type Props = {
   title: string,
-  onPress?: () => void,
+  onPress: Function,
 };
