@@ -1,3 +1,5 @@
+import React from 'react';
+import { Image } from 'react-native';
 import {
   createAppContainer,
   createStackNavigator,
@@ -9,6 +11,7 @@ import ItemsScene from 'scenes/Items';
 import PeopleScene from 'scenes/People';
 import PlacesScene from 'scenes/Places';
 import ProfileScene from 'scenes/Profile';
+import AddItemScene from 'scenes/AddItem';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 const generateStack = (RouteConfigs, StackNavigatorConfig) =>
@@ -19,19 +22,82 @@ const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) =>
 
 const generateAppContainer = navigator => createAppContainer(navigator);
 
+const itemsStack = generateStack({
+  [SCENE_NAMES.ItemsSceneName]: ItemsScene,
+});
+const peopleStack = generateStack({
+  [SCENE_NAMES.PeopleSceneName]: PeopleScene,
+});
+const placesStack = generateStack({
+  [SCENE_NAMES.PlacesSceneName]: PlacesScene,
+});
+const profileStack = generateStack({
+  [SCENE_NAMES.ProfileSceneName]: ProfileScene,
+});
+const addItemStack = generateStack({
+  [SCENE_NAMES.AddItemSceneName]: AddItemScene,
+});
+
 const rootTabs = {
-  [SCENE_NAMES.ItemsSceneName]: generateStack({
-    [SCENE_NAMES.ItemsSceneName]: ItemsScene,
-  }),
-  [SCENE_NAMES.PeopleSceneName]: generateStack({
-    [SCENE_NAMES.PeopleSceneName]: PeopleScene,
-  }),
-  [SCENE_NAMES.PlacesSceneName]: generateStack({
-    [SCENE_NAMES.PlacesSceneName]: PlacesScene,
-  }),
-  [SCENE_NAMES.ProfileSceneName]: generateStack({
-    [SCENE_NAMES.ProfileSceneName]: ProfileScene,
-  }),
+  [SCENE_NAMES.ItemsSceneName]: {
+    screen: itemsStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/chair.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.PlacesSceneName]: {
+    screen: placesStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/location.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.AddItemSceneName]: {
+    screen: addItemStack,
+    navigationOptions: {
+      tabBarIcon: () => (
+        <Image
+          style={{
+            height: 36,
+            width: 41,
+            resizeMode: 'contain',
+          }}
+          source={require('src/assets/logo.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.PeopleSceneName]: {
+    screen: peopleStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/people.png')}
+        />
+      ),
+    },
+  },
+  [SCENE_NAMES.ProfileSceneName]: {
+    screen: profileStack,
+    navigationOptions: {
+      tabBarIcon: ({ focused }) => (
+        <Image
+          style={!focused && { opacity: 0.5 }}
+          source={require('src/assets/user.png')}
+        />
+      ),
+    },
+  },
 };
 
 const authStack = {
@@ -44,6 +110,9 @@ const rootConfig = {
   tabBarPosition: 'bottom',
   animationEnabled: false,
   swipeEnabled: false,
+  tabBarOptions: {
+    showLabel: false,
+  },
 };
 
 const authConfig = {
