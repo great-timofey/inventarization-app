@@ -309,6 +309,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		A5047DC021AE2F9D0040FD0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 36589474590F43ECAFDB60A8 /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = BVLinearGradient;
+		};
+		A5047DC221AE2F9D0040FD0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 36589474590F43ECAFDB60A8 /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 64AA15081EF7F30100718508;
+			remoteInfo = "BVLinearGradient-tvOS";
+		};
 		A552198721ABB9E500D02F96 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C358B56B43AF4FA7BBFBEE0B /* RNGestureHandler.xcodeproj */;
@@ -612,6 +626,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A5047DBC21AE2F9D0040FD0C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A5047DC121AE2F9D0040FD0C /* libBVLinearGradient.a */,
+				A5047DC321AE2F9D0040FD0C /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A552195E21ABB9E100D02F96 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -749,6 +772,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = A5047DBC21AE2F9D0040FD0C /* Products */;
+					ProjectRef = 36589474590F43ECAFDB60A8 /* BVLinearGradient.xcodeproj */;
+				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
@@ -1063,6 +1090,20 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A5047DC121AE2F9D0040FD0C /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = A5047DC021AE2F9D0040FD0C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A5047DC321AE2F9D0040FD0C /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = A5047DC221AE2F9D0040FD0C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A552198821ABB9E500D02F96 /* libRNGestureHandler.a */ = {
