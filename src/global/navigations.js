@@ -1,6 +1,6 @@
 import {
-  createStackNavigator,
   createAppContainer,
+  createStackNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
 
