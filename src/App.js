@@ -1,16 +1,9 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
+//  @flow
 import React from 'react';
-import { AppNavigator } from './navigation';
+import AppNavigator from 'navigation';
 
 type Props = {};
 
-const App = (): Props => <AppNavigator isAuth />;
+const App = (): Props => <AppNavigator />;
 
-export default React.memo(App);
+export default App;

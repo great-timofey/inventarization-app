@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src/",
+    "paths": {
+      "global/": [
+        "src/global/*"
+      ],
+      "scenes/": [
+        "src/scenes/*"
+      ],
+      "navigation/": [
+        "src/navigation/*"
+      ],
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

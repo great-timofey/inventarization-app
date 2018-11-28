@@ -3,8 +3,10 @@
     "airbnb",
     "plugin:prettier/recommended"
   ],
+  "parser": "babel-eslint",
   "plugins": [
-    "prettier"
+    "prettier",
+    "react"
   ],
   "rules": {
     "prettier/prettier": [
@@ -12,5 +14,13 @@
     ],
     "react/jsx-filename-extension": 0
   },
-  "parser": "babel-eslint"
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": [
+          "src"
+        ]
+      }
+    }
+  }
 }
