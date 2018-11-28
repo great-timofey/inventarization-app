@@ -4,8 +4,8 @@ import React from 'react';
 import { Text, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+import colors from 'global/colors';
 import styles from './styles';
-import colors from '../../global/colors';
 
 import type { ButtonProps } from './types';
 
