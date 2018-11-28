@@ -50,6 +50,9 @@ module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/Lib
 munge_underscores=true
 
 module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
+module.name_mapper='^navigation' ->'<PROJECT_ROOT>/src/navigation'
+module.name_mapper='^scenes' ->'<PROJECT_ROOT>/src/scenes'
+module.name_mapper='^global' ->'<PROJECT_ROOT>/src/global'
 
 module.file_ext=.js
 module.file_ext=.jsx
@@ -67,4 +70,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-^0.86.0
+0.78.0
