@@ -15,6 +15,11 @@ export default StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
   },
+  notValide: {
+    color: colors.red,
+    fontSize: 13,
+    lineHeight: 20,
+  },
   input: {
     height: 30,
     width: '100%',

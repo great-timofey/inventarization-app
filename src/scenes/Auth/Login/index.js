@@ -266,7 +266,7 @@ class Login extends PureComponent<Props, State> {
               <TouchableWithoutFeedback>
                 <View>
                   <Text
-                    onPress={this.onPushButton}
+                    onPress={this.onPushLeftHeaderButton}
                     style={styles.additionalButtonsText}
                   >
                     Регистрация

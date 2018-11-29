@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react';
 import { View, Text, TextInput } from 'react-native';
 
+import utils from 'global/utils';
 import constants from 'global/constants';
 import type { Props } from './types';
 import styles from './styles';
@@ -15,19 +16,30 @@ class Input extends PureComponent<Props> {
       props: { type, value, state, onChangeText, focusNextField, onPushButton },
     } = this;
 
-    let secureTextEntry = false;
-    let keyboardType = 'default';
-    let returnKeyType = 'next';
-    let autoCapitalize = 'none';
+    let secureTextEntry: boolean = false;
+    let keyboardType: string = 'default';
+    let returnKeyType: string = 'next';
+    let autoCapitalize: string = 'none';
+    let isValideValue: boolean = true;
     let onSubmitEditing = () => focusNextField(type);
+
     switch (type) {
       case constants.inputTypes.name:
         autoCapitalize = 'sentences';
         break;
       case constants.inputTypes.email:
+        if (value !== '') {
+          isValideValue = utils.validateFunction(constants.regExp.email, value);
+        }
         keyboardType = 'email-address';
         break;
       case constants.inputTypes.password:
+        if (value !== '') {
+          isValideValue = utils.validateFunction(
+            constants.regExp.password,
+            value
+          );
+        }
         secureTextEntry = true;
         returnKeyType = state ? 'next' : 'go';
         onSubmitEditing = state
@@ -35,6 +47,12 @@ class Input extends PureComponent<Props> {
           : () => onPushButton(type);
         break;
       case constants.inputTypes.mobileNumber:
+        if (value.length >= 11) {
+          isValideValue = utils.validateFunction(
+            constants.regExp.mobileNumber,
+            value
+          );
+        }
         keyboardType = 'numbers-and-punctuation';
         onSubmitEditing = () => onPushButton(type);
         returnKeyType = 'go';
@@ -45,7 +63,9 @@ class Input extends PureComponent<Props> {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.inputTitleText}>{type}</Text>
+        <Text style={isValideValue ? styles.inputTitleText : styles.notValide}>
+          {type}
+        </Text>
         <TextInput
           onSubmitEditing={onSubmitEditing}
           ref={ref => {
