@@ -1,17 +1,14 @@
 //  @flow
 import React from 'react';
-import AppNavigator from 'navigation';
-import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 
-const client = new ApolloClient({
-  uri: 'https://api.staging.inventoryapp.info/graphql',
-});
+import AppNavigator from 'navigation';
+import apolloClient from 'services/apolloClient';
 
 type Props = {};
 
 const App = (): Props => (
-  <ApolloProvider client={client}>
+  <ApolloProvider client={apolloClient}>
     <AppNavigator isAuth />
   </ApolloProvider>
 );

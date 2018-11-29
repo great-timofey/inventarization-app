@@ -12,6 +12,7 @@
       "alias": {
         "src": "./src",
         "scenes": "./src/scenes",
+        "services": "./src/services",
         "navigation": "./src/navigation"
       }
     }]
