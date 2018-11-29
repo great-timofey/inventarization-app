@@ -16,11 +16,11 @@ class Input extends PureComponent<Props> {
       props: { type, value, state, onChangeText, focusNextField, onPushButton },
     } = this;
 
-    let secureTextEntry: boolean = false;
-    let keyboardType: string = 'default';
-    let returnKeyType: string = 'next';
-    let autoCapitalize: string = 'none';
-    let isValideValue: boolean = true;
+    let secureTextEntry = false;
+    let keyboardType = 'default';
+    let returnKeyType = 'next';
+    let autoCapitalize = 'none';
+    let isValideValue = true;
     let onSubmitEditing = () => focusNextField(type);
 
     switch (type) {

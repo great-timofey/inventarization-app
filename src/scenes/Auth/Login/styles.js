@@ -3,12 +3,16 @@ import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
 
 export default StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: colors.backGroundBlack,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 30,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: colors.black,
+    backgroundColor: colors.backGroundBlack,
   },
   activeHeaderButton: {
     marginHorizontal: 30,
@@ -30,6 +34,7 @@ export default StyleSheet.create({
     paddingVertical: 7,
     borderWidth: 1,
     borderColor: colors.black,
+    backgroundColor: colors.black,
   },
   inactiveHeaderButtonText: {
     color: colors.header.grayButtonText,
@@ -40,7 +45,7 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.black,
+    backgroundColor: colors.backGroundBlack,
     marginBottom: 50,
   },
   logoImage: {
@@ -50,13 +55,13 @@ export default StyleSheet.create({
     flex: 2,
     width: '100%',
     justifyContent: 'flex-start',
-    paddingHorizontal: 20,
   },
   additionalButtons: {
     flex: 1,
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   additionalButtonsText: {
     color: colors.buttonBlue,
