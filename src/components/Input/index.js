@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
 import constants from 'global/constants';
@@ -62,25 +62,29 @@ class Input extends PureComponent<Props> {
     }
 
     return (
-      <View style={styles.container}>
-        <Text style={isValideValue ? styles.inputTitleText : styles.notValide}>
-          {type}
-        </Text>
-        <TextInput
-          onSubmitEditing={onSubmitEditing}
-          ref={ref => {
-            this.ref = ref;
-          }}
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
-          returnKeyType={returnKeyType}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={false}
-          style={styles.input}
-          onChangeText={onChangeText(value)}
-          value={value}
-        />
-      </View>
+      <TouchableWithoutFeedback onPress={() => this.ref.focus()}>
+        <View style={styles.container}>
+          <Text
+            style={isValideValue ? styles.inputTitleText : styles.notValide}
+          >
+            {type}
+          </Text>
+          <TextInput
+            onSubmitEditing={onSubmitEditing}
+            ref={ref => {
+              this.ref = ref;
+            }}
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            returnKeyType={returnKeyType}
+            autoCapitalize={autoCapitalize}
+            autoCorrect={false}
+            style={styles.input}
+            onChangeText={onChangeText(value)}
+            value={value}
+          />
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
