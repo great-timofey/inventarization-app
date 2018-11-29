@@ -1,3 +1,4 @@
+//  @flow
 import React from 'react';
 import { Image } from 'react-native';
 import {
@@ -42,7 +43,7 @@ const rootTabs = {
   [SCENE_NAMES.ItemsSceneName]: {
     screen: itemsStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
+      tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
           source={require('assets/chair.png')}
@@ -53,7 +54,7 @@ const rootTabs = {
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
+      tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
           source={require('assets/location.png')}
@@ -79,7 +80,7 @@ const rootTabs = {
   [SCENE_NAMES.PeopleSceneName]: {
     screen: peopleStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
+      tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
           source={require('assets/people.png')}
@@ -90,7 +91,7 @@ const rootTabs = {
   [SCENE_NAMES.ProfileSceneName]: {
     screen: profileStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
+      tabBarIcon: ({ focused }: { focused: boolean }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
           source={require('assets/user.png')}
@@ -126,7 +127,7 @@ const authConfig = {
 
 const navigators = {};
 
-export function setNavigatior(routeName, navigator) {
+export function setNavigatior(routeName: string, navigator: Object) {
   if (navigator) {
     const { subs } = navigator;
     if (subs) {
