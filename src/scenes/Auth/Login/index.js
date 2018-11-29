@@ -1,7 +1,13 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, TouchableWithoutFeedback, Image } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
@@ -13,7 +19,10 @@ import styles from './styles';
 
 type State = {
   isRegistrationForm: boolean,
-  textInput: string | number,
+  textInputName: string,
+  textInputEmail: string,
+  textInputPassword: string,
+  textInputMobile: string,
 };
 
 type Props = {
@@ -91,12 +100,33 @@ class Login extends PureComponent<Props, State> {
 
   state = {
     isRegistrationForm: false,
-    textInput: '',
+    textInputName: '',
+    textInputEmail: '',
+    textInputPassword: '',
+    textInputMobile: '',
   };
 
-  onHandleChangeText = (value: string | number) => {
+  onChangeName = (value: string) => {
     this.setState({
-      textInput: value,
+      textInputName: value,
+    });
+  };
+
+  onChangeEmail = (value: string) => {
+    this.setState({
+      textInputEmail: value,
+    });
+  };
+
+  onChangePassword = (value: string) => {
+    this.setState({
+      textInputPassword: value,
+    });
+  };
+
+  onChangeMobile = (value: string) => {
+    this.setState({
+      textInputMobile: value,
     });
   };
 
@@ -107,6 +137,8 @@ class Login extends PureComponent<Props, State> {
     navigation.setParams({ isRegistrationForm: true });
     this.setState({
       isRegistrationForm: true,
+      textInputEmail: '',
+      textInputPassword: '',
     });
   };
 
@@ -117,69 +149,115 @@ class Login extends PureComponent<Props, State> {
     navigation.setParams({ isRegistrationForm: false });
     this.setState({
       isRegistrationForm: false,
+      textInputName: '',
+      textInputEmail: '',
+      textInputPassword: '',
+      textInputMobile: '',
     });
   };
 
+  focusNextField = (type: string) => {
+    const {
+      state: { isRegistrationForm },
+    } = this;
+    if (isRegistrationForm) {
+      if (type === constants.inputTypes.name) {
+        this.textInputEmailRef.ref.focus();
+      } else if (type === constants.inputTypes.email) {
+        this.textInputPasswordRef.ref.focus();
+      } else if (type === constants.inputTypes.password) {
+        this.textInputMobileRef.ref.focus();
+      }
+    } else {
+      this.textInputPasswordRef.ref.focus();
+    }
+  };
+
+  onPushButton = () => {
+    alert('Click');
+  };
+
+  textInputNameRef: any;
+
+  textInputEmailRef: any;
+
+  textInputPasswordRef: any;
+
+  textInputMobileRef: any;
+
   render() {
     const {
-      state: { textInput, isRegistrationForm },
+      state: {
+        textInputName,
+        textInputEmail,
+        textInputPassword,
+        textInputMobile,
+        isRegistrationForm,
+      },
     } = this;
 
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
         <View style={styles.logo}>
-          <Image style={{ marginBottom: 25 }} source={images.logo} />
+          <Image style={styles.logoImage} source={images.logo} />
           <Image source={images.appName} />
         </View>
-        <View
-          style={{
-            flex: 2,
-            width: '100%',
-            justifyContent: 'flex-start',
-            paddingHorizontal: 20,
-          }}
-        >
+        <View style={styles.formContainer}>
           {isRegistrationForm && (
             <Input
+              onPushButton={this.onPushButton}
+              focusNextField={this.focusNextField}
+              ref={ref => {
+                this.textInputNameRef = ref;
+              }}
+              state={isRegistrationForm}
               type={constants.inputTypes.name}
-              value={textInput}
-              onChangeText={() => this.onHandleChangeText}
+              value={textInputName}
+              onChangeText={() => this.onChangeName}
             />
           )}
           <Input
+            onPushButton={this.onPushButton}
+            focusNextField={this.focusNextField}
+            ref={ref => {
+              this.textInputEmailRef = ref;
+            }}
+            state={isRegistrationForm}
             type={constants.inputTypes.email}
-            value={textInput}
-            onChangeText={() => this.onHandleChangeText}
+            value={textInputEmail}
+            onChangeText={() => this.onChangeEmail}
           />
           <Input
+            onPushButton={this.onPushButton}
+            focusNextField={this.focusNextField}
+            ref={ref => {
+              this.textInputPasswordRef = ref;
+            }}
+            state={isRegistrationForm}
             type={constants.inputTypes.password}
-            value={textInput}
-            onChangeText={() => this.onHandleChangeText}
+            value={textInputPassword}
+            onChangeText={() => this.onChangePassword}
           />
           {isRegistrationForm && (
             <Input
+              onPushButton={this.onPushButton}
+              focusNextField={this.focusNextField}
+              ref={ref => {
+                this.textInputMobileRef = ref;
+              }}
+              state={isRegistrationForm}
               type={constants.inputTypes.mobileNumber}
-              value={textInput}
-              onChangeText={() => this.onHandleChangeText}
+              value={textInputMobile}
+              onChangeText={() => this.onChangeMobile}
             />
           )}
           {!isRegistrationForm && (
-            <View
-              style={{
-                flex: 1,
-                marginTop: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
+            <View style={styles.additionalButtons}>
               <TouchableWithoutFeedback>
                 <View>
                   <Text
-                    style={{
-                      color: colors.buttonBlue,
-                      fontSize: 16,
-                      lineHeight: 19,
-                    }}
+                    onPress={this.onPushButton}
+                    style={styles.additionalButtonsText}
                   >
                     Забыли пароль?
                   </Text>
@@ -188,11 +266,8 @@ class Login extends PureComponent<Props, State> {
               <TouchableWithoutFeedback>
                 <View>
                   <Text
-                    style={{
-                      color: colors.buttonBlue,
-                      fontSize: 16,
-                      lineHeight: 19,
-                    }}
+                    onPress={this.onPushButton}
+                    style={styles.additionalButtonsText}
                   >
                     Регистрация
                   </Text>
@@ -202,13 +277,14 @@ class Login extends PureComponent<Props, State> {
           )}
         </View>
         <Button
+          onPressButton={this.onPushButton}
           title={
             isRegistrationForm
               ? constants.buttonTitles.reg
               : constants.buttonTitles.login
           }
         />
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

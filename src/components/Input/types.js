@@ -1,7 +1,10 @@
 // @flow
 
 export type Props = {
-  value: string | number,
-  onChangeText: Function,
   type: string,
+  value: string,
+  state: boolean,
+  onPushButton: Function,
+  onChangeText: Function,
+  focusNextField: Function,
 };

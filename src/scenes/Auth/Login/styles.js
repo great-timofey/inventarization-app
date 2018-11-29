@@ -10,13 +10,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.black,
   },
-  logo: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.black,
-    marginBottom: 50,
-  },
   activeHeaderButton: {
     marginHorizontal: 30,
     borderRadius: 16,
@@ -42,5 +35,32 @@ export default StyleSheet.create({
     color: colors.header.grayButtonText,
     fontSize: 14,
     lineHeight: 16,
+  },
+  logo: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.black,
+    marginBottom: 50,
+  },
+  logoImage: {
+    marginBottom: 25,
+  },
+  formContainer: {
+    flex: 2,
+    width: '100%',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+  },
+  additionalButtons: {
+    flex: 1,
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  additionalButtonsText: {
+    color: colors.buttonBlue,
+    fontSize: 16,
+    lineHeight: 19,
   },
 });
