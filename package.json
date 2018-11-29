@@ -9,16 +9,17 @@
     "clean": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache"
   },
   "dependencies": {
+    "apollo-cache-inmemory": "^1.3.11",
+    "apollo-client": "^2.4.7",
+    "apollo-link-http": "^1.5.7",
+    "graphql-tag": "^2.10.0",
     "ramda": "^0.26.0",
     "react": "16.6.1",
     "react-apollo": "^2.3.2",
     "react-native": "0.57.5",
-    "apollo-client": "^2.4.7",
-    "react-navigation": "^3.0.0",
-    "apollo-link-http": "^1.5.7",
-    "apollo-cache-inmemory": "^1.3.11",
     "react-native-gesture-handler": "^1.0.9",
-    "react-native-linear-gradient": "^2.4.4"
+    "react-native-linear-gradient": "^2.4.4",
+    "react-navigation": "^3.0.0"
   },
   "devDependencies": {
     "apollo-link-error": "^1.1.2",

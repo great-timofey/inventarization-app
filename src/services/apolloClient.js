@@ -3,15 +3,13 @@ import ApolloClient from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-import inventoryApiUrl from 'global/constants';
+import { inventoryApiUrl, githubApiUrl, githubToken } from 'global/constants';
 
 const httpLink = {
-  uri: inventoryApiUrl,
-  /*
+  uri: githubApiUrl,
   headers: {
-    authorization: ???
-  }
-  */
+    authorization: `bearer ${githubToken}`,
+  },
 };
 
 const apolloClient = new ApolloClient({
