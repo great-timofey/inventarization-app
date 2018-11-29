@@ -8,6 +8,9 @@
       "scenes/": [
         "src/scenes/*"
       ],
+      "assets/": [
+        "assets/*"
+      ],
       "services/": [
         "src/services/*"
       ],

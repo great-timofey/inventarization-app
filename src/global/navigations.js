@@ -45,7 +45,7 @@ const rootTabs = {
       tabBarIcon: ({ focused }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
-          source={require('src/assets/chair.png')}
+          source={require('assets/chair.png')}
         />
       ),
     },
@@ -56,7 +56,7 @@ const rootTabs = {
       tabBarIcon: ({ focused }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
-          source={require('src/assets/location.png')}
+          source={require('assets/location.png')}
         />
       ),
     },
@@ -71,7 +71,7 @@ const rootTabs = {
             width: 41,
             resizeMode: 'contain',
           }}
-          source={require('src/assets/logo.png')}
+          source={require('assets/logo.png')}
         />
       ),
     },
@@ -82,7 +82,7 @@ const rootTabs = {
       tabBarIcon: ({ focused }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
-          source={require('src/assets/people.png')}
+          source={require('assets/people.png')}
         />
       ),
     },
@@ -93,7 +93,7 @@ const rootTabs = {
       tabBarIcon: ({ focused }) => (
         <Image
           style={!focused && { opacity: 0.5 }}
-          source={require('src/assets/user.png')}
+          source={require('assets/user.png')}
         />
       ),
     },
