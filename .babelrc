@@ -4,16 +4,18 @@
   ],
   "plugins": [
     [
-      "module-resolver", 
+      "module-resolver",
       {
-      "root": [
-        "./src"
-      ],
-      "alias": {
-        "src": "./src",
-        "scenes": "./src/scenes",
-        "navigation": "./src/navigation"
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "src": "./src",
+          "assets": "./assets",
+          "scenes": "./src/scenes",
+          "navigation": "./src/navigation"
+        }
       }
-    }]
+    ]
   ]
 }
