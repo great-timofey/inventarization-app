@@ -11,8 +11,7 @@ import {
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import RateButton from 'components/RateButton';
-import Button from 'components/Button';
+import Item from 'components/Item';
 import styles from './styles';
 
 const GET_REPOS_QUERY = gql`
@@ -44,64 +43,53 @@ class ItemsScene extends PureComponent<Props> {
     loading: false,
   };
 
-  getItems = async login => {
+  getItems = async () => {
     this.setState({ loading: true });
     const { client } = this.props;
     const { data } = await client.query({
       query: GET_REPOS_QUERY,
-      variables: { login },
+      variables: { login: 'great-timofey' },
     });
     console.log(data);
     this.setState({ data, loading: false });
   };
+
+  renderItem = ({
+    item: {
+      node: {
+        id,
+        name,
+        description,
+        primaryLanguage: { name: languageName },
+      },
+    },
+  }) => (
+    <Item
+      name={name}
+      description={description}
+      repoId={id}
+      languageName={languageName}
+    />
+  );
 
   render() {
     const { loading, data } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.instructions}>ITEMS</Text>
-        {loading ? (
-          <ActivityIndicator />
-        ) : data ? (
+        {loading && <ActivityIndicator />}
+        {data ? (
           <FlatList
             keyExtractor={item => item.node.id}
-            data={this.state.data.user.repositories.edges}
-            renderItem={({
-              item: {
-                node: {
-                  id,
-                  name,
-                  description,
-                  primaryLanguage: { name: languageName },
-                },
-              },
-            }) => (
-              <View
-                style={{
-                  marginBottom: 5,
-                  borderBottomColor: 'black',
-                  borderBottomWidth: 1,
-                }}
-              >
-                <Text>
-                  {name} : {description} : {languageName}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <RateButton repoId={id} forAdding={true} />
-                  <RateButton repoId={id} forAdding={false} />
-                </View>
-              </View>
-            )}
+            data={data.user.repositories.edges}
+            renderItem={this.renderItem}
           />
         ) : (
-          <TouchableOpacity onPress={() => this.getItems('great-timofey')}>
-            <Text>Get Info from Github API</Text>
-          </TouchableOpacity>
+          !loading && (
+            <TouchableOpacity onPress={this.getItems}>
+              <Text>Get Info from Github API</Text>
+            </TouchableOpacity>
+          )
         )}
       </View>
     );
