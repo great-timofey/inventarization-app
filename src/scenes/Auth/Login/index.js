@@ -15,221 +15,154 @@ import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 
 import colors from 'global/colors';
-import images from 'global/images';
+import assets from 'global/assets';
 import constants from 'global/constants';
 import styles from './styles';
 
 type State = {
-  textInputName: string,
-  textInputEmail: string,
-  textInputMobile: string,
+  name: string,
+  email: string,
+  mobile: string,
+  password: string,
   isKeyboardActive: boolean,
-  textInputPassword: string,
-  isRegistrationForm: boolean,
+  isRegForm: boolean,
 };
 
 type Props = {
   navigation: any,
 };
 
+const initialState = {
+  name: '',
+  email: '',
+  mobile: '',
+  password: '',
+  isKeyboardActive: false,
+  isRegForm: false,
+};
+
+const headerButton = ({
+  isActive,
+  onPress,
+  name,
+}: {
+  isActive: boolean,
+  onPress: Function,
+  name: string,
+}) => (
+  <TouchableWithoutFeedback onPress={isActive ? onPress : null}>
+    <View style={[styles.buttonHeader, !isActive && styles.inactiveHeaderBtn]}>
+      <Text
+        style={[styles.buttonText, !isActive && styles.inactiveHeaderBtnText]}
+      >
+        {name}
+      </Text>
+    </View>
+  </TouchableWithoutFeedback>
+);
+
+const AdditionalButton = ({
+  title,
+  onPress,
+}: {
+  title: string,
+  onPress: Function,
+}) => (
+  <Text onPress={onPress} style={styles.additionalButtonsText}>
+    {title}
+  </Text>
+);
+
 class Login extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: { navigation: any }) => {
     const { state } = navigation;
-    const isRegistrationForm = state.params && state.params.isRegistrationForm;
+    const isRegForm = state.params && state.params.isRegForm;
+
     return {
       headerStyle: {
         marginTop: 15,
         backgroundColor: colors.backGroundBlack,
         borderBottomWidth: 0,
       },
-      headerLeft: (
-        <TouchableWithoutFeedback
-          onPress={() => state.params.onPushLeftHeaderButton()}
-        >
-          <View
-            style={
-              isRegistrationForm
-                ? styles.inactiveHeaderButton
-                : styles.activeHeaderButton
-            }
-          >
-            <Text
-              style={
-                isRegistrationForm
-                  ? styles.inactiveHeaderButtonText
-                  : styles.activeHeaderButtonText
-              }
-            >
-              Регистрация
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      ),
-      headerRight: (
-        <TouchableWithoutFeedback
-          onPress={() => state.params.onPushRightHeaderButton()}
-        >
-          <View
-            style={
-              isRegistrationForm
-                ? styles.activeHeaderButton
-                : styles.inactiveHeaderButton
-            }
-          >
-            <Text
-              style={
-                isRegistrationForm
-                  ? styles.activeHeaderButtonText
-                  : styles.inactiveHeaderButtonText
-              }
-            >
-              Вход
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      ),
+      headerLeft: headerButton({
+        name: 'Регистрация',
+        isActive: !isRegForm,
+        onPress: () => state.params.onPushHeaderButton(isRegForm),
+      }),
+      headerRight: headerButton({
+        name: 'Вход',
+        isActive: isRegForm,
+        onPress: () => state.params.onPushHeaderButton(isRegForm),
+      }),
     };
   };
 
   constructor(props: Props) {
     super(props);
-    const {
-      props: { navigation },
-    } = this;
+    const { navigation } = this.props;
+
     navigation.setParams({
-      isRegistrationForm: false,
-      onPushLeftHeaderButton: this.onPushLeftHeaderButton,
-      onPushRightHeaderButton: this.onPushRightHeaderButton,
+      isRegForm: false,
+      onPushHeaderButton: this.onPushHeaderButton,
     });
+
     this.keyboardWillShowSub = Keyboard.addListener(
       'keyboardWillShow',
-      this.keyboardWillShow
+      this.toggleKeyboard
     );
+
     this.keyboardWillHideSub = Keyboard.addListener(
       'keyboardWillHide',
-      this.keyboardWillHide
+      this.toggleKeyboard
     );
+    this.state = { ...initialState };
   }
-
-  state = {
-    isKeyboardActive: false,
-    isRegistrationForm: false,
-    textInputName: '',
-    textInputEmail: '',
-    textInputPassword: '',
-    textInputMobile: '',
-  };
 
   componentWillUnmount() {
     this.keyboardWillShowSub.remove();
     this.keyboardWillHideSub.remove();
   }
 
-  keyboardWillShow = () => {
-    this.setState({ isKeyboardActive: true });
-  };
+  toggleKeyboard = () =>
+    this.setState(({ isKeyboardActive }) => ({
+      isKeyboardActive: !isKeyboardActive,
+    }));
 
-  keyboardWillHide = () => {
-    this.setState({ isKeyboardActive: false });
-  };
-
-  onChangeName = (value: string) => {
+  onChangeField = (field: string, value: string) => {
     this.setState({
-      textInputName: value,
+      [field]: value,
     });
   };
 
-  onChangeEmail = (value: string) => {
+  onPushHeaderButton = (isRegForm: boolean) => {
+    const { navigation } = this.props;
+    const { isKeyboardActive } = this.state;
+    navigation.setParams({ isRegForm: !isRegForm });
     this.setState({
-      textInputEmail: value,
+      ...initialState,
+      isRegForm: !isRegForm,
     });
-  };
-
-  onChangePassword = (value: string) => {
-    this.setState({
-      textInputPassword: value,
-    });
-  };
-
-  onChangeMobile = (value: string) => {
-    this.setState({
-      textInputMobile: value,
-    });
-  };
-
-  onPushLeftHeaderButton = () => {
-    const {
-      props: { navigation },
-    } = this;
-    navigation.setParams({ isRegistrationForm: true });
-    this.setState({
-      isRegistrationForm: true,
-      textInputEmail: '',
-      textInputPassword: '',
-    });
-    Keyboard.dismiss();
-  };
-
-  onPushRightHeaderButton = () => {
-    const {
-      props: { navigation },
-    } = this;
-    navigation.setParams({ isRegistrationForm: false });
-    this.setState({
-      isRegistrationForm: false,
-      textInputName: '',
-      textInputEmail: '',
-      textInputPassword: '',
-      textInputMobile: '',
-    });
-    Keyboard.dismiss();
-  };
-
-  focusNextField = (type: string) => {
-    const {
-      state: { isRegistrationForm },
-    } = this;
-    if (isRegistrationForm) {
-      if (type === constants.inputTypes.name) {
-        this.textInputEmailRef.ref.focus();
-      } else if (type === constants.inputTypes.email) {
-        this.textInputPasswordRef.ref.focus();
-      } else if (type === constants.inputTypes.password) {
-        this.textInputMobileRef.ref.focus();
-      }
-    } else {
-      this.textInputPasswordRef.ref.focus();
+    if (isKeyboardActive) {
+      this.toggleKeyboard();
     }
+    Keyboard.dismiss();
+  };
+
+  focusNextField = (type: string, key: string) => {
+    if (this[key]) this[key].focus();
   };
 
   onPushButton = () => {
     console.log('Click');
   };
 
-  bottomButtonsRender = (data: Array<string>) => (
-    <View style={styles.additionalButtons}>
-      {data.map((item, index) => (
-        <TouchableWithoutFeedback key={index}>
-          <View>
-            <Text
-              onPress={this.onPushButton}
-              style={styles.additionalButtonsText}
-            >
-              {item}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      ))}
-    </View>
-  );
+  nameRef: any;
 
-  textInputNameRef: any;
+  emailRef: any;
 
-  textInputEmailRef: any;
+  passwordRef: any;
 
-  textInputPasswordRef: any;
-
-  textInputMobileRef: any;
+  mobileRef: any;
 
   keyboardWillShowSub: any;
 
@@ -237,15 +170,13 @@ class Login extends PureComponent<Props, State> {
 
   render() {
     const {
-      state: {
-        textInputName,
-        textInputEmail,
-        textInputMobile,
-        isKeyboardActive,
-        textInputPassword,
-        isRegistrationForm,
-      },
-    } = this;
+      name,
+      email,
+      mobile,
+      password,
+      isRegForm,
+      isKeyboardActive,
+    } = this.state;
 
     return (
       <View style={styles.wrapper}>
@@ -257,68 +188,79 @@ class Login extends PureComponent<Props, State> {
           contentContainerStyle={styles.container}
         >
           <View style={styles.logo}>
-            <Image style={styles.logoImage} source={images.logo} />
-            <Image source={images.appName} />
+            <Image style={styles.logoImage} source={assets.logologin} />
+            <Image source={assets.appName} />
           </View>
           <View style={styles.formContainer}>
-            {isRegistrationForm && (
+            {isRegForm && (
               <Input
-                onPushButton={this.onPushButton}
-                focusNextField={this.focusNextField}
-                ref={ref => {
-                  this.textInputNameRef = ref;
+                value={name}
+                nextRefName="emailRef"
+                fieldRef={ref => {
+                  this.nameRef = ref;
                 }}
-                state={isRegistrationForm}
+                state={isRegForm}
                 type={constants.inputTypes.name}
-                value={textInputName}
-                onChangeText={() => this.onChangeName}
+                focusNextField={this.focusNextField}
+                onChangeText={text => this.onChangeField('name', text)}
               />
             )}
             <Input
-              onPushButton={this.onPushButton}
-              focusNextField={this.focusNextField}
-              ref={ref => {
-                this.textInputEmailRef = ref;
+              value={email}
+              nextRefName="passwordRef"
+              fieldRef={ref => {
+                this.emailRef = ref;
               }}
-              state={isRegistrationForm}
+              state={isRegForm}
               type={constants.inputTypes.email}
-              value={textInputEmail}
-              onChangeText={() => this.onChangeEmail}
+              focusNextField={this.focusNextField}
+              onChangeText={text => this.onChangeField('email', text)}
             />
             <Input
+              value={password}
+              nextRefName="mobileRef"
+              fieldRef={ref => {
+                this.passwordRef = ref;
+              }}
+              state={isRegForm}
               onPushButton={this.onPushButton}
               focusNextField={this.focusNextField}
-              ref={ref => {
-                this.textInputPasswordRef = ref;
-              }}
-              state={isRegistrationForm}
               type={constants.inputTypes.password}
-              value={textInputPassword}
-              onChangeText={() => this.onChangePassword}
+              onChangeText={text => this.onChangeField('password', text)}
             />
-            {isRegistrationForm && (
+            {isRegForm && (
               <Input
+                value={mobile}
+                fieldRef={ref => {
+                  this.mobileRef = ref;
+                }}
+                state={isRegForm}
                 onPushButton={this.onPushButton}
                 focusNextField={this.focusNextField}
-                ref={ref => {
-                  this.textInputMobileRef = ref;
-                }}
-                state={isRegistrationForm}
                 type={constants.inputTypes.mobileNumber}
-                value={textInputMobile}
-                onChangeText={() => this.onChangeMobile}
+                onChangeText={text => this.onChangeField('mobile', text)}
               />
             )}
-            {!isRegistrationForm &&
-              this.bottomButtonsRender(constants.loginButtonsTitle)}
+            {!isRegForm && (
+              <View style={styles.additionalButtons}>
+                <AdditionalButton
+                  onPress={this.onPushButton}
+                  title={constants.buttonTitles.forgotPassword}
+                />
+                <AdditionalButton
+                  onPress={this.onPushButton}
+                  title={constants.buttonTitles.registration}
+                />
+              </View>
+            )}
           </View>
           <Button
-            onPressButton={this.onPushButton}
             title={
-              isRegistrationForm
+              isRegForm
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
+            onPressButton={this.onPushButton}
           />
         </KeyboardAwareScrollView>
       </View>

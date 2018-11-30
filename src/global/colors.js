@@ -13,6 +13,7 @@ export default {
   text: {
     gray: '#BDBDBD',
     blue: '#42BCF8',
+    inputTitle: '#616161',
   },
   header: {
     grayButtonText: '#5C5C5C',

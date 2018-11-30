@@ -6,16 +6,16 @@ import colors from 'global/colors';
 
 export default StyleSheet.create({
   container: {
-    width: '100%',
     height: 54,
-    marginBottom: 10,
+    width: '100%',
     backgroundColor: colors.black,
-    borderRadius: 7,
     paddingTop: 8,
+    borderRadius: 7,
+    marginBottom: 10,
     paddingHorizontal: 20,
   },
   inputTitleText: {
-    color: '#616161',
+    color: colors.text.inputTitle,
     fontSize: 13,
     lineHeight: 15,
     textAlign: 'justify',

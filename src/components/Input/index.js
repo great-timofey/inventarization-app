@@ -13,15 +13,23 @@ class Input extends PureComponent<Props> {
 
   render() {
     const {
-      props: { type, value, state, onChangeText, focusNextField, onPushButton },
+      props: {
+        type,
+        nextRefName,
+        value,
+        state,
+        onChangeText,
+        focusNextField,
+        onPushButton,
+        fieldRef,
+      },
     } = this;
-
     let secureTextEntry = false;
     let keyboardType = 'default';
     let returnKeyType = 'next';
     let autoCapitalize = 'none';
     let isValideValue = true;
-    let onSubmitEditing = () => focusNextField(type);
+    let onSubmitEditing = () => focusNextField(type, nextRefName);
 
     switch (type) {
       case constants.inputTypes.name:
@@ -43,7 +51,7 @@ class Input extends PureComponent<Props> {
         secureTextEntry = true;
         returnKeyType = state ? 'next' : 'go';
         onSubmitEditing = state
-          ? () => focusNextField(type)
+          ? () => focusNextField(type, nextRefName)
           : () => onPushButton(type);
         break;
       case constants.inputTypes.mobileNumber:
@@ -71,16 +79,14 @@ class Input extends PureComponent<Props> {
           </Text>
           <TextInput
             onSubmitEditing={onSubmitEditing}
-            ref={ref => {
-              this.ref = ref;
-            }}
+            ref={fieldRef}
             secureTextEntry={secureTextEntry}
             keyboardType={keyboardType}
             returnKeyType={returnKeyType}
             autoCapitalize={autoCapitalize}
             autoCorrect={false}
             style={styles.input}
-            onChangeText={onChangeText(value)}
+            onChangeText={onChangeText}
             value={value}
           />
         </View>

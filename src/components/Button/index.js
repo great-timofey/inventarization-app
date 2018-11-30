@@ -1,17 +1,15 @@
 // @flow
 
 import React from 'react';
-import { View, Text, TouchableWithoutFeedback } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 import type { Props } from './types';
 import styles from './styles';
 
 const Button = ({ title, onPressButton }: Props) => (
-  <TouchableWithoutFeedback onPress={onPressButton}>
-    <View style={styles.container}>
-      <Text style={styles.titleText}>{title}</Text>
-    </View>
-  </TouchableWithoutFeedback>
+  <TouchableOpacity onPress={onPressButton} style={styles.container}>
+    <Text style={styles.titleText}>{title}</Text>
+  </TouchableOpacity>
 );
 
 export default Button;
