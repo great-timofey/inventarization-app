@@ -13,6 +13,12 @@ import PlacesScene from 'scenes/Places';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
 import * as SCENE_NAMES from 'navigation/scenes';
+import styles from './styles';
+import assets from './assets';
+
+type iconType = {
+  focused: Boolean,
+};
 
 const generateStack = (RouteConfigs, StackNavigatorConfig) =>
   createStackNavigator(RouteConfigs, StackNavigatorConfig);
@@ -42,59 +48,38 @@ const rootTabs = {
   [SCENE_NAMES.ItemsSceneName]: {
     screen: itemsStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
-        <Image
-          style={!focused && { opacity: 0.5 }}
-          source={require('assets/chair.png')}
-        />
+      tabBarIcon: ({ focused }: iconType) => (
+        <Image style={!focused && { opacity: 0.5 }} source={assets.chair} />
       ),
     },
   },
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
-        <Image
-          style={!focused && { opacity: 0.5 }}
-          source={require('assets/location.png')}
-        />
+      tabBarIcon: ({ focused }: iconType) => (
+        <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
     },
   },
   [SCENE_NAMES.AddItemSceneName]: {
     screen: addItemStack,
     navigationOptions: {
-      tabBarIcon: () => (
-        <Image
-          style={{
-            height: 36,
-            width: 41,
-            resizeMode: 'contain',
-          }}
-          source={require('assets/logo.png')}
-        />
-      ),
+      tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
     },
   },
   [SCENE_NAMES.PeopleSceneName]: {
     screen: peopleStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
-        <Image
-          style={!focused && { opacity: 0.5 }}
-          source={require('assets/people.png')}
-        />
+      tabBarIcon: ({ focused }: iconType) => (
+        <Image style={!focused && { opacity: 0.5 }} source={assets.people} />
       ),
     },
   },
   [SCENE_NAMES.ProfileSceneName]: {
     screen: profileStack,
     navigationOptions: {
-      tabBarIcon: ({ focused }) => (
-        <Image
-          style={!focused && { opacity: 0.5 }}
-          source={require('assets/user.png')}
-        />
+      tabBarIcon: ({ focused }: iconType) => (
+        <Image style={!focused && { opacity: 0.5 }} source={assets.user} />
       ),
     },
   },

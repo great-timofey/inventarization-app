@@ -16,8 +16,9 @@
   },
   "settings": {
     "import/resolver": {
-      "node": {
+      "babel-module": {
         "paths": [
+          "./",
           "src"
         ]
       }
