@@ -28,13 +28,13 @@ class Input extends PureComponent<Props> {
         autoCapitalize = 'sentences';
         break;
       case constants.inputTypes.email:
-        if (value !== '') {
+        if (value) {
           isValideValue = utils.validateFunction(constants.regExp.email, value);
         }
         keyboardType = 'email-address';
         break;
       case constants.inputTypes.password:
-        if (value !== '') {
+        if (value) {
           isValideValue = utils.validateFunction(
             constants.regExp.password,
             value
@@ -47,7 +47,7 @@ class Input extends PureComponent<Props> {
           : () => onPushButton(type);
         break;
       case constants.inputTypes.mobileNumber:
-        if (value.length >= 11) {
+        if (value) {
           isValideValue = utils.validateFunction(
             constants.regExp.mobileNumber,
             value

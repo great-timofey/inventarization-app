@@ -6,12 +6,21 @@ const regExp = {
   password: /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{8,})\S$/,
 };
 
-const inputTypes = {
+export type inputTypesType = {
+  name: string,
+  email: string,
+  password: string,
+  mobileNumber: string,
+};
+
+const inputTypes: inputTypesType = {
   name: 'Имя',
   email: 'e-mail',
   password: 'Пароль',
   mobileNumber: 'Телефон',
 };
+
+const loginButtonsTitle = ['Забыли пароль?', 'Регистрация'];
 
 const buttonTitles = {
   reg: 'Зарегистрироваться',
@@ -24,7 +33,8 @@ const buttonTitles = {
 };
 
 export default {
+  regExp,
   inputTypes,
   buttonTitles,
-  regExp,
+  loginButtonsTitle,
 };

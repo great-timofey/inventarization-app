@@ -47,6 +47,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.backGroundBlack,
     marginBottom: 50,
+    marginTop: 40,
   },
   logoImage: {
     marginBottom: 25,

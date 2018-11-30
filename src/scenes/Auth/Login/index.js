@@ -38,6 +38,7 @@ class Login extends PureComponent<Props, State> {
     const isRegistrationForm = state.params && state.params.isRegistrationForm;
     return {
       headerStyle: {
+        marginTop: 15,
         backgroundColor: colors.backGroundBlack,
         borderBottomWidth: 0,
       },
@@ -205,6 +206,23 @@ class Login extends PureComponent<Props, State> {
     console.log('Click');
   };
 
+  bottomButtonsRender = (data: Array<string>) => (
+    <View style={styles.additionalButtons}>
+      {data.map((item, index) => (
+        <TouchableWithoutFeedback key={index}>
+          <View>
+            <Text
+              onPress={this.onPushButton}
+              style={styles.additionalButtonsText}
+            >
+              {item}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      ))}
+    </View>
+  );
+
   textInputNameRef: any;
 
   textInputEmailRef: any;
@@ -291,30 +309,8 @@ class Login extends PureComponent<Props, State> {
                 onChangeText={() => this.onChangeMobile}
               />
             )}
-            {!isRegistrationForm && (
-              <View style={styles.additionalButtons}>
-                <TouchableWithoutFeedback>
-                  <View>
-                    <Text
-                      onPress={this.onPushButton}
-                      style={styles.additionalButtonsText}
-                    >
-                      Забыли пароль?
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback>
-                  <View>
-                    <Text
-                      onPress={this.onPushLeftHeaderButton}
-                      style={styles.additionalButtonsText}
-                    >
-                      Регистрация
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            )}
+            {!isRegistrationForm &&
+              this.bottomButtonsRender(constants.loginButtonsTitle)}
           </View>
           <Button
             onPressButton={this.onPushButton}
