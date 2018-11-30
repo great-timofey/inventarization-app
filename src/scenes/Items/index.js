@@ -2,18 +2,32 @@
 import React, { PureComponent } from 'react';
 import { Text, View } from 'react-native';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
+import InventoryIcon from 'assets/InventoryIcon';
 
+import colors from 'global/colors';
 import styles from './styles';
 
 type Props = {};
+
 class ItemsScene extends PureComponent<Props> {
   static navigationOptions = () => ({
     title: 'Предметы',
-    headerLeft: () => (
-      <Icon.Button name="facebook" backgroundColor="#3b5998">
-        Login with Facebook
-      </Icon.Button>
+
+    headerLeft: (
+      <InventoryIcon.Button
+        size={25}
+        name="tile"
+        backgroundColor="transparent"
+        color={colors.accent}
+      />
+    ),
+    headerRight: (
+      <InventoryIcon.Button
+        size={25}
+        name="search"
+        backgroundColor="transparent"
+        color={colors.accent}
+      />
     ),
   });
 

@@ -14,6 +14,7 @@ export default StyleSheet.create({
   },
   instructions: {
     fontSize: 50,
+    fontFamily: 'SFProText-SemiBold',
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
