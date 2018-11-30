@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   Keyboard,
+  StatusBar,
   TouchableWithoutFeedback,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -201,7 +202,7 @@ class Login extends PureComponent<Props, State> {
   };
 
   onPushButton = () => {
-    alert('Click');
+    console.log('Click');
   };
 
   textInputNameRef: any;
@@ -230,10 +231,12 @@ class Login extends PureComponent<Props, State> {
 
     return (
       <View style={styles.wrapper}>
+        <StatusBar barStyle="light-content" />
         <KeyboardAwareScrollView
-          contentContainerStyle={styles.container}
-          scrollEnabled={isKeyboardActive}
           extraScrollHeight={50}
+          scrollEnabled={isKeyboardActive}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
         >
           <View style={styles.logo}>
             <Image style={styles.logoImage} source={images.logo} />
