@@ -6,6 +6,12 @@ const Styles = StyleSheet.create({
     height: 36,
     resizeMode: 'contain',
   },
+  iconStyle: {
+    width: 28,
+    height: 28,
+    marginLeft: 10,
+    marginRight: 0,
+  },
 });
 
 export default Styles;
