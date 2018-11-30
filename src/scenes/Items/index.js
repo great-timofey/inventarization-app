@@ -11,6 +11,8 @@ import {
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 
+import RateButton from 'components/RateButton';
+import Button from 'components/Button';
 import styles from './styles';
 
 const GET_REPOS_QUERY = gql`
@@ -67,15 +69,33 @@ class ItemsScene extends PureComponent<Props> {
             renderItem={({
               item: {
                 node: {
+                  id,
                   name,
                   description,
                   primaryLanguage: { name: languageName },
                 },
               },
             }) => (
-              <Text>
-                {name} : {description} : {languageName}
-              </Text>
+              <View
+                style={{
+                  marginBottom: 5,
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 1,
+                }}
+              >
+                <Text>
+                  {name} : {description} : {languageName}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <RateButton repoId={id} forAdding={true} />
+                  <RateButton repoId={id} forAdding={false} />
+                </View>
+              </View>
             )}
           />
         ) : (
