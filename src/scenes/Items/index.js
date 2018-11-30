@@ -5,7 +5,11 @@ import { Text, View } from 'react-native';
 import styles from './styles';
 
 type Props = {};
-export default class ItemsScene extends PureComponent<Props> {
+class ItemsScene extends PureComponent<Props> {
+  static navigationOptions = () => ({
+    title: 'Предметы',
+  });
+
   render() {
     return (
       <View style={styles.container}>
@@ -14,3 +18,5 @@ export default class ItemsScene extends PureComponent<Props> {
     );
   }
 }
+
+export default ItemsScene;
