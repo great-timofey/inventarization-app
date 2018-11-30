@@ -28,10 +28,10 @@ const REMOVE_STAR_MUTATION = gql`
 
 type Props = {
   name: string,
-  description: string,
-  languageName: string,
   repoId: string,
   addStar: () => void,
+  description: string,
+  languageName: string,
   removeStar: () => void,
 };
 
