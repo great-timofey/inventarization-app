@@ -1,6 +1,6 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, Image, View, ScrollView, FlatList } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 
 import InventoryIcon from 'assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Feather';
