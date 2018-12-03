@@ -7,7 +7,7 @@ export type Props = {
   state: boolean,
   fieldRef: Object,
   focusField: Function,
-  nextRefName: string,
-  onPushButton: Function,
+  nextRefName?: string,
+  onPushButton?: Function,
   onChangeText: Function,
 };

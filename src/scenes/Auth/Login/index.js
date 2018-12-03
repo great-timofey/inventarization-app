@@ -122,11 +122,8 @@ class Login extends PureComponent<Props, State> {
   };
 
   focusField = (key: string) => {
-    if (this[key]) this[key].focus();
-  };
-
-  onPushButton = () => {
-    console.log('Click');
+    const t = this[key];
+    if (t) t.focus();
   };
 
   nameRef: any;
@@ -200,7 +197,6 @@ class Login extends PureComponent<Props, State> {
               }}
               state={isRegForm}
               focusField={this.focusField}
-              onPushButton={this.onPushButton}
               type={constants.inputTypes.password}
               onChangeText={text => this.onChangeField('password', text)}
             />
@@ -213,7 +209,6 @@ class Login extends PureComponent<Props, State> {
                 }}
                 state={isRegForm}
                 focusField={this.focusField}
-                onPushButton={this.onPushButton}
                 type={constants.inputTypes.mobileNumber}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
@@ -221,11 +216,11 @@ class Login extends PureComponent<Props, State> {
             {!isRegForm && (
               <View style={styles.additionalButtons}>
                 <AdditionalButton
-                  onPress={this.onPushButton}
+                  onPress={() => {}}
                   title={constants.buttonTitles.forgotPassword}
                 />
                 <AdditionalButton
-                  onPress={this.onPushButton}
+                  onPress={() => {}}
                   title={constants.buttonTitles.registration}
                 />
               </View>
@@ -237,7 +232,7 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            onPressButton={this.onPushButton}
+            onPressButton={() => {}}
           />
         </KeyboardAwareScrollView>
       </View>

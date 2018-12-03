@@ -17,7 +17,6 @@ class Input extends PureComponent<Props> {
       state,
       onChangeText,
       focusField,
-      onPushButton,
       fieldRef,
       refEl,
     } = this.props;
@@ -47,9 +46,7 @@ class Input extends PureComponent<Props> {
         }
         secureTextEntry = true;
         returnKeyType = state ? 'next' : 'go';
-        onSubmitEditing = state
-          ? () => focusField(nextRefName)
-          : () => onPushButton(type);
+        onSubmitEditing = state ? () => focusField(nextRefName) : () => {};
         break;
       case constants.inputTypes.mobileNumber:
         if (value) {
@@ -59,7 +56,7 @@ class Input extends PureComponent<Props> {
           );
         }
         keyboardType = 'numbers-and-punctuation';
-        onSubmitEditing = () => onPushButton(type);
+        onSubmitEditing = () => {};
         returnKeyType = 'go';
         break;
       default:
