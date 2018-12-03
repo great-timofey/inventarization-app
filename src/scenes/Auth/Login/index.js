@@ -1,26 +1,18 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Keyboard,
-  StatusBar,
-  TouchableWithoutFeedback,
-  YellowBox,
-} from 'react-native';
+import { View, Text, Image, Keyboard, StatusBar } from 'react-native';
+
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
+import HeaderButton from 'components/HeaderButton';
 
 import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
 import styles from './styles';
-
-YellowBox.ignoreWarnings(['unknown call: "relay:check"']);
 
 type State = {
   name: string,
@@ -43,26 +35,6 @@ const initialState = {
   isKeyboardActive: false,
   isRegForm: false,
 };
-
-const headerButton = ({
-  isActive,
-  onPress,
-  name,
-}: {
-  isActive: boolean,
-  onPress: Function,
-  name: string,
-}) => (
-  <TouchableWithoutFeedback onPress={isActive ? onPress : null}>
-    <View style={[styles.buttonHeader, !isActive && styles.inactiveHeaderBtn]}>
-      <Text
-        style={[styles.buttonText, !isActive && styles.inactiveHeaderBtnText]}
-      >
-        {name}
-      </Text>
-    </View>
-  </TouchableWithoutFeedback>
-);
 
 const AdditionalButton = ({
   title,
@@ -87,12 +59,12 @@ class Login extends PureComponent<Props, State> {
         backgroundColor: colors.backGroundBlack,
         borderBottomWidth: 0,
       },
-      headerLeft: headerButton({
+      headerLeft: HeaderButton({
         name: 'Регистрация',
         isActive: !isRegForm,
         onPress: () => state.params.onPushHeaderButton(isRegForm),
       }),
-      headerRight: headerButton({
+      headerRight: HeaderButton({
         name: 'Вход',
         isActive: isRegForm,
         onPress: () => state.params.onPushHeaderButton(isRegForm),
@@ -108,12 +80,10 @@ class Login extends PureComponent<Props, State> {
       isRegForm: false,
       onPushHeaderButton: this.onPushHeaderButton,
     });
-
     this.keyboardWillShowSub = Keyboard.addListener(
       'keyboardWillShow',
       this.toggleKeyboard
     );
-
     this.keyboardWillHideSub = Keyboard.addListener(
       'keyboardWillHide',
       this.toggleKeyboard
