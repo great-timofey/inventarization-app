@@ -12,8 +12,10 @@ export default {
   gray: '#F6F6F6',
   text: {
     gray: '#BDBDBD',
+    bigGray: '#747474',
     blue: '#42BCF8',
     inputTitle: '#616161',
+    placeholder: '#3F3F3F',
   },
   header: {
     grayButtonText: '#5C5C5C',

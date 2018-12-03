@@ -4,10 +4,11 @@ export type Props = {
   type: string,
   value: string,
   refEl: string,
-  state: boolean,
+  state?: boolean,
   fieldRef: Object,
   focusField: Function,
+  placeholder?: string,
   nextRefName?: string,
-  onPushButton?: Function,
   onChangeText: Function,
+  onPushButton?: Function,
 };

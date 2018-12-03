@@ -8,6 +8,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 import HeaderButton from 'components/HeaderButton';
+import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';
 import assets from 'global/assets';
@@ -147,6 +148,7 @@ class Login extends PureComponent<Props, State> {
       isRegForm,
       isKeyboardActive,
     } = this.state;
+    const { navigation } = this.props;
 
     return (
       <View style={styles.wrapper}>
@@ -216,7 +218,9 @@ class Login extends PureComponent<Props, State> {
             {!isRegForm && (
               <View style={styles.additionalButtons}>
                 <AdditionalButton
-                  onPress={() => {}}
+                  onPress={() =>
+                    navigation.navigate(SCENE_NAMES.ForgotPasswordSceneName)
+                  }
                   title={constants.buttonTitles.forgotPassword}
                 />
                 <AdditionalButton

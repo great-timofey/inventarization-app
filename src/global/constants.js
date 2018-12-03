@@ -4,7 +4,7 @@ const regExp = {
   password: /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{8,})\S$/,
 };
 
-const inputTypes: inputTypesType = {
+const inputTypes = {
   name: 'Имя',
   email: 'e-mail',
   password: 'Пароль',
@@ -16,15 +16,24 @@ const buttonTitles = {
   login: 'Войти',
   update: 'Обновить',
   create: 'Да, создать',
-  registration: 'Регистрация',
-  forgotPassword: 'Забыли пароль?',
   createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
+  registration: 'Регистрация',
+  forgotPassword: 'Забыли пароль?',
+};
+
+const forgotPassText = {
+  headerTitle: `Восстановление \n пароля`,
+  enterData: 'Введите e-mail или телефон',
+  placeHolder: 'Ваш номер телефона',
+  sendMail:
+    'На ваш е-mail было отправлено письмо с ссылкой на восстановление. Проверьте свой почтовый ящик.',
 };
 
 export default {
   regExp,
   inputTypes,
   buttonTitles,
+  forgotPassText,
 };

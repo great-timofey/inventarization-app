@@ -5,6 +5,7 @@ import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
 import constants from 'global/constants';
+import colors from 'global/colors';
 import type { Props } from './types';
 import styles from './styles';
 
@@ -12,13 +13,14 @@ class Input extends PureComponent<Props> {
   render() {
     const {
       type,
-      nextRefName,
       value,
       state,
-      onChangeText,
-      focusField,
-      fieldRef,
       refEl,
+      fieldRef,
+      focusField,
+      placeholder,
+      nextRefName,
+      onChangeText,
     } = this.props;
     let secureTextEntry = false;
     let keyboardType = 'default';
@@ -72,16 +74,18 @@ class Input extends PureComponent<Props> {
             {type}
           </Text>
           <TextInput
-            onSubmitEditing={onSubmitEditing}
+            value={value}
             ref={fieldRef}
-            secureTextEntry={secureTextEntry}
-            keyboardType={keyboardType}
-            returnKeyType={returnKeyType}
-            autoCapitalize={autoCapitalize}
             autoCorrect={false}
             style={styles.input}
+            keyboardType={keyboardType}
             onChangeText={onChangeText}
-            value={value}
+            returnKeyType={returnKeyType}
+            autoCapitalize={autoCapitalize}
+            onSubmitEditing={onSubmitEditing}
+            secureTextEntry={secureTextEntry}
+            placeholder={placeholder || null}
+            placeholderTextColor={colors.text.placeholder}
           />
         </View>
       </TouchableWithoutFeedback>
