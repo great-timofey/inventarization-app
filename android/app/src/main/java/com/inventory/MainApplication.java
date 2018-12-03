@@ -2,6 +2,7 @@ package com.inventory;
 
 import android.app.Application;
 
+import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactApplication;
 import com.imagepicker.ImagePickerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -26,9 +27,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new ImagePickerPackage(),
-            new LinearGradientPackage(),
-          new RNGestureHandlerPackage()
+          new ImagePickerPackage(),
+          new LinearGradientPackage(),
+          new RNGestureHandlerPackage(),
+          new RNCameraPackage()
       );
     }
 
