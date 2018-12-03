@@ -14,8 +14,10 @@
     "react-native": "0.57.5",
     "react-navigation": "^3.0.0",
     "react-native-modal": "^7.0.1",
+    "react-native-swipeout": "^2.3.6",
     "react-native-gesture-handler": "^1.0.9",
-    "react-native-linear-gradient": "^2.4.4"
+    "react-native-linear-gradient": "^2.4.4",
+    "react-native-keyboard-aware-scroll-view": "^0.7.4"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
