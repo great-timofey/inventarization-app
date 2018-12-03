@@ -1,28 +1,25 @@
+//  @flow
 import React, { Component } from 'react';
 import { View, Button, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
 import styles from './styles';
+import type { CameraSceneProps, CameraSceneState } from './types';
 
-type Props = { navigation: Object };
-type State = {
-  type: boolean,
-  flashMode: boolean,
-};
-
-class CameraScene extends Component<Props, State> {
+class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
   state = {
-    flashMode: RNCamera.Constants.FlashMode.off,
     type: RNCamera.Constants.Type.back,
+    flashMode: RNCamera.Constants.FlashMode.off,
   };
 
   takePicture = async () => {
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
       const data = await this.camera.takePictureAsync(options);
-      console.log(data.uri);
+      return data.uri;
     }
+    return null;
   };
 
   toggleFlash = () => {
@@ -50,6 +47,8 @@ class CameraScene extends Component<Props, State> {
     });
   };
 
+  camera: ?RNCamera;
+
   render() {
     return (
       <View style={styles.container}>
@@ -64,9 +63,6 @@ class CameraScene extends Component<Props, State> {
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.on}
-          onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            console.log(barcodes);
-          }}
         />
         <View style={styles.cameraActionsZone}>
           <Button onPress={this.returnBack} title="Назад" color="white" />
