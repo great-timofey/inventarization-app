@@ -6,6 +6,7 @@ import InventoryIcon from 'assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Feather';
 
 import colors from 'global/colors';
+import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import styles from './styles';
 
@@ -49,7 +50,7 @@ class ItemsScene extends PureComponent<Props> {
   render() {
     return (
       <ScrollView>
-        <Text style={styles.header}>Предметы</Text>
+        <Text style={styles.header}>{constants.headers.items}</Text>
       </ScrollView>
     );
   }
