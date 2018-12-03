@@ -1,6 +1,7 @@
 // @flow
 
 export default {
+  transparent: 'transparent',
   backGroundBlack: '#0D0D0D',
   white: '#FFFFFF',
   black: '#000000',
