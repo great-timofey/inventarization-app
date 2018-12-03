@@ -1,12 +1,12 @@
 // @flow
 
-export type Props = {
+export type ModalProps = {
   isModalVisible: boolean,
   onBackCallback: () => void,
   navigationCallback: () => void,
 };
 
-export type State = {
+export type ModalState = {
   photos: Array<Object>,
 };
 

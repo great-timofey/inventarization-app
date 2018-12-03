@@ -13,10 +13,10 @@ import {
 import Modal from 'react-native-modal';
 import ImagePicker from 'react-native-image-picker';
 
-import type { Props, State, PhotoType } from './types';
+import type { ModalProps, ModalState, PhotoType } from './types';
 import styles from './styles';
 
-class PickPhotoModal extends PureComponent<Props, State> {
+class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
   state = {
     photos: [{ some: 'placeholder' }],
   };
