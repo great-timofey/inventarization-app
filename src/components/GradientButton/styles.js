@@ -5,18 +5,15 @@ import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
 
 export default StyleSheet.create({
-  container: {
+  linearGradient: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    width: 150,
     height: 54,
-    backgroundColor: colors.buttonBlue,
     borderRadius: 7,
-    marginBottom: 30,
   },
-  titleText: {
-    color: 'white',
+  buttonText: {
     fontSize: 18,
-    lineHeight: 21,
+    color: colors.white,
   },
 });
