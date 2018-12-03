@@ -11,13 +11,11 @@ type State = { isModalVisible: boolean, photos: Array<String> };
 export default class ItemsScene extends PureComponent<Props, State> {
   state = {
     isModalVisible: false,
-    photos: ['a', 'b', 'a', 'b', 'a', 'b'],
   };
 
   handleOpenModal = () => {
     const { isModalVisible } = this.state;
     this.setState({ isModalVisible: !isModalVisible });
-    console.log('sdf');
   };
 
   handleCloseModal = () => {
@@ -26,13 +24,12 @@ export default class ItemsScene extends PureComponent<Props, State> {
   };
 
   render() {
-    const { isModalVisible, photos } = this.state;
+    const { isModalVisible } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.instructions}>ITEMS</Text>
         <Button title="choose photo" onPress={this.handleOpenModal} />
         <PickPhotoModal
-          data={photos}
           isModalVisible={isModalVisible}
           onBackCallback={this.handleCloseModal}
         />

@@ -1,24 +1,69 @@
-import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, FlatList } from 'react-native';
+import React, { PureComponent, Fragment } from 'react';
+import {
+  Text,
+  View,
+  FlatList,
+  CameraRoll,
+  ImageBackground,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 
 import Modal from 'react-native-modal';
 import colors from 'global/colors';
 import styles from './styles';
 
 type Props = {
-  data: Array,
   onBackCallback: () => void,
   isModalVisible: boolean,
 };
-class PickPhotoModal extends Component<Props> {
-  renderItem = ({ item }) => (
-    <View style={{ width: 82, height: 82, backgroundColor: 'yellow' }}>
-      <Text>{item}</Text>
-    </View>
+
+type State = {
+  photos: Array<String>,
+};
+class PickPhotoModal extends PureComponent<Props, State> {
+  state = {
+    photos: ['placeholder'],
+  };
+
+  componentDidMount() {
+    const { photos } = this.state;
+    CameraRoll.getPhotos({
+      first: 20,
+      assetType: 'All',
+    }).then(data => this.setState({ photos: [photos, ...data.edges] }));
+  }
+
+  handleTakePhoto = async () => {
+    console.log('take');
+  };
+
+  handleChoosePhoto = () => {
+    console.log('choose');
+  };
+
+  renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={{
+        width: 82,
+        height: 82,
+        backgroundColor: 'green',
+        marginLeft: 10,
+      }}
+      onPress={index === 0 ? this.handleTakePhoto : this.handleChoosePhoto}
+    >
+      {index > 0 && (
+        <ImageBackground
+          source={{ uri: item.node.image.uri }}
+          style={{ width: '100%', height: '100%' }}
+        />
+      )}
+    </TouchableOpacity>
   );
 
   render() {
-    const { onBackCallback, isModalVisible, data } = this.props;
+    const { photos } = this.state;
+    const { onBackCallback, isModalVisible } = this.props;
     return (
       <Modal
         style={{
@@ -31,32 +76,41 @@ class PickPhotoModal extends Component<Props> {
       >
         <View
           style={{
-            paddingTop: 5,
             height: 150,
+            paddingTop: 10,
             borderRadius: 7,
             marginBottom: 15,
-            overflow: 'hidden',
             backgroundColor: 'white',
           }}
         >
-          <FlatList
-            data={data}
-            renderItem={this.renderItem}
-            keyExtractor={(_, index) => index.toString()}
-            horizontal
-            style={{ flex: 2 }}
-          />
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              backgroundColor: 'transparent',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={this.handleOpenModal}
-          >
-            <Text style={{ fontSize: 18, color: 'white' }}>Отмена</Text>
-          </TouchableOpacity>
+          {photos.length === 0 ? (
+            <ActivityIndicator />
+          ) : (
+            <View style={{ justifyContent: 'space-between' }}>
+              <FlatList
+                horizontal
+                data={photos}
+                keyExtractor={(item, index) =>
+                  index > 0 ? item.node.image.uri : 'key'
+                }
+                renderItem={this.renderItem}
+                showsHorizontalScrollIndicator={false}
+              />
+              <TouchableOpacity
+                style={{
+                  height: 60,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                }}
+                onPress={this.handleOpenModal}
+              >
+                <Text style={{ fontSize: 18, color: colors.buttonBlue }}>
+                  Выбрать фото
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
         <TouchableOpacity
           activeOpacity={1}
