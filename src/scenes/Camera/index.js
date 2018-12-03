@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Button, TouchableOpacity } from 'react-native';
+
 import { RNCamera } from 'react-native-camera';
 
 import styles from './styles';

@@ -9,9 +9,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { RNCamera } from 'react-native-camera';
-
 import Modal from 'react-native-modal';
+import ImagePicker from 'react-native-image-picker';
+
 import colors from 'global/colors';
 import styles from './styles';
 
@@ -45,6 +45,28 @@ class PickPhotoModal extends PureComponent<Props, State> {
 
   handleChoosePhoto = () => {
     console.log('choose');
+  };
+
+  handleOpenImageGallery = () => {
+    const options = {
+      title: 'Select Avatar',
+      customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    console.log('opening library');
+    ImagePicker.launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      }
+    });
   };
 
   renderItem = ({ item, index }) => (
@@ -108,7 +130,7 @@ class PickPhotoModal extends PureComponent<Props, State> {
                   justifyContent: 'center',
                   backgroundColor: 'transparent',
                 }}
-                onPress={this.handleOpenModal}
+                onPress={this.handleOpenImageGallery}
               >
                 <Text style={{ fontSize: 18, color: colors.buttonBlue }}>
                   Выбрать фото
