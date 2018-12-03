@@ -1,10 +1,12 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, View } from 'react-native';
+import { Text, Image, View, ScrollView, FlatList } from 'react-native';
 
 import InventoryIcon from 'assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Feather';
 
+import { getPlaceholder } from 'global/utils';
+import { deviceWidth } from 'global/utils';
 import colors from 'global/colors';
 import globalStyles from 'global/styles';
 import styles from './styles';
@@ -17,7 +19,9 @@ const iconProps = {
   backgroundColor: colors.transparent,
 };
 
-class ItemsScene extends PureComponent<Props> {
+type Props = {};
+type State = { items: Array<Object> };
+class ItemsScene extends PureComponent<Props, State> {
   static navigationOptions = () => ({
     header: () => (
       <View
@@ -54,11 +58,48 @@ class ItemsScene extends PureComponent<Props> {
     ),
   });
 
+  state = {
+    items: [
+      { name: 'macbook', price: '120000' },
+      { name: 'macbook', price: '120000' },
+      { name: 'macbook', price: '120000' },
+      { name: 'macbook', price: '120000' },
+    ],
+  };
+
+  renderItem = ({ item: { name, price } }) => (
+    <View style={{ flexBasis: 158 }}>
+      <Image
+        source={{ uri: getPlaceholder(158) }}
+        style={{ width: 158, height: 158 }}
+      />
+      <Text>{name}</Text>
+      <Text>{price}</Text>
+    </View>
+  );
+
   render() {
+    const { items } = this.state;
     return (
-      <View style={styles.container}>
-        <Text style={styles.instructions}>ITEMS</Text>
-      </View>
+      <ScrollView>
+        <Text style={styles.header}>Предметы</Text>
+        <Text>here goes filters</Text>
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
+          <FlatList
+            data={items}
+            contentContainerStyle={{
+              justifyContent: 'center',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+            }}
+            renderItem={this.renderItem}
+          />
+        </View>
+      </ScrollView>
     );
   }
 }
