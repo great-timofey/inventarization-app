@@ -252,7 +252,7 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            onPressButton={this.handleOpenModal}
+            onPressButton={() => {}}
           />
         </KeyboardAwareScrollView>
         <PickPhotoModal
