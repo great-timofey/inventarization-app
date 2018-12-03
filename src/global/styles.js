@@ -14,4 +14,20 @@ const Styles = StyleSheet.create({
   },
 });
 
+const proText = 'SFProText';
+const proDisplay = 'SFProDisplay';
+
+export const fonts = {
+  proDisplay: {
+    bold: `${proDisplay}-Bold`,
+    light: `${proDisplay}-Light`,
+    medium: `${proDisplay}-Medium`,
+    regular: `${proDisplay}-Regular`,
+  },
+  proText: {
+    regular: `${proText}-Regular`,
+    semibold: `${proText}-SemiBold`,
+  },
+};
+
 export default Styles;

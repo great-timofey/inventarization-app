@@ -2,6 +2,7 @@
 
 import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   headerContainer: {
@@ -13,9 +14,9 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
   },
   header: {
-    fontFamily: 'SFProDisplay-Bold',
     fontSize: 34,
     marginLeft: 20,
+    fontFamily: fonts.proDisplay.bold,
   },
   headerRightButtonsContainer: {
     flexDirection: 'row',
