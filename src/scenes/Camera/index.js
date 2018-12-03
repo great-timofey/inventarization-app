@@ -4,8 +4,9 @@ import { View, Button, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
-import styles from './styles';
+import colors from 'global/colors';
 import type { CameraSceneProps, CameraSceneState } from './types';
+import styles from './styles';
 
 class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
   state = {
@@ -53,7 +54,11 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
     return (
       <View style={styles.container}>
         <View style={styles.flashZone}>
-          <Button color="white" onPress={this.toggleFlash} title="Вспышка" />
+          <Button
+            title="Вспышка"
+            color={colors.white}
+            onPress={this.toggleFlash}
+          />
         </View>
 
         <RNCamera
@@ -65,9 +70,13 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
           flashMode={RNCamera.Constants.FlashMode.on}
         />
         <View style={styles.cameraActionsZone}>
-          <Button onPress={this.returnBack} title="Назад" color="white" />
+          <Button
+            title="Назад"
+            color={colors.white}
+            onPress={this.returnBack}
+          />
           <TouchableOpacity onPress={this.takePicture} style={styles.capture} />
-          <Button onPress={this.flipCamera} title="Flip" color="white" />
+          <Button onPress={this.flipCamera} title="Flip" color={colors.white} />
         </View>
       </View>
     );
