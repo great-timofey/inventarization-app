@@ -9,27 +9,24 @@ import type { Props } from './types';
 import styles from './styles';
 
 class Input extends PureComponent<Props> {
-  ref: any;
-
   render() {
     const {
-      props: {
-        type,
-        nextRefName,
-        value,
-        state,
-        onChangeText,
-        focusNextField,
-        onPushButton,
-        fieldRef,
-      },
-    } = this;
+      type,
+      nextRefName,
+      value,
+      state,
+      onChangeText,
+      focusField,
+      onPushButton,
+      fieldRef,
+      refEl,
+    } = this.props;
     let secureTextEntry = false;
     let keyboardType = 'default';
     let returnKeyType = 'next';
     let autoCapitalize = 'none';
     let isValideValue = true;
-    let onSubmitEditing = () => focusNextField(type, nextRefName);
+    let onSubmitEditing = () => focusField(nextRefName);
 
     switch (type) {
       case constants.inputTypes.name:
@@ -51,7 +48,7 @@ class Input extends PureComponent<Props> {
         secureTextEntry = true;
         returnKeyType = state ? 'next' : 'go';
         onSubmitEditing = state
-          ? () => focusNextField(type, nextRefName)
+          ? () => focusField(nextRefName)
           : () => onPushButton(type);
         break;
       case constants.inputTypes.mobileNumber:
@@ -70,7 +67,7 @@ class Input extends PureComponent<Props> {
     }
 
     return (
-      <TouchableWithoutFeedback onPress={() => this.ref.focus()}>
+      <TouchableWithoutFeedback onPress={() => focusField(refEl)}>
         <View style={styles.container}>
           <Text
             style={isValideValue ? styles.inputTitleText : styles.notValide}

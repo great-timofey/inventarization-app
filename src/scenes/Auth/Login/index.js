@@ -8,6 +8,7 @@ import {
   Keyboard,
   StatusBar,
   TouchableWithoutFeedback,
+  YellowBox,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -18,6 +19,8 @@ import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
 import styles from './styles';
+
+YellowBox.ignoreWarnings(['unknown call: "relay:check"']);
 
 type State = {
   name: string,
@@ -148,7 +151,7 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  focusNextField = (type: string, key: string) => {
+  focusField = (key: string) => {
     if (this[key]) this[key].focus();
   };
 
@@ -195,48 +198,52 @@ class Login extends PureComponent<Props, State> {
             {isRegForm && (
               <Input
                 value={name}
+                refEl="nameRef"
                 nextRefName="emailRef"
                 fieldRef={ref => {
                   this.nameRef = ref;
                 }}
                 state={isRegForm}
                 type={constants.inputTypes.name}
-                focusNextField={this.focusNextField}
+                focusField={this.focusField}
                 onChangeText={text => this.onChangeField('name', text)}
               />
             )}
             <Input
               value={email}
+              refEl="emailRef"
               nextRefName="passwordRef"
               fieldRef={ref => {
                 this.emailRef = ref;
               }}
               state={isRegForm}
+              focusField={this.focusField}
               type={constants.inputTypes.email}
-              focusNextField={this.focusNextField}
               onChangeText={text => this.onChangeField('email', text)}
             />
             <Input
               value={password}
+              refEl="passwordRef"
               nextRefName="mobileRef"
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
               state={isRegForm}
+              focusField={this.focusField}
               onPushButton={this.onPushButton}
-              focusNextField={this.focusNextField}
               type={constants.inputTypes.password}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
               <Input
                 value={mobile}
+                refEl="mobileRef"
                 fieldRef={ref => {
                   this.mobileRef = ref;
                 }}
                 state={isRegForm}
+                focusField={this.focusField}
                 onPushButton={this.onPushButton}
-                focusNextField={this.focusNextField}
                 type={constants.inputTypes.mobileNumber}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
