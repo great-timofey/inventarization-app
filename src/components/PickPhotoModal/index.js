@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Text,
   View,
@@ -9,13 +9,16 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { RNCamera } from 'react-native-camera';
+
 import Modal from 'react-native-modal';
 import colors from 'global/colors';
 import styles from './styles';
 
 type Props = {
-  onBackCallback: () => void,
   isModalVisible: boolean,
+  onBackCallback: () => void,
+  navigationCallback: () => void,
 };
 
 type State = {
@@ -34,8 +37,10 @@ class PickPhotoModal extends PureComponent<Props, State> {
     }).then(data => this.setState({ photos: [photos, ...data.edges] }));
   }
 
-  handleTakePhoto = async () => {
+  handleTakePhoto = () => {
+    const { navigationCallback } = this.props;
     console.log('take');
+    navigationCallback();
   };
 
   handleChoosePhoto = () => {
@@ -47,7 +52,7 @@ class PickPhotoModal extends PureComponent<Props, State> {
       style={{
         width: 82,
         height: 82,
-        backgroundColor: 'green',
+        backgroundColor: colors.backGroundBlack,
         marginLeft: 10,
       }}
       onPress={index === 0 ? this.handleTakePhoto : this.handleChoosePhoto}

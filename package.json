@@ -9,15 +9,16 @@
     "clean": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache"
   },
   "dependencies": {
-    "react": "16.6.1",
     "ramda": "^0.26.0",
+    "react": "16.6.1",
     "react-native": "0.57.5",
-    "react-navigation": "^3.0.0",
+    "react-native-camera": "^1.4.3",
+    "react-native-gesture-handler": "^1.0.9",
+    "react-native-keyboard-aware-scroll-view": "^0.7.4",
+    "react-native-linear-gradient": "^2.4.4",
     "react-native-modal": "^7.0.1",
     "react-native-swipeout": "^2.3.6",
-    "react-native-gesture-handler": "^1.0.9",
-    "react-native-linear-gradient": "^2.4.4",
-    "react-native-keyboard-aware-scroll-view": "^0.7.4"
+    "react-navigation": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
