@@ -1,51 +1,41 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, View, Button, TouchableOpacity, FlatList } from 'react-native';
-import Modal from 'react-native-modal';
+import { Alert, Text, View, Button } from 'react-native';
 
+import PickPhotoModal from 'components/PickPhotoModal';
+import colors from 'global/colors';
 import styles from './styles';
 
 type Props = {};
-type State = { isModalVisible: boolean };
+type State = { isModalVisible: boolean, photos: Array<String> };
 export default class ItemsScene extends PureComponent<Props, State> {
   state = {
     isModalVisible: false,
+    photos: ['a', 'b', 'a', 'b', 'a', 'b'],
   };
 
-  handlePickPhoto = () => {
+  handleOpenModal = () => {
+    const { isModalVisible } = this.state;
+    this.setState({ isModalVisible: !isModalVisible });
+    console.log('sdf');
+  };
+
+  handleCloseModal = () => {
     const { isModalVisible } = this.state;
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleClose = () => {
-    // some implementation
-  };
-
   render() {
-    const { isModalVisible } = this.state;
+    const { isModalVisible, photos } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.instructions}>ITEMS</Text>
-        <Button title="choose photo" onPress={this.handlePickPhoto} />
-        <Modal
-          style={{
-            flex: 1,
-            justifyContent: 'flex-end',
-          }}
-          isVisible={isModalVisible}
-          onBackdropPress={this.handlePickPhoto}
-          onBackButtonPress={this.handlePickPhoto}
-        >
-          <View style={{ backgroundColor: 'orange' }}>
-            <Text>Hello!</Text>
-            <View>
-              <FlatList horizontal />
-            </View>
-            <TouchableOpacity onPress={this.handlePickPhoto}>
-              <Text>Отмена</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
+        <Button title="choose photo" onPress={this.handleOpenModal} />
+        <PickPhotoModal
+          data={photos}
+          isModalVisible={isModalVisible}
+          onBackCallback={this.handleCloseModal}
+        />
       </View>
     );
   }
