@@ -13,6 +13,7 @@ import {
 import Modal from 'react-native-modal';
 import ImagePicker from 'react-native-image-picker';
 
+import assets from 'global/assets';
 import type { ModalProps, ModalState, PhotoType } from './types';
 import styles from './styles';
 
@@ -47,11 +48,13 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
       style={styles.photo}
       onPress={index === 0 ? this.handleTakePhoto : this.handleChoosePhoto}
     >
-      {index > 0 && (
+      {index > 0 ? (
         <ImageBackground
           source={{ uri: item.node.image.uri }}
           style={styles.photoBackgroundImage}
         />
+      ) : (
+        <ImageBackground source={assets.camera} style={styles.cameraIcon} />
       )}
     </TouchableOpacity>
   );

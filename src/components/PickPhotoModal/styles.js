@@ -19,8 +19,10 @@ export default StyleSheet.create({
   photo: {
     width: 82,
     height: 82,
-    backgroundColor: colors.backGroundBlack,
     marginLeft: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.backGroundBlack,
   },
   photoBackgroundImage: {
     width: '100%',
@@ -38,6 +40,10 @@ export default StyleSheet.create({
   openGalleryText: {
     fontSize: 18,
     color: colors.buttonBlue,
+  },
+  cameraIcon: {
+    width: 30,
+    height: 25,
   },
   cancelButton: {
     height: 50,
