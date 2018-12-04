@@ -59,12 +59,7 @@ class SetNewPassword extends PureComponent<Props, State> {
   };
 
   onSubmitForm = (password: string, confirmPassword: string) => {
-    const isPasswordValid =
-      password && utils.isValidate(password, constants.inputTypes.password);
-    const isConfirmPasswordValid =
-      password &&
-      utils.isValidate(confirmPassword, constants.inputTypes.password);
-    if (isPasswordValid && isConfirmPasswordValid) {
+    if (utils.isValidatePassword(password, confirmPassword)) {
       alert('click');
     }
   };
@@ -109,6 +104,7 @@ class SetNewPassword extends PureComponent<Props, State> {
           <Button
             title={constants.buttonTitles.setNewPass}
             onPress={() => this.onSubmitForm(password, confirmPassword)}
+            isDisable={!utils.isValidatePassword(password, confirmPassword)}
           />
         </KeyboardAwareScrollView>
       </View>

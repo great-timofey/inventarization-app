@@ -28,6 +28,7 @@ const isValidate = (value: string, type: string) => {
   if (regExp && regExp.test(value)) {
     return true;
   }
+  return false;
 };
 
 const isValidLoginForm = (
@@ -48,9 +49,25 @@ const isValidLoginForm = (
   return false;
 };
 
+const isValidatePassword = (password: string, confirmPassword: string) => {
+  const isPasswordValid =
+    password && isValidate(password, constants.inputTypes.password);
+  const isConfirmPasswordValid =
+    password && isValidate(confirmPassword, constants.inputTypes.password);
+  if (
+    isPasswordValid &&
+    isConfirmPasswordValid &&
+    password === confirmPassword
+  ) {
+    return true;
+  }
+  return false;
+};
+
 export default {
   isValidate,
   getPlaceholder,
   platformSelect,
   isValidLoginForm,
+  isValidatePassword,
 };
