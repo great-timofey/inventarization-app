@@ -6,9 +6,10 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 
-import AuthScene from 'scenes/Auth';
+import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
 import PeopleScene from 'scenes/People';
+import CameraScene from 'scenes/Camera';
 import PlacesScene from 'scenes/Places';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
@@ -87,7 +88,10 @@ const rootTabs = {
 
 const authStack = {
   [SCENE_NAMES.AuthSceneName]: {
-    screen: AuthScene,
+    screen: Login,
+  },
+  [SCENE_NAMES.CameraSceneName]: {
+    screen: CameraScene,
   },
 };
 
