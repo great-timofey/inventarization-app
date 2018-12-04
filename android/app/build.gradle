@@ -138,11 +138,19 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-picker')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-gesture-handler')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "com.android.support:appcompat-v7:27.1.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    compile (project(':react-native-camera')) {
+        exclude group: "com.google.android.gms"
+        compile 'com.android.support:exifinterface:25.+'
+        compile ('com.google.android.gms:play-services-vision:12.0.1') {
+            force = true
+        }
+    }
     compile project(':react-native-vector-icons')
 }
 
@@ -152,3 +160,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+

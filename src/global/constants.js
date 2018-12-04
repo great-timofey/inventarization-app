@@ -12,15 +12,26 @@ const inputTypes: inputTypesType = {
 };
 
 const buttonTitles = {
-  reg: 'Зарегистрироваться',
+  on: 'Вкл',
+  off: 'Выкл',
   login: 'Войти',
+  cancel: 'Отмена',
   update: 'Обновить',
   create: 'Да, создать',
+  reg: 'Зарегистрироваться',
   registration: 'Регистрация',
+  choosePhoto: 'Выбрать фото',
   forgotPassword: 'Забыли пароль?',
   createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
+};
+
+const errors = {
+  camera: {
+    photo:
+      'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+  },
 };
 
 const headers = {
@@ -28,6 +39,7 @@ const headers = {
 };
 
 export default {
+  errors,
   regExp,
   headers,
   inputTypes,
