@@ -12,11 +12,15 @@ const inputTypes: inputTypesType = {
 };
 
 const buttonTitles = {
-  reg: 'Зарегистрироваться',
+  on: 'Вкл',
+  off: 'Выкл',
   login: 'Войти',
+  cancel: 'Отмена',
   update: 'Обновить',
   create: 'Да, создать',
+  reg: 'Зарегистрироваться',
   registration: 'Регистрация',
+  choosePhoto: 'Выбрать фото',
   forgotPassword: 'Забыли пароль?',
   createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
