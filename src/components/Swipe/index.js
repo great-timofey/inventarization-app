@@ -21,13 +21,6 @@ class SwipebleListItem extends PureComponent<Props, State> {
     this.state = { activeRowId: null, scrollEnabled: true };
   }
 
-  componentDidUpdate() {
-    const {
-      state: { scrollEnabled },
-    } = this;
-    console.log(scrollEnabled);
-  }
-
   onSwipeOpen = (id: number) => {
     this.setState({
       activeRowId: id,
@@ -35,7 +28,7 @@ class SwipebleListItem extends PureComponent<Props, State> {
     });
   };
 
-  onSwipeClose = (id: number, activeRowId) => {
+  onSwipeClose = (id: number) => {
     // TODO:
     if (id)
       this.setState({
@@ -69,9 +62,7 @@ class SwipebleListItem extends PureComponent<Props, State> {
           direction !== undefined ? this.onSwipeOpen(itemId) : null
         }
         onClose={(sectionID, rowId, direction: string) =>
-          direction !== undefined
-            ? this.onSwipeClose(itemId, activeRowId)
-            : null
+          direction !== undefined ? this.onSwipeClose(itemId) : null
         }
       >
         <View>

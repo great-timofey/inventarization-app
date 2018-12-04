@@ -14,16 +14,15 @@ class Input extends PureComponent<Props> {
     const {
       type,
       value,
-      refEl,
       fieldRef,
       focusField,
       placeholder,
-      nextRefName,
       onPushButton,
       onChangeText,
       keyboardType,
       returnKeyType,
       secureTextEntry,
+      onSubmitEditing,
     } = this.props;
 
     let isValideValue = true;
@@ -32,7 +31,7 @@ class Input extends PureComponent<Props> {
     }
 
     return (
-      <TouchableWithoutFeedback onPress={() => focusField(refEl)}>
+      <TouchableWithoutFeedback onPress={focusField}>
         <View
           style={isValideValue ? styles.container : styles.inValideContainer}
         >
@@ -46,9 +45,7 @@ class Input extends PureComponent<Props> {
             onChangeText={onChangeText}
             returnKeyType={returnKeyType || 'next'}
             autoCapitalize="none"
-            onSubmitEditing={
-              returnKeyType ? onPushButton : () => focusField(nextRefName)
-            }
+            onSubmitEditing={onSubmitEditing || (returnKeyType && onPushButton)}
             secureTextEntry={secureTextEntry}
             placeholder={placeholder}
             placeholderTextColor={colors.text.placeholder}
