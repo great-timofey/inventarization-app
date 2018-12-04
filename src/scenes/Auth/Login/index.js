@@ -1,19 +1,30 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, Keyboard, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Keyboard,
+  StatusBar,
+  AsyncStorage,
+} from 'react-native';
 
+import { withApollo, Mutation, Query } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Input from 'components/Input/index';
-import Button from 'components/Button/index';
+import Input from 'components/Input';
+import Loader from 'components/Loader';
+import Button from 'components/Button';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
 import colors from 'global/colors';
 import assets from 'global/assets';
-import * as SCENE_NAMES from 'navigation/scenes';
 import constants from 'global/constants';
+import * as SCENE_NAMES from 'navigation/scenes';
+import { SIGN_IN_MUTATION } from 'graphql/auth/mutations';
+import { GET_CURRENT_USER_QUERY } from 'graphql/auth/queries';
 import styles from './styles';
 
 type State = {
@@ -21,6 +32,7 @@ type State = {
   email: string,
   mobile: string,
   password: string,
+  loading: boolean,
   isKeyboardActive: boolean,
   isRegForm: boolean,
   isModalVisible: boolean,
@@ -35,9 +47,10 @@ const initialState = {
   email: '',
   mobile: '',
   password: '',
-  isKeyboardActive: false,
+  loading: false,
   isRegForm: false,
   isModalVisible: false,
+  isKeyboardActive: false,
 };
 
 const AdditionalButton = ({
@@ -105,6 +118,40 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
+  // client
+  //   .mutate({
+  //     variables: { email: user.email, password: user.password },
+  //     mutation: SIGN_IN_MUTATION,
+  //   })
+  //   .then(result => result.data.signInUser.token)
+  //   .then(token => {
+  //     AsyncStorage.setItem('token', token);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
+
+  handleSignIn = () => {
+    const { client, navigation } = this.props;
+
+    const user = {
+      email: 'ttverdokhlebov@some.team',
+      password: '11112222',
+    };
+
+    client
+      .query({ query: GET_CURRENT_USER_QUERY })
+      .then(result => {
+        AsyncStorage.setItem('isAuth', true);
+        console.log(result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  handleSignUp = () => {};
+
   handleOpenCamera = () => {
     const { navigation } = this.props;
     this.toggleModal();
@@ -165,13 +212,16 @@ class Login extends PureComponent<Props, State> {
       name,
       email,
       mobile,
+      loading,
       password,
       isRegForm,
       isModalVisible,
       isKeyboardActive,
     } = this.state;
 
-    return (
+    return loading ? (
+      <Loader />
+    ) : (
       <View style={styles.wrapper}>
         <StatusBar barStyle="light-content" />
         <KeyboardAwareScrollView
@@ -255,7 +305,7 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            onPressButton={this.toggleModal}
+            onPressButton={isRegForm ? this.handleSignUp : this.handleSignIn}
           />
         </KeyboardAwareScrollView>
         <PickPhotoModal
@@ -269,4 +319,4 @@ class Login extends PureComponent<Props, State> {
   }
 }
 
-export default Login;
+export default withApollo(Login);

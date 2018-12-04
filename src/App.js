@@ -7,13 +7,13 @@ import AppNavigator from 'navigation';
 import apolloClient from 'services/apolloClient';
 
 type Props = {};
-const isAuth = true;
+const isAuth = false;
 
 const App = (): Props => (
   <Fragment>
     <StatusBar barStyle={isAuth ? 'dark-content' : 'light-content'} />
     <ApolloProvider client={apolloClient}>
-      <AppNavigator isAuth />
+      <AppNavigator isAuth={isAuth} />
     </ApolloProvider>
   </Fragment>
 );
