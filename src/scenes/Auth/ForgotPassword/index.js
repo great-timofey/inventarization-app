@@ -1,12 +1,13 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, Keyboard, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 
+import utils from 'global/utils';
 import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
@@ -16,7 +17,6 @@ import type { State, Props } from './types';
 
 const initialState = {
   email: '',
-  mobile: '',
   isKeyboardActive: false,
   isRecoveryMailSend: false,
 };
@@ -48,25 +48,19 @@ class ForgotPassword extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { ...initialState };
-    this.keyboardWillShowSub = Keyboard.addListener(
-      'keyboardWillShow',
-      this.toggleKeyboard
-    );
-    this.keyboardWillHideSub = Keyboard.addListener(
-      'keyboardWillHide',
-      this.toggleKeyboard
-    );
   }
 
-  componentWillUnmount() {
-    this.keyboardWillShowSub.remove();
-    this.keyboardWillHideSub.remove();
-  }
+  toggleShowKeyboard = () => {
+    this.setState({
+      isKeyboardActive: true,
+    });
+  };
 
-  toggleKeyboard = () =>
-    this.setState(({ isKeyboardActive }) => ({
-      isKeyboardActive: !isKeyboardActive,
-    }));
+  toggleHideKeyboard = () => {
+    this.setState({
+      isKeyboardActive: false,
+    });
+  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -80,30 +74,28 @@ class ForgotPassword extends PureComponent<Props, State> {
   };
 
   onSendRecoveryMail = (email: string) => {
-    console.log(email);
-    this.setState({
-      isRecoveryMailSend: true,
-    });
+    if (utils.validateFunction(email, constants.inputTypes.email)) {
+      this.setState({
+        isRecoveryMailSend: true,
+      });
+    }
   };
 
   emailRef: any;
 
   mobileRef: any;
 
-  keyboardWillShowSub: any;
-
-  keyboardWillHideSub: any;
-
   render() {
-    const { email, mobile, isKeyboardActive, isRecoveryMailSend } = this.state;
+    const { email, isKeyboardActive, isRecoveryMailSend } = this.state;
 
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView
-          extraScrollHeight={50}
           scrollEnabled={isKeyboardActive}
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
+          onKeyboardWillShow={this.toggleShowKeyboard}
+          onKeyboardWillHide={this.toggleHideKeyboard}
         >
           {!isRecoveryMailSend && (
             <View style={styles.logo}>
@@ -120,43 +112,29 @@ class ForgotPassword extends PureComponent<Props, State> {
               <Input
                 value={email}
                 refEl="emailRef"
-                nextRefName="mobileRef"
                 fieldRef={ref => {
                   this.emailRef = ref;
                 }}
+                returnKeyType="go"
+                keyboardType="email-address"
+                focusField={this.focusField}
                 type={constants.inputTypes.email}
-                focusField={this.focusField}
+                onPushButton={() => this.onSendRecoveryMail(email)}
                 onChangeText={text => this.onChangeField('email', text)}
-              />
-            )}
-            {!isRecoveryMailSend && (
-              <Input
-                value={mobile}
-                refEl="mobileRef"
-                fieldRef={ref => {
-                  this.mobileRef = ref;
-                }}
-                focusField={this.focusField}
-                type={constants.inputTypes.mobileNumber}
-                placeholder={constants.forgotPassText.placeHolder}
-                onChangeText={text => this.onChangeField('mobile', text)}
-                onPushButton={this.onSendRecoveryMail}
               />
             )}
             <Text style={styles.text}>
               {!isRecoveryMailSend
-                ? constants.forgotPassText.enterData
+                ? constants.forgotPassText.enterEmail
                 : constants.forgotPassText.sendMail}
             </Text>
           </View>
-          <Button
-            title={
-              !isRecoveryMailSend
-                ? constants.buttonTitles.restorePass
-                : constants.buttonTitles.update
-            }
-            onPressButton={() => this.onSendRecoveryMail(email)}
-          />
+          {!isRecoveryMailSend && (
+            <Button
+              title={constants.buttonTitles.restorePass}
+              onPressButton={() => this.onSendRecoveryMail(email)}
+            />
+          )}
         </KeyboardAwareScrollView>
       </View>
     );

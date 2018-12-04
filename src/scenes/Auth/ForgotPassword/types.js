@@ -2,7 +2,6 @@
 
 export type State = {
   email: string,
-  mobile: string,
   isKeyboardActive: boolean,
   isRecoveryMailSend: boolean,
 };

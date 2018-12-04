@@ -10,6 +10,7 @@ export default {
   buttonBlue: '#35CEF1',
   red: '#FF2D55',
   gray: '#F6F6F6',
+  inValideBorder: '#D54A0F',
   text: {
     gray: '#BDBDBD',
     bigGray: '#747474',
