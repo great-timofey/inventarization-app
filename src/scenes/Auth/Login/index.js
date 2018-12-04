@@ -261,19 +261,8 @@ class Login extends PureComponent<Props, State> {
         />
         {!this.isEmailEmpty(email) &&
           !utils.isValidate(email, constants.inputTypes.email) && (
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                width: '100%',
-                backgroundColor: colors.black,
-                height: 56,
-                justifyContent: 'center',
-              }}
-            >
-              <Text
-                style={{ color: colors.invalidBorder, textAlign: 'center' }}
-              >
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>
                 {constants.errors.login.email}
               </Text>
             </View>

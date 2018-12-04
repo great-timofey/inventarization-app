@@ -66,6 +66,8 @@ class ForgotPassword extends PureComponent<Props, State> {
     }
   };
 
+  isEmailEmpty = (value: string) => value === '';
+
   emailRef: any;
 
   render() {
@@ -111,6 +113,14 @@ class ForgotPassword extends PureComponent<Props, State> {
               onPress={() => this.onSendRecoveryMail(email)}
             />
           )}
+          {!this.isEmailEmpty(email) &&
+            !utils.isValidate(email, constants.inputTypes.email) && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>
+                  {constants.errors.login.email}
+                </Text>
+              </View>
+            )}
         </KeyboardAwareScrollView>
       </View>
     );
