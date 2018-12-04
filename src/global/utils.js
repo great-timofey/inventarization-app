@@ -8,7 +8,7 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const validateFunction = (value: string, type: string) => {
+const isValidate = (value: string, type: string) => {
   let regExp = null;
   if (type === constants.inputTypes.email) {
     regExp = constants.regExp.email;
@@ -33,5 +33,5 @@ const validateFunction = (value: string, type: string) => {
 export default {
   getPlaceholder,
   platformSelect,
-  validateFunction,
+  isValidate,
 };

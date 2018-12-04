@@ -59,7 +59,7 @@ class ForgotPassword extends PureComponent<Props, State> {
   };
 
   onSendRecoveryMail = (email: string) => {
-    if (utils.validateFunction(email, constants.inputTypes.email)) {
+    if (utils.isValidate(email, constants.inputTypes.email)) {
       this.setState({
         isRecoveryMailSend: true,
       });
@@ -95,7 +95,7 @@ class ForgotPassword extends PureComponent<Props, State> {
                 keyboardType="email-address"
                 type={constants.inputTypes.email}
                 focusField={() => this.focusField(this.emailRef)}
-                onPushButton={() => this.onSendRecoveryMail(email)}
+                onSubmitForm={() => this.onSendRecoveryMail(email)}
                 onChangeText={text => this.onChangeField('email', text)}
               />
             )}
@@ -108,7 +108,7 @@ class ForgotPassword extends PureComponent<Props, State> {
           {!isRecoveryMailSend && (
             <Button
               title={constants.buttonTitles.restorePass}
-              onPressButton={() => this.onSendRecoveryMail(email)}
+              onPress={() => this.onSendRecoveryMail(email)}
             />
           )}
         </KeyboardAwareScrollView>

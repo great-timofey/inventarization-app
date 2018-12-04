@@ -58,17 +58,15 @@ class SetNewPassword extends PureComponent<Props, State> {
     }
   };
 
-  onPushButton = (password: string, confirmPassword: string) => {
-    if (
+  onSubmitForm = (password: string, confirmPassword: string) => {
+    const isPasswordValid =
+      password && utils.isValidate(password, constants.inputTypes.password);
+    const isConfirmPasswordValid =
       password &&
-      confirmPassword &&
-      password === confirmPassword &&
-      utils.validateFunction(password, constants.inputTypes.password) &&
-      utils.validateFunction(confirmPassword, constants.inputTypes.password)
-    ) {
-      return null;
+      utils.isValidate(confirmPassword, constants.inputTypes.password);
+    if (isPasswordValid && isConfirmPasswordValid) {
+      alert('click');
     }
-    return null;
   };
 
   passwordRef: any;
@@ -104,13 +102,13 @@ class SetNewPassword extends PureComponent<Props, State> {
               focusField={() => this.focusField(this.confirmPasswordRef)}
               returnKeyType="go"
               type={constants.inputTypes.confirmPassword}
-              onPushButton={() => this.onPushButton(password, confirmPassword)}
+              onSubmitForm={() => this.onSubmitForm(password, confirmPassword)}
               onChangeText={text => this.onChangeField('confirmPassword', text)}
             />
           </View>
           <Button
             title={constants.buttonTitles.setNewPass}
-            onPressButton={() => this.onPushButton(password, confirmPassword)}
+            onPress={() => this.onSubmitForm(password, confirmPassword)}
           />
         </KeyboardAwareScrollView>
       </View>
