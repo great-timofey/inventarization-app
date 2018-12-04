@@ -2,7 +2,6 @@
 
 import React, { PureComponent } from 'react';
 import { View, Text, Image, Keyboard, StatusBar } from 'react-native';
-
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Input from 'components/Input/index';
@@ -13,6 +12,7 @@ import * as SCENE_NAMES from 'navigation/scenes';
 import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
+import utils from 'global/utils';
 import styles from './styles';
 
 type State = {
@@ -81,26 +81,20 @@ class Login extends PureComponent<Props, State> {
       isRegForm: false,
       onPushHeaderButton: this.onPushHeaderButton,
     });
-    this.keyboardWillShowSub = Keyboard.addListener(
-      'keyboardWillShow',
-      this.toggleKeyboard
-    );
-    this.keyboardWillHideSub = Keyboard.addListener(
-      'keyboardWillHide',
-      this.toggleKeyboard
-    );
     this.state = { ...initialState };
   }
 
-  componentWillUnmount() {
-    this.keyboardWillShowSub.remove();
-    this.keyboardWillHideSub.remove();
-  }
+  toggleShowKeyboard = () => {
+    this.setState({
+      isKeyboardActive: true,
+    });
+  };
 
-  toggleKeyboard = () =>
-    this.setState(({ isKeyboardActive }) => ({
-      isKeyboardActive: !isKeyboardActive,
-    }));
+  toggleHideKeyboard = () => {
+    this.setState({
+      isKeyboardActive: false,
+    });
+  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -117,9 +111,34 @@ class Login extends PureComponent<Props, State> {
       isRegForm: !isRegForm,
     });
     if (isKeyboardActive) {
-      this.toggleKeyboard();
+      this.toggleHideKeyboard();
     }
     Keyboard.dismiss();
+  };
+
+  onPushEnterButton = (email: string, password: string) => {
+    if (
+      email &&
+      password &&
+      utils.validateFunction(email, constants.inputTypes.email) &&
+      utils.validateFunction(password, constants.inputTypes.password)
+    ) {
+      return null;
+    }
+    return null;
+  };
+
+  onPushRegButton = (name: string, email: string, password: string) => {
+    if (
+      name &&
+      email &&
+      password &&
+      utils.validateFunction(email, constants.inputTypes.email) &&
+      utils.validateFunction(password, constants.inputTypes.password)
+    ) {
+      return null;
+    }
+    return null;
   };
 
   focusField = (key: string) => {
@@ -134,10 +153,6 @@ class Login extends PureComponent<Props, State> {
   passwordRef: any;
 
   mobileRef: any;
-
-  keyboardWillShowSub: any;
-
-  keyboardWillHideSub: any;
 
   render() {
     const {
@@ -154,10 +169,12 @@ class Login extends PureComponent<Props, State> {
       <View style={styles.wrapper}>
         <StatusBar barStyle="light-content" />
         <KeyboardAwareScrollView
-          extraScrollHeight={50}
+          enableResetScrollToCoords
           scrollEnabled={isKeyboardActive}
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
+          onKeyboardWillShow={this.toggleShowKeyboard}
+          onKeyboardWillHide={this.toggleHideKeyboard}
         >
           <View style={styles.logo}>
             <Image style={styles.logoImage} source={assets.logologin} />
@@ -181,11 +198,12 @@ class Login extends PureComponent<Props, State> {
             <Input
               value={email}
               refEl="emailRef"
-              nextRefName="passwordRef"
               fieldRef={ref => {
                 this.emailRef = ref;
               }}
               state={isRegForm}
+              nextRefName="passwordRef"
+              keyboardType="email-address"
               focusField={this.focusField}
               type={constants.inputTypes.email}
               onChangeText={text => this.onChangeField('email', text)}
@@ -193,24 +211,29 @@ class Login extends PureComponent<Props, State> {
             <Input
               value={password}
               refEl="passwordRef"
-              nextRefName="mobileRef"
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
-              state={isRegForm}
+              secureTextEntry
+              nextRefName="mobileRef"
               focusField={this.focusField}
+              onPushButton={() => this.onPushEnterButton(email, password)}
               type={constants.inputTypes.password}
+              keyboardType="numbers-and-punctuation"
+              returnKeyType={!isRegForm ? 'go' : null}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
               <Input
                 value={mobile}
                 refEl="mobileRef"
+                returnKeyType="go"
+                onPushButton={() => this.onPushRegButton(name, email, password)}
                 fieldRef={ref => {
                   this.mobileRef = ref;
                 }}
-                state={isRegForm}
                 focusField={this.focusField}
+                keyboardType="numbers-and-punctuation"
                 type={constants.inputTypes.mobileNumber}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
@@ -224,7 +247,9 @@ class Login extends PureComponent<Props, State> {
                   title={constants.buttonTitles.forgotPassword}
                 />
                 <AdditionalButton
-                  onPress={() => {}}
+                  onPress={() =>
+                    navigation.state.params.onPushHeaderButton(isRegForm)
+                  }
                   title={constants.buttonTitles.registration}
                 />
               </View>
@@ -236,7 +261,11 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            onPressButton={() => {}}
+            onPressButton={
+              isRegForm
+                ? () => this.onPushRegButton(name, email, password)
+                : () => this.onPushEnterButton(email, password)
+            }
           />
         </KeyboardAwareScrollView>
       </View>
