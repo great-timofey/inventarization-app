@@ -1,28 +1,18 @@
 //  @flow
 import gql from 'graphql-tag';
 
-export const GET_REPOS_QUERY = gql`
-  query myQuery($login: String!) {
-    user(login: $login) {
+export const GET_CURRENT_USER_QUERY = gql`
+  query getCurrentUser {
+    current {
       id
-      url
-      login
-      repositories(first: 3) {
-        edges {
-          node {
-            id
-            name
-            description
-            primaryLanguage {
-              name
-            }
-          }
-        }
+      fullName
+      responsibleAssets {
+        id
       }
     }
   }
 `;
 
 export default {
-  GET_REPOS_QUERY,
+  GET_CURRENT_USER_QUERY,
 };
