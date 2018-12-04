@@ -13,7 +13,7 @@
     "react": "16.6.1",
     "react-native": "0.57.5",
     "react-native-gesture-handler": "^1.0.9",
-    "react-native-keyboard-aware-scroll-view": "^0.7.4",
+    "react-native-keyboard-aware-scroll-view": "git+https://github.com/AllmaxTeam/react-native-keyboard-aware-scroll-view.git#a7f2cb46743700744e83748a159b488a1ecebcaf",
     "react-native-linear-gradient": "^2.4.4",
     "react-native-swipeout": "^2.3.6",
     "react-navigation": "^3.0.0"
