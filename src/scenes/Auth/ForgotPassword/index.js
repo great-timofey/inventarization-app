@@ -12,12 +12,10 @@ import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
 import styles from './styles';
-
 import type { State, Props } from './types';
 
 const initialState = {
   email: '',
-  isKeyboardActive: false,
   isRecoveryMailSend: false,
 };
 
@@ -50,27 +48,14 @@ class ForgotPassword extends PureComponent<Props, State> {
     this.state = { ...initialState };
   }
 
-  toggleShowKeyboard = () => {
-    this.setState({
-      isKeyboardActive: true,
-    });
-  };
-
-  toggleHideKeyboard = () => {
-    this.setState({
-      isKeyboardActive: false,
-    });
-  };
-
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
     });
   };
 
-  focusField = (key: string) => {
-    const t = this[key];
-    if (t) t.focus();
+  focusField = (ref: Object) => {
+    if (ref) ref.focus();
   };
 
   onSendRecoveryMail = (email: string) => {
@@ -83,20 +68,12 @@ class ForgotPassword extends PureComponent<Props, State> {
 
   emailRef: any;
 
-  mobileRef: any;
-
   render() {
-    const { email, isKeyboardActive, isRecoveryMailSend } = this.state;
+    const { email, isRecoveryMailSend } = this.state;
 
     return (
       <View style={styles.wrapper}>
-        <KeyboardAwareScrollView
-          scrollEnabled={isKeyboardActive}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          contentContainerStyle={styles.container}
-          onKeyboardWillShow={this.toggleShowKeyboard}
-          onKeyboardWillHide={this.toggleHideKeyboard}
-        >
+        <KeyboardAwareScrollView contentContainerStyle={styles.container}>
           {!isRecoveryMailSend && (
             <View style={styles.logo}>
               <Image source={assets.grayLogo} />
@@ -111,14 +88,13 @@ class ForgotPassword extends PureComponent<Props, State> {
             {!isRecoveryMailSend && (
               <Input
                 value={email}
-                refEl="emailRef"
                 fieldRef={ref => {
                   this.emailRef = ref;
                 }}
                 returnKeyType="go"
                 keyboardType="email-address"
-                focusField={this.focusField}
                 type={constants.inputTypes.email}
+                focusField={() => this.focusField(this.emailRef)}
                 onPushButton={() => this.onSendRecoveryMail(email)}
                 onChangeText={text => this.onChangeField('email', text)}
               />

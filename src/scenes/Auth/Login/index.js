@@ -9,31 +9,18 @@ import Button from 'components/Button/index';
 import HeaderButton from 'components/HeaderButton';
 import * as SCENE_NAMES from 'navigation/scenes';
 
+import utils from 'global/utils';
 import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
-import utils from 'global/utils';
 import styles from './styles';
-
-type State = {
-  name: string,
-  email: string,
-  mobile: string,
-  password: string,
-  isKeyboardActive: boolean,
-  isRegForm: boolean,
-};
-
-type Props = {
-  navigation: any,
-};
+import type { Props, State } from './types';
 
 const initialState = {
   name: '',
   email: '',
   mobile: '',
   password: '',
-  isKeyboardActive: false,
   isRegForm: false,
 };
 
@@ -84,18 +71,6 @@ class Login extends PureComponent<Props, State> {
     this.state = { ...initialState };
   }
 
-  toggleShowKeyboard = () => {
-    this.setState({
-      isKeyboardActive: true,
-    });
-  };
-
-  toggleHideKeyboard = () => {
-    this.setState({
-      isKeyboardActive: false,
-    });
-  };
-
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
@@ -104,15 +79,11 @@ class Login extends PureComponent<Props, State> {
 
   onPushHeaderButton = (isRegForm: boolean) => {
     const { navigation } = this.props;
-    const { isKeyboardActive } = this.state;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState({
       ...initialState,
       isRegForm: !isRegForm,
     });
-    if (isKeyboardActive) {
-      this.toggleHideKeyboard();
-    }
     Keyboard.dismiss();
   };
 
@@ -141,9 +112,29 @@ class Login extends PureComponent<Props, State> {
     return null;
   };
 
-  focusField = (key: string) => {
-    const t = this[key];
-    if (t) t.focus();
+  focusField = (ref: Object) => {
+    if (ref) ref.focus();
+  };
+
+  focusEmailInput = () => {
+    const { emailRef } = this;
+    if (emailRef) {
+      emailRef.focus();
+    }
+  };
+
+  focusPasswordInput = () => {
+    const { passwordRef } = this;
+    if (passwordRef) {
+      passwordRef.focus();
+    }
+  };
+
+  focusMobileInput = () => {
+    const { mobileRef } = this;
+    if (mobileRef) {
+      mobileRef.focus();
+    }
   };
 
   nameRef: any;
@@ -155,27 +146,13 @@ class Login extends PureComponent<Props, State> {
   mobileRef: any;
 
   render() {
-    const {
-      name,
-      email,
-      mobile,
-      password,
-      isRegForm,
-      isKeyboardActive,
-    } = this.state;
+    const { name, email, mobile, password, isRegForm } = this.state;
     const { navigation } = this.props;
 
     return (
       <View style={styles.wrapper}>
         <StatusBar barStyle="light-content" />
-        <KeyboardAwareScrollView
-          enableResetScrollToCoords
-          scrollEnabled={isKeyboardActive}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          contentContainerStyle={styles.container}
-          onKeyboardWillShow={this.toggleShowKeyboard}
-          onKeyboardWillHide={this.toggleHideKeyboard}
-        >
+        <KeyboardAwareScrollView contentContainerStyle={styles.container}>
           <View style={styles.logo}>
             <Image style={styles.logoImage} source={assets.logologin} />
             <Image source={assets.appName} />
@@ -184,57 +161,51 @@ class Login extends PureComponent<Props, State> {
             {isRegForm && (
               <Input
                 value={name}
-                refEl="nameRef"
-                nextRefName="emailRef"
                 fieldRef={ref => {
                   this.nameRef = ref;
                 }}
-                state={isRegForm}
                 type={constants.inputTypes.name}
-                focusField={this.focusField}
+                onSubmitEditing={this.focusEmailInput}
+                focusField={() => this.focusField(this.nameRef)}
                 onChangeText={text => this.onChangeField('name', text)}
               />
             )}
             <Input
               value={email}
-              refEl="emailRef"
               fieldRef={ref => {
                 this.emailRef = ref;
               }}
-              state={isRegForm}
-              nextRefName="passwordRef"
               keyboardType="email-address"
-              focusField={this.focusField}
               type={constants.inputTypes.email}
+              onSubmitEditing={this.focusPasswordInput}
+              focusField={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('email', text)}
             />
             <Input
               value={password}
-              refEl="passwordRef"
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
               secureTextEntry
-              nextRefName="mobileRef"
-              focusField={this.focusField}
+              onSubmitEditing={this.focusMobileInput}
               onPushButton={() => this.onPushEnterButton(email, password)}
               type={constants.inputTypes.password}
               keyboardType="numbers-and-punctuation"
               returnKeyType={!isRegForm ? 'go' : null}
+              focusField={() => this.focusField(this.passwordRef)}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
               <Input
                 value={mobile}
-                refEl="mobileRef"
                 returnKeyType="go"
                 onPushButton={() => this.onPushRegButton(name, email, password)}
                 fieldRef={ref => {
                   this.mobileRef = ref;
                 }}
-                focusField={this.focusField}
                 keyboardType="numbers-and-punctuation"
                 type={constants.inputTypes.mobileNumber}
+                focusField={() => this.focusField(this.mobileRef)}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
             )}

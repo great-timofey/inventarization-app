@@ -18,7 +18,6 @@ import type { State, Props } from './types';
 const initialState = {
   password: '',
   confirmPassword: '',
-  isKeyboardActive: false,
 };
 
 class SetNewPassword extends PureComponent<Props, State> {
@@ -42,27 +41,21 @@ class SetNewPassword extends PureComponent<Props, State> {
     this.state = { ...initialState };
   }
 
-  toggleShowKeyboard = () => {
-    this.setState({
-      isKeyboardActive: true,
-    });
-  };
-
-  toggleHideKeyboard = () => {
-    this.setState({
-      isKeyboardActive: false,
-    });
-  };
-
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
     });
   };
 
-  focusField = (key: string) => {
-    const t = this[key];
-    if (t) t.focus();
+  focusField = (ref: Object) => {
+    if (ref) ref.focus();
+  };
+
+  focusConfirmPassInput = () => {
+    const { confirmPasswordRef } = this;
+    if (confirmPasswordRef) {
+      confirmPasswordRef.focus();
+    }
   };
 
   onPushButton = (password: string, confirmPassword: string) => {
@@ -73,7 +66,7 @@ class SetNewPassword extends PureComponent<Props, State> {
       utils.validateFunction(password, constants.inputTypes.password) &&
       utils.validateFunction(confirmPassword, constants.inputTypes.password)
     ) {
-      alert('click');
+      return null;
     }
     return null;
   };
@@ -83,40 +76,32 @@ class SetNewPassword extends PureComponent<Props, State> {
   confirmPasswordRef: any;
 
   render() {
-    const { password, confirmPassword, isKeyboardActive } = this.state;
+    const { password, confirmPassword } = this.state;
     return (
       <View style={styles.wrapper}>
-        <KeyboardAwareScrollView
-          scrollEnabled={isKeyboardActive}
-          resetScrollToCoords={{ x: 0, y: 0 }}
-          contentContainerStyle={styles.container}
-          onKeyboardWillShow={this.toggleShowKeyboard}
-          onKeyboardWillHide={this.toggleHideKeyboard}
-        >
+        <KeyboardAwareScrollView contentContainerStyle={styles.container}>
           <View style={styles.logo}>
             <Image source={assets.grayLogo} />
           </View>
           <View style={styles.formContainer}>
             <Input
               value={password}
-              refEl="passwordRef"
-              nextRefName="confirmPasswordRef"
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
               secureTextEntry
+              onSubmitEditing={this.focusConfirmPassInput}
               type={constants.inputTypes.setNewPassword}
-              focusField={this.focusField}
+              focusField={() => this.focusField(this.passwordRef)}
               onChangeText={text => this.onChangeField('password', text)}
             />
             <Input
               value={confirmPassword}
-              refEl="confirmPasswordRef"
               fieldRef={ref => {
                 this.confirmPasswordRef = ref;
               }}
               secureTextEntry
-              focusField={this.focusField}
+              focusField={() => this.focusField(this.confirmPasswordRef)}
               returnKeyType="go"
               type={constants.inputTypes.confirmPassword}
               onPushButton={() => this.onPushButton(password, confirmPassword)}
