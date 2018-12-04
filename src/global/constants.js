@@ -35,8 +35,13 @@ const forgotPassText = {
 const setNewPassword = {
   create: 'Создание нового \n пароля',
 };
+const headers = {
+  items: 'Предметы',
+};
+
 export default {
   regExp,
+  headers,
   inputTypes,
   buttonTitles,
   forgotPassText,

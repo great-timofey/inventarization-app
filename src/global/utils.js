@@ -1,5 +1,12 @@
 // @flow
 import constants from 'global/constants';
+import { Platform } from 'react-native';
+
+export const getPlaceholder = (size: number) =>
+  `https://via.placeholder.com/${size}x${size}`;
+
+export const platformSelect = (ios?: Object, android?: Object) =>
+  Platform.select({ ios, android });
 
 const validateFunction = (value: string, type: string) => {
   let regExp = null;
@@ -24,5 +31,7 @@ const validateFunction = (value: string, type: string) => {
 };
 
 export default {
+  getPlaceholder,
+  platformSelect,
   validateFunction,
 };
