@@ -6,6 +6,7 @@ export type State = {
   mobile: string,
   password: string,
   isRegForm: boolean,
+  isModalVisible: boolean,
 };
 
 export type Props = {
