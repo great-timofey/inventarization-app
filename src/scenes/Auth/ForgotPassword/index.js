@@ -111,17 +111,18 @@ class ForgotPassword extends PureComponent<Props, State> {
             <Button
               title={constants.buttonTitles.restorePass}
               onPress={() => this.onSendRecoveryMail(email)}
+              isDisable={!utils.isValidate(email, constants.inputTypes.email)}
             />
           )}
-          {!this.isEmailEmpty(email) &&
-            !utils.isValidate(email, constants.inputTypes.email) && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>
-                  {constants.errors.login.email}
-                </Text>
-              </View>
-            )}
         </KeyboardAwareScrollView>
+        {!this.isEmailEmpty(email) &&
+          !utils.isValidate(email, constants.inputTypes.email) && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>
+                {constants.errors.login.email}
+              </Text>
+            </View>
+          )}
       </View>
     );
   }

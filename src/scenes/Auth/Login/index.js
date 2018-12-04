@@ -107,32 +107,13 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  isValidForm = (
-    email: string,
-    password: string,
-    name: string,
-    isRegForm: boolean
-  ) => {
-    const isEmailValid =
-      email && utils.isValidate(email, constants.inputTypes.email);
-    const isPasswordValid =
-      password && utils.isValidate(password, constants.inputTypes.password);
-    if (isRegForm && name && isEmailValid && isPasswordValid) {
-      return true;
-    }
-    if (!isRegForm && isEmailValid && isPasswordValid) {
-      return true;
-    }
-    return false;
-  };
-
   onSubmitForm = (
     email: string,
     password: string,
     name: string,
     isRegForm: boolean
   ) => {
-    if (this.isValidForm(email, password, name, isRegForm)) {
+    if (utils.isValidLoginForm(email, password, name, isRegForm)) {
       alert('SUCCESS');
       return null;
     }
@@ -249,7 +230,9 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            isDisable={!this.isValidForm(email, password, name, isRegForm)}
+            isDisable={
+              !utils.isValidLoginForm(email, password, name, isRegForm)
+            }
             onPress={() => this.onSubmitForm(email, password, name, isRegForm)}
           />
         </KeyboardAwareScrollView>

@@ -30,8 +30,27 @@ const isValidate = (value: string, type: string) => {
   }
 };
 
+const isValidLoginForm = (
+  email: string,
+  password: string,
+  name: string,
+  isRegForm: boolean
+) => {
+  const isEmailValid = email && isValidate(email, constants.inputTypes.email);
+  const isPasswordValid =
+    password && isValidate(password, constants.inputTypes.password);
+  if (isRegForm && name && isEmailValid && isPasswordValid) {
+    return true;
+  }
+  if (!isRegForm && isEmailValid && isPasswordValid) {
+    return true;
+  }
+  return false;
+};
+
 export default {
+  isValidate,
   getPlaceholder,
   platformSelect,
-  isValidate,
+  isValidLoginForm,
 };
