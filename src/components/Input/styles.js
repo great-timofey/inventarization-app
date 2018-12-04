@@ -16,7 +16,7 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     borderColor: colors.black,
   },
-  inValideContainer: {
+  invalidContainer: {
     height: 52,
     width: '100%',
     backgroundColor: colors.black,
@@ -25,7 +25,7 @@ export default StyleSheet.create({
     borderRadius: 7,
     marginBottom: 10,
     paddingHorizontal: 20,
-    borderColor: colors.inValideBorder,
+    borderColor: colors.invalidBorder,
   },
   inputTitleText: {
     color: colors.text.inputTitle,

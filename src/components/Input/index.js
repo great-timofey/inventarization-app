@@ -41,7 +41,7 @@ class Input extends PureComponent<Props> {
     return (
       <TouchableWithoutFeedback onPress={focusField}>
         <View
-          style={isValideValue ? styles.container : styles.inValideContainer}
+          style={isValideValue ? styles.container : styles.invalidContainer}
         >
           <Text style={styles.inputTitleText}>{type}</Text>
           <TextInput

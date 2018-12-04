@@ -11,9 +11,10 @@ export default {
   accent: '#42BCF8',
   blue: '#5AC8FA',
   buttonBlue: '#35CEF1',
+  buttonGray: '#333333',
   red: '#FF2D55',
   gray: '#F6F6F6',
-  inValideBorder: '#D54A0F',
+  invalidBorder: '#D54A0F',
   text: {
     gray: '#BDBDBD',
     bigGray: '#747474',
