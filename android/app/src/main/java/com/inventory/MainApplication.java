@@ -2,7 +2,9 @@ package com.inventory;
 
 import android.app.Application;
 
+import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactApplication;
+import com.imagepicker.ImagePickerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
@@ -12,6 +14,7 @@ import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 import java.util.List;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -25,8 +28,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new LinearGradientPackage(),
-          new RNGestureHandlerPackage()
+          new ImagePickerPackage(),
+          new LinearGradientPackage(),
+          new RNGestureHandlerPackage(),
+          new RNCameraPackage(),
+          new VectorIconsPackage()
       );
     }
 

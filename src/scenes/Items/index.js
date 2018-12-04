@@ -1,18 +1,15 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import {
-  Text,
-  View,
-  Button,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 
-import { withApollo, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import Icon from 'react-native-vector-icons/Feather';
+import { withApollo, Mutation } from 'react-apollo';
 
-import Item from 'components/Item';
+import InventoryIcon from 'assets/InventoryIcon';
+import colors from 'global/colors';
+import constants from 'global/constants';
+import globalStyles from 'global/styles';
 import styles from './styles';
 
 const GET_REPOS_QUERY = gql`
@@ -46,9 +43,43 @@ const SIGN_IN_MUTATION = gql`
   }
 `;
 
+const iconProps = {
+  size: 25,
+  borderRadius: 0,
+  iconStyle: globalStyles.iconStyle,
+  backgroundColor: colors.transparent,
+};
+
 type Props = { client: Object };
 type State = { data: ?Object, loading: boolean };
 class ItemsScene extends PureComponent<Props, State> {
+  static navigationOptions = () => ({
+    header: () => (
+      <View style={styles.headerContainer}>
+        <Icon.Button
+          {...iconProps}
+          name="grid"
+          color={colors.accent}
+          backgroundColor={colors.transparent}
+        />
+        <View style={styles.headerRightButtonsContainer}>
+          <InventoryIcon.Button
+            {...iconProps}
+            name="dashboard"
+            color={colors.accent}
+            backgroundColor={colors.transparent}
+          />
+          <InventoryIcon.Button
+            {...iconProps}
+            name="search"
+            color={colors.accent}
+            backgroundColor={colors.transparent}
+          />
+        </View>
+      </View>
+    ),
+  });
+
   state = {
     data: null,
     loading: false,
@@ -59,6 +90,7 @@ class ItemsScene extends PureComponent<Props, State> {
       email: 'ttverdokhlebov@some.team',
       password: '11112222',
     };
+
     return <Mutation mutation={SIGN_IN_MUTATION}>{}</Mutation>;
   };
 
@@ -96,12 +128,9 @@ class ItemsScene extends PureComponent<Props, State> {
     const { loading, data } = this.state;
     return (
       <View style={styles.container}>
-        <Text style={styles.instructions}>ITEMS</Text>
-        <Button
-          onPress={this.signIn}
-          style={{ backgroundColor: 'green', flex: 1 }}
-          title="sign in"
-        />
+        <ScrollView>
+          <Text style={styles.header}>{constants.headers.items}</Text>
+        </ScrollView>
       </View>
     );
   }

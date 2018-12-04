@@ -1,21 +1,25 @@
+//  @flow
+
 import { StyleSheet } from 'react-native';
+import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  headerContainer: {
+    height: 65,
+    paddingTop: 20,
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: colors.white,
+    justifyContent: 'space-between',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  header: {
+    fontSize: 34,
+    marginLeft: 20,
+    fontFamily: fonts.proDisplay.bold,
   },
-  instructions: {
-    fontSize: 50,
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  headerRightButtonsContainer: {
+    flexDirection: 'row',
+    paddingRight: 10,
   },
 });

@@ -1,0 +1,272 @@
+// @flow
+
+import React, { PureComponent } from 'react';
+import { View, Text, Image, Keyboard, StatusBar } from 'react-native';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import Input from 'components/Input/index';
+import Button from 'components/Button/index';
+import HeaderButton from 'components/HeaderButton';
+import PickPhotoModal from 'components/PickPhotoModal';
+
+import colors from 'global/colors';
+import assets from 'global/assets';
+import * as SCENE_NAMES from 'navigation/scenes';
+import constants from 'global/constants';
+import styles from './styles';
+
+type State = {
+  name: string,
+  email: string,
+  mobile: string,
+  password: string,
+  isKeyboardActive: boolean,
+  isRegForm: boolean,
+  isModalVisible: boolean,
+};
+
+type Props = {
+  navigation: any,
+};
+
+const initialState = {
+  name: '',
+  email: '',
+  mobile: '',
+  password: '',
+  isKeyboardActive: false,
+  isRegForm: false,
+  isModalVisible: false,
+};
+
+const AdditionalButton = ({
+  title,
+  onPress,
+}: {
+  title: string,
+  onPress: Function,
+}) => (
+  <Text onPress={onPress} style={styles.additionalButtonsText}>
+    {title}
+  </Text>
+);
+
+class Login extends PureComponent<Props, State> {
+  static navigationOptions = ({ navigation }: { navigation: any }) => {
+    const { state } = navigation;
+    const isRegForm = state.params && state.params.isRegForm;
+
+    return {
+      headerStyle: {
+        marginTop: 15,
+        backgroundColor: colors.backGroundBlack,
+        borderBottomWidth: 0,
+      },
+      headerLeft: HeaderButton({
+        name: 'Регистрация',
+        isActive: !isRegForm,
+        onPress: () => state.params.onPushHeaderButton(isRegForm),
+      }),
+      headerRight: HeaderButton({
+        name: 'Вход',
+        isActive: isRegForm,
+        onPress: () => state.params.onPushHeaderButton(isRegForm),
+      }),
+    };
+  };
+
+  constructor(props: Props) {
+    super(props);
+    const { navigation } = this.props;
+
+    navigation.setParams({
+      isRegForm: false,
+      onPushHeaderButton: this.onPushHeaderButton,
+    });
+    this.keyboardWillShowSub = Keyboard.addListener(
+      'keyboardWillShow',
+      this.toggleKeyboard
+    );
+    this.keyboardWillHideSub = Keyboard.addListener(
+      'keyboardWillHide',
+      this.toggleKeyboard
+    );
+    this.state = { ...initialState };
+  }
+
+  componentWillUnmount() {
+    this.keyboardWillShowSub.remove();
+    this.keyboardWillHideSub.remove();
+  }
+
+  toggleModal = () => {
+    const { isModalVisible } = this.state;
+    this.setState({ isModalVisible: !isModalVisible });
+  };
+
+  handleOpenCamera = () => {
+    const { navigation } = this.props;
+    this.toggleModal();
+    navigation.navigate(SCENE_NAMES.CameraSceneName, {
+      setPhotoUriCallback: this.setPhotoUriCallback,
+    });
+  };
+
+  setPhotoUriCallback = (uri: string) => {
+    const { navigation } = this.props;
+    navigation.setParams({ uri });
+  };
+
+  toggleKeyboard = () =>
+    this.setState(({ isKeyboardActive }) => ({
+      isKeyboardActive: !isKeyboardActive,
+    }));
+
+  onChangeField = (field: string, value: string) => {
+    this.setState({
+      [field]: value,
+    });
+  };
+
+  onPushHeaderButton = (isRegForm: boolean) => {
+    const { navigation } = this.props;
+    const { isKeyboardActive } = this.state;
+    navigation.setParams({ isRegForm: !isRegForm });
+    this.setState({
+      ...initialState,
+      isRegForm: !isRegForm,
+    });
+    if (isKeyboardActive) {
+      this.toggleKeyboard();
+    }
+    Keyboard.dismiss();
+  };
+
+  focusField = (key: string) => {
+    const t = this[key];
+    if (t) t.focus();
+  };
+
+  nameRef: any;
+
+  emailRef: any;
+
+  passwordRef: any;
+
+  mobileRef: any;
+
+  keyboardWillShowSub: any;
+
+  keyboardWillHideSub: any;
+
+  render() {
+    const {
+      name,
+      email,
+      mobile,
+      password,
+      isRegForm,
+      isModalVisible,
+      isKeyboardActive,
+    } = this.state;
+
+    return (
+      <View style={styles.wrapper}>
+        <StatusBar barStyle="light-content" />
+        <KeyboardAwareScrollView
+          extraScrollHeight={50}
+          scrollEnabled={isKeyboardActive}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
+        >
+          <View style={styles.logo}>
+            <Image style={styles.logoImage} source={assets.logologin} />
+            <Image source={assets.appName} />
+          </View>
+          <View style={styles.formContainer}>
+            {isRegForm && (
+              <Input
+                value={name}
+                refEl="nameRef"
+                nextRefName="emailRef"
+                fieldRef={ref => {
+                  this.nameRef = ref;
+                }}
+                state={isRegForm}
+                type={constants.inputTypes.name}
+                focusField={this.focusField}
+                onChangeText={text => this.onChangeField('name', text)}
+              />
+            )}
+            <Input
+              value={email}
+              refEl="emailRef"
+              nextRefName="passwordRef"
+              fieldRef={ref => {
+                this.emailRef = ref;
+              }}
+              state={isRegForm}
+              focusField={this.focusField}
+              type={constants.inputTypes.email}
+              onChangeText={text => this.onChangeField('email', text)}
+            />
+            <Input
+              value={password}
+              refEl="passwordRef"
+              nextRefName="mobileRef"
+              fieldRef={ref => {
+                this.passwordRef = ref;
+              }}
+              state={isRegForm}
+              focusField={this.focusField}
+              type={constants.inputTypes.password}
+              onChangeText={text => this.onChangeField('password', text)}
+            />
+            {isRegForm && (
+              <Input
+                value={mobile}
+                refEl="mobileRef"
+                fieldRef={ref => {
+                  this.mobileRef = ref;
+                }}
+                state={isRegForm}
+                focusField={this.focusField}
+                type={constants.inputTypes.mobileNumber}
+                onChangeText={text => this.onChangeField('mobile', text)}
+              />
+            )}
+            {!isRegForm && (
+              <View style={styles.additionalButtons}>
+                <AdditionalButton
+                  onPress={() => {}}
+                  title={constants.buttonTitles.forgotPassword}
+                />
+                <AdditionalButton
+                  onPress={() => {}}
+                  title={constants.buttonTitles.registration}
+                />
+              </View>
+            )}
+          </View>
+          <Button
+            title={
+              isRegForm
+                ? constants.buttonTitles.reg
+                : constants.buttonTitles.login
+            }
+            onPressButton={this.toggleModal}
+          />
+        </KeyboardAwareScrollView>
+        <PickPhotoModal
+          isModalVisible={isModalVisible}
+          toggleModalCallback={this.toggleModal}
+          navigationCallback={this.handleOpenCamera}
+          setPhotoUriCallback={this.setPhotoUriCallback}
+        />
+      </View>
+    );
+  }
+}
+
+export default Login;
