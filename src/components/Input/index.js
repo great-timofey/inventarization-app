@@ -14,65 +14,29 @@ class Input extends PureComponent<Props> {
     const {
       type,
       value,
-      state,
       refEl,
       fieldRef,
       focusField,
       placeholder,
       nextRefName,
+      onPushButton,
       onChangeText,
+      keyboardType,
+      returnKeyType,
+      secureTextEntry,
     } = this.props;
-    let secureTextEntry = false;
-    let keyboardType = 'default';
-    let returnKeyType = 'next';
-    let autoCapitalize = 'none';
-    let isValideValue = true;
-    let onSubmitEditing = () => focusField(nextRefName);
 
-    switch (type) {
-      case constants.inputTypes.name:
-        autoCapitalize = 'sentences';
-        break;
-      case constants.inputTypes.email:
-        if (value) {
-          isValideValue = utils.validateFunction(constants.regExp.email, value);
-        }
-        keyboardType = 'email-address';
-        break;
-      case constants.inputTypes.password:
-        if (value) {
-          isValideValue = utils.validateFunction(
-            constants.regExp.password,
-            value
-          );
-        }
-        secureTextEntry = true;
-        returnKeyType = state ? 'next' : 'go';
-        onSubmitEditing = state ? () => focusField(nextRefName) : () => {};
-        break;
-      case constants.inputTypes.mobileNumber:
-        if (value) {
-          isValideValue = utils.validateFunction(
-            constants.regExp.mobileNumber,
-            value
-          );
-        }
-        keyboardType = 'numbers-and-punctuation';
-        onSubmitEditing = () => {};
-        returnKeyType = 'go';
-        break;
-      default:
-        break;
+    let isValideValue = true;
+    if (type !== constants.inputTypes.name) {
+      isValideValue = value !== '' ? utils.validateFunction(value, type) : true;
     }
 
     return (
       <TouchableWithoutFeedback onPress={() => focusField(refEl)}>
-        <View style={styles.container}>
-          <Text
-            style={isValideValue ? styles.inputTitleText : styles.notValide}
-          >
-            {type}
-          </Text>
+        <View
+          style={isValideValue ? styles.container : styles.inValideContainer}
+        >
+          <Text style={styles.inputTitleText}>{type}</Text>
           <TextInput
             value={value}
             ref={fieldRef}
@@ -80,11 +44,13 @@ class Input extends PureComponent<Props> {
             style={styles.input}
             keyboardType={keyboardType}
             onChangeText={onChangeText}
-            returnKeyType={returnKeyType}
-            autoCapitalize={autoCapitalize}
-            onSubmitEditing={onSubmitEditing}
+            returnKeyType={returnKeyType || 'next'}
+            autoCapitalize="none"
+            onSubmitEditing={
+              returnKeyType ? onPushButton : () => focusField(nextRefName)
+            }
             secureTextEntry={secureTextEntry}
-            placeholder={placeholder || null}
+            placeholder={placeholder}
             placeholderTextColor={colors.text.placeholder}
           />
         </View>
