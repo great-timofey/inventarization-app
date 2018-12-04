@@ -6,8 +6,8 @@ import { Text, TouchableOpacity } from 'react-native';
 import type { Props } from './types';
 import styles from './styles';
 
-const Button = ({ title, onPressButton }: Props) => (
-  <TouchableOpacity onPress={onPressButton} style={styles.container}>
+const Button = ({ title, onPress }: Props) => (
+  <TouchableOpacity onPress={onPress} style={styles.container}>
     <Text style={styles.titleText}>{title}</Text>
   </TouchableOpacity>
 );

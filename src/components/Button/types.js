@@ -2,5 +2,5 @@
 
 export type Props = {
   title: string,
-  onPressButton: Function,
+  onPress: Function,
 };
