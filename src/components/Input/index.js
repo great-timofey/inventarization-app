@@ -4,10 +4,18 @@ import React, { PureComponent } from 'react';
 import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
-import constants from 'global/constants';
 import colors from 'global/colors';
+import constants from 'global/constants';
+
 import type { Props } from './types';
 import styles from './styles';
+
+const KEY_TYPES = {
+  GO: 'go',
+  NEXT: 'next',
+};
+
+const isEmpty = value => value === '';
 
 class Input extends PureComponent<Props> {
   render() {
@@ -17,7 +25,7 @@ class Input extends PureComponent<Props> {
       fieldRef,
       focusField,
       placeholder,
-      onPushButton,
+      onSubmitForm,
       onChangeText,
       keyboardType,
       returnKeyType,
@@ -26,8 +34,8 @@ class Input extends PureComponent<Props> {
     } = this.props;
 
     let isValideValue = true;
-    if (type !== constants.inputTypes.name) {
-      isValideValue = value !== '' ? utils.validateFunction(value, type) : true;
+    if (type !== constants.inputTypes.name && !isEmpty(value)) {
+      isValideValue = utils.isValidate(value, type);
     }
 
     return (
@@ -43,9 +51,11 @@ class Input extends PureComponent<Props> {
             style={styles.input}
             keyboardType={keyboardType}
             onChangeText={onChangeText}
-            returnKeyType={returnKeyType || 'next'}
+            returnKeyType={returnKeyType || KEY_TYPES.NEXT}
             autoCapitalize="none"
-            onSubmitEditing={onSubmitEditing || (returnKeyType && onPushButton)}
+            onSubmitEditing={
+              returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
+            }
             secureTextEntry={secureTextEntry}
             placeholder={placeholder}
             placeholderTextColor={colors.text.placeholder}

@@ -9,7 +9,7 @@ export type Props = {
   focusField: Function,
   placeholder?: string,
   onChangeText: Function,
-  onPushButton?: Function,
+  onSubmitForm?: Function,
   secureTextEntry?: boolean,
   keyboardType?: ?KeyboardType,
   onSubmitEditing?: () => void,
