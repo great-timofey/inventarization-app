@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
+  Alert,
   FlatList,
   CameraRoll,
   ImageBackground,
@@ -14,6 +15,7 @@ import Modal from 'react-native-modal';
 import ImagePicker from 'react-native-image-picker';
 
 import assets from 'global/assets';
+import constants from 'global/constants';
 import type { ModalProps, ModalState, PhotoType } from './types';
 import styles from './styles';
 
@@ -35,18 +37,32 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
     navigationCallback();
   };
 
-  handleChoosePhoto = () => {
-    //  here goes choose photo implementation
+  handleChoosePhoto = (uri: string) => {
+    const { setPhotoUriCallback } = this.props;
+    setPhotoUriCallback(uri);
   };
 
   handleOpenImageGallery = () => {
-    ImagePicker.launchImageLibrary({}, response => response);
+    const { toggleModalCallback } = this.props;
+    //  $FlowFixMe
+    ImagePicker.launchImageLibrary({}, response => {
+      if (response.error) {
+        Alert.alert(constants.errors.camera.photo);
+      } else {
+        this.handleChoosePhoto(response.uri);
+        toggleModalCallback();
+      }
+    });
   };
 
   renderItem = ({ item, index }: PhotoType) => (
     <TouchableOpacity
       style={styles.photo}
-      onPress={index === 0 ? this.handleTakePhoto : this.handleChoosePhoto}
+      onPress={() =>
+        index === 0
+          ? this.handleTakePhoto()
+          : this.handleChoosePhoto(item.node.image.uri)
+      }
     >
       {index > 0 ? (
         <ImageBackground
@@ -61,13 +77,13 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
 
   render() {
     const { photos } = this.state;
-    const { onBackCallback, isModalVisible } = this.props;
+    const { toggleModalCallback, isModalVisible } = this.props;
     return (
       <Modal
         isVisible={isModalVisible}
         style={styles.modalContainer}
-        onBackdropPress={onBackCallback}
-        onBackButtonPress={onBackCallback}
+        onBackdropPress={toggleModalCallback}
+        onBackButtonPress={toggleModalCallback}
       >
         <View style={styles.choosePhotoContainer}>
           {photos.length === 0 ? (
@@ -88,17 +104,21 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
                 style={styles.openGalleryButton}
                 onPress={this.handleOpenImageGallery}
               >
-                <Text style={styles.openGalleryText}>Выбрать фото</Text>
+                <Text style={styles.openGalleryText}>
+                  {constants.buttonTitles.choosePhoto}
+                </Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={onBackCallback}
           style={styles.cancelButton}
+          onPress={toggleModalCallback}
         >
-          <Text style={styles.cancelButtonText}>Отмена</Text>
+          <Text style={styles.cancelButtonText}>
+            {constants.buttonTitles.cancel}
+          </Text>
         </TouchableOpacity>
       </Modal>
     );

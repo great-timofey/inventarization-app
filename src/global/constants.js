@@ -27,7 +27,15 @@ const buttonTitles = {
   restorePass: 'Восстановить пароль',
 };
 
+const errors = {
+  camera: {
+    photo:
+      'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+  },
+};
+
 export default {
+  errors,
   regExp,
   inputTypes,
   buttonTitles,

@@ -2,8 +2,9 @@
 
 export type ModalProps = {
   isModalVisible: boolean,
-  onBackCallback: () => void,
+  toggleModalCallback: () => void,
   navigationCallback: () => void,
+  setPhotoUriCallback: string => void,
 };
 
 export type ModalState = {
