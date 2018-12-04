@@ -12,6 +12,7 @@ import PickPhotoModal from 'components/PickPhotoModal';
 
 import colors from 'global/colors';
 import assets from 'global/assets';
+import * as SCENE_NAMES from 'navigation/scenes';
 import constants from 'global/constants';
 import styles from './styles';
 
@@ -99,20 +100,22 @@ class Login extends PureComponent<Props, State> {
     this.keyboardWillHideSub.remove();
   }
 
-  handleOpenModal = () => {
-    const { isModalVisible } = this.state;
-    this.setState({ isModalVisible: !isModalVisible });
-  };
-
-  handleCloseModal = () => {
+  toggleModal = () => {
     const { isModalVisible } = this.state;
     this.setState({ isModalVisible: !isModalVisible });
   };
 
   handleOpenCamera = () => {
     const { navigation } = this.props;
-    this.handleCloseModal();
-    navigation.navigate('CameraScene');
+    this.toggleModal();
+    navigation.navigate(SCENE_NAMES.CameraSceneName, {
+      setPhotoUriCallback: this.setPhotoUriCallback,
+    });
+  };
+
+  setPhotoUriCallback = (uri: string) => {
+    const { navigation } = this.props;
+    navigation.setParams({ uri });
   };
 
   toggleKeyboard = () =>
@@ -252,13 +255,14 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            onPressButton={() => {}}
+            onPressButton={this.toggleModal}
           />
         </KeyboardAwareScrollView>
         <PickPhotoModal
           isModalVisible={isModalVisible}
-          onBackCallback={this.handleCloseModal}
+          toggleModalCallback={this.toggleModal}
           navigationCallback={this.handleOpenCamera}
+          setPhotoUriCallback={this.setPhotoUriCallback}
         />
       </View>
     );
