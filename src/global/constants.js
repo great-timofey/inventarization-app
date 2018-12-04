@@ -14,14 +14,19 @@ const inputTypes = {
 };
 
 const buttonTitles = {
-  reg: 'Зарегистрироваться',
+  on: 'Вкл',
+  off: 'Выкл',
   login: 'Войти',
   create: 'Да, создать',
+  cancel: 'Отмена',
+  update: 'Обновить',
+  reg: 'Зарегистрироваться',
+  registration: 'Регистрация',
+  choosePhoto: 'Выбрать фото',
+  forgotPassword: 'Забыли пароль?',
   createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
-  registration: 'Регистрация',
-  forgotPassword: 'Забыли пароль?',
 };
 
 const forgotPassText = {
@@ -35,11 +40,20 @@ const forgotPassText = {
 const setNewPassword = {
   create: 'Создание нового \n пароля',
 };
+
+const errors = {
+  camera: {
+    photo:
+      'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+  },
+};
+
 const headers = {
   items: 'Предметы',
 };
 
 export default {
+  errors,
   regExp,
   headers,
   inputTypes,

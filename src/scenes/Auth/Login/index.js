@@ -7,11 +7,12 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 import HeaderButton from 'components/HeaderButton';
-import * as SCENE_NAMES from 'navigation/scenes';
+import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
 import colors from 'global/colors';
 import assets from 'global/assets';
+import * as SCENE_NAMES from 'navigation/scenes';
 import constants from 'global/constants';
 import styles from './styles';
 import type { Props, State } from './types';
@@ -22,6 +23,7 @@ const initialState = {
   mobile: '',
   password: '',
   isRegForm: false,
+  isModalVisible: false,
 };
 
 const AdditionalButton = ({
@@ -70,6 +72,24 @@ class Login extends PureComponent<Props, State> {
     });
     this.state = { ...initialState };
   }
+
+  toggleModal = () => {
+    const { isModalVisible } = this.state;
+    this.setState({ isModalVisible: !isModalVisible });
+  };
+
+  handleOpenCamera = () => {
+    const { navigation } = this.props;
+    this.toggleModal();
+    navigation.navigate(SCENE_NAMES.CameraSceneName, {
+      setPhotoUriCallback: this.setPhotoUriCallback,
+    });
+  };
+
+  setPhotoUriCallback = (uri: string) => {
+    const { navigation } = this.props;
+    navigation.setParams({ uri });
+  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -146,7 +166,14 @@ class Login extends PureComponent<Props, State> {
   mobileRef: any;
 
   render() {
-    const { name, email, mobile, password, isRegForm } = this.state;
+    const {
+      name,
+      email,
+      mobile,
+      password,
+      isRegForm,
+      isModalVisible,
+    } = this.state;
     const { navigation } = this.props;
 
     return (
@@ -239,6 +266,12 @@ class Login extends PureComponent<Props, State> {
             }
           />
         </KeyboardAwareScrollView>
+        <PickPhotoModal
+          isModalVisible={isModalVisible}
+          toggleModalCallback={this.toggleModal}
+          navigationCallback={this.handleOpenCamera}
+          setPhotoUriCallback={this.setPhotoUriCallback}
+        />
       </View>
     );
   }
