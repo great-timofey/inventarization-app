@@ -13,7 +13,6 @@
           "src": "./src",
           "assets": "./assets",
           "scenes": "./src/scenes",
-          "graphql": "./src/graphql",
           "services": "./src/services",
           "navigation": "./src/navigation"
         }
