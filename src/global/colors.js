@@ -1,11 +1,13 @@
 // @flow
 
 export default {
+  transparent: 'transparent',
   backGroundBlack: '#0D0D0D',
   white: '#FFFFFF',
   black: '#000000',
   green: '#39FA90',
   darkGreen: '#19D191',
+  accent: '#42BCF8',
   blue: '#5AC8FA',
   buttonBlue: '#35CEF1',
   red: '#FF2D55',

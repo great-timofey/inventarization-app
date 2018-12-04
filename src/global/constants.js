@@ -23,8 +23,13 @@ const buttonTitles = {
   restorePass: 'Восстановить пароль',
 };
 
+const headers = {
+  items: 'Предметы',
+};
+
 export default {
   regExp,
+  headers,
   inputTypes,
   buttonTitles,
 };
