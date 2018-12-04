@@ -1,10 +1,12 @@
 //  @flow
 import React, { Component } from 'react';
-import { View, Button, TouchableOpacity } from 'react-native';
+import { Text, Image, View, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
 import colors from 'global/colors';
+import constants from 'global/constants';
+import icons from 'global/assets';
 import type { CameraSceneProps, CameraSceneState } from './types';
 import styles from './styles';
 
@@ -15,12 +17,14 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
   };
 
   takePicture = async () => {
+    const { navigation } = this.props;
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
-      const data = await this.camera.takePictureAsync(options);
-      return data.uri;
+      const { uri } = await this.camera.takePictureAsync(options);
+      const setUriCallback = navigation.getParam('setPhotoUriCallback', 'none');
+      setUriCallback(uri);
+      navigation.goBack();
     }
-    return null;
   };
 
   toggleFlash = () => {
@@ -51,32 +55,42 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
   camera: ?RNCamera;
 
   render() {
+    const { flashMode, type } = this.state;
     return (
       <View style={styles.container}>
-        <View style={styles.flashZone}>
-          <Button
-            title="Вспышка"
-            color={colors.white}
+        <View style={styles.topSection}>
+          <TouchableOpacity
+            style={styles.flashButton}
             onPress={this.toggleFlash}
-          />
+          >
+            <Image source={icons.flash} style={styles.flashImage} />
+            <Text style={styles.flashTitle}>
+              {flashMode
+                ? constants.buttonTitles.on
+                : constants.buttonTitles.off}
+            </Text>
+          </TouchableOpacity>
         </View>
-
         <RNCamera
           ref={ref => {
             this.camera = ref;
           }}
+          type={type}
+          flashMode={flashMode}
           style={styles.preview}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
         />
-        <View style={styles.cameraActionsZone}>
-          <Button
-            title="Назад"
-            color={colors.white}
-            onPress={this.returnBack}
-          />
-          <TouchableOpacity onPress={this.takePicture} style={styles.capture} />
-          <Button onPress={this.flipCamera} title="Flip" color={colors.white} />
+        <View style={styles.bottomSection}>
+          <TouchableOpacity onPress={this.returnBack}>
+            <Text style={{ color: colors.white }}>
+              {constants.buttonTitles.cancel}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
+            <View style={styles.captureInner} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.flipCamera}>
+            <Image source={icons.flip} style={styles.flipImage} />
+          </TouchableOpacity>
         </View>
       </View>
     );

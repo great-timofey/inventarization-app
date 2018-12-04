@@ -1,28 +1,58 @@
 import { StyleSheet } from 'react-native';
 
+import colors from 'global/colors';
+
 export default StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'black',
+    backgroundColor: colors.black,
   },
   preview: {
     flex: 1,
-    justifyContent: 'flex-end',
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   capture: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
   },
-  flashZone: {
+  captureInner: {
+    width: 60,
+    height: 60,
+    borderWidth: 1,
+    borderRadius: 30,
+    borderColor: colors.black,
+    backgroundColor: colors.white,
+  },
+  topSection: {
     flex: 0,
     height: 45,
-    alignItems: 'flex-start',
+    paddingLeft: 20,
+    justifyContent: 'center',
   },
-  cameraActionsZone: {
+  flashButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  flashImage: {
+    width: 25,
+    height: 25,
+    marginRight: 10,
+  },
+  flashTitle: {
+    color: colors.white,
+  },
+  flipImage: {
+    width: 32,
+    height: 34,
+  },
+  bottomSection: {
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
