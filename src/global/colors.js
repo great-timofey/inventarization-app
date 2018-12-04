@@ -8,6 +8,7 @@ export default {
   green: '#39FA90',
   darkGreen: '#19D191',
   cancel: '#6DC1EA',
+  accent: '#42BCF8',
   blue: '#5AC8FA',
   buttonBlue: '#35CEF1',
   red: '#FF2D55',

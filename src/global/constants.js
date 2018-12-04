@@ -34,9 +34,14 @@ const errors = {
   },
 };
 
+const headers = {
+  items: 'Предметы',
+};
+
 export default {
   errors,
   regExp,
+  headers,
   inputTypes,
   buttonTitles,
 };

@@ -56,6 +56,7 @@ module.name_mapper='^navigation' ->'<PROJECT_ROOT>/src/navigation'
 module.name_mapper='^components' ->'<PROJECT_ROOT>/src/components'
 module.name_mapper='^scenes' ->'<PROJECT_ROOT>/src/scenes'
 module.name_mapper='^global' ->'<PROJECT_ROOT>/src/global'
+module.name_mapper='^assets' ->'<PROJECT_ROOT>/assets'
 module.name_mapper='^src' ->'<PROJECT_ROOT>/src'
 
 module.file_ext=.js
