@@ -10,6 +10,13 @@ export const SIGN_IN_MUTATION = gql`
   }
 `;
 
+export const SIGN_IN_MUTATION_CLIENT = gql`
+  mutation loginUser($isAuthed: Boolean) {
+    loginUser(isAuthed: $isAuthed) @client
+  }
+`;
+
 export default {
   SIGN_IN_MUTATION,
+  SIGN_IN_MUTATION_CLIENT,
 };

@@ -25,6 +25,7 @@ import constants from 'global/constants';
 import * as SCENE_NAMES from 'navigation/scenes';
 import { SIGN_IN_MUTATION } from 'graphql/auth/mutations';
 import { GET_CURRENT_USER_QUERY } from 'graphql/auth/queries';
+import * as MUTATIONS from 'graphql/auth/mutations';
 import styles from './styles';
 
 type State = {
@@ -132,7 +133,7 @@ class Login extends PureComponent<Props, State> {
   //   });
 
   handleSignIn = () => {
-    const { client, navigation } = this.props;
+    const { client } = this.props;
 
     const user = {
       email: 'ttverdokhlebov@some.team',
@@ -140,10 +141,19 @@ class Login extends PureComponent<Props, State> {
     };
 
     client
-      .query({ query: GET_CURRENT_USER_QUERY })
+      .mutate({
+        mutation: MUTATIONS.SIGN_IN_MUTATION,
+        variables: { email: user.email, password: user.password },
+      })
       .then(result => {
-        AsyncStorage.setItem('isAuth', true);
-        console.log(result);
+        // console.log(result);
+        AsyncStorage.setItem('token', result.data.signInUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SIGN_IN_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
       })
       .catch(error => {
         console.log(error);

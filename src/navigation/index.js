@@ -1,5 +1,6 @@
 //  @flow
-import React from 'react';
+import React, { Component, Fragment } from 'react';
+
 import R from 'ramda';
 
 import {
@@ -11,7 +12,20 @@ import {
 const navRef = R.curry(setNavigatior)('HOME_NAVIGATOR');
 const authNavRef = R.curry(setNavigatior)('AUTH_NAVIGATOR');
 
-const AppNavigator = ({ isAuth }: { isAuth: boolean }) =>
-  isAuth ? <RootNavigator ref={navRef} /> : <AuthNavigator ref={authNavRef} />;
+type Props = { isAuthed: boolean };
+class AppNavigator extends Component<Props> {
+  render() {
+    const { isAuthed } = this.props;
+    return (
+      <Fragment>
+        {isAuthed ? (
+          <RootNavigator ref={navRef} />
+        ) : (
+          <AuthNavigator ref={authNavRef} />
+        )}
+      </Fragment>
+    );
+  }
+}
 
 export default AppNavigator;
