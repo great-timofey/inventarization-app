@@ -5,7 +5,6 @@ export type State = {
   email: string,
   mobile: string,
   password: string,
-  loading: boolean,
   isRegForm: boolean,
   isModalVisible: boolean,
 };

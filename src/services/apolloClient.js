@@ -4,6 +4,7 @@ import { AsyncStorage } from 'react-native';
 import ApolloClient from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
+import DeviceInfo from 'react-native-device-info';
 import { createHttpLink } from 'apollo-link-http';
 import { withClientState } from 'apollo-link-state';
 import { persistCache } from 'apollo-cache-persist';
@@ -23,7 +24,7 @@ async function getClient() {
     return {
       headers: {
         ...headers,
-        device: 'abc',
+        device: DeviceInfo.getUniqueID(),
         authorization: token || '',
       },
     };
