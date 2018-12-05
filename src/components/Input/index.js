@@ -1,11 +1,11 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
 import colors from 'global/colors';
-import constants from 'global/constants';
 
 import type { Props } from './types';
 import styles from './styles';
@@ -17,24 +17,35 @@ const KEY_TYPES = {
 
 const isEmpty = value => value === '';
 
-class Input extends PureComponent<Props> {
+class Input extends Component<Props> {
+  static defaultProps = {
+    autoCorrect: false,
+    autoCapitalize: 'none',
+    returnKeyType: KEY_TYPES.NEXT,
+  };
+
+  shouldComponentUpdate(nextProps: Props) {
+    const { value } = this.props;
+    return !(nextProps.value === value);
+  }
+
   render() {
     const {
+      mask,
       type,
       value,
       fieldRef,
       focusField,
-      placeholder,
-      onSubmitForm,
-      onChangeText,
-      keyboardType,
       returnKeyType,
-      secureTextEntry,
+      onSubmitForm,
       onSubmitEditing,
+      ...textInputProps
     } = this.props;
 
+    const CustomTextInput: any = mask ? TextInputMask : TextInput;
+
     let isValideValue = true;
-    if (type !== constants.inputTypes.name && !isEmpty(value)) {
+    if (type.require && !isEmpty(value)) {
       isValideValue = utils.isValid(value, type);
     }
 
@@ -43,22 +54,18 @@ class Input extends PureComponent<Props> {
         <View
           style={isValideValue ? styles.container : styles.invalidContainer}
         >
-          <Text style={styles.inputTitleText}>{type}</Text>
-          <TextInput
+          <Text style={styles.inputTitleText}>{type.label}</Text>
+          <CustomTextInput
+            {...textInputProps}
+            mask={mask}
             value={value}
             ref={fieldRef}
-            autoCorrect={false}
             style={styles.input}
-            keyboardType={keyboardType}
-            onChangeText={onChangeText}
-            returnKeyType={returnKeyType || KEY_TYPES.NEXT}
-            autoCapitalize="none"
+            returnKeyType={returnKeyType}
+            placeholderTextColor={colors.text.placeholder}
             onSubmitEditing={
               returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
             }
-            secureTextEntry={secureTextEntry}
-            placeholder={placeholder}
-            placeholderTextColor={colors.text.placeholder}
           />
         </View>
       </TouchableWithoutFeedback>

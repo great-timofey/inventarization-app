@@ -1,18 +1,43 @@
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
-  mobileNumber: /^(?:\+7|8)?9(?:\d{9})$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   password: /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{7,})\S$/,
 };
 
+const masks = {
+  mobileNumber: '+7 ([000]) [000]-[00]-[00]',
+};
+
+const placeHolders = {
+  mobileNumber: '+7 (___) ___-__-__',
+};
+
 const inputTypes = {
-  name: 'Имя',
-  email: 'e-mail',
-  password: 'Пароль',
-  mobileNumber: 'Телефон',
-  confirmPassword: 'Повторите пароль',
-  setNewPassword: 'Введите новый пароль',
+  name: {
+    label: 'Имя',
+    require: false,
+  },
+  email: {
+    label: 'e-mail',
+    require: true,
+  },
+  password: {
+    label: 'Пароль',
+    require: true,
+  },
+  mobileNumber: {
+    label: 'Телефон',
+    require: true,
+  },
+  confirmPassword: {
+    label: 'Повторите пароль',
+    require: true,
+  },
+  setNewPassword: {
+    label: 'Введите новый пароль',
+    require: true,
+  },
 };
 
 const buttonTitles = {
@@ -47,6 +72,8 @@ const setNewPassword = {
 const errors = {
   login: {
     email: 'Неверный формат электронной почты',
+    password:
+      'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
   },
   camera: {
     photo:
@@ -63,11 +90,13 @@ const text = {
 };
 export default {
   text,
+  masks,
   errors,
   regExp,
   headers,
   inputTypes,
   buttonTitles,
+  placeHolders,
   forgotPassText,
   setNewPassword,
 };

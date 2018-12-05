@@ -8,7 +8,7 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const isValid = (value: string, type: string) => {
+const isValid = (value: string, type: Object) => {
   let regExp = null;
   if (type === constants.inputTypes.email) {
     regExp = constants.regExp.email;

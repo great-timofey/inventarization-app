@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Keyboard, AsyncStorage } from 'react-native';
+import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
 import { withApollo } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -81,7 +81,7 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignIn = () => {
+  handleSignUp = () => {
     const { client } = this.props;
     const { email, password } = this.state;
 
@@ -91,21 +91,43 @@ class Login extends PureComponent<Props, State> {
         variables: { email, password },
       })
       .then(async result => {
-        console.log(result);
+        console.log('logged in with data: ', result);
         await AsyncStorage.setItem('token', result.data.signInUser.token);
       })
       .then(_ => {
         client.mutate({
-          mutation: MUTATIONS.SIGN_IN_MUTATION_CLIENT,
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
           variables: { isAuthed: true },
         });
       })
       .catch(error => {
-        console.log(error);
+        Alert.alert(error.message);
       });
   };
 
-  handleSignUp = () => {};
+  handleSignUp = () => {
+    const { client } = this.props;
+    const { email, password, name, mobile } = this.state;
+
+    client
+      .mutate({
+        mutation: MUTATIONS.SIGN_UP_MUTATION,
+        variables: { email, password, fullName: name, phoneNumber: mobile },
+      })
+      .then(async result => {
+        console.log('signed up with data: ', result);
+        await AsyncStorage.setItem('token', result.data.signUpUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+  };
 
   handleOpenCamera = () => {
     const { navigation } = this.props;
@@ -139,12 +161,16 @@ class Login extends PureComponent<Props, State> {
   onSubmitForm = () => {
     const { email, password, name, isRegForm } = this.state;
     if (utils.isValidLoginForm(email, password, name, isRegForm)) {
-      this.handleSignIn();
+      isRegForm ? this.handleSignUp() : this.handleSignIn();
     }
   };
 
   focusField = (ref: Object) => {
-    if (ref) ref.focus();
+    if (ref.input === undefined) {
+      ref.focus();
+    } else {
+      ref.input.focus();
+    }
   };
 
   isEmailEmpty = (value: string) => value === '';
@@ -167,6 +193,7 @@ class Login extends PureComponent<Props, State> {
       isModalVisible,
     } = this.state;
     const { navigation } = this.props;
+
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
@@ -201,12 +228,12 @@ class Login extends PureComponent<Props, State> {
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
+              onSubmitForm={this.onSubmitForm}
               type={constants.inputTypes.password}
               keyboardType="numbers-and-punctuation"
-              returnKeyType={!isRegForm ? 'go' : null}
+              returnKeyType={!isRegForm ? 'go' : undefined}
               focusField={() => this.focusField(this.passwordRef)}
               onSubmitEditing={() => this.focusField(this.mobileRef)}
-              onSubmitForm={this.onSubmitForm}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
@@ -216,11 +243,13 @@ class Login extends PureComponent<Props, State> {
                 fieldRef={ref => {
                   this.mobileRef = ref;
                 }}
+                onSubmitForm={this.onSubmitForm}
                 keyboardType="numbers-and-punctuation"
                 type={constants.inputTypes.mobileNumber}
+                placeholder={constants.placeHolders.mobileNumber}
                 focusField={() => this.focusField(this.mobileRef)}
                 onChangeText={text => this.onChangeField('mobile', text)}
-                onSubmitForm={this.onSubmitForm}
+                mask={constants.masks.mobileNumber}
               />
             )}
             {!isRegForm && (
