@@ -23,8 +23,6 @@ import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
 import * as SCENE_NAMES from 'navigation/scenes';
-import { SIGN_IN_MUTATION } from 'graphql/auth/mutations';
-import { GET_CURRENT_USER_QUERY } from 'graphql/auth/queries';
 import * as MUTATIONS from 'graphql/auth/mutations';
 import styles from './styles';
 
@@ -34,9 +32,9 @@ type State = {
   mobile: string,
   password: string,
   loading: boolean,
-  isKeyboardActive: boolean,
   isRegForm: boolean,
   isModalVisible: boolean,
+  isKeyboardActive: boolean,
 };
 
 type Props = {
@@ -133,17 +131,20 @@ class Login extends PureComponent<Props, State> {
   //   });
 
   handleSignIn = () => {
-    const { client } = this.props;
+    this.setState({ loading: true });
 
-    const user = {
-      email: 'ttverdokhlebov@some.team',
-      password: '11112222',
-    };
+    const { client } = this.props;
+    const { email, password } = this.state;
+
+    // const user = {
+    //   email: 'ttverdokhlebov@some.team',
+    //   password: '11112222',
+    // };
 
     client
       .mutate({
         mutation: MUTATIONS.SIGN_IN_MUTATION,
-        variables: { email: user.email, password: user.password },
+        variables: { email, password },
       })
       .then(async result => {
         console.log(result);
@@ -158,6 +159,7 @@ class Login extends PureComponent<Props, State> {
       .catch(error => {
         console.log(error);
       });
+    this.setState({ loading: false });
   };
 
   handleSignUp = () => {};

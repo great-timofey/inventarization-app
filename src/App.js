@@ -1,15 +1,39 @@
 //  @flow
-import React from 'react';
+import React, { Component } from 'react';
 
-import { ApolloProvider } from 'react-apollo';
 import AppNavigator from 'navigation';
-import apolloClient from 'services/apolloClient';
+import { ApolloProvider } from 'react-apollo';
+import getApolloClient from 'services/apolloClient';
+
+import Loader from 'components/Loader';
 
 type Props = {};
-const App = (): Props => (
-  <ApolloProvider client={apolloClient}>
-    <AppNavigator />
-  </ApolloProvider>
-);
+type State = { client: ?Object, loading: boolean };
+
+class App extends Component<Props, State> {
+  constructor() {
+    super();
+
+    this.state = {
+      client: null,
+      loading: true,
+    };
+  }
+
+  async componentWillMount() {
+    const client = await getApolloClient();
+    this.setState({ client, loading: false });
+  }
+
+  render() {
+    const { loading, client } = this.state;
+    if (loading) return <Loader />;
+    return (
+      <ApolloProvider client={client}>
+        <AppNavigator />
+      </ApolloProvider>
+    );
+  }
+}
 
 export default App;
