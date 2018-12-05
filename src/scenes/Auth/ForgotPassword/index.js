@@ -21,7 +21,7 @@ import type { State, Props } from './types';
 class ForgotPassword extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
-    headerTitle: HeaderTitle(),
+    headerTitle: HeaderTitle({ title: constants.forgotPassText.headerTitle }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
     }),

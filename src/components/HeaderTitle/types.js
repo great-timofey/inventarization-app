@@ -1,7 +1,5 @@
 // @flow
 
 export type Props = {
-  isActive: Boolean,
-  onPress: Function,
-  name: string,
+  title: string,
 };
