@@ -4648,6 +4648,10 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
+"react-native-text-input-mask@github:allmaxgit/react-native-text-input-mask":
+  version "0.8.0"
+  resolved "https://codeload.github.com/allmaxgit/react-native-text-input-mask/tar.gz/1006ea0179d6a7af0b0d40781e355622700ce422"
+
 react-native-vector-icons@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.1.0.tgz#770a3f8ced692d75deb3afbb9829195ceed1eedd"
