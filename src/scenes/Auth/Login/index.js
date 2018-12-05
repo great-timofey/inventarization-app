@@ -169,7 +169,11 @@ class Login extends PureComponent<Props, State> {
   };
 
   focusField = (ref: Object) => {
-    if (ref) ref.focus();
+    if (ref.input === undefined) {
+      ref.focus();
+    } else {
+      ref.input.focus();
+    }
   };
 
   isEmailEmpty = (value: string) => value === '';
@@ -192,6 +196,7 @@ class Login extends PureComponent<Props, State> {
       isModalVisible,
     } = this.state;
     const { navigation } = this.props;
+
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
@@ -226,12 +231,12 @@ class Login extends PureComponent<Props, State> {
               fieldRef={ref => {
                 this.passwordRef = ref;
               }}
+              onSubmitForm={this.onSubmitForm}
               type={constants.inputTypes.password}
               keyboardType="numbers-and-punctuation"
-              returnKeyType={!isRegForm ? 'go' : null}
+              returnKeyType={!isRegForm ? 'go' : undefined}
               focusField={() => this.focusField(this.passwordRef)}
               onSubmitEditing={() => this.focusField(this.mobileRef)}
-              onSubmitForm={this.onSubmitForm}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
@@ -241,11 +246,13 @@ class Login extends PureComponent<Props, State> {
                 fieldRef={ref => {
                   this.mobileRef = ref;
                 }}
+                onSubmitForm={this.onSubmitForm}
                 keyboardType="numbers-and-punctuation"
                 type={constants.inputTypes.mobileNumber}
+                placeholder={constants.placeHolders.mobileNumber}
                 focusField={() => this.focusField(this.mobileRef)}
                 onChangeText={text => this.onChangeField('mobile', text)}
-                onSubmitForm={this.onSubmitForm}
+                mask={constants.masks.mobileNumber}
               />
             )}
             {!isRegForm && (
