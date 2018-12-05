@@ -1,3 +1,4 @@
+//  @flow
 import React from 'react';
 import { Image } from 'react-native';
 import {
@@ -91,11 +92,11 @@ const rootTabs = {
 };
 
 const authStack = {
-  [SCENE_NAMES.SetNewPasswordSceneName]: {
-    screen: SetNewPassword,
-  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
+  },
+  [SCENE_NAMES.SetNewPasswordSceneName]: {
+    screen: SetNewPassword,
   },
   [SCENE_NAMES.ForgotPasswordSceneName]: {
     screen: ForgotPassword,
@@ -123,7 +124,7 @@ const authConfig = {
 
 const navigators = {};
 
-export function setNavigatior(routeName, navigator) {
+export function setNavigatior(routeName: string, navigator: Object) {
   if (navigator) {
     const { subs } = navigator;
     if (subs) {

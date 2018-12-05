@@ -11,6 +11,9 @@
       "assets/": [
         "assets/*"
       ],
+      "services/": [
+        "src/services/*"
+      ],
       "navigation/": [
         "src/navigation/*"
       ],

@@ -9,10 +9,20 @@
     "clean": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache"
   },
   "dependencies": {
+    "apollo-cache-inmemory": "^1.3.11",
+    "apollo-cache-persist": "^0.1.1",
+    "apollo-client": "^2.4.7",
+    "apollo-link": "^1.2.4",
+    "apollo-link-context": "^1.0.10",
+    "apollo-link-http": "^1.5.7",
+    "apollo-link-state": "^0.4.2",
+    "graphql-tag": "^2.10.0",
     "ramda": "^0.26.0",
     "react": "16.6.1",
+    "react-apollo": "^2.3.2",
     "react-native": "0.57.5",
     "react-native-camera": "^1.4.3",
+    "react-native-device-info": "^0.24.3",
     "react-native-gesture-handler": "^1.0.9",
     "react-native-image-picker": "^0.27.1",
     "react-native-keyboard-aware-scroll-view": "git+https://github.com/AllmaxTeam/react-native-keyboard-aware-scroll-view.git#a7f2cb46743700744e83748a159b488a1ecebcaf",
@@ -24,6 +34,7 @@
     "react-navigation": "^3.0.0"
   },
   "devDependencies": {
+    "apollo-link-error": "^1.1.2",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "23.6.0",
@@ -38,6 +49,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
     "flow-bin": "0.78.0",
+    "graphql": "^14.0.2",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.49.2",
     "prettier": "^1.15.2",

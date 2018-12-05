@@ -10,5 +10,6 @@ export type State = {
 };
 
 export type Props = {
-  navigation: any,
+  client: Object,
+  navigation: Object,
 };
