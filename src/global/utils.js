@@ -8,7 +8,7 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const isValidate = (value: string, type: string) => {
+const isValid = (value: string, type: string) => {
   let regExp = null;
   if (type === constants.inputTypes.email) {
     regExp = constants.regExp.email;
@@ -37,9 +37,9 @@ const isValidLoginForm = (
   name: string,
   isRegForm: boolean
 ) => {
-  const isEmailValid = email && isValidate(email, constants.inputTypes.email);
+  const isEmailValid = email && isValid(email, constants.inputTypes.email);
   const isPasswordValid =
-    password && isValidate(password, constants.inputTypes.password);
+    password && isValid(password, constants.inputTypes.password);
   if (isRegForm && name && isEmailValid && isPasswordValid) {
     return true;
   }
@@ -49,11 +49,11 @@ const isValidLoginForm = (
   return false;
 };
 
-const isValidatePassword = (password: string, confirmPassword: string) => {
+const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid =
-    password && isValidate(password, constants.inputTypes.password);
+    password && isValid(password, constants.inputTypes.password);
   const isConfirmPasswordValid =
-    password && isValidate(confirmPassword, constants.inputTypes.password);
+    password && isValid(confirmPassword, constants.inputTypes.password);
   if (
     isPasswordValid &&
     isConfirmPasswordValid &&
@@ -65,9 +65,9 @@ const isValidatePassword = (password: string, confirmPassword: string) => {
 };
 
 export default {
-  isValidate,
+  isValid,
   getPlaceholder,
   platformSelect,
   isValidLoginForm,
-  isValidatePassword,
+  isValidPassword,
 };

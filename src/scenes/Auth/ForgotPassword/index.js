@@ -7,33 +7,21 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
+import EmailError from 'components/EmailError';
+import HeaderTitle from 'components/HeaderTitle';
 
 import utils from 'global/utils';
-import colors from 'global/colors';
 import assets from 'global/assets';
+import Styles from 'global/styles';
 import constants from 'global/constants';
+
 import styles from './styles';
 import type { State, Props } from './types';
 
-const initialState = {
-  email: '',
-  isRecoveryMailSend: false,
-};
-
 class ForgotPassword extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: {
-      height: 100,
-      borderBottomWidth: 0,
-      backgroundColor: colors.backGroundBlack,
-    },
-    headerTitle: (
-      <View>
-        <Text style={styles.headerTitle} numberOfLines={2}>
-          {constants.forgotPassText.headerTitle}
-        </Text>
-      </View>
-    ),
+    headerStyle: Styles.authHeaderStyle,
+    headerTitle: HeaderTitle(),
     headerLeft: (
       <TouchableOpacity
         style={styles.headerLeft}
@@ -46,7 +34,7 @@ class ForgotPassword extends PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { ...initialState };
+    this.state = { email: '', isRecoveryMailSend: false };
   }
 
   onChangeField = (field: string, value: string) => {
@@ -59,8 +47,9 @@ class ForgotPassword extends PureComponent<Props, State> {
     if (ref) ref.focus();
   };
 
-  onSendRecoveryMail = (email: string) => {
-    if (utils.isValidate(email, constants.inputTypes.email)) {
+  onSendRecoveryMail = () => {
+    const { email } = this.state;
+    if (utils.isValid(email, constants.inputTypes.email)) {
       this.setState({
         isRecoveryMailSend: true,
       });
@@ -94,7 +83,7 @@ class ForgotPassword extends PureComponent<Props, State> {
                 keyboardType="email-address"
                 type={constants.inputTypes.email}
                 focusField={() => this.focusField(this.emailRef)}
-                onSubmitForm={() => this.onSendRecoveryMail(email)}
+                onSubmitForm={this.onSendRecoveryMail}
                 onChangeText={text => this.onChangeField('email', text)}
               />
             )}
@@ -107,19 +96,13 @@ class ForgotPassword extends PureComponent<Props, State> {
           {!isRecoveryMailSend && (
             <Button
               title={constants.buttonTitles.restorePass}
-              onPress={() => this.onSendRecoveryMail(email)}
-              isDisable={!utils.isValidate(email, constants.inputTypes.email)}
+              onPress={this.onSendRecoveryMail}
+              isDisable={!utils.isValid(email, constants.inputTypes.email)}
             />
           )}
         </KeyboardAwareScrollView>
         {!this.isEmailEmpty(email) &&
-          !utils.isValidate(email, constants.inputTypes.email) && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>
-                {constants.errors.login.email}
-              </Text>
-            </View>
-          )}
+          !utils.isValid(email, constants.inputTypes.email) && <EmailError />}
       </View>
     );
   }

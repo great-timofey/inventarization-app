@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 
@@ -28,17 +28,5 @@ export default StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     color: colors.buttonBlue,
-  },
-  errorContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: Dimensions.get('screen').width,
-    backgroundColor: colors.black,
-    height: 56,
-    justifyContent: 'center',
-  },
-  errorText: {
-    color: colors.invalidBorder,
-    textAlign: 'center',
   },
 });

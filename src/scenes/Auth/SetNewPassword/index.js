@@ -1,45 +1,31 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
+import HeaderTitle from 'components/HeaderTitle';
 
-import colors from 'global/colors';
-import assets from 'global/assets';
-import constants from 'global/constants';
 import utils from 'global/utils';
+import Styles from 'global/styles';
+import constants from 'global/constants';
+
 import styles from './styles';
 
 import type { State, Props } from './types';
 
-const initialState = {
-  password: '',
-  confirmPassword: '',
-};
-
 class SetNewPassword extends PureComponent<Props, State> {
   static navigationOptions = () => ({
-    headerStyle: {
-      height: 100,
-      borderBottomWidth: 0,
-      backgroundColor: colors.backGroundBlack,
-    },
-    headerTitle: (
-      <View>
-        <Text style={styles.headerTitle} numberOfLines={2}>
-          {constants.setNewPassword.create}
-        </Text>
-      </View>
-    ),
+    headerStyle: Styles.authHeaderStyle,
+    headerTitle: HeaderTitle(),
   });
 
   constructor(props: Props) {
     super(props);
-    this.state = { ...initialState };
+    this.state = { password: '', confirmPassword: '' };
   }
 
   onChangeField = (field: string, value: string) => {
@@ -60,7 +46,7 @@ class SetNewPassword extends PureComponent<Props, State> {
   };
 
   onSubmitForm = (password: string, confirmPassword: string) => {
-    if (utils.isValidatePassword(password, confirmPassword)) {
+    if (utils.isValidPassword(password, confirmPassword)) {
       alert('click');
     }
   };
@@ -103,7 +89,7 @@ class SetNewPassword extends PureComponent<Props, State> {
           <Button
             title={constants.buttonTitles.setNewPass}
             onPress={() => this.onSubmitForm(password, confirmPassword)}
-            isDisable={!utils.isValidatePassword(password, confirmPassword)}
+            isDisable={!utils.isValidPassword(password, confirmPassword)}
           />
         </KeyboardAwareScrollView>
       </View>

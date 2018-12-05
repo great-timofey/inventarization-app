@@ -20,9 +20,4 @@ export default StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.backGroundBlack,
   },
-  headerTitle: {
-    textAlign: 'center',
-    color: colors.white,
-    fontSize: 22,
-  },
 });

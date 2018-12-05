@@ -7,6 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
+import EmailError from 'components/EmailError';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
@@ -107,12 +108,8 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  onSubmitForm = (
-    email: string,
-    password: string,
-    name: string,
-    isRegForm: boolean
-  ) => {
+  onSubmitForm = () => {
+    const { email, password, name, isRegForm } = this.state;
     if (utils.isValidLoginForm(email, password, name, isRegForm)) {
       alert('SUCCESS');
       return null;
@@ -183,9 +180,7 @@ class Login extends PureComponent<Props, State> {
               returnKeyType={!isRegForm ? 'go' : null}
               focusField={() => this.focusField(this.passwordRef)}
               onSubmitEditing={() => this.focusField(this.mobileRef)}
-              onSubmitForm={() =>
-                this.onSubmitForm(email, password, name, isRegForm)
-              }
+              onSubmitForm={this.onSubmitForm}
               onChangeText={text => this.onChangeField('password', text)}
             />
             {isRegForm && (
@@ -199,9 +194,7 @@ class Login extends PureComponent<Props, State> {
                 type={constants.inputTypes.mobileNumber}
                 focusField={() => this.focusField(this.mobileRef)}
                 onChangeText={text => this.onChangeField('mobile', text)}
-                onSubmitForm={() =>
-                  this.onSubmitForm(email, password, name, isRegForm)
-                }
+                onSubmitForm={this.onSubmitForm}
               />
             )}
             {!isRegForm && (
@@ -230,7 +223,7 @@ class Login extends PureComponent<Props, State> {
             isDisable={
               !utils.isValidLoginForm(email, password, name, isRegForm)
             }
-            onPress={() => this.onSubmitForm(email, password, name, isRegForm)}
+            onPress={this.onSubmitForm}
           />
         </KeyboardAwareScrollView>
         <PickPhotoModal
@@ -240,13 +233,7 @@ class Login extends PureComponent<Props, State> {
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
         {!this.isEmailEmpty(email) &&
-          !utils.isValidate(email, constants.inputTypes.email) && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>
-                {constants.errors.login.email}
-              </Text>
-            </View>
-          )}
+          !utils.isValid(email, constants.inputTypes.email) && <EmailError />}
       </View>
     );
   }

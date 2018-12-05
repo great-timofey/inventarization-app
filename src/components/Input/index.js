@@ -35,7 +35,7 @@ class Input extends PureComponent<Props> {
 
     let isValideValue = true;
     if (type !== constants.inputTypes.name && !isEmpty(value)) {
-      isValideValue = utils.isValidate(value, type);
+      isValideValue = utils.isValid(value, type);
     }
 
     return (
