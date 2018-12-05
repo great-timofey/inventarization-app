@@ -10,21 +10,22 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 30,
-    justifyContent: 'flex-start',
+    paddingBottom: 30,
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.backGroundBlack,
   },
   formContainer: {
-    flex: 2,
     width: '100%',
     justifyContent: 'flex-start',
   },
   additionalButtons: {
+    marginTop: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   additionalButtonsText: {
-    padding: 20,
+    paddingHorizontal: 20,
     fontSize: 16,
     lineHeight: 19,
     color: colors.buttonBlue,

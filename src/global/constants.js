@@ -29,6 +29,7 @@ const buttonTitles = {
   createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
+  enter: 'Нет, войти как пользователь',
 };
 
 const forgotPassText = {
@@ -57,7 +58,11 @@ const headers = {
   items: 'Предметы',
 };
 
+const text = {
+  question: 'Вы хотите создать \n аккаунт организации?',
+};
 export default {
+  text,
   errors,
   regExp,
   headers,

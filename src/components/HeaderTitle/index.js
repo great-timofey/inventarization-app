@@ -8,8 +8,8 @@ import constants from 'global/constants';
 import styles from './styles';
 
 const HeaderTitle = () => (
-  <View>
-    <Text style={styles.headerTitle} numberOfLines={2}>
+  <View style={styles.headerTitle}>
+    <Text style={styles.headerTitleText} numberOfLines={2}>
       {constants.forgotPassText.headerTitle}
     </Text>
   </View>

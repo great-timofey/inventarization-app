@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
@@ -9,9 +9,9 @@ import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 import EmailError from 'components/EmailError';
 import HeaderTitle from 'components/HeaderTitle';
+import HeaderBackbutton from 'components/HeaderBackButton';
 
 import utils from 'global/utils';
-import assets from 'global/assets';
 import Styles from 'global/styles';
 import constants from 'global/constants';
 
@@ -22,14 +22,9 @@ class ForgotPassword extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
     headerTitle: HeaderTitle(),
-    headerLeft: (
-      <TouchableOpacity
-        style={styles.headerLeft}
-        onPress={() => navigation.goBack()}
-      >
-        <Image source={assets.headerBackArrow} />
-      </TouchableOpacity>
-    ),
+    headerLeft: HeaderBackbutton({
+      onPress: () => navigation.goBack(),
+    }),
   });
 
   constructor(props: Props) {
