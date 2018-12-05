@@ -13,7 +13,11 @@ import CameraScene from 'scenes/Camera';
 import PlacesScene from 'scenes/Places';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
+import ForgotPassword from 'scenes/Auth/ForgotPassword';
+import SetNewPassword from 'scenes/Auth/SetNewPassword';
 import * as SCENE_NAMES from 'navigation/scenes';
+
+import colors from 'global/colors';
 import styles from './styles';
 import assets from './assets';
 
@@ -87,8 +91,14 @@ const rootTabs = {
 };
 
 const authStack = {
-  [SCENE_NAMES.AuthSceneName]: {
+  [SCENE_NAMES.SetNewPasswordSceneName]: {
+    screen: SetNewPassword,
+  },
+  [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
+  },
+  [SCENE_NAMES.ForgotPasswordSceneName]: {
+    screen: ForgotPassword,
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: CameraScene,
@@ -105,10 +115,8 @@ const rootConfig = {
 };
 
 const authConfig = {
-  mode: 'modal',
-  headerMode: 'none',
   cardStyle: {
-    backgroundColor: 'white',
+    backgroundColor: colors.backGroundBlack,
   },
   navigationOptions: { gesturesEnabled: false },
 };

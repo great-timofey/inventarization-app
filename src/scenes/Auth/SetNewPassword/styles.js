@@ -9,24 +9,15 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 30,
-    justifyContent: 'flex-start',
     alignItems: 'center',
+    paddingHorizontal: 30,
+    justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
   },
   formContainer: {
-    flex: 2,
+    flex: 1,
     width: '100%',
-    justifyContent: 'flex-start',
-  },
-  additionalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  additionalButtonsText: {
-    padding: 20,
-    fontSize: 16,
-    lineHeight: 19,
-    color: colors.buttonBlue,
+    justifyContent: 'center',
+    backgroundColor: colors.backGroundBlack,
   },
 });
