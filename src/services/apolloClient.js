@@ -37,7 +37,7 @@ async function getClient() {
     },
     resolvers: {
       Mutation: {
-        loginUser: async (_, { isAuthed }, { cache: innerCache }) => {
+        setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
           await innerCache.writeData({ data: { isAuthed } });
           return null;
         },

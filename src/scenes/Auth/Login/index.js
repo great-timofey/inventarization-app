@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Keyboard, AsyncStorage } from 'react-native';
+import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
 import { withApollo } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -84,7 +84,7 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignIn = () => {
+  handleAuth = () => {
     const { client } = this.props;
     const { email, password } = this.state;
 
@@ -94,21 +94,43 @@ class Login extends PureComponent<Props, State> {
         variables: { email, password },
       })
       .then(async result => {
-        console.log(result);
+        console.log('logged in with data: ', result);
         await AsyncStorage.setItem('token', result.data.signInUser.token);
       })
       .then(_ => {
         client.mutate({
-          mutation: MUTATIONS.SIGN_IN_MUTATION_CLIENT,
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
           variables: { isAuthed: true },
         });
       })
       .catch(error => {
-        console.log(error);
+        Alert.alert(error.message);
       });
   };
 
-  handleSignUp = () => {};
+  handleSignUp = () => {
+    const { client } = this.props;
+    const { email, password, name, mobile } = this.state;
+
+    client
+      .mutate({
+        mutation: MUTATIONS.SIGN_UP_MUTATION,
+        variables: { email, password, fullName: name, phoneNumber: mobile },
+      })
+      .then(async result => {
+        console.log('signed up with data: ', result);
+        await AsyncStorage.setItem('token', result.data.signUpUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+  };
 
   handleOpenCamera = () => {
     const { navigation } = this.props;
@@ -142,7 +164,7 @@ class Login extends PureComponent<Props, State> {
   onSubmitForm = () => {
     const { email, password, name, isRegForm } = this.state;
     if (utils.isValidLoginForm(email, password, name, isRegForm)) {
-      this.handleSignIn();
+      isRegForm ? this.handleSignUp() : this.handleSignIn();
     }
   };
 
