@@ -9,6 +9,7 @@ import {
 
 import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
+import Question from 'scenes/Auth/Question';
 import PeopleScene from 'scenes/People';
 import CameraScene from 'scenes/Camera';
 import PlacesScene from 'scenes/Places';
@@ -94,6 +95,9 @@ const rootTabs = {
 const authStack = {
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
+  },
+  [SCENE_NAMES.QuestionSceneName]: {
+    screen: Question,
   },
   [SCENE_NAMES.SetNewPasswordSceneName]: {
     screen: SetNewPassword,
