@@ -14,10 +14,6 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
   },
-  logo: {
-    flex: 1,
-    justifyContent: 'center',
-  },
   formContainer: {
     flex: 1,
     width: '100%',

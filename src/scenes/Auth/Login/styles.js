@@ -14,17 +14,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.backGroundBlack,
   },
-  logo: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.backGroundBlack,
-    marginBottom: 50,
-    marginTop: 40,
-  },
-  logoImage: {
-    marginBottom: 25,
-  },
   formContainer: {
     flex: 2,
     width: '100%',

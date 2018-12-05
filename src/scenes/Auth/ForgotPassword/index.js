@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 
@@ -76,11 +77,7 @@ class ForgotPassword extends PureComponent<Props, State> {
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-          {!isRecoveryMailSend && (
-            <View style={styles.logo}>
-              <Image source={assets.grayLogo} />
-            </View>
-          )}
+          {!isRecoveryMailSend && <Logo isSmall={false} />}
           <View
             style={[
               styles.formContainer,

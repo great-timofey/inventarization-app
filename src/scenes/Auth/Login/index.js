@@ -1,9 +1,10 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, Keyboard } from 'react-native';
+import { View, Text, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 import HeaderButton from 'components/HeaderButton';
@@ -11,7 +12,6 @@ import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
 import colors from 'global/colors';
-import assets from 'global/assets';
 import * as SCENE_NAMES from 'navigation/scenes';
 import constants from 'global/constants';
 import styles from './styles';
@@ -52,12 +52,12 @@ class Login extends PureComponent<Props, State> {
       headerLeft: HeaderButton({
         name: 'Регистрация',
         isActive: !isRegForm,
-        onPress: () => state.params.onPushHeaderButton(isRegForm),
+        onPress: () => state.params.onPressButton(isRegForm),
       }),
       headerRight: HeaderButton({
         name: 'Вход',
         isActive: isRegForm,
-        onPress: () => state.params.onPushHeaderButton(isRegForm),
+        onPress: () => state.params.onPressButton(isRegForm),
       }),
     };
   };
@@ -68,7 +68,7 @@ class Login extends PureComponent<Props, State> {
 
     navigation.setParams({
       isRegForm: false,
-      onPushHeaderButton: this.onPushHeaderButton,
+      onPressButton: this.onPressButton,
     });
     this.state = { ...initialState };
   }
@@ -97,7 +97,7 @@ class Login extends PureComponent<Props, State> {
     });
   };
 
-  onPushHeaderButton = (isRegForm: boolean) => {
+  onPressButton = (isRegForm: boolean) => {
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState({
@@ -147,10 +147,7 @@ class Login extends PureComponent<Props, State> {
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-          <View style={styles.logo}>
-            <Image style={styles.logoImage} source={assets.logologin} />
-            <Image source={assets.appName} />
-          </View>
+          <Logo isSmall />
           <View style={styles.formContainer}>
             {isRegForm && (
               <Input
@@ -218,7 +215,7 @@ class Login extends PureComponent<Props, State> {
                 <AdditionalButton
                   title={constants.buttonTitles.registration}
                   onPress={() =>
-                    navigation.state.params.onPushHeaderButton(isRegForm)
+                    navigation.state.params.onPressButton(isRegForm)
                   }
                 />
               </View>
