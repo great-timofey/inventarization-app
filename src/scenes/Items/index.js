@@ -53,19 +53,20 @@ class ItemsScene extends PureComponent<Props, State> {
     return (
       <ScrollView>
         <Text style={styles.header}>{constants.headers.items}</Text>
-        <Query query={QUERIES.GET_CURRENT_USER}>
-          {({ loading, error, data }) => {
-            if (loading) return <Text>Loading...</Text>;
-            if (error) return <Text>{error.message}</Text>;
+        <View style={{ alignItems: 'center' }}>
+          <Query query={QUERIES.GET_CURRENT_USER}>
+            {({ loading, error, data }) => {
+              if (loading) return <Text>Loading...</Text>;
+              if (error) return <Text>{error.message}</Text>;
 
-            return (
-              <Text>
-                {data.current.id}
-                {data.current.fullName}
-              </Text>
-            );
-          }}
-        </Query>
+              return (
+                <Text>
+                  name: {data.current.fullName}, id: {data.current.id}
+                </Text>
+              );
+            }}
+          </Query>
+        </View>
       </ScrollView>
     );
   }
