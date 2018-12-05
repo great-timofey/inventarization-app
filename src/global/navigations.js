@@ -92,11 +92,11 @@ const rootTabs = {
 };
 
 const authStack = {
-  [SCENE_NAMES.SetNewPasswordSceneName]: {
-    screen: SetNewPassword,
-  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
+  },
+  [SCENE_NAMES.SetNewPasswordSceneName]: {
+    screen: SetNewPassword,
   },
   [SCENE_NAMES.ForgotPasswordSceneName]: {
     screen: ForgotPassword,

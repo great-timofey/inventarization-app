@@ -1,7 +1,7 @@
 //  @flow
 import gql from 'graphql-tag';
 
-export const GET_CURRENT_USER_QUERY = gql`
+export const GET_CURRENT_USER = gql`
   query getCurrentUser {
     current {
       id
@@ -14,5 +14,5 @@ export const GET_CURRENT_USER_QUERY = gql`
 `;
 
 export default {
-  GET_CURRENT_USER_QUERY,
+  GET_CURRENT_USER,
 };
