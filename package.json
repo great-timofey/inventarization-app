@@ -24,11 +24,12 @@
     "react-native-camera": "^1.4.3",
     "react-native-gesture-handler": "^1.0.9",
     "react-native-image-picker": "^0.27.1",
-    "react-native-keyboard-aware-scroll-view": "^0.7.4",
     "react-native-linear-gradient": "^2.4.4",
     "react-native-modal": "^7.0.1",
     "react-native-swipeout": "^2.3.6",
     "react-native-vector-icons": "^6.1.0",
+    "react-native-keyboard-aware-scroll-view": "git+https://github.com/AllmaxTeam/react-native-keyboard-aware-scroll-view.git#a7f2cb46743700744e83748a159b488a1ecebcaf",
+    "react-native-linear-gradient": "^2.4.4",
     "react-navigation": "^3.0.0"
   },
   "devDependencies": {

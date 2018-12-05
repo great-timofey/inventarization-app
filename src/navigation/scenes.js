@@ -5,4 +5,6 @@ export const PeopleSceneName = 'People';
 export const PlacesSceneName = 'Places';
 export const ProfileSceneName = 'Profile';
 export const AddItemSceneName = 'AddItem';
+export const ForgotPasswordSceneName = 'ForgotPassword';
+export const SetNewPasswordSceneName = 'SetNewPassword';
 export const CameraSceneName = 'CameraScene';

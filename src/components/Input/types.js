@@ -1,13 +1,17 @@
 // @flow
 
+import type { KeyboardType, ReturnKeyType } from 'global/types';
+
 export type Props = {
   type: string,
   value: string,
-  refEl: string,
-  state: boolean,
   fieldRef: Object,
   focusField: Function,
-  nextRefName?: string,
-  onPushButton?: Function,
+  placeholder?: string,
   onChangeText: Function,
+  onSubmitForm?: Function,
+  secureTextEntry?: boolean,
+  keyboardType?: ?KeyboardType,
+  onSubmitEditing?: () => void,
+  returnKeyType?: ?ReturnKeyType,
 };

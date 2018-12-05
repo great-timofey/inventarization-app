@@ -4,84 +4,61 @@ import React, { PureComponent } from 'react';
 import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
+import colors from 'global/colors';
 import constants from 'global/constants';
+
 import type { Props } from './types';
 import styles from './styles';
+
+const KEY_TYPES = {
+  GO: 'go',
+  NEXT: 'next',
+};
+
+const isEmpty = value => value === '';
 
 class Input extends PureComponent<Props> {
   render() {
     const {
       type,
-      nextRefName,
       value,
-      state,
-      onChangeText,
-      focusField,
       fieldRef,
-      refEl,
+      focusField,
+      placeholder,
+      onSubmitForm,
+      onChangeText,
+      keyboardType,
+      returnKeyType,
+      secureTextEntry,
+      onSubmitEditing,
     } = this.props;
-    let secureTextEntry = false;
-    let keyboardType = 'default';
-    let returnKeyType = 'next';
-    let autoCapitalize = 'none';
-    let isValideValue = true;
-    let onSubmitEditing = () => focusField(nextRefName);
 
-    switch (type) {
-      case constants.inputTypes.name:
-        autoCapitalize = 'sentences';
-        break;
-      case constants.inputTypes.email:
-        if (value) {
-          isValideValue = utils.validateFunction(constants.regExp.email, value);
-        }
-        keyboardType = 'email-address';
-        break;
-      case constants.inputTypes.password:
-        if (value) {
-          isValideValue = utils.validateFunction(
-            constants.regExp.password,
-            value
-          );
-        }
-        secureTextEntry = true;
-        returnKeyType = state ? 'next' : 'go';
-        onSubmitEditing = state ? () => focusField(nextRefName) : () => {};
-        break;
-      case constants.inputTypes.mobileNumber:
-        if (value) {
-          isValideValue = utils.validateFunction(
-            constants.regExp.mobileNumber,
-            value
-          );
-        }
-        keyboardType = 'numbers-and-punctuation';
-        onSubmitEditing = () => {};
-        returnKeyType = 'go';
-        break;
-      default:
-        break;
+    let isValideValue = true;
+    if (type !== constants.inputTypes.name && !isEmpty(value)) {
+      isValideValue = utils.isValid(value, type);
     }
 
     return (
-      <TouchableWithoutFeedback onPress={() => focusField(refEl)}>
-        <View style={styles.container}>
-          <Text
-            style={isValideValue ? styles.inputTitleText : styles.notValide}
-          >
-            {type}
-          </Text>
+      <TouchableWithoutFeedback onPress={focusField}>
+        <View
+          style={isValideValue ? styles.container : styles.invalidContainer}
+        >
+          <Text style={styles.inputTitleText}>{type}</Text>
           <TextInput
-            onSubmitEditing={onSubmitEditing}
+            value={value}
             ref={fieldRef}
-            secureTextEntry={secureTextEntry}
-            keyboardType={keyboardType}
-            returnKeyType={returnKeyType}
-            autoCapitalize={autoCapitalize}
             autoCorrect={false}
             style={styles.input}
+            keyboardType={keyboardType}
             onChangeText={onChangeText}
-            value={value}
+            returnKeyType={returnKeyType || KEY_TYPES.NEXT}
+            autoCapitalize="none"
+            onSubmitEditing={
+              returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
+            }
+            secureTextEntry={secureTextEntry}
+            placeholder={placeholder}
+            placeholderTextColor={colors.text.placeholder}
           />
         </View>
       </TouchableWithoutFeedback>
