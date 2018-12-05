@@ -1,20 +1,23 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Keyboard } from 'react-native';
+import { View, Text, Keyboard, AsyncStorage } from 'react-native';
+
+import { withApollo } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
-import Input from 'components/Input/index';
-import Button from 'components/Button/index';
+import Input from 'components/Input';
+import Button from 'components/Button';
 import EmailError from 'components/EmailError';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
 import colors from 'global/colors';
-import * as SCENE_NAMES from 'navigation/scenes';
 import constants from 'global/constants';
+import * as SCENE_NAMES from 'navigation/scenes';
+import * as MUTATIONS from 'graphql/auth/mutations';
 import styles from './styles';
 import type { Props, State } from './types';
 
@@ -23,8 +26,10 @@ const initialState = {
   email: '',
   mobile: '',
   password: '',
+  loading: false,
   isRegForm: false,
   isModalVisible: false,
+  isKeyboardActive: false,
 };
 
 const AdditionalButton = ({
@@ -40,7 +45,7 @@ const AdditionalButton = ({
 );
 
 class Login extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: { navigation: any }) => {
+  static navigationOptions = ({ navigation }: { navigation: Object }) => {
     const { state } = navigation;
     const isRegForm = state.params && state.params.isRegForm;
 
@@ -79,6 +84,32 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
+  handleSignIn = () => {
+    const { client } = this.props;
+    const { email, password } = this.state;
+
+    client
+      .mutate({
+        mutation: MUTATIONS.SIGN_IN_MUTATION,
+        variables: { email, password },
+      })
+      .then(async result => {
+        console.log(result);
+        await AsyncStorage.setItem('token', result.data.signInUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SIGN_IN_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  handleSignUp = () => {};
+
   handleOpenCamera = () => {
     const { navigation } = this.props;
     this.toggleModal();
@@ -111,10 +142,8 @@ class Login extends PureComponent<Props, State> {
   onSubmitForm = () => {
     const { email, password, name, isRegForm } = this.state;
     if (utils.isValidLoginForm(email, password, name, isRegForm)) {
-      alert('SUCCESS');
-      return null;
+      this.handleSignIn();
     }
-    return null;
   };
 
   focusField = (ref: Object) => {
@@ -239,4 +268,4 @@ class Login extends PureComponent<Props, State> {
   }
 }
 
-export default Login;
+export default withApollo(Login);

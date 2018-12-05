@@ -1,3 +1,5 @@
+export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
+
 const regExp = {
   mobileNumber: /^(?:\+7|8)?9(?:\d{9})$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
