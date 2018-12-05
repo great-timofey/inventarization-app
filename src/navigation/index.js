@@ -1,7 +1,10 @@
 //  @flow
 import React, { Component, Fragment } from 'react';
+import { StatusBar } from 'react-native';
 
 import R from 'ramda';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import {
   setNavigatior,
@@ -12,12 +15,15 @@ import {
 const navRef = R.curry(setNavigatior)('HOME_NAVIGATOR');
 const authNavRef = R.curry(setNavigatior)('AUTH_NAVIGATOR');
 
-type Props = { isAuthed: boolean };
+type Props = { data: Object };
 class AppNavigator extends Component<Props> {
   render() {
-    const { isAuthed } = this.props;
+    const {
+      data: { isAuthed },
+    } = this.props;
     return (
       <Fragment>
+        <StatusBar barStyle={isAuthed ? 'dark-content' : 'light-content'} />
         {isAuthed ? (
           <RootNavigator ref={navRef} />
         ) : (
@@ -27,5 +33,10 @@ class AppNavigator extends Component<Props> {
     );
   }
 }
-
-export default AppNavigator;
+export default graphql(
+  gql`
+    {
+      isAuthed @client
+    }
+  `
+)(AppNavigator);

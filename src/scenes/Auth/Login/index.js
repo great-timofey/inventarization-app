@@ -145,9 +145,9 @@ class Login extends PureComponent<Props, State> {
         mutation: MUTATIONS.SIGN_IN_MUTATION,
         variables: { email: user.email, password: user.password },
       })
-      .then(result => {
-        // console.log(result);
-        AsyncStorage.setItem('token', result.data.signInUser.token);
+      .then(async result => {
+        console.log(result);
+        await AsyncStorage.setItem('token', result.data.signInUser.token);
       })
       .then(_ => {
         client.mutate({
