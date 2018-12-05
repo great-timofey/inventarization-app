@@ -20,7 +20,7 @@ import type { State, Props } from './types';
 class SetNewPassword extends PureComponent<Props, State> {
   static navigationOptions = () => ({
     headerStyle: Styles.authHeaderStyle,
-    headerTitle: HeaderTitle(),
+    headerTitle: HeaderTitle({ title: constants.setNewPassword.create }),
   });
 
   constructor(props: Props) {
