@@ -3,7 +3,11 @@
 import type { KeyboardType, ReturnKeyType } from 'global/types';
 
 export type Props = {
-  type: string,
+  mask?: string,
+  type: {
+    label: string,
+    require: boolean,
+  },
   value: string,
   fieldRef: Object,
   focusField: Function,
