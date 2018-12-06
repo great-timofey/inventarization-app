@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   wrapper: {
@@ -10,10 +11,10 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingBottom: 30,
     alignItems: 'center',
-    paddingHorizontal: 30,
+    paddingBottom: normalize(30),
     justifyContent: 'space-between',
+    paddingHorizontal: normalize(30),
     backgroundColor: colors.backGroundBlack,
   },
   formContainer: {
@@ -21,15 +22,15 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   additionalButtons: {
-    marginTop: 30,
     flexDirection: 'row',
+    marginTop: normalize(30),
     justifyContent: 'space-between',
   },
   additionalButtonsText: {
-    fontSize: 16,
-    lineHeight: 19,
-    paddingHorizontal: 20,
+    fontSize: normalize(16),
     color: colors.buttonBlue,
+    lineHeight: normalize(19),
+    paddingHorizontal: normalize(20),
     fontFamily: fonts.proDisplay.light,
   },
 });

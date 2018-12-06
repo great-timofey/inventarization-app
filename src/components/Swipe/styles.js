@@ -2,6 +2,7 @@
 
 import { StyleSheet } from 'react-native';
 
+import { normalize } from 'global/utils';
 import colors from '../../global/colors';
 
 export default StyleSheet.create({
@@ -14,50 +15,50 @@ export default StyleSheet.create({
   rowItem: {
     flex: 1,
     flexDirection: 'row',
-    height: 78,
-    justifyContent: 'space-between',
+    height: normalize(78),
     alignItems: 'center',
+    padding: normalize(20),
     backgroundColor: colors.white,
-    padding: 20,
+    justifyContent: 'space-between',
   },
   image: {
-    width: 62,
-    height: 62,
-    backgroundColor: colors.green, // ToDo
     borderRadius: 14,
-    marginRight: 8,
+    width: normalize(62),
+    height: normalize(62),
+    backgroundColor: colors.green,
+    marginRight: normalize(8),
   },
   description: {
     flex: 1,
-    height: 78,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 10,
+    height: normalize(78),
+    paddingLeft: normalize(10),
+    justifyContent: 'space-between',
     borderBottomColor: colors.border,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: normalize(0.5),
   },
   count: {
-    padding: 7,
-    backgroundColor: '#F6F6F6',
     borderRadius: 15,
+    padding: normalize(7),
+    backgroundColor: '#F6F6F6',
   },
   countText: {
     color: colors.text.blue,
-    fontSize: 14,
+    fontSize: normalize(14),
   },
   topText: {
-    fontSize: 16,
-    fontFamily: 'System',
     color: colors.black,
-    lineHeight: 19,
-    marginBottom: 3,
+    fontFamily: 'System',
+    fontSize: normalize(16),
+    lineHeight: normalize(19),
+    marginBottom: normalize(3),
   },
   botText: {
-    fontSize: 15,
     fontFamily: 'System',
-    lineHeight: 18,
     color: colors.text.gray,
+    fontSize: normalize(15),
+    lineHeight: normalize(18),
   },
   buttonStyle: {
     flex: 1,

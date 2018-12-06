@@ -1,15 +1,16 @@
 import { StyleSheet } from 'react-native';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   instructions: {
-    fontSize: 30,
-    textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    textAlign: 'center',
+    fontSize: normalize(30),
+    marginBottom: normalize(5),
   },
 });

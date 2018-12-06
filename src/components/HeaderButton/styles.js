@@ -4,16 +4,17 @@ import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   buttonHeader: {
-    marginTop: 17,
     borderWidth: 1,
     borderRadius: 16,
-    paddingVertical: 7,
-    marginHorizontal: 30,
-    paddingHorizontal: 14,
     alignSelf: 'flex-start',
+    marginTop: normalize(17),
+    paddingVertical: normalize(7),
+    marginHorizontal: normalize(30),
+    paddingHorizontal: normalize(14),
     borderColor: colors.header.bluebuttonText,
   },
   inactiveHeaderBtn: {
@@ -21,8 +22,8 @@ export default StyleSheet.create({
     backgroundColor: colors.black,
   },
   buttonText: {
-    fontSize: 14,
-    lineHeight: 16,
+    fontSize: normalize(14),
+    lineHeight: normalize(16),
     fontFamily: fonts.proDisplay.regular,
     color: colors.header.bluebuttonText,
   },

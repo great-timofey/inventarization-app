@@ -5,13 +5,14 @@ import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
 import { deviceWidth } from 'global/device';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   visibleContainer: {
     bottom: 0,
-    height: 56,
     width: deviceWidth,
     position: 'absolute',
+    height: normalize(56),
     justifyContent: 'center',
     backgroundColor: colors.black,
   },
