@@ -12,4 +12,7 @@ export type State = {
 export type Props = {
   client: Object,
   navigation: Object,
+  signInMutation: Function,
+  signUpMutation: Function,
+  setAuthMutationClient: Function,
 };

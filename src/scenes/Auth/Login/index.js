@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
-import { withApollo } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
@@ -161,10 +161,38 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  onSubmitForm = () => {
-    const { email, password, name, isRegForm } = this.state;
-    if (utils.isValidLoginForm(email, password, name, isRegForm)) {
-      isRegForm ? this.handleSignUp() : this.handleSignIn();
+  onSubmitForm = async () => {
+    const {
+      email,
+      password,
+      name: fullName,
+      mobile: phoneNumber,
+      isRegForm,
+    } = this.state;
+
+    const {
+      signInMutation,
+      signUpMutation,
+      setAuthMutationClient,
+    } = this.props;
+
+    if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
+      try {
+        const variables = { email, password, fullName };
+        if (phoneNumber) variables.phoneNumber = phoneNumber;
+
+        const { data } = await (isRegForm
+          ? signUpMutation({ variables })
+          : signInMutation({ variables }));
+
+        await AsyncStorage.setItem(
+          'token',
+          isRegForm ? data.signUpUser.token : data.signInUser.token
+        );
+        await setAuthMutationClient({ variables: { isAuthed: true } });
+      } catch (error) {
+        Alert.alert(error.message);
+      }
     }
   };
 
@@ -300,4 +328,14 @@ class Login extends PureComponent<Props, State> {
   }
 }
 
-export default withApollo(Login);
+export default compose(
+  graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
+    name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.SIGN_IN_MUTATION, {
+    name: 'signInMutation',
+  }),
+  graphql(MUTATIONS.SIGN_UP_MUTATION, {
+    name: 'signUpMutation',
+  })
+)(Login);
