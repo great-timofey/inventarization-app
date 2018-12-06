@@ -81,7 +81,7 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignUp = () => {
+  handleSignIn = () => {
     const { client } = this.props;
     const { email, password } = this.state;
 
@@ -109,10 +109,13 @@ class Login extends PureComponent<Props, State> {
     const { client } = this.props;
     const { email, password, name, mobile } = this.state;
 
+    let variables = { email, password, fullName: name };
+    if (mobile) variables.mobile = mobile;
+
     client
       .mutate({
         mutation: MUTATIONS.SIGN_UP_MUTATION,
-        variables: { email, password, fullName: name, phoneNumber: mobile },
+        variables,
       })
       .then(async result => {
         console.log('signed up with data: ', result);
