@@ -6,7 +6,6 @@ import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
 import colors from 'global/colors';
-import constants from 'global/constants';
 
 import type { Props } from './types';
 import styles from './styles';
@@ -26,11 +25,11 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { type, value } = this.props;
-    if (nextProps.value !== value) {
-      return true;
-    }
-    if (type === constants.inputTypes.password) {
+    const { returnKeyType, value } = this.props;
+    if (
+      nextProps.value !== value ||
+      nextProps.returnKeyType !== returnKeyType
+    ) {
       return true;
     }
     return false;
@@ -48,7 +47,6 @@ class Input extends Component<Props> {
       onSubmitEditing,
       ...textInputProps
     } = this.props;
-    console.log(type);
 
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
 
