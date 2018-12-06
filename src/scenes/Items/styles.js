@@ -1,5 +1,6 @@
 //  @flow
 
+import { isIphoneX } from 'global/device';
 import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
@@ -10,8 +11,10 @@ export default StyleSheet.create({
     paddingTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
+    borderTopColor: colors.white,
     backgroundColor: colors.white,
     justifyContent: 'space-between',
+    borderTopWidth: isIphoneX ? 15 : 0,
   },
   header: {
     fontSize: 34,

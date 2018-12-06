@@ -84,7 +84,7 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignUp = () => {
+  handleSignIn = () => {
     const { client } = this.props;
     const { email, password } = this.state;
 
