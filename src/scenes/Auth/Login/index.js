@@ -14,10 +14,11 @@ import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
-import colors from 'global/colors';
+import Styles from 'global/styles';
 import constants from 'global/constants';
 import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
+
 import styles from './styles';
 import type { Props, State } from './types';
 
@@ -50,11 +51,7 @@ class Login extends PureComponent<Props, State> {
     const isRegForm = state.params && state.params.isRegForm;
 
     return {
-      headerStyle: {
-        marginTop: 15,
-        backgroundColor: colors.backGroundBlack,
-        borderBottomWidth: 0,
-      },
+      headerStyle: Styles.authHeaderStyle,
       headerLeft: HeaderButton({
         name: 'Регистрация',
         isActive: !isRegForm,

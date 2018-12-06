@@ -2,6 +2,7 @@
 
 export type Props = {
   title: string,
-  isDisable?: boolean,
+  isGreen?: boolean,
   onPress: Function,
+  isDisable?: boolean,
 };

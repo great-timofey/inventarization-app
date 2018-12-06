@@ -9,8 +9,10 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderRadius: 16,
     paddingVertical: 7,
-    paddingHorizontal: 14,
     marginHorizontal: 30,
+    marginTop: 17,
+    paddingHorizontal: 14,
+    alignSelf: 'flex-start',
     borderColor: colors.header.bluebuttonText,
   },
   inactiveHeaderBtn: {

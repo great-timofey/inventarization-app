@@ -15,7 +15,7 @@ const Styles = StyleSheet.create({
     marginRight: 0,
   },
   authHeaderStyle: {
-    height: 100,
+    height: 90,
     borderBottomWidth: 0,
     backgroundColor: colors.backGroundBlack,
   },

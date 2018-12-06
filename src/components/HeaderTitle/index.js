@@ -3,14 +3,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import constants from 'global/constants';
-
 import styles from './styles';
+import type { Props } from './types';
 
-const HeaderTitle = () => (
-  <View>
-    <Text style={styles.headerTitle} numberOfLines={2}>
-      {constants.forgotPassText.headerTitle}
+const HeaderTitle = ({ title }: Props) => (
+  <View style={styles.headerTitle}>
+    <Text style={styles.headerTitleText} numberOfLines={2}>
+      {title}
     </Text>
   </View>
 );
