@@ -58,6 +58,13 @@ class SetNewPassword extends PureComponent<Props, State> {
 
   render() {
     const { password, confirmPassword } = this.state;
+    const isValidateWarnings =
+      utils.isWarning(password, constants.inputTypes.password) ||
+      utils.isWarning(confirmPassword, constants.inputTypes.password);
+    const isPasswordNotMatch =
+      !isValidateWarnings && password !== confirmPassword;
+    const isWarningVisible = isValidateWarnings || password !== confirmPassword;
+
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
@@ -95,16 +102,8 @@ class SetNewPassword extends PureComponent<Props, State> {
         </KeyboardAwareScrollView>
         <Warning
           isEmail={false}
-          notMatch={
-            !utils.isWarning(password, constants.inputTypes.password) &&
-            !utils.isWarning(confirmPassword, constants.inputTypes.password) &&
-            password !== confirmPassword
-          }
-          isVisible={
-            utils.isWarning(password, constants.inputTypes.password) ||
-            utils.isWarning(confirmPassword, constants.inputTypes.password) ||
-            password !== confirmPassword
-          }
+          notMatch={isPasswordNotMatch}
+          isVisible={isWarningVisible}
         />
       </View>
     );
