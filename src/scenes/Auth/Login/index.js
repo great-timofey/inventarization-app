@@ -111,24 +111,29 @@ class Login extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
-    const { email, password, name, mobile, isRegForm } = this.state;
+    const {
+      email,
+      password,
+      name: fullName,
+      mobile: phoneNumber,
+      isRegForm,
+    } = this.state;
+
     const {
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
     } = this.props;
 
-    if (utils.isValidLoginForm(email, password, name, isRegForm)) {
+    if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
       try {
-        let variables;
-        if (mobile) {
-          variables = { email, password, fullName: name, phoneNumber: mobile };
-        } else {
-          variables = { email, password, fullName: name };
-        }
+        let variables = { email, password, fullName };
+        if (phoneNumber) variables.phoneNumber = phoneNumber;
+
         const { data } = await (isRegForm
           ? signUpMutation({ variables })
           : signInMutation({ variables }));
+
         await AsyncStorage.setItem(
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
