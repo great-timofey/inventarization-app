@@ -11,12 +11,13 @@ import Styles from 'global/styles';
 import constants from 'global/constants';
 
 import styles from './styles';
+import type { Props } from './types';
 
-class Question extends PureComponent<{}, {}> {
-  static navigationOptions = () => ({
+class Question extends PureComponent<Props, {}> {
+  static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
     headerLeft: HeaderBackbutton({
-      onPress: () => {},
+      onPress: () => navigation.goBack(),
     }),
   });
 
