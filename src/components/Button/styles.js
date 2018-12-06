@@ -3,6 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   container: {
@@ -21,9 +22,10 @@ export default StyleSheet.create({
     backgroundColor: colors.buttonGreen,
   },
   titleText: {
-    color: colors.white,
     fontSize: 18,
     lineHeight: 21,
+    color: colors.white,
+    fontFamily: fonts.proDisplay.light,
   },
   titleTextDisable: {
     color: colors.text.bigGray,
