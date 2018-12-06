@@ -3,15 +3,18 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   headerTitle: {
-    paddingTop: 30,
     alignSelf: 'flex-start',
+    paddingTop: normalize(30),
   },
   headerTitleText: {
     textAlign: 'center',
     color: colors.white,
-    fontSize: 22,
+    fontSize: normalize(22),
+    fontFamily: fonts.proDisplay.light,
   },
 });

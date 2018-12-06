@@ -4,14 +4,16 @@ import { StyleSheet } from 'react-native';
 
 import { fonts } from 'global/styles';
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
-    height: 54,
-    marginTop: 15,
     width: '100%',
     borderRadius: 7,
     alignItems: 'center',
+    height: normalize(54),
+    marginTop: normalize(15),
     justifyContent: 'center',
     backgroundColor: colors.buttonBlue,
   },
@@ -22,9 +24,9 @@ export default StyleSheet.create({
     backgroundColor: colors.buttonGreen,
   },
   titleText: {
-    fontSize: 18,
-    lineHeight: 21,
     color: colors.white,
+    fontSize: normalize(18),
+    lineHeight: normalize(21),
     fontFamily: fonts.proDisplay.light,
   },
   titleTextDisable: {

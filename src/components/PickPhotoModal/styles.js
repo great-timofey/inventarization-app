@@ -3,6 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   modalContainer: {
@@ -10,17 +11,17 @@ export default StyleSheet.create({
     justifyContent: 'flex-end',
   },
   choosePhotoContainer: {
-    height: 150,
-    paddingTop: 10,
     borderRadius: 7,
-    marginBottom: 15,
+    height: normalize(150),
+    paddingTop: normalize(10),
+    marginBottom: normalize(15),
     backgroundColor: colors.white,
   },
   photo: {
-    width: 82,
-    height: 82,
-    marginLeft: 10,
     alignItems: 'center',
+    width: normalize(82),
+    height: normalize(82),
+    marginLeft: normalize(10),
     justifyContent: 'center',
     backgroundColor: colors.backGroundBlack,
   },
@@ -29,31 +30,31 @@ export default StyleSheet.create({
     height: '100%',
   },
   photos: {
-    paddingRight: 10,
+    paddingRight: normalize(10),
   },
   openGalleryButton: {
-    height: 60,
     alignItems: 'center',
+    height: normalize(60),
     justifyContent: 'center',
     backgroundColor: colors.transparent,
   },
   openGalleryText: {
-    fontSize: 18,
+    fontSize: normalize(18),
     color: colors.buttonBlue,
   },
   cameraIcon: {
-    width: 30,
-    height: 25,
+    width: normalize(30),
+    height: normalize(25),
   },
   cancelButton: {
-    height: 50,
     borderRadius: 7,
     alignItems: 'center',
+    height: normalize(50),
     justifyContent: 'center',
     backgroundColor: colors.cancel,
   },
   cancelButtonText: {
-    fontSize: 18,
     color: colors.white,
+    fontSize: normalize(18),
   },
 });

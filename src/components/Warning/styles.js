@@ -3,22 +3,25 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 import { deviceWidth } from 'global/device';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   visibleContainer: {
-    position: 'absolute',
     bottom: 0,
     width: deviceWidth,
-    backgroundColor: colors.black,
-    height: 56,
+    position: 'absolute',
+    height: normalize(56),
     justifyContent: 'center',
+    backgroundColor: colors.black,
   },
   hiddenContainer: {
     display: 'none',
   },
   errorText: {
-    color: colors.invalidBorder,
     textAlign: 'center',
+    color: colors.invalidBorder,
+    fontFamily: fonts.proDisplay.light,
   },
 });

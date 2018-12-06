@@ -5,6 +5,7 @@ import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
+
 import colors from 'global/colors';
 
 import type { Props } from './types';
@@ -52,7 +53,7 @@ class Input extends Component<Props> {
     return (
       <TouchableWithoutFeedback onPress={focusField}>
         <View
-          style={isValideValue ? styles.container : styles.invalidContainer}
+          style={[styles.container, !isValideValue && styles.invalidContainer]}
         >
           <Text style={styles.inputTitleText}>{type.label}</Text>
           <CustomTextInput

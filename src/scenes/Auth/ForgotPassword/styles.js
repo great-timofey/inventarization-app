@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   wrapper: {
@@ -10,9 +12,9 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 50,
-    paddingBottom: 30,
-    paddingHorizontal: 30,
+    paddingTop: normalize(50),
+    paddingBottom: normalize(30),
+    paddingHorizontal: normalize(30),
     justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
   },
@@ -26,10 +28,11 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    fontSize: 18,
-    marginTop: 15,
-    marginBottom: 25,
-    color: colors.text.bigGray,
     textAlign: 'center',
+    fontSize: normalize(18),
+    marginTop: normalize(15),
+    marginBottom: normalize(25),
+    color: colors.text.bigGray,
+    fontFamily: fonts.proDisplay.light,
   },
 });
