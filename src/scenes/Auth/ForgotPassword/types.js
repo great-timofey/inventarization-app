@@ -6,5 +6,6 @@ export type State = {
 };
 
 export type Props = {
-  navigation: any,
+  mutate: Function,
+  navigation: Object,
 };
