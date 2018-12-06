@@ -10,7 +10,11 @@ import icons from 'global/assets';
 import type { CameraSceneProps, CameraSceneState } from './types';
 import styles from './styles';
 
-class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
+class Camera extends Component<CameraSceneProps, CameraSceneState> {
+  static navigationOptions = {
+    header: null,
+  };
+
   state = {
     type: RNCamera.Constants.Type.back,
     flashMode: RNCamera.Constants.FlashMode.off,
@@ -21,8 +25,11 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
       const { uri } = await this.camera.takePictureAsync(options);
-      const setUriCallback = navigation.getParam('setPhotoUriCallback', 'none');
-      setUriCallback(uri);
+      const setPhotoUriCameraCallback = navigation.getParam(
+        'setPhotoUriCameraCallback',
+        'none'
+      );
+      setPhotoUriCameraCallback(uri);
       navigation.goBack();
     }
   };
@@ -97,4 +104,4 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
   }
 }
 
-export default CameraScene;
+export default Camera;

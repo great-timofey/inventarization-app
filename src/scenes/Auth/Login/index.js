@@ -11,7 +11,6 @@ import Input from 'components/Input';
 import Button from 'components/Button';
 import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
-import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
 import Styles from 'global/styles';
@@ -27,7 +26,6 @@ const initialState = {
   email: '',
   mobile: '',
   password: '',
-  loading: false,
   isRegForm: false,
   isModalVisible: false,
   isKeyboardActive: false,
@@ -75,75 +73,6 @@ class Login extends PureComponent<Props, State> {
     });
     this.state = { ...initialState };
   }
-
-  toggleModal = () => {
-    const { isModalVisible } = this.state;
-    this.setState({ isModalVisible: !isModalVisible });
-  };
-
-  handleSignIn = () => {
-    const { client } = this.props;
-    const { email, password } = this.state;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_IN_MUTATION,
-        variables: { email, password },
-      })
-      .then(async result => {
-        console.log('logged in with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signInUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
-  handleSignUp = () => {
-    const { client } = this.props;
-    const { email, password, name, mobile } = this.state;
-
-    const variables = { email, password, fullName: name };
-    if (mobile) variables.mobile = mobile;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_UP_MUTATION,
-        variables,
-      })
-      .then(async result => {
-        console.log('signed up with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signUpUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
-  handleOpenCamera = () => {
-    const { navigation } = this.props;
-    this.toggleModal();
-    navigation.navigate(SCENE_NAMES.CameraSceneName, {
-      setPhotoUriCallback: this.setPhotoUriCallback,
-    });
-  };
-
-  setPhotoUriCallback = (uri: string) => {
-    const { navigation } = this.props;
-    navigation.setParams({ uri });
-  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -213,15 +142,8 @@ class Login extends PureComponent<Props, State> {
   mobileRef: any;
 
   render() {
-    const {
-      name,
-      email,
-      mobile,
-      password,
-      isRegForm,
-      isModalVisible,
-    } = this.state;
     const { navigation } = this.props;
+    const { name, email, mobile, password, isRegForm } = this.state;
 
     return (
       <View style={styles.wrapper}>
@@ -310,12 +232,6 @@ class Login extends PureComponent<Props, State> {
             onPress={this.onSubmitForm}
           />
         </KeyboardAwareScrollView>
-        <PickPhotoModal
-          isModalVisible={isModalVisible}
-          toggleModalCallback={this.toggleModal}
-          navigationCallback={this.handleOpenCamera}
-          setPhotoUriCallback={this.setPhotoUriCallback}
-        />
         <Warning
           isVisible={
             utils.isWarning(email, constants.inputTypes.email) ||
