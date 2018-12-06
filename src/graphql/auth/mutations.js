@@ -39,6 +39,14 @@ export const SIGN_UP_MUTATION = gql`
   }
 `;
 
+export const RESET_PASSWORD_MUTATION = gql`
+  mutation ResetPassword($email: String!) {
+    resetPasswordForUser(email: $email) {
+      message
+    }
+  }
+`;
+
 export const SET_AUTH_MUTATION_CLIENT = gql`
   mutation setAuth($isAuthed: Boolean) {
     setAuth(isAuthed: $isAuthed) @client
@@ -48,5 +56,6 @@ export const SET_AUTH_MUTATION_CLIENT = gql`
 export default {
   SIGN_IN_MUTATION,
   SIGN_UP_MUTATION,
+  RESET_PASSWORD_MUTATION,
   SET_AUTH_MUTATION_CLIENT,
 };

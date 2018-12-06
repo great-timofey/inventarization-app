@@ -12,44 +12,44 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { inventoryApiUrl } from 'global/constants';
 
-async function getClient() {
-  const cache = new InMemoryCache();
+const cache = new InMemoryCache();
 
-  const httpLink = createHttpLink({
-    uri: inventoryApiUrl,
-  });
+const httpLink = createHttpLink({
+  uri: inventoryApiUrl,
+});
 
-  const authLink = setContext(async (_, { headers }) => {
-    const token = await AsyncStorage.getItem('token');
-    return {
-      headers: {
-        ...headers,
-        device: DeviceInfo.getUniqueID(),
-        authorization: token || '',
-      },
-    };
-  });
-
-  const stateLink = withClientState({
-    cache,
-    defaults: {
-      isAuthed: false,
+const authLink = setContext(async (_, { headers }) => {
+  const token = await AsyncStorage.getItem('token');
+  return {
+    headers: {
+      ...headers,
+      device: DeviceInfo.getUniqueID(),
+      authorization: token || '',
     },
-    resolvers: {
-      Mutation: {
-        setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
-          await innerCache.writeData({ data: { isAuthed } });
-          return null;
-        },
+  };
+});
+
+const stateLink = withClientState({
+  cache,
+  defaults: {
+    isAuthed: false,
+  },
+  resolvers: {
+    Mutation: {
+      setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
+        await innerCache.writeData({ data: { isAuthed } });
+        return null;
       },
     },
-    typeDefs: `
+  },
+  typeDefs: `
     type Query {
       isAuthed: Boolean
     }
   `,
-  });
+});
 
+async function getClient() {
   await persistCache({
     cache,
     debug: true,

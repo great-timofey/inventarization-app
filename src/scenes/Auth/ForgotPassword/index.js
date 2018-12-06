@@ -1,7 +1,9 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text } from 'react-native';
+import { Alert, View, Text } from 'react-native';
+
+import { graphql } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
@@ -14,6 +16,7 @@ import HeaderBackbutton from 'components/HeaderBackButton';
 import utils from 'global/utils';
 import Styles from 'global/styles';
 import constants from 'global/constants';
+import { RESET_PASSWORD_MUTATION } from 'graphql/auth/mutations';
 
 import styles from './styles';
 import type { State, Props } from './types';
@@ -42,12 +45,20 @@ class ForgotPassword extends PureComponent<Props, State> {
     if (ref) ref.focus();
   };
 
-  onSendRecoveryMail = () => {
+  onSendRecoveryMail = async () => {
     const { email } = this.state;
+    const { mutate } = this.props;
+
     if (utils.isValid(email, constants.inputTypes.email)) {
-      this.setState({
-        isRecoveryMailSend: true,
-      });
+      try {
+        await mutate({ variables: { email } });
+
+        this.setState({
+          isRecoveryMailSend: true,
+        });
+      } catch (error) {
+        Alert.alert(error.message);
+      }
     }
   };
 
@@ -103,4 +114,4 @@ class ForgotPassword extends PureComponent<Props, State> {
   }
 }
 
-export default ForgotPassword;
+export default graphql(RESET_PASSWORD_MUTATION)(ForgotPassword);
