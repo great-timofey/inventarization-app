@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   wrapper: {
@@ -29,7 +30,8 @@ export default StyleSheet.create({
     fontSize: 18,
     marginTop: 15,
     marginBottom: 25,
-    color: colors.text.bigGray,
     textAlign: 'center',
+    color: colors.text.bigGray,
+    fontFamily: fonts.proDisplay.light,
   },
 });

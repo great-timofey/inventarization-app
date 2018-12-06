@@ -3,6 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   headerTitle: {
@@ -10,8 +11,9 @@ export default StyleSheet.create({
     alignSelf: 'flex-start',
   },
   headerTitleText: {
+    fontSize: 22,
     textAlign: 'center',
     color: colors.white,
-    fontSize: 22,
+    fontFamily: fonts.proDisplay.light,
   },
 });

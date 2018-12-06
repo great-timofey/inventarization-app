@@ -3,6 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 import { deviceWidth } from 'global/device';
 
 export default StyleSheet.create({
@@ -20,5 +21,6 @@ export default StyleSheet.create({
   errorText: {
     textAlign: 'center',
     color: colors.invalidBorder,
+    fontFamily: fonts.proDisplay.light,
   },
 });
