@@ -12,6 +12,7 @@ import ItemsScene from 'scenes/Items';
 import PeopleScene from 'scenes/People';
 import CameraScene from 'scenes/Camera';
 import PlacesScene from 'scenes/Places';
+import Organisation from 'scenes/Auth/Organisation';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
@@ -92,6 +93,9 @@ const rootTabs = {
 };
 
 const authStack = {
+  [SCENE_NAMES.OrganisationSceneName]: {
+    screen: Organisation,
+  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
