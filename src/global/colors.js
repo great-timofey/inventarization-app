@@ -14,6 +14,7 @@ export default {
   buttonBlue: '#35CEF1',
   buttonGray: '#333333',
   buttonInvitee: '#67B8F3',
+  buttonChooseLogo: '#EFEFEF',
   red: '#FF2D55',
   gray: '#F6F6F6',
   invalidBorder: '#D54A0F',

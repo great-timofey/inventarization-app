@@ -47,6 +47,7 @@ const buttonTitles = {
   cancel: 'Отмена',
   update: 'Обновить',
   create: 'Да, создать',
+  chooseLogo: 'Выбери \n лого',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
