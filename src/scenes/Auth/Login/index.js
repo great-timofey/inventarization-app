@@ -9,7 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input';
 import Button from 'components/Button';
-import EmailError from 'components/EmailError';
+import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
@@ -109,7 +109,7 @@ class Login extends PureComponent<Props, State> {
     const { client } = this.props;
     const { email, password, name, mobile } = this.state;
 
-    let variables = { email, password, fullName: name };
+    const variables = { email, password, fullName: name };
     if (mobile) variables.mobile = mobile;
 
     client
@@ -175,8 +175,6 @@ class Login extends PureComponent<Props, State> {
       ref.input.focus();
     }
   };
-
-  isEmailEmpty = (value: string) => value === '';
 
   nameRef: any;
 
@@ -290,8 +288,13 @@ class Login extends PureComponent<Props, State> {
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        {!this.isEmailEmpty(email) &&
-          !utils.isValid(email, constants.inputTypes.email) && <EmailError />}
+        <Warning
+          isVisible={
+            utils.isWarning(email, constants.inputTypes.email) ||
+            utils.isWarning(password, constants.inputTypes.password)
+          }
+          isEmail={utils.isWarning(email, constants.inputTypes.email)}
+        />
       </View>
     );
   }

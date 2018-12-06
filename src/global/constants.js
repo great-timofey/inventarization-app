@@ -2,7 +2,7 @@ export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
-  password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{6,})\S$/,
+  password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
 };
 
 const masks = {
