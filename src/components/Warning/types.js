@@ -2,6 +2,6 @@
 
 export type Props = {
   isEmail: boolean,
-  notMatch: boolean,
+  notMatch?: boolean,
   isVisible: boolean,
 };

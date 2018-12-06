@@ -2,13 +2,14 @@ import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 30,
-    paddingHorizontal: 30,
     justifyContent: 'flex-end',
+    paddingBottom: normalize(30),
+    paddingHorizontal: normalize(30),
     backgroundColor: colors.backGroundBlack,
   },
   wrapper: {
@@ -17,8 +18,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    fontSize: 17,
     textAlign: 'center',
+    fontSize: normalize(17),
     color: colors.text.bigGray,
     fontFamily: fonts.proDisplay.light,
   },

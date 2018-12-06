@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
@@ -14,26 +15,26 @@ export default StyleSheet.create({
     justifyContent: 'flex-end',
   },
   capture: {
-    width: 70,
-    height: 70,
     borderRadius: 35,
     alignItems: 'center',
+    width: normalize(70),
+    height: normalize(70),
     justifyContent: 'center',
     backgroundColor: colors.white,
   },
   captureInner: {
-    width: 60,
-    height: 60,
     borderWidth: 1,
     borderRadius: 30,
+    width: normalize(60),
+    height: normalize(60),
     borderColor: colors.black,
     backgroundColor: colors.white,
   },
   topSection: {
     flex: 0,
-    height: 45,
-    paddingLeft: 20,
+    height: normalize(45),
     justifyContent: 'center',
+    paddingLeft: normalize(20),
   },
   flashButton: {
     flexDirection: 'row',
@@ -41,22 +42,22 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   flashImage: {
-    width: 25,
-    height: 25,
     marginRight: 10,
+    width: normalize(25),
+    height: normalize(25),
   },
   flashTitle: {
     color: colors.white,
   },
   flipImage: {
-    width: 32,
-    height: 34,
+    width: normalize(32),
+    height: normalize(34),
   },
   bottomSection: {
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 30,
+    marginHorizontal: normalize(30),
     justifyContent: 'space-between',
   },
 });

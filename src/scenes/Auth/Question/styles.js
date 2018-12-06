@@ -2,28 +2,29 @@ import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingBottom: normalize(30),
     justifyContent: 'space-between',
+    paddingHorizontal: normalize(30),
     backgroundColor: colors.backGroundBlack,
-    paddingBottom: 30,
   },
   wrapper: {
     flex: 1,
     justifyContent: 'flex-start',
   },
   headerLeft: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
     alignSelf: 'flex-start',
+    paddingVertical: normalize(15),
+    paddingHorizontal: normalize(20),
   },
   text: {
-    fontSize: 18,
-    marginTop: 35,
     textAlign: 'center',
+    fontSize: normalize(18),
+    marginTop: normalize(35),
     color: colors.text.questionGray,
     fontFamily: fonts.proDisplay.light,
   },
