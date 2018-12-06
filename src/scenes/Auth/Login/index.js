@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
-import { withApollo } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
@@ -81,57 +81,6 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignIn = () => {
-    const { client } = this.props;
-    const { email, password } = this.state;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_IN_MUTATION,
-        variables: { email, password },
-      })
-      .then(async result => {
-        console.log('logged in with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signInUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
-  handleSignUp = () => {
-    const { client } = this.props;
-    const { email, password, name, mobile } = this.state;
-
-    let variables = { email, password, fullName: name };
-    if (mobile) variables.mobile = mobile;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_UP_MUTATION,
-        variables,
-      })
-      .then(async result => {
-        console.log('signed up with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signUpUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
   handleOpenCamera = () => {
     const { navigation } = this.props;
     this.toggleModal();
@@ -161,10 +110,33 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  onSubmitForm = () => {
-    const { email, password, name, isRegForm } = this.state;
+  onSubmitForm = async () => {
+    const { email, password, name, mobile, isRegForm } = this.state;
+    const {
+      signInMutation,
+      signUpMutation,
+      setAuthMutationClient,
+    } = this.props;
+
     if (utils.isValidLoginForm(email, password, name, isRegForm)) {
-      isRegForm ? this.handleSignUp() : this.handleSignIn();
+      try {
+        let variables;
+        if (mobile) {
+          variables = { email, password, fullName: name, phoneNumber: mobile };
+        } else {
+          variables = { email, password, fullName: name };
+        }
+        const { data } = await (isRegForm
+          ? signUpMutation({ variables })
+          : signInMutation({ variables }));
+        await AsyncStorage.setItem(
+          'token',
+          isRegForm ? data.signUpUser.token : data.signInUser.token
+        );
+        await setAuthMutationClient({ variables: { isAuthed: true } });
+      } catch (error) {
+        Alert.alert(error.message);
+      }
     }
   };
 
@@ -297,4 +269,14 @@ class Login extends PureComponent<Props, State> {
   }
 }
 
-export default withApollo(Login);
+export default compose(
+  graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
+    name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.SIGN_IN_MUTATION, {
+    name: 'signInMutation',
+  }),
+  graphql(MUTATIONS.SIGN_UP_MUTATION, {
+    name: 'signUpMutation',
+  })
+)(Login);
