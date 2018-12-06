@@ -6,6 +6,7 @@ export default {
   white: '#FFFFFF',
   black: '#000000',
   green: '#39FA90',
+  buttonGreen: '#1CD25A',
   darkGreen: '#19D191',
   cancel: '#6DC1EA',
   accent: '#42BCF8',
@@ -18,6 +19,7 @@ export default {
   text: {
     gray: '#BDBDBD',
     bigGray: '#747474',
+    questionGray: '#8A8A8A',
     blue: '#42BCF8',
     inputTitle: '#616161',
     placeholder: '#3F3F3F',

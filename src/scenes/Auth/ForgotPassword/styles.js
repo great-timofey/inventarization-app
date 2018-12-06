@@ -10,6 +10,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    paddingTop: 50,
+    paddingBottom: 30,
     paddingHorizontal: 30,
     justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
@@ -29,10 +31,5 @@ export default StyleSheet.create({
     marginBottom: 25,
     color: colors.text.bigGray,
     textAlign: 'center',
-  },
-  headerLeft: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignSelf: 'flex-start',
   },
 });

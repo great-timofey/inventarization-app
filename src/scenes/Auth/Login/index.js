@@ -14,10 +14,11 @@ import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
 import utils from 'global/utils';
-import colors from 'global/colors';
+import Styles from 'global/styles';
 import constants from 'global/constants';
 import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
+
 import styles from './styles';
 import type { Props, State } from './types';
 
@@ -50,11 +51,7 @@ class Login extends PureComponent<Props, State> {
     const isRegForm = state.params && state.params.isRegForm;
 
     return {
-      headerStyle: {
-        marginTop: 15,
-        backgroundColor: colors.backGroundBlack,
-        borderBottomWidth: 0,
-      },
+      headerStyle: Styles.authHeaderStyle,
       headerLeft: HeaderButton({
         name: 'Регистрация',
         isActive: !isRegForm,
@@ -84,7 +81,7 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  handleSignUp = () => {
+  handleSignIn = () => {
     const { client } = this.props;
     const { email, password } = this.state;
 
@@ -112,10 +109,13 @@ class Login extends PureComponent<Props, State> {
     const { client } = this.props;
     const { email, password, name, mobile } = this.state;
 
+    let variables = { email, password, fullName: name };
+    if (mobile) variables.mobile = mobile;
+
     client
       .mutate({
         mutation: MUTATIONS.SIGN_UP_MUTATION,
-        variables: { email, password, fullName: name, phoneNumber: mobile },
+        variables,
       })
       .then(async result => {
         console.log('signed up with data: ', result);

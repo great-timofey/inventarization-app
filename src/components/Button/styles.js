@@ -12,25 +12,20 @@ export default StyleSheet.create({
     height: 54,
     backgroundColor: colors.buttonBlue,
     borderRadius: 7,
-    marginBottom: 30,
+    marginTop: 15,
   },
   disable: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: 54,
     backgroundColor: colors.buttonGray,
-    borderRadius: 7,
-    marginBottom: 30,
+  },
+  green: {
+    backgroundColor: colors.buttonGreen,
   },
   titleText: {
-    color: 'white',
+    color: colors.white,
     fontSize: 18,
     lineHeight: 21,
   },
   titleTextDisable: {
     color: colors.text.bigGray,
-    fontSize: 18,
-    lineHeight: 21,
   },
 });

@@ -10,6 +10,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    paddingTop: 50,
+    paddingBottom: 30,
     paddingHorizontal: 30,
     justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
