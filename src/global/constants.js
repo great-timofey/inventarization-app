@@ -2,7 +2,7 @@ export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
-  password: /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{7,})\S$/,
+  password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
 };
 
 const masks = {
@@ -87,6 +87,8 @@ const headers = {
 
 const text = {
   question: 'Вы хотите создать \n аккаунт организации?',
+  organisation:
+    'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
 };
 export default {
   text,

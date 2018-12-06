@@ -63,9 +63,19 @@ const isValidPassword = (password: string, confirmPassword: string) => {
   }
   return false;
 };
+const isEmpty = (value: string) => value === '';
+
+const isWarning = (value: string, type: Object) => {
+  if (!isEmpty(value) && !isValid(value, type)) {
+    return true;
+  }
+  return false;
+};
 
 export default {
+  isEmpty,
   isValid,
+  isWarning,
   getPlaceholder,
   platformSelect,
   isValidLoginForm,

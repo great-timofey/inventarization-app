@@ -9,7 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
-import EmailError from 'components/EmailError';
+import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
@@ -62,8 +62,6 @@ class ForgotPassword extends PureComponent<Props, State> {
     }
   };
 
-  isEmailEmpty = (value: string) => value === '';
-
   emailRef: any;
 
   render() {
@@ -107,8 +105,10 @@ class ForgotPassword extends PureComponent<Props, State> {
             />
           )}
         </KeyboardAwareScrollView>
-        {!this.isEmailEmpty(email) &&
-          !utils.isValid(email, constants.inputTypes.email) && <EmailError />}
+        <Warning
+          isVisible={utils.isWarning(email, constants.inputTypes.email)}
+          isEmail
+        />
       </View>
     );
   }

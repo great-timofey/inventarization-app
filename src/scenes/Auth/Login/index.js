@@ -9,7 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input';
 import Button from 'components/Button';
-import EmailError from 'components/EmailError';
+import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 
@@ -81,6 +81,57 @@ class Login extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
+  handleSignIn = () => {
+    const { client } = this.props;
+    const { email, password } = this.state;
+
+    client
+      .mutate({
+        mutation: MUTATIONS.SIGN_IN_MUTATION,
+        variables: { email, password },
+      })
+      .then(async result => {
+        console.log('logged in with data: ', result);
+        await AsyncStorage.setItem('token', result.data.signInUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+  };
+
+  handleSignUp = () => {
+    const { client } = this.props;
+    const { email, password, name, mobile } = this.state;
+
+    const variables = { email, password, fullName: name };
+    if (mobile) variables.mobile = mobile;
+
+    client
+      .mutate({
+        mutation: MUTATIONS.SIGN_UP_MUTATION,
+        variables,
+      })
+      .then(async result => {
+        console.log('signed up with data: ', result);
+        await AsyncStorage.setItem('token', result.data.signUpUser.token);
+      })
+      .then(_ => {
+        client.mutate({
+          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
+          variables: { isAuthed: true },
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
+  };
+
   handleOpenCamera = () => {
     const { navigation } = this.props;
     this.toggleModal();
@@ -127,7 +178,7 @@ class Login extends PureComponent<Props, State> {
 
     if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
       try {
-        let variables = { email, password, fullName };
+        const variables = { email, password, fullName };
         if (phoneNumber) variables.phoneNumber = phoneNumber;
 
         const { data } = await (isRegForm
@@ -152,8 +203,6 @@ class Login extends PureComponent<Props, State> {
       ref.input.focus();
     }
   };
-
-  isEmailEmpty = (value: string) => value === '';
 
   nameRef: any;
 
@@ -267,8 +316,13 @@ class Login extends PureComponent<Props, State> {
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        {!this.isEmailEmpty(email) &&
-          !utils.isValid(email, constants.inputTypes.email) && <EmailError />}
+        <Warning
+          isVisible={
+            utils.isWarning(email, constants.inputTypes.email) ||
+            utils.isWarning(password, constants.inputTypes.password)
+          }
+          isEmail={utils.isWarning(email, constants.inputTypes.email)}
+        />
       </View>
     );
   }

@@ -3,17 +3,16 @@
 import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
 
-import Logo from 'components/Logo';
-import Button from 'components/Button/index';
+import Button from 'components/Button';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
 import Styles from 'global/styles';
 import constants from 'global/constants';
 
-import styles from './styles';
 import type { Props } from './types';
+import styles from './styles';
 
-class Question extends PureComponent<Props, {}> {
+class Organisation extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
     headerLeft: HeaderBackbutton({
@@ -25,18 +24,13 @@ class Question extends PureComponent<Props, {}> {
     return (
       <View style={styles.container}>
         <View style={styles.wrapper}>
-          <Logo isSmall />
-          <Text style={styles.text}>{constants.text.question}</Text>
+          <Text style={styles.text}>{constants.text.organisation}</Text>
         </View>
-        <Button title={constants.buttonTitles.create} onPress={() => {}} />
-        <Button
-          isGreen
-          onPress={() => {}}
-          title={constants.buttonTitles.enter}
-        />
+
+        <Button title={constants.buttonTitles.update} onPress={() => {}} />
       </View>
     );
   }
 }
 
-export default Question;
+export default Organisation;
