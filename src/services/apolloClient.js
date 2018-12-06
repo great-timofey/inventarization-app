@@ -1,4 +1,5 @@
 //  @flow
+
 import { AsyncStorage } from 'react-native';
 
 import ApolloClient from 'apollo-client';
