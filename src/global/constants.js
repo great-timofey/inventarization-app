@@ -44,17 +44,17 @@ const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
   login: 'Войти',
-  create: 'Да, создать',
   cancel: 'Отмена',
   update: 'Обновить',
+  create: 'Да, создать',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
   forgotPassword: 'Забыли пароль?',
-  createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
+  createOrganization: 'Создать организацию',
 };
 
 const forgotPassText = {
@@ -83,6 +83,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
+  newOrganization: 'Создание новой \n организации',
 };
 
 const text = {

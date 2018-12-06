@@ -7,17 +7,18 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 
+import Camera from 'scenes/Camera';
 import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
-import Question from 'scenes/Auth/Question';
 import PeopleScene from 'scenes/People';
-import CameraScene from 'scenes/Camera';
 import PlacesScene from 'scenes/Places';
-import Organisation from 'scenes/Auth/Organisation';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
+import Question from 'scenes/Auth/Question';
+import Unorganized from 'scenes/Unorganized';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
+import CreateOrganization from 'scenes/CreateOrganization';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';
@@ -94,11 +95,14 @@ const rootTabs = {
 };
 
 const authStack = {
+  [SCENE_NAMES.CreateOrganizationSceneName]: {
+    screen: CreateOrganization,
+  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
-  [SCENE_NAMES.OrganisationSceneName]: {
-    screen: Organisation,
+  [SCENE_NAMES.UnorganizedSceneName]: {
+    screen: Unorganized,
   },
   [SCENE_NAMES.QuestionSceneName]: {
     screen: Question,
@@ -110,7 +114,7 @@ const authStack = {
     screen: ForgotPassword,
   },
   [SCENE_NAMES.CameraSceneName]: {
-    screen: CameraScene,
+    screen: Camera,
   },
 };
 
