@@ -1,36 +1,33 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 
 import Button from 'components/Button';
-import HeaderTitle from 'components/HeaderTitle';
+import HeaderBackbutton from 'components/HeaderBackButton';
 
-import assets from 'global/assets';
 import Styles from 'global/styles';
 import constants from 'global/constants';
 
+import type { Props } from './types';
 import styles from './styles';
-import type { State, Props } from './types';
 
-class Organisation extends PureComponent<Props, State> {
+class Organisation extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
-    headerTitle: HeaderTitle(),
-    headerLeft: (
-      <TouchableOpacity
-        style={styles.headerLeft}
-        onPress={() => navigation.goBack()}
-      >
-        <Image source={assets.headerBackArrow} />
-      </TouchableOpacity>
-    ),
+    headerLeft: HeaderBackbutton({
+      onPress: () => navigation.goBack(),
+    }),
   });
 
   render() {
     return (
       <View style={styles.container}>
-        <Button />
+        <View style={styles.wrapper}>
+          <Text style={styles.text}>{constants.text.organisation}</Text>
+        </View>
+
+        <Button title={constants.buttonTitles.update} onPress={() => {}} />
       </View>
     );
   }
