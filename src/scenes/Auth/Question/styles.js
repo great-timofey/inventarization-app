@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   container: {
@@ -24,5 +25,6 @@ export default StyleSheet.create({
     marginTop: 35,
     textAlign: 'center',
     color: colors.text.questionGray,
+    fontFamily: fonts.proDisplay.light,
   },
 });

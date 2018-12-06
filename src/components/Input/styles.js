@@ -3,6 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   container: {
@@ -28,16 +29,18 @@ export default StyleSheet.create({
     borderColor: colors.invalidBorder,
   },
   inputTitleText: {
-    color: colors.text.inputTitle,
     fontSize: 13,
     lineHeight: 15,
     textAlign: 'justify',
+    color: colors.text.inputTitle,
+    fontFamily: fonts.proDisplay.light,
   },
   input: {
     width: '100%',
-    color: colors.white,
     fontSize: 18,
     lineHeight: 21,
+    color: colors.white,
     textAlign: 'justify',
+    fontFamily: fonts.proDisplay.light,
   },
 });

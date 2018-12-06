@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
+import { fonts } from 'global/styles';
 
 export default StyleSheet.create({
   wrapper: {
@@ -9,10 +10,10 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 30,
     paddingBottom: 30,
-    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 30,
+    justifyContent: 'space-between',
     backgroundColor: colors.backGroundBlack,
   },
   formContainer: {
@@ -25,9 +26,10 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
   },
   additionalButtonsText: {
-    paddingHorizontal: 20,
     fontSize: 16,
     lineHeight: 19,
+    paddingHorizontal: 20,
     color: colors.buttonBlue,
+    fontFamily: fonts.proDisplay.light,
   },
 });
