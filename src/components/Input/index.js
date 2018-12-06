@@ -5,8 +5,8 @@ import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
 
 import utils from 'global/utils';
-
 import colors from 'global/colors';
+import constants from 'global/constants';
 
 import type { Props } from './types';
 import styles from './styles';
@@ -26,8 +26,14 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { value } = this.props;
-    return !(nextProps.value === value);
+    const { type, value } = this.props;
+    if (nextProps.value !== value) {
+      return true;
+    }
+    if (type === constants.inputTypes.password) {
+      return true;
+    }
+    return false;
   }
 
   render() {
@@ -37,11 +43,12 @@ class Input extends Component<Props> {
       value,
       fieldRef,
       focusField,
-      returnKeyType,
       onSubmitForm,
+      returnKeyType,
       onSubmitEditing,
       ...textInputProps
     } = this.props;
+    console.log(type);
 
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
 
