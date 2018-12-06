@@ -7,6 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
+import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
 
 import utils from 'global/utils';
@@ -57,6 +58,13 @@ class SetNewPassword extends PureComponent<Props, State> {
 
   render() {
     const { password, confirmPassword } = this.state;
+    const isValidateWarnings =
+      utils.isWarning(password, constants.inputTypes.password) ||
+      utils.isWarning(confirmPassword, constants.inputTypes.password);
+    const isPasswordNotMatch =
+      !isValidateWarnings && password !== confirmPassword;
+    const isWarningVisible = isValidateWarnings || password !== confirmPassword;
+
     return (
       <View style={styles.wrapper}>
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
@@ -92,6 +100,11 @@ class SetNewPassword extends PureComponent<Props, State> {
             isDisable={!utils.isValidPassword(password, confirmPassword)}
           />
         </KeyboardAwareScrollView>
+        <Warning
+          isEmail={false}
+          notMatch={isPasswordNotMatch}
+          isVisible={isWarningVisible}
+        />
       </View>
     );
   }
