@@ -95,11 +95,11 @@ const rootTabs = {
 };
 
 const authStack = {
-  [SCENE_NAMES.CreateCompanySceneName]: {
-    screen: CreateCompany,
-  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
+  },
+  [SCENE_NAMES.CreateCompanySceneName]: {
+    screen: CreateCompany,
   },
   [SCENE_NAMES.UnorganizedSceneName]: {
     screen: Unorganized,

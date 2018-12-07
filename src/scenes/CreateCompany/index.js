@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import R from 'ramda';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Button from 'components/Button';
@@ -23,7 +23,7 @@ import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
-import { CREATE_COMPANY_MUTATION } from 'graphql/auth/mutations';
+import * as MUTATIONS from 'graphql/auth/mutations';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
@@ -89,13 +89,14 @@ class CreateCompany extends PureComponent<Props, State> {
     this.setState({ companyName });
 
   handleCreateCompany = async () => {
-    const { createCompany } = this.props;
-    const { invitees: inviters, companyName: name } = this.state;
+    const { createCompany, setAuthMutationClient } = this.props;
+    const { invitees, companyName: name, chosenPhotoUri: logo } = this.state;
+    const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
-      const result = await createCompany({
-        variables: { name, inviters },
+      await createCompany({
+        variables: { name, logo, inviters },
       });
-      console.log(result);
+      await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.log(error.message);
     }
@@ -123,7 +124,12 @@ class CreateCompany extends PureComponent<Props, State> {
   );
 
   render() {
-    const { invitees, isModalVisible, chosenPhotoUri } = this.state;
+    const {
+      invitees,
+      isModalVisible,
+      chosenPhotoUri,
+      currentInvitee,
+    } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{constants.headers.newOrganization}</Text>
@@ -142,11 +148,11 @@ class CreateCompany extends PureComponent<Props, State> {
           </TouchableOpacity>
           <View style={styles.inputContainer}>
             <Text style={styles.inputTitleText}>Название организации</Text>
-
             <TextInput
               style={{
                 backgroundColor: '#FAFAFA',
               }}
+              onChangeText={this.handleInputCompanyName}
               placeholder="Введите"
               placeholderTextColor="#C8C8C8"
             />
@@ -160,6 +166,7 @@ class CreateCompany extends PureComponent<Props, State> {
                 style={{
                   backgroundColor: '#FAFAFA',
                 }}
+                value={currentInvitee}
                 placeholder="e-mail"
                 placeholderTextColor="#C8C8C8"
                 onChangeText={this.handleInputInvitee}
@@ -194,6 +201,11 @@ class CreateCompany extends PureComponent<Props, State> {
   }
 }
 
-export default graphql(CREATE_COMPANY_MUTATION, {
-  name: 'createOrganization',
-})(CreateCompany);
+export default compose(
+  graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
+    name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.CREATE_COMPANY_MUTATION, {
+    name: 'createCompany',
+  })
+)(CreateCompany);
