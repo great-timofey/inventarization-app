@@ -1,6 +1,7 @@
 // @flow
 
 export type State = {
+  companyName: string,
   invitees: Array<string>,
   chosenPhotoUri: string,
   isModalVisible: boolean,
@@ -9,6 +10,7 @@ export type State = {
 
 export type Props = {
   navigation: Object,
+  createCompany: Function,
 };
 
 export type InviteeProps = {

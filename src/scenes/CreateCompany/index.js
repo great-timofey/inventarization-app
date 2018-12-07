@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import R from 'ramda';
+import { graphql } from 'react-apollo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Button from 'components/Button';
@@ -22,6 +23,8 @@ import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
+import { CREATE_COMPANY_MUTATION } from 'graphql/auth/mutations';
+import { create } from 'handlebars';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
@@ -37,7 +40,7 @@ const RemoveInviteeButton = props => (
     backgroundColor={colors.transparent}
   />
 );
-class CreateOrganization extends PureComponent<Props, State> {
+class CreateCompany extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [globalStyles.authHeaderStyle && styles.newOrganizationHeader],
     headerLeft: HeaderBackbutton({
@@ -50,6 +53,7 @@ class CreateOrganization extends PureComponent<Props, State> {
 
     this.state = {
       invitees: [],
+      companyName: '',
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
@@ -81,6 +85,22 @@ class CreateOrganization extends PureComponent<Props, State> {
 
   handleInputInvitee = (currentInvitee: string) =>
     this.setState({ currentInvitee });
+
+  handleInputCompanyName = (companyName: string) =>
+    this.setState({ companyName });
+
+  handleCreateCompany = async () => {
+    const { createCompany } = this.props;
+    const { invitees: inviters, companyName: name } = this.state;
+    try {
+      const result = await createCompany({
+        variables: { name, inviters },
+      });
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   setPhotoUriCameraCallback = (uri: string) => {
     this.setState({ chosenPhotoUri: uri });
@@ -161,7 +181,7 @@ class CreateOrganization extends PureComponent<Props, State> {
           showsHorizontalScrollIndicator={false}
         />
         <Button
-          onPress={() => {}}
+          onPress={this.handleCreateCompany}
           title={constants.buttonTitles.createOrganization}
         />
         <PickPhotoModal
@@ -175,4 +195,6 @@ class CreateOrganization extends PureComponent<Props, State> {
   }
 }
 
-export default CreateOrganization;
+export default graphql(CREATE_COMPANY_MUTATION, {
+  name: 'createOrganization',
+})(CreateCompany);

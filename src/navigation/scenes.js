@@ -8,6 +8,6 @@ export const ProfileSceneName = 'Profile';
 export const AddItemSceneName = 'AddItem';
 export const QuestionSceneName = 'Question';
 export const UnorganizedSceneName = 'Unorganized';
+export const CreateCompanySceneName = 'CreateCompany';
 export const ForgotPasswordSceneName = 'ForgotPassword';
 export const SetNewPasswordSceneName = 'SetNewPassword';
-export const CreateOrganizationSceneName = 'CreateOrganization';

@@ -47,6 +47,18 @@ export const RESET_PASSWORD_MUTATION = gql`
   }
 `;
 
+export const CREATE_COMPANY_MUTATION = gql`
+  mutation CreateCompany($name: String!, $logo: String, $inviters: [String!]) {
+    createCompany(
+      attributes: { name: $name, logo: $logo }
+      inviters: $inviters
+    ) {
+      company
+      invitations
+    }
+  }
+`;
+
 export const SET_AUTH_MUTATION_CLIENT = gql`
   mutation setAuth($isAuthed: Boolean) {
     setAuth(isAuthed: $isAuthed) @client
