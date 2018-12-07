@@ -21,6 +21,7 @@ export default StyleSheet.create({
   title: {
     fontSize: 22,
     textAlign: 'center',
+    marginBottom: 25,
     fontFamily: fonts.proDisplay.light,
     color: colors.header.newOrganization,
   },
@@ -63,6 +64,7 @@ export default StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55,
+    marginBottom: 30,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

@@ -108,7 +108,7 @@ class CreateOrganization extends PureComponent<Props, State> {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{constants.headers.newOrganization}</Text>
-        <View style={{ alignItems: 'center' }}>
+        <View style={{ alignItems: 'center', marginBottom: 10 }}>
           <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
             {chosenPhotoUri ? (
               <Image
@@ -123,7 +123,6 @@ class CreateOrganization extends PureComponent<Props, State> {
           </TouchableOpacity>
           <View style={styles.inputContainer}>
             <Text style={styles.inputTitleText}>Название организации</Text>
-
             <TextInput
               style={{
                 backgroundColor: '#FAFAFA',
