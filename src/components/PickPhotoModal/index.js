@@ -29,7 +29,10 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
     CameraRoll.getPhotos({
       first: 20,
       assetType: 'All',
-    }).then(data => this.setState({ photos: [photos[0], ...data.edges] }));
+    }).then(data => {
+      console.log(data);
+      this.setState({ photos: [photos[0], ...data.edges] });
+    });
   }
 
   handleTakePhoto = () => {
@@ -43,12 +46,16 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
   };
 
   handleOpenImageGallery = () => {
+    const options = {
+      quality: 0.5,
+    };
     //  $FlowFixMe
-    ImagePicker.launchImageLibrary({}, response => {
+    ImagePicker.launchImageLibrary(options, response => {
       if (response.error) {
         Alert.alert(constants.errors.camera.photo);
       } else {
-        this.handleChoosePhoto(response.uri);
+        console.log(response);
+        this.handleChoosePhoto(response.origURL);
       }
     });
   };

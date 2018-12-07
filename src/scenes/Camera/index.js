@@ -25,6 +25,7 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
       const { uri } = await this.camera.takePictureAsync(options);
+      console.log(uri);
       const setPhotoUriCameraCallback = navigation.getParam(
         'setPhotoUriCameraCallback',
         'none'

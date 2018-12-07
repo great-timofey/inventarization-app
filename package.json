@@ -16,6 +16,7 @@
     "apollo-link-context": "^1.0.10",
     "apollo-link-http": "^1.5.7",
     "apollo-link-state": "^0.4.2",
+    "apollo-upload-client": "^9.1.0",
     "graphql-tag": "^2.10.0",
     "ramda": "^0.26.0",
     "react": "16.6.1",

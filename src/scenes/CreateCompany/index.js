@@ -12,6 +12,7 @@ import {
 
 import R from 'ramda';
 import { graphql, compose } from 'react-apollo';
+import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Button from 'components/Button';
@@ -90,15 +91,26 @@ class CreateCompany extends PureComponent<Props, State> {
 
   handleCreateCompany = async () => {
     const { createCompany, setAuthMutationClient } = this.props;
-    const { invitees, companyName: name, chosenPhotoUri: logo } = this.state;
+    const { invitees, companyName: name, chosenPhotoUri: uri } = this.state;
     const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
-      await createCompany({
-        variables: { name, logo, inviters },
+      let file = '';
+      if (uri) {
+        file = new ReactNativeFile({
+          uri: uri.replace('file://', ''),
+          name: 'a.jpg',
+          type: 'image/jpeg',
+        });
+        console.log(file);
+      }
+
+      const result = await createCompany({
+        variables: { name, logo: file, inviters },
       });
-      await setAuthMutationClient({ variables: { isAuthed: true } });
+      console.log(result);
+      // await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
-      console.log(error.message);
+      console.dir(error);
     }
   };
 
