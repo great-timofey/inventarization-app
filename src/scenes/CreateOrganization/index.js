@@ -1,11 +1,20 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { Image, View, Text, TouchableOpacity, FlatList } from 'react-native';
+import {
+  TextInput,
+  Image,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import R from 'ramda';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Button from 'components/Button';
+import AddButton from 'components/AddButton';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
@@ -13,22 +22,21 @@ import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
-import type { Props, State } from './types';
+import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
-const RemoveInviteeButton = () => (
-  <Icon.Button
+const RemoveInviteeButton = props => (
+  <MaterialIcon.Button
+    {...props}
     size={34}
     name="cancel"
-    activeOpacity={1}
-    onPress={() => {}}
+    activeOpacity={0.5}
     color={colors.white}
     style={styles.inviteeRemove}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
   />
 );
-
 class CreateOrganization extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [globalStyles.authHeaderStyle && styles.newOrganizationHeader],
@@ -41,14 +49,10 @@ class CreateOrganization extends PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      isModalVisible: false,
-      data: [
-        { id: 1, mail: 'sldkjf@mail.com' },
-        { id: 2, mail: 'sldkjf@mail.com' },
-        { id: 3, mail: 'sldkjf@mail.com' },
-        { id: 4, mail: 'sldkjf@mail.com' },
-      ],
+      invitees: [],
       chosenPhotoUri: '',
+      currentInvitee: '',
+      isModalVisible: false,
     };
   }
 
@@ -59,6 +63,24 @@ class CreateOrganization extends PureComponent<Props, State> {
       setPhotoUriCameraCallback: this.setPhotoUriCameraCallback,
     });
   };
+
+  handleAddInvitee = () => {
+    const { invitees, currentInvitee } = this.state;
+    this.setState({
+      currentInvitee: '',
+      invitees: R.concat(invitees, [currentInvitee]),
+    });
+  };
+
+  handleRemoveInvitee = (index: number) => {
+    const { invitees } = this.state;
+    this.setState({
+      invitees: R.remove(index, 1, invitees),
+    });
+  };
+
+  handleInputInvitee = (currentInvitee: string) =>
+    this.setState({ currentInvitee });
 
   setPhotoUriCameraCallback = (uri: string) => {
     this.setState({ chosenPhotoUri: uri });
@@ -74,15 +96,15 @@ class CreateOrganization extends PureComponent<Props, State> {
     this.setState({ isModalVisible: !isModalVisible });
   };
 
-  renderItem = ({ item: { id, mail } }) => (
+  renderInvitee = ({ item, index }: InviteeProps) => (
     <View style={styles.inviteeContainer}>
-      <Text style={styles.inviteeTitle}>{mail}</Text>
-      <RemoveInviteeButton />
+      <Text style={styles.inviteeTitle}>{item}</Text>
+      <RemoveInviteeButton onPress={() => this.handleRemoveInvitee(index)} />
     </View>
   );
 
   render() {
-    const { data, isModalVisible, chosenPhotoUri } = this.state;
+    const { invitees, isModalVisible, chosenPhotoUri } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{constants.headers.newOrganization}</Text>
@@ -90,8 +112,8 @@ class CreateOrganization extends PureComponent<Props, State> {
           <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
             {chosenPhotoUri ? (
               <Image
+                style={styles.chosenPhoto}
                 source={{ uri: chosenPhotoUri }}
-                style={{ width: '100%', height: '100%' }}
               />
             ) : (
               <Text style={styles.photoHint}>
@@ -99,15 +121,45 @@ class CreateOrganization extends PureComponent<Props, State> {
               </Text>
             )}
           </TouchableOpacity>
-          {/** here goes form */}
-          <FlatList
-            horizontal
-            data={data}
-            style={styles.inviteeList}
-            renderItem={this.renderItem}
-            showsHorizontalScrollIndicator={false}
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputTitleText}>Название организации</Text>
+
+            <TextInput
+              style={{
+                backgroundColor: '#FAFAFA',
+              }}
+              placeholder="Введите"
+              placeholderTextColor="#C8C8C8"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputTitleText}>Добавьте людей</Text>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              <TextInput
+                style={{
+                  backgroundColor: '#FAFAFA',
+                }}
+                placeholder="e-mail"
+                placeholderTextColor="#C8C8C8"
+                onChangeText={this.handleInputInvitee}
+              />
+              <AddButton
+                style={styles.inviteeRemove}
+                onPress={this.handleAddInvitee}
+              />
+            </View>
+          </View>
         </View>
+        <FlatList
+          horizontal
+          data={invitees}
+          style={styles.inviteeList}
+          renderItem={this.renderInvitee}
+          keyExtractor={item => item}
+          showsHorizontalScrollIndicator={false}
+        />
         <Button
           onPress={() => {}}
           title={constants.buttonTitles.createOrganization}
