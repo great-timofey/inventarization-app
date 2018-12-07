@@ -24,7 +24,6 @@ import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
 import { CREATE_COMPANY_MUTATION } from 'graphql/auth/mutations';
-import { create } from 'handlebars';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
