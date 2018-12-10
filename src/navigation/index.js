@@ -5,6 +5,7 @@ import { StatusBar } from 'react-native';
 import R from 'ramda';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import SplashScreen from 'react-native-splash-screen';
 
 import {
   setNavigatior,
@@ -17,6 +18,10 @@ const authNavRef = R.curry(setNavigatior)('AUTH_NAVIGATOR');
 
 type Props = { data: Object };
 class AppNavigator extends Component<Props> {
+  componentDidMount() {
+    SplashScreen.hide();
+  }
+
   render() {
     const {
       data: { isAuthed },
