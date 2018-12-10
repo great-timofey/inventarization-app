@@ -54,6 +54,7 @@
 		B26F225221B7CD1600E31CAB /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26F225121B7CD1600E31CAB /* InputMask.framework */; };
 		B26F225321B7CD1600E31CAB /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B26F225121B7CD1600E31CAB /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B482EF3960C84FEDB9307E1B /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6CFD4D4C2CC47039540D896 /* libRNImagePicker.a */; };
+		CEC9B57721BE25C00035C192 /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC9B57621BE258E0035C192 /* libRCTImageResizer.a */; };
 		DDE80BE6B6314E9C8E694112 /* SFProDisplay-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 622CCC5224C0424DB633A052 /* SFProDisplay-Medium.ttf */; };
 		EDE42626E5064ED1BF4758E0 /* SFProText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B3C5BDBAF5ED4F7FB716639D /* SFProText-Regular.ttf */; };
 		FF3AE547C49E4BB6B17B2E7E /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A069B2FC5B04AB39E9C80D3 /* libBVLinearGradient.a */; };
@@ -410,6 +411,13 @@
 			remoteGlobalIDString = 00278A001F2F25CE0023E794;
 			remoteInfo = RNTextInputMask;
 		};
+		CEC9B57521BE258E0035C192 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEC9B57121BE258E0035C192 /* RCTImageResizer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5D72D2E81C16249000E22EC1;
+			remoteInfo = RCTImageResizer;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -486,6 +494,7 @@
 		B3C5BDBAF5ED4F7FB716639D /* SFProText-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProText-Regular.ttf"; path = "../assets/fonts/SFProText-Regular.ttf"; sourceTree = "<group>"; };
 		C2FF7D966FF64F0892F1ED41 /* SFProDisplay-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Light.ttf"; path = "../assets/fonts/SFProDisplay-Light.ttf"; sourceTree = "<group>"; };
 		C358B56B43AF4FA7BBFBEE0B /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
+		CEC9B57121BE258E0035C192 /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImageResizer.xcodeproj; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; };
 		D04058E7DF5F43ABA85B493F /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNImagePicker.xcodeproj; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; };
 		DF47AA28ADC740BEA0EC3AE9 /* libRNDeviceInfo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNDeviceInfo-tvOS.a"; sourceTree = "<group>"; };
 		FBE3B371E22F4BDDB14BC8B7 /* libRNTextInputMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNTextInputMask.a; sourceTree = "<group>"; };
@@ -517,6 +526,7 @@
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				A58F898521B11B3300AFA800 /* libRNVectorIcons.a in Frameworks */,
+				CEC9B57721BE25C00035C192 /* libRCTImageResizer.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				B26F225221B7CD1600E31CAB /* InputMask.framework in Frameworks */,
@@ -691,6 +701,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				CEC9B57121BE258E0035C192 /* RCTImageResizer.xcodeproj */,
 				B26F224521B7CCB300E31CAB /* RNTextInputMask.xcodeproj */,
 				A5629BA921B516A6007F5987 /* RNCamera.xcodeproj */,
 				A5629B7A21B5077D007F5987 /* RCTCameraRoll.xcodeproj */,
@@ -864,6 +875,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CEC9B57221BE258E0035C192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CEC9B57621BE258E0035C192 /* libRCTImageResizer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -963,6 +982,10 @@
 				{
 					ProductGroup = 00C302BC1ABCB91800DB3ED1 /* Products */;
 					ProjectRef = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = CEC9B57221BE258E0035C192 /* Products */;
+					ProjectRef = CEC9B57121BE258E0035C192 /* RCTImageResizer.xcodeproj */;
 				},
 				{
 					ProductGroup = 78C398B11ACF4ADC00677621 /* Products */;
@@ -1367,6 +1390,13 @@
 			fileType = archive.ar;
 			path = libRNTextInputMask.a;
 			remoteRef = B26F224A21B7CCB300E31CAB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CEC9B57621BE258E0035C192 /* libRCTImageResizer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTImageResizer.a;
+			remoteRef = CEC9B57521BE258E0035C192 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
