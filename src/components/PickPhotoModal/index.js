@@ -4,6 +4,7 @@ import {
   Text,
   View,
   Alert,
+  Image,
   FlatList,
   CameraRoll,
   ImageBackground,
@@ -12,11 +13,13 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
+import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 
 import assets from 'global/assets';
 import constants from 'global/constants';
 import type { ModalProps, ModalState, PhotoType } from './types';
+
 import styles from './styles';
 
 class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
@@ -76,7 +79,13 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
           style={styles.photoBackgroundImage}
         />
       ) : (
-        <ImageBackground source={assets.camera} style={styles.cameraIcon} />
+        <ImageBackground
+          source={assets.camera}
+          style={styles.cameraIconContainer}
+        >
+          <RNCamera />
+          <Image source={assets.cameraIcon} style={styles.cameraIcon} />
+        </ImageBackground>
       )}
     </TouchableOpacity>
   );

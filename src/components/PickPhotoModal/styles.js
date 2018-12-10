@@ -42,9 +42,15 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     color: colors.buttonBlue,
   },
-  cameraIcon: {
+  cameraIconContainer: {
     width: normalize(30),
     height: normalize(25),
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cameraIcon: {
+    position: 'absolute',
   },
   cancelButton: {
     borderRadius: 7,
