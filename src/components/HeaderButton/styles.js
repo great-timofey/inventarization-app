@@ -18,7 +18,7 @@ export default StyleSheet.create({
   },
   inactiveHeaderBtn: {
     borderWidth: 1,
-    borderColor: colors.text.blue,
+    borderColor: colors.buttonBlue,
     backgroundColor: colors.black,
   },
   buttonText: {

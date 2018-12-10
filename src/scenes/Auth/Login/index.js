@@ -169,7 +169,7 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  isWarning = () => {
+  checkForErrors = () => {
     const {
       warnings: { email, password, name, mobile },
       isRegForm,
@@ -182,42 +182,68 @@ class Login extends PureComponent<Props, State> {
   };
 
   checkValue = () => {
-    const { name, email, password, mobile } = this.state;
-    this.setState({
-      warnings: {
-        name: utils.isEmpty(name),
-        email: !utils.isValid(email, constants.regExp.email),
-        password: !utils.isValid(password, constants.regExp.password),
-        mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
-      },
-    });
+    const { name, email, password, mobile, isRegForm } = this.state;
+    console.log(name);
+    console.log(email);
+    console.log(password);
+    console.log(mobile);
+    if (isRegForm) {
+      this.setState({
+        warnings: {
+          name: utils.isEmpty(name),
+          email: !utils.isValid(email, constants.regExp.email),
+          password: !utils.isValid(password, constants.regExp.password),
+          mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
+        },
+      });
+    } else {
+      this.setState({
+        warnings: {
+          email: !utils.isValid(email, constants.regExp.email),
+          password: !utils.isValid(password, constants.regExp.password),
+        },
+      });
+    }
   };
 
   onSubmitForm = async () => {
+    const {
+      isRegForm,
+      email,
+      password,
+      name: fullName,
+      mobile: phoneNumber,
+    } = this.state;
     const {
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
     } = this.props;
 
-    if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
-      try {
-        const variables = { email, password, fullName };
-        if (phoneNumber) variables.phoneNumber = phoneNumber;
+    // console.log(this.state);
 
-        const { data } = await (isRegForm
-          ? signUpMutation({ variables })
-          : signInMutation({ variables }));
+    this.checkValue();
+    console.log(this.checkForErrors());
+    // if (!this.checkForErrors()) {
+    //   try {
+    //     const variables = { email, password, fullName };
+    //     if (phoneNumber) variables.phoneNumber = phoneNumber;
 
-        await AsyncStorage.setItem(
-          'token',
-          isRegForm ? data.signUpUser.token : data.signInUser.token
-        );
-        await setAuthMutationClient({ variables: { isAuthed: true } });
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    }
+    //     const { data } = await (isRegForm
+    //       ? signUpMutation({ variables })
+    //       : signInMutation({ variables }));
+
+    //     console.log(data);
+
+    //     await AsyncStorage.setItem(
+    //       'token',
+    //       isRegForm ? data.signUpUser.token : data.signInUser.token
+    //     );
+    //     // await setAuthMutationClient({ variables: { isAuthed: true } });
+    //   } catch (error) {
+    //     Alert.alert(error.message);
+    //   }
+    // }
   };
 
   focusField = (ref: Object) => {
@@ -326,7 +352,7 @@ class Login extends PureComponent<Props, State> {
               ? constants.buttonTitles.reg
               : constants.buttonTitles.login
           }
-          isDisable={this.isWarning()}
+          isDisable={this.checkForErrors()}
           onPress={this.checkValue}
         />
         <PickPhotoModal
@@ -335,7 +361,7 @@ class Login extends PureComponent<Props, State> {
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        <Warning isVisible={this.isWarning()} isEmail={warnings.email} />
+        <Warning isVisible={this.checkForErrors()} isEmail={warnings.email} />
       </ScrollViewContainer>
     );
   }
