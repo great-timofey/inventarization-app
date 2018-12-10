@@ -14,6 +14,7 @@ import R from 'ramda';
 import { graphql, compose } from 'react-apollo';
 import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import ImageResizer from 'react-native-image-resizer';
 
 import Button from 'components/Button';
 import AddButton from 'components/AddButton';
@@ -91,24 +92,32 @@ class CreateCompany extends PureComponent<Props, State> {
 
   handleCreateCompany = async () => {
     const { createCompany, setAuthMutationClient } = this.props;
-    const { invitees, companyName: name, chosenPhotoUri: uri } = this.state;
+    const { invitees, companyName: name, chosenPhotoUri } = this.state;
     const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
       let file = '';
-      if (uri) {
+      if (chosenPhotoUri) {
+        const type = chosenPhotoUri.slice(-3);
+        const response = await ImageResizer.createResizedImage(
+          chosenPhotoUri,
+          constants.uploadCreateCompanyImages.width,
+          constants.uploadCreateCompanyImages.height,
+          type === 'JPG' ? 'JPEG' : type,
+          constants.uploadCreateCompanyImages.quality
+        );
+
         file = new ReactNativeFile({
-          uri: uri.replace('file://', ''),
+          uri: response.uri.replace('file://', ''),
           name: 'a.jpg',
           type: 'image/jpeg',
         });
-        console.log(file);
       }
 
       const result = await createCompany({
         variables: { name, logo: file, inviters },
       });
-      console.log(result);
-      // await setAuthMutationClient({ variables: { isAuthed: true } });
+      console.log('result of creating: ', result);
+      await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.dir(error);
     }

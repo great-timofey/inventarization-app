@@ -30,7 +30,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
       first: 20,
       assetType: 'All',
     }).then(data => {
-      console.log(data);
+      console.log('camera roll data', data);
       this.setState({ photos: [photos[0], ...data.edges] });
     });
   }
@@ -42,6 +42,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
 
   handleChoosePhoto = (uri: string) => {
     const { setPhotoUriLocalCallback } = this.props;
+    console.log(uri);
     setPhotoUriLocalCallback(uri);
   };
 

@@ -9,6 +9,12 @@ const masks = {
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
+const uploadCreateCompanyImages = {
+  width: 110,
+  height: 110,
+  quality: 0.5,
+};
+
 const placeHolders = {
   mobileNumber: '+7 (___) ___-__-__',
 };
@@ -104,4 +110,5 @@ export default {
   placeHolders,
   forgotPassText,
   setNewPassword,
+  uploadCreateCompanyImages,
 };
