@@ -99,11 +99,7 @@ class Login extends PureComponent<Props, State> {
       isRegForm,
     } = this.state;
 
-    const {
-      signInMutation,
-      signUpMutation,
-      setAuthMutationClient,
-    } = this.props;
+    const { navigation, signInMutation, signUpMutation } = this.props;
 
     if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
       try {
@@ -122,8 +118,7 @@ class Login extends PureComponent<Props, State> {
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
-        this.props.navigation.navigate('CreateCompany');
-        // await setAuthMutationClient({ variables: { isAuthed: true } });
+        navigation.navigate('CreateCompany');
       } catch (error) {
         Alert.alert(error.message);
       }
