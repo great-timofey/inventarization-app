@@ -49,7 +49,7 @@ class ForgotPassword extends PureComponent<Props, State> {
     const { email } = this.state;
     const { mutate } = this.props;
 
-    if (utils.isValid(email, constants.inputTypes.email)) {
+    if (utils.isValid(email, constants.regExp.email)) {
       try {
         await mutate({ variables: { email } });
 
@@ -101,7 +101,7 @@ class ForgotPassword extends PureComponent<Props, State> {
             <Button
               title={constants.buttonTitles.restorePass}
               onPress={this.onSendRecoveryMail}
-              isDisable={!utils.isValid(email, constants.inputTypes.email)}
+              isDisable={!utils.isValid(email, constants.regExp.email)}
             />
           )}
         </KeyboardAwareScrollView>

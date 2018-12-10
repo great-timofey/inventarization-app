@@ -9,6 +9,7 @@ import Input from 'components/Input/index';
 import Button from 'components/Button/index';
 import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
+import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';
 import Styles from 'global/styles';
@@ -66,46 +67,42 @@ class SetNewPassword extends PureComponent<Props, State> {
     const isWarningVisible = isValidateWarnings || password !== confirmPassword;
 
     return (
-      <View style={styles.wrapper}>
-        <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-          <Logo isSmall={false} />
-          <View style={styles.formContainer}>
-            <Input
-              value={password}
-              fieldRef={ref => {
-                this.passwordRef = ref;
-              }}
-              secureTextEntry
-              onSubmitEditing={this.focusConfirmPassInput}
-              type={constants.inputTypes.setNewPassword}
-              focusField={() => this.focusField(this.passwordRef)}
-              onChangeText={text => this.onChangeField('password', text)}
-            />
-            <Input
-              value={confirmPassword}
-              fieldRef={ref => {
-                this.confirmPasswordRef = ref;
-              }}
-              secureTextEntry
-              focusField={() => this.focusField(this.confirmPasswordRef)}
-              returnKeyType="go"
-              type={constants.inputTypes.confirmPassword}
-              onSubmitForm={() => this.onSubmitForm(password, confirmPassword)}
-              onChangeText={text => this.onChangeField('confirmPassword', text)}
-            />
-          </View>
-          <Button
-            title={constants.buttonTitles.setNewPass}
-            onPress={() => this.onSubmitForm(password, confirmPassword)}
-            isDisable={!utils.isValidPassword(password, confirmPassword)}
+      <ScrollViewContainer>
+        <Logo isSmall={false} />
+        <View style={styles.formContainer}>
+          <Input
+            value={password}
+            fieldRef={ref => {
+              this.passwordRef = ref;
+            }}
+            secureTextEntry
+            onSubmitEditing={this.focusConfirmPassInput}
+            type={constants.inputTypes.setNewPassword}
+            onChangeText={text => this.onChangeField('password', text)}
           />
-        </KeyboardAwareScrollView>
+          <Input
+            value={confirmPassword}
+            fieldRef={ref => {
+              this.confirmPasswordRef = ref;
+            }}
+            secureTextEntry
+            returnKeyType="go"
+            type={constants.inputTypes.confirmPassword}
+            onSubmitForm={() => this.onSubmitForm(password, confirmPassword)}
+            onChangeText={text => this.onChangeField('confirmPassword', text)}
+          />
+        </View>
+        <Button
+          title={constants.buttonTitles.setNewPass}
+          onPress={() => this.onSubmitForm(password, confirmPassword)}
+          isDisable={!utils.isValidPassword(password, confirmPassword)}
+        />
         <Warning
           isEmail={false}
           notMatch={isPasswordNotMatch}
           isVisible={isWarningVisible}
         />
-      </View>
+      </ScrollViewContainer>
     );
   }
 }

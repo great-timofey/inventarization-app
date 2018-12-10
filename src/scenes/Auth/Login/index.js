@@ -2,9 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
-
 import { compose, graphql } from 'react-apollo';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
 import Input from 'components/Input';
@@ -12,6 +10,7 @@ import Button from 'components/Button';
 import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
 import PickPhotoModal from 'components/PickPhotoModal';
+import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';
 import Styles from 'global/styles';
@@ -27,6 +26,12 @@ const initialState = {
   email: '',
   mobile: '',
   password: '',
+  warnings: {
+    name: false,
+    email: false,
+    mobile: false,
+    password: false,
+  },
   loading: false,
   isRegForm: false,
   isModalVisible: false,
@@ -55,12 +60,12 @@ class Login extends PureComponent<Props, State> {
       headerLeft: HeaderButton({
         name: 'Регистрация',
         isActive: !isRegForm,
-        onPress: () => state.params.onPressButton(isRegForm),
+        onPress: () => state.params.onToggleForm(isRegForm),
       }),
       headerRight: HeaderButton({
         name: 'Вход',
         isActive: isRegForm,
-        onPress: () => state.params.onPressButton(isRegForm),
+        onPress: () => state.params.onToggleForm(isRegForm),
       }),
     };
   };
@@ -71,7 +76,7 @@ class Login extends PureComponent<Props, State> {
 
     navigation.setParams({
       isRegForm: false,
-      onPressButton: this.onPressButton,
+      onToggleForm: this.onToggleForm,
     });
     this.state = { ...initialState };
   }
@@ -147,11 +152,14 @@ class Login extends PureComponent<Props, State> {
 
   onChangeField = (field: string, value: string) => {
     this.setState({
+      warnings: {
+        ...initialState.warnings,
+      },
       [field]: value,
     });
   };
 
-  onPressButton = (isRegForm: boolean) => {
+  onToggleForm = (isRegForm: boolean) => {
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState({
@@ -161,15 +169,31 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  onSubmitForm = async () => {
+  isWarning = () => {
     const {
-      email,
-      password,
-      name: fullName,
-      mobile: phoneNumber,
+      warnings: { email, password, name, mobile },
       isRegForm,
     } = this.state;
 
+    if (isRegForm) {
+      if (email || password || name || mobile) return true;
+    } else if (email || password) return true;
+    return false;
+  };
+
+  checkValue = () => {
+    const { name, email, password, mobile } = this.state;
+    this.setState({
+      warnings: {
+        name: utils.isEmpty(name),
+        email: !utils.isValid(email, constants.regExp.email),
+        password: !utils.isValid(password, constants.regExp.password),
+        mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
+      },
+    });
+  };
+
+  onSubmitForm = async () => {
     const {
       signInMutation,
       signUpMutation,
@@ -218,112 +242,101 @@ class Login extends PureComponent<Props, State> {
       email,
       mobile,
       password,
+      warnings,
       isRegForm,
       isModalVisible,
     } = this.state;
     const { navigation } = this.props;
 
     return (
-      <View style={styles.wrapper}>
-        <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-          <Logo isSmall />
-          <View style={styles.formContainer}>
-            {isRegForm && (
-              <Input
-                value={name}
-                fieldRef={ref => {
-                  this.nameRef = ref;
-                }}
-                type={constants.inputTypes.name}
-                focusField={() => this.focusField(this.nameRef)}
-                onSubmitEditing={() => this.focusField(this.emailRef)}
-                onChangeText={text => this.onChangeField('name', text)}
-              />
-            )}
+      <ScrollViewContainer>
+        <Logo isSmall />
+        <View style={styles.formContainer}>
+          {isRegForm && (
             <Input
-              value={email}
+              value={name}
               fieldRef={ref => {
-                this.emailRef = ref;
+                this.nameRef = ref;
               }}
-              keyboardType="email-address"
-              type={constants.inputTypes.email}
-              focusField={() => this.focusField(this.emailRef)}
-              onChangeText={text => this.onChangeField('email', text)}
-              onSubmitEditing={() => this.focusField(this.passwordRef)}
+              isWarning={warnings.name}
+              type={constants.inputTypes.name}
+              onSubmitEditing={() => this.focusField(this.emailRef)}
+              onChangeText={text => this.onChangeField('name', text)}
             />
-            <Input
-              secureTextEntry
-              value={password}
-              fieldRef={ref => {
-                this.passwordRef = ref;
-              }}
-              onSubmitForm={this.onSubmitForm}
-              type={constants.inputTypes.password}
-              keyboardType="numbers-and-punctuation"
-              returnKeyType={!isRegForm ? 'go' : undefined}
-              focusField={() => this.focusField(this.passwordRef)}
-              onSubmitEditing={() => this.focusField(this.mobileRef)}
-              onChangeText={text => this.onChangeField('password', text)}
-            />
-            {isRegForm && (
-              <Input
-                value={mobile}
-                returnKeyType="go"
-                fieldRef={ref => {
-                  this.mobileRef = ref;
-                }}
-                onSubmitForm={this.onSubmitForm}
-                keyboardType="numbers-and-punctuation"
-                type={constants.inputTypes.mobileNumber}
-                placeholder={constants.placeHolders.mobileNumber}
-                focusField={() => this.focusField(this.mobileRef)}
-                onChangeText={text => this.onChangeField('mobile', text)}
-                mask={constants.masks.mobileNumber}
-              />
-            )}
-            {!isRegForm && (
-              <View style={styles.additionalButtons}>
-                <AdditionalButton
-                  title={constants.buttonTitles.forgotPassword}
-                  onPress={() =>
-                    navigation.navigate(SCENE_NAMES.ForgotPasswordSceneName)
-                  }
-                />
-                <AdditionalButton
-                  title={constants.buttonTitles.registration}
-                  onPress={() =>
-                    navigation.state.params.onPressButton(isRegForm)
-                  }
-                />
-              </View>
-            )}
-          </View>
-          <Button
-            title={
-              isRegForm
-                ? constants.buttonTitles.reg
-                : constants.buttonTitles.login
-            }
-            isDisable={
-              !utils.isValidLoginForm(email, password, name, isRegForm)
-            }
-            onPress={this.onSubmitForm}
+          )}
+          <Input
+            value={email}
+            fieldRef={ref => {
+              this.emailRef = ref;
+            }}
+            isWarning={warnings.email}
+            keyboardType="email-address"
+            type={constants.inputTypes.email}
+            onChangeText={text => this.onChangeField('email', text)}
+            onSubmitEditing={() => this.focusField(this.passwordRef)}
           />
-        </KeyboardAwareScrollView>
+          <Input
+            secureTextEntry
+            value={password}
+            fieldRef={ref => {
+              this.passwordRef = ref;
+            }}
+            isWarning={warnings.password}
+            onSubmitForm={this.onSubmitForm}
+            type={constants.inputTypes.password}
+            keyboardType="numbers-and-punctuation"
+            returnKeyType={!isRegForm ? 'go' : undefined}
+            onSubmitEditing={() => this.focusField(this.mobileRef)}
+            onChangeText={text => this.onChangeField('password', text)}
+          />
+          {isRegForm && (
+            <Input
+              value={mobile}
+              returnKeyType="go"
+              fieldRef={ref => {
+                this.mobileRef = ref;
+              }}
+              isWarning={warnings.mobile}
+              onSubmitForm={this.onSubmitForm}
+              mask={constants.masks.mobileNumber}
+              keyboardType="numbers-and-punctuation"
+              type={constants.inputTypes.mobileNumber}
+              placeholder={constants.placeHolders.mobileNumber}
+              onChangeText={text => this.onChangeField('mobile', text)}
+            />
+          )}
+          {!isRegForm && (
+            <View style={styles.additionalButtons}>
+              <AdditionalButton
+                title={constants.buttonTitles.forgotPassword}
+                onPress={() =>
+                  navigation.navigate(SCENE_NAMES.ForgotPasswordSceneName)
+                }
+              />
+              <AdditionalButton
+                title={constants.buttonTitles.registration}
+                onPress={() => navigation.state.params.onPressButton(isRegForm)}
+              />
+            </View>
+          )}
+        </View>
+        <Button
+          title={
+            isRegForm
+              ? constants.buttonTitles.reg
+              : constants.buttonTitles.login
+          }
+          isDisable={this.isWarning()}
+          onPress={this.checkValue}
+        />
         <PickPhotoModal
           isModalVisible={isModalVisible}
           toggleModalCallback={this.toggleModal}
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        <Warning
-          isVisible={
-            utils.isWarning(email, constants.inputTypes.email) ||
-            utils.isWarning(password, constants.inputTypes.password)
-          }
-          isEmail={utils.isWarning(email, constants.inputTypes.email)}
-        />
-      </View>
+        <Warning isVisible={this.isWarning()} isEmail={warnings.email} />
+      </ScrollViewContainer>
     );
   }
 }
