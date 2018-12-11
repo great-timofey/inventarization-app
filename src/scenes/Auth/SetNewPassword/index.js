@@ -2,7 +2,6 @@
 
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
@@ -27,17 +26,14 @@ class SetNewPassword extends PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { password: '', confirmPassword: '' };
+    this.state = { password: '', confirmPassword: '', warnings: [] };
   }
 
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
+      warnings: [],
     });
-  };
-
-  focusField = (ref: Object) => {
-    if (ref) ref.focus();
   };
 
   focusConfirmPassInput = () => {
@@ -47,7 +43,29 @@ class SetNewPassword extends PureComponent<Props, State> {
     }
   };
 
+  checkValue = () => {
+    const { password, confirmPassword } = this.state;
+    const warnings = [];
+    if (!utils.isValid(password, constants.regExp.password)) {
+      warnings.push('password');
+    }
+    if (!utils.isValid(confirmPassword, constants.regExp.password)) {
+      warnings.push('confirmPassword');
+    }
+    if (password !== confirmPassword) {
+      warnings.push('notMatch');
+    }
+    this.setState({ warnings });
+  };
+
+  checkForErrors = () => {
+    const { warnings } = this.state;
+    if (warnings.length) return true;
+    return false;
+  };
+
   onSubmitForm = (password: string, confirmPassword: string) => {
+    this.checkValue();
     if (utils.isValidPassword(password, confirmPassword)) {
       alert('click');
     }
@@ -58,13 +76,7 @@ class SetNewPassword extends PureComponent<Props, State> {
   confirmPasswordRef: any;
 
   render() {
-    const { password, confirmPassword } = this.state;
-    const isValidateWarnings =
-      utils.isWarning(password, constants.inputTypes.password) ||
-      utils.isWarning(confirmPassword, constants.inputTypes.password);
-    const isPasswordNotMatch =
-      !isValidateWarnings && password !== confirmPassword;
-    const isWarningVisible = isValidateWarnings || password !== confirmPassword;
+    const { password, confirmPassword, warnings } = this.state;
 
     return (
       <ScrollViewContainer>
@@ -76,8 +88,9 @@ class SetNewPassword extends PureComponent<Props, State> {
               this.passwordRef = ref;
             }}
             secureTextEntry
-            onSubmitEditing={this.focusConfirmPassInput}
+            isWarning={warnings.includes('password')}
             type={constants.inputTypes.setNewPassword}
+            onSubmitEditing={this.focusConfirmPassInput}
             onChangeText={text => this.onChangeField('password', text)}
           />
           <Input
@@ -88,6 +101,7 @@ class SetNewPassword extends PureComponent<Props, State> {
             secureTextEntry
             returnKeyType="go"
             type={constants.inputTypes.confirmPassword}
+            isWarning={warnings.includes('confirmPassword')}
             onSubmitForm={() => this.onSubmitForm(password, confirmPassword)}
             onChangeText={text => this.onChangeField('confirmPassword', text)}
           />
@@ -95,12 +109,15 @@ class SetNewPassword extends PureComponent<Props, State> {
         <Button
           title={constants.buttonTitles.setNewPass}
           onPress={() => this.onSubmitForm(password, confirmPassword)}
-          isDisable={!utils.isValidPassword(password, confirmPassword)}
+          isDisable={this.checkForErrors()}
         />
         <Warning
-          isEmail={false}
-          notMatch={isPasswordNotMatch}
-          isVisible={isWarningVisible}
+          isVisible={this.checkForErrors()}
+          title={
+            warnings[0] === 'notMatch'
+              ? constants.errors.login.notMatch
+              : constants.errors.login.password
+          }
         />
       </ScrollViewContainer>
     );

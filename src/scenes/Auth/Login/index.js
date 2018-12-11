@@ -26,12 +26,7 @@ const initialState = {
   email: '',
   mobile: '',
   password: '',
-  warnings: {
-    name: false,
-    email: false,
-    mobile: false,
-    password: false,
-  },
+  warnings: [],
   loading: false,
   isRegForm: false,
   isModalVisible: false,
@@ -152,9 +147,7 @@ class Login extends PureComponent<Props, State> {
 
   onChangeField = (field: string, value: string) => {
     this.setState({
-      warnings: {
-        ...initialState.warnings,
-      },
+      warnings: [],
       [field]: value,
     });
   };
@@ -169,63 +162,63 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
   };
 
-  isWarning = () => {
-    const {
-      warnings: { email, password, name, mobile },
-      isRegForm,
-    } = this.state;
-
-    if (isRegForm) {
-      if (email || password || name || mobile) return true;
-    } else if (email || password) return true;
+  checkForErrors = () => {
+    const { warnings } = this.state;
+    if (warnings.length) return true;
     return false;
   };
 
-  warning = () => {
-    let warning = null;
-    const {
-      warnings: { email, password, name, mobile },
-    } = this.state;
-    switch (true) {
-      case name:
-        warning = constants.errors.login.name;
-        break;
-      case email:
-        warning = constants.errors.login.email;
-        break;
-      case password:
-        warning = constants.errors.login.password;
-        break;
-      case mobile:
-        warning = constants.errors.login.mobile;
-        break;
-      default:
-        warning = '';
-        break;
+  checkForWarnings = () => {
+    const { warnings } = this.state;
+    if (warnings.length) {
+      return constants.errors.login[warnings[0]];
     }
-    return warning;
+    return '';
   };
 
   checkValue = () => {
-    const { name, email, password, mobile } = this.state;
-    this.setState({
-      warnings: {
-        name: utils.isEmpty(name),
-        email: !utils.isValid(email, constants.regExp.email),
-        password: !utils.isValid(password, constants.regExp.password),
-        mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
-      },
-    });
+    const { name, email, password, mobile, isRegForm } = this.state;
+    const warnings = [];
+    if (isRegForm && utils.isEmpty(name)) {
+      warnings.push('name');
+    }
+    if (!utils.isValid(email, constants.regExp.email)) {
+      warnings.push('email');
+    }
+    if (!utils.isValid(password, constants.regExp.password)) {
+      warnings.push('password');
+    }
+    if (
+      isRegForm &&
+      mobile &&
+      !utils.isValid(mobile, constants.regExp.mobileNumber)
+    ) {
+      warnings.push('mobile');
+    }
+    this.setState({ warnings });
   };
 
   onSubmitForm = async () => {
+    const {
+      isRegForm,
+      email,
+      password,
+      name: fullName,
+      mobile: phoneNumber,
+    } = this.state;
     const {
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
     } = this.props;
 
-    if (utils.isValidLoginForm(email, password, fullName, isRegForm)) {
+    /** 'Promise.resolve' and 'await' below used because of async setState in this.checkValue and this.checkForErrors */
+
+    const isFormInvalid = await Promise.resolve()
+      .then(_ => this.checkValue())
+      .then(_ => this.checkForErrors());
+
+    if (!isFormInvalid) {
       try {
         const variables = { email, password, fullName };
         if (phoneNumber) variables.phoneNumber = phoneNumber;
@@ -234,11 +227,13 @@ class Login extends PureComponent<Props, State> {
           ? signUpMutation({ variables })
           : signInMutation({ variables }));
 
+        console.log(data);
+
         await AsyncStorage.setItem(
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
-        await setAuthMutationClient({ variables: { isAuthed: true } });
+        // await setAuthMutationClient({ variables: { isAuthed: true } });
       } catch (error) {
         Alert.alert(error.message);
       }
@@ -283,7 +278,8 @@ class Login extends PureComponent<Props, State> {
               fieldRef={ref => {
                 this.nameRef = ref;
               }}
-              isWarning={warnings.name}
+              blurOnSubmit={false}
+              isWarning={warnings.includes('name')}
               type={constants.inputTypes.name}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('name', text)}
@@ -294,7 +290,8 @@ class Login extends PureComponent<Props, State> {
             fieldRef={ref => {
               this.emailRef = ref;
             }}
-            isWarning={warnings.email}
+            blurOnSubmit={false}
+            isWarning={warnings.includes('email')}
             keyboardType="email-address"
             type={constants.inputTypes.email}
             onChangeText={text => this.onChangeField('email', text)}
@@ -306,7 +303,8 @@ class Login extends PureComponent<Props, State> {
             fieldRef={ref => {
               this.passwordRef = ref;
             }}
-            isWarning={warnings.password}
+            blurOnSubmit={false}
+            isWarning={warnings.includes('password')}
             onSubmitForm={this.onSubmitForm}
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
@@ -321,7 +319,8 @@ class Login extends PureComponent<Props, State> {
               fieldRef={ref => {
                 this.mobileRef = ref;
               }}
-              isWarning={warnings.mobile}
+              blurOnSubmit={false}
+              isWarning={warnings.includes('mobile')}
               onSubmitForm={this.onSubmitForm}
               mask={constants.masks.mobileNumber}
               keyboardType="numbers-and-punctuation"
@@ -340,7 +339,7 @@ class Login extends PureComponent<Props, State> {
               />
               <AdditionalButton
                 title={constants.buttonTitles.registration}
-                onPress={() => navigation.state.params.onPressButton(isRegForm)}
+                onPress={() => navigation.state.params.onToggleForm(isRegForm)}
               />
             </View>
           )}
@@ -351,8 +350,8 @@ class Login extends PureComponent<Props, State> {
               ? constants.buttonTitles.reg
               : constants.buttonTitles.login
           }
-          isDisable={this.isWarning()}
-          onPress={this.checkValue}
+          isDisable={this.checkForErrors()}
+          onPress={this.onSubmitForm}
         />
         <PickPhotoModal
           isModalVisible={isModalVisible}
@@ -360,7 +359,10 @@ class Login extends PureComponent<Props, State> {
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        <Warning isVisible={this.isWarning()} title={this.warning()} />
+        <Warning
+          isVisible={this.checkForErrors()}
+          title={this.checkForWarnings()}
+        />
       </ScrollViewContainer>
     );
   }

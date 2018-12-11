@@ -2,6 +2,7 @@
 
 export type State = {
   password: string,
+  warnings: Array<string>,
   confirmPassword: string,
 };
 
