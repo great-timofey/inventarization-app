@@ -1,8 +1,9 @@
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
-  email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
+  email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
+  mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
 };
 
 const masks = {
@@ -71,9 +72,11 @@ const setNewPassword = {
 
 const errors = {
   login: {
+    name: 'Введите имя',
     email: 'Неверный формат электронной почты',
     password:
       'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
+    mobile: 'Неверный формат номера телефона',
     notMatch: 'Пароли не совпадают',
   },
   camera: {

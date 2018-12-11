@@ -18,7 +18,6 @@ export default StyleSheet.create({
     backgroundColor: colors.backGroundBlack,
   },
   formContainer: {
-    width: '100%',
     justifyContent: 'flex-start',
   },
   additionalButtons: {

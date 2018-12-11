@@ -4,6 +4,7 @@ export type State = {
   name: string,
   email: string,
   mobile: string,
+  warnings: Array<string>,
   password: string,
   isRegForm: boolean,
   isModalVisible: boolean,
