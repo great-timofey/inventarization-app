@@ -79,11 +79,14 @@ class CreateOrganization extends PureComponent<Props, State> {
   };
 
   handleAddInvitee = () => {
+    this.checkValue();
     const { invitees, currentInvitee } = this.state;
-    this.setState({
-      currentInvitee: '',
-      invitees: R.concat(invitees, [currentInvitee]),
-    });
+    if (utils.isValid(currentInvitee, constants.regExp.email)) {
+      this.setState({
+        currentInvitee: '',
+        invitees: R.concat(invitees, [currentInvitee]),
+      });
+    }
   };
 
   handleRemoveInvitee = (index: number) => {
