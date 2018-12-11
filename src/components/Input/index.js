@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput } from 'react-native';
 
-// import utils from 'global/utils';
 import colors from 'global/colors';
 
 import type { Props } from './types';

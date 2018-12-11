@@ -3,8 +3,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-// import constants from 'global/constants';
-
 import styles from './styles';
 import type { Props } from './types';
 
