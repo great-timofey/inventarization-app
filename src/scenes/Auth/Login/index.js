@@ -183,27 +183,14 @@ class Login extends PureComponent<Props, State> {
 
   checkValue = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
-    console.log(name);
-    console.log(email);
-    console.log(password);
-    console.log(mobile);
-    if (isRegForm) {
-      this.setState({
-        warnings: {
-          name: utils.isEmpty(name),
-          email: !utils.isValid(email, constants.regExp.email),
-          password: !utils.isValid(password, constants.regExp.password),
-          mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
-        },
-      });
-    } else {
-      this.setState({
-        warnings: {
-          email: !utils.isValid(email, constants.regExp.email),
-          password: !utils.isValid(password, constants.regExp.password),
-        },
-      });
-    }
+    this.setState({
+      warnings: {
+        name: utils.isEmpty(name),
+        email: !utils.isValid(email, constants.regExp.email),
+        password: !utils.isValid(password, constants.regExp.password),
+        mobile: !utils.isValid(mobile, constants.regExp.mobileNumber),
+      },
+    });
   };
 
   onSubmitForm = async () => {
@@ -220,30 +207,32 @@ class Login extends PureComponent<Props, State> {
       setAuthMutationClient,
     } = this.props;
 
-    // console.log(this.state);
+    /** 'Promise.resolve' and 'await' below used because of async setState in this.checkValue and this.checkForErrors */
 
-    this.checkValue();
-    console.log(this.checkForErrors());
-    // if (!this.checkForErrors()) {
-    //   try {
-    //     const variables = { email, password, fullName };
-    //     if (phoneNumber) variables.phoneNumber = phoneNumber;
+    const isFormInvalid = await Promise.resolve()
+      .then(_ => this.checkValue())
+      .then(_ => this.checkForErrors());
 
-    //     const { data } = await (isRegForm
-    //       ? signUpMutation({ variables })
-    //       : signInMutation({ variables }));
+    if (!isFormInvalid) {
+      try {
+        const variables = { email, password, fullName };
+        if (phoneNumber) variables.phoneNumber = phoneNumber;
 
-    //     console.log(data);
+        const { data } = await (isRegForm
+          ? signUpMutation({ variables })
+          : signInMutation({ variables }));
 
-    //     await AsyncStorage.setItem(
-    //       'token',
-    //       isRegForm ? data.signUpUser.token : data.signInUser.token
-    //     );
-    //     // await setAuthMutationClient({ variables: { isAuthed: true } });
-    //   } catch (error) {
-    //     Alert.alert(error.message);
-    //   }
-    // }
+        console.log(data);
+
+        await AsyncStorage.setItem(
+          'token',
+          isRegForm ? data.signUpUser.token : data.signInUser.token
+        );
+        // await setAuthMutationClient({ variables: { isAuthed: true } });
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    }
   };
 
   focusField = (ref: Object) => {
@@ -357,7 +346,7 @@ class Login extends PureComponent<Props, State> {
               : constants.buttonTitles.login
           }
           isDisable={this.checkForErrors()}
-          onPress={this.checkValue}
+          onPress={this.onSubmitForm}
         />
         <PickPhotoModal
           isModalVisible={isModalVisible}
