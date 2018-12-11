@@ -6,9 +6,9 @@ import { Alert, View, Text } from 'react-native';
 import { graphql } from 'react-apollo';
 
 import Logo from 'components/Logo';
+import Warning from 'components/Warning';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
-import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
 import HeaderBackbutton from 'components/HeaderBackButton';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';

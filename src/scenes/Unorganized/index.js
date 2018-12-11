@@ -12,7 +12,7 @@ import constants from 'global/constants';
 import type { Props } from './types';
 import styles from './styles';
 
-class Organisation extends PureComponent<Props, {}> {
+class Unorganized extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
     headerLeft: HeaderBackbutton({
@@ -33,4 +33,4 @@ class Organisation extends PureComponent<Props, {}> {
   }
 }
 
-export default Organisation;
+export default Unorganized;

@@ -38,19 +38,17 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
   };
 
   handleChoosePhoto = (uri: string) => {
-    const { setPhotoUriCallback } = this.props;
-    setPhotoUriCallback(uri);
+    const { setPhotoUriLocalCallback } = this.props;
+    setPhotoUriLocalCallback(uri);
   };
 
   handleOpenImageGallery = () => {
-    const { toggleModalCallback } = this.props;
     //  $FlowFixMe
     ImagePicker.launchImageLibrary({}, response => {
       if (response.error) {
         Alert.alert(constants.errors.camera.photo);
       } else {
         this.handleChoosePhoto(response.uri);
-        toggleModalCallback();
       }
     });
   };

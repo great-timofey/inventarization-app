@@ -9,7 +9,6 @@ import Input from 'components/Input';
 import Button from 'components/Button';
 import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
-import PickPhotoModal from 'components/PickPhotoModal';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';
@@ -27,7 +26,6 @@ const initialState = {
   mobile: '',
   password: '',
   warnings: [],
-  loading: false,
   isRegForm: false,
   isModalVisible: false,
   isKeyboardActive: false,
@@ -75,75 +73,6 @@ class Login extends PureComponent<Props, State> {
     });
     this.state = { ...initialState };
   }
-
-  toggleModal = () => {
-    const { isModalVisible } = this.state;
-    this.setState({ isModalVisible: !isModalVisible });
-  };
-
-  handleSignIn = () => {
-    const { client } = this.props;
-    const { email, password } = this.state;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_IN_MUTATION,
-        variables: { email, password },
-      })
-      .then(async result => {
-        console.log('logged in with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signInUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
-  handleSignUp = () => {
-    const { client } = this.props;
-    const { email, password, name, mobile } = this.state;
-
-    const variables = { email, password, fullName: name };
-    if (mobile) variables.mobile = mobile;
-
-    client
-      .mutate({
-        mutation: MUTATIONS.SIGN_UP_MUTATION,
-        variables,
-      })
-      .then(async result => {
-        console.log('signed up with data: ', result);
-        await AsyncStorage.setItem('token', result.data.signUpUser.token);
-      })
-      .then(_ => {
-        client.mutate({
-          mutation: MUTATIONS.SET_AUTH_MUTATION_CLIENT,
-          variables: { isAuthed: true },
-        });
-      })
-      .catch(error => {
-        Alert.alert(error.message);
-      });
-  };
-
-  handleOpenCamera = () => {
-    const { navigation } = this.props;
-    this.toggleModal();
-    navigation.navigate(SCENE_NAMES.CameraSceneName, {
-      setPhotoUriCallback: this.setPhotoUriCallback,
-    });
-  };
-
-  setPhotoUriCallback = (uri: string) => {
-    const { navigation } = this.props;
-    navigation.setParams({ uri });
-  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -257,16 +186,8 @@ class Login extends PureComponent<Props, State> {
   mobileRef: any;
 
   render() {
-    const {
-      name,
-      email,
-      mobile,
-      password,
-      warnings,
-      isRegForm,
-      isModalVisible,
-    } = this.state;
     const { navigation } = this.props;
+    const { name, email, mobile, password, warnings, isRegForm } = this.state;
 
     return (
       <ScrollViewContainer>
@@ -352,12 +273,6 @@ class Login extends PureComponent<Props, State> {
           }
           isDisable={this.checkForErrors()}
           onPress={this.onSubmitForm}
-        />
-        <PickPhotoModal
-          isModalVisible={isModalVisible}
-          toggleModalCallback={this.toggleModal}
-          navigationCallback={this.handleOpenCamera}
-          setPhotoUriCallback={this.setPhotoUriCallback}
         />
         <Warning
           isVisible={this.checkForErrors()}

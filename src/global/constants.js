@@ -19,6 +19,14 @@ const inputTypes = {
     label: 'Имя',
     require: false,
   },
+  orgName: {
+    label: 'Название организации',
+    require: false,
+  },
+  invitees: {
+    label: 'Добавьте людей:',
+    require: false,
+  },
   email: {
     label: 'e-mail',
     require: true,
@@ -45,17 +53,18 @@ const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
   login: 'Войти',
-  create: 'Да, создать',
   cancel: 'Отмена',
   update: 'Обновить',
+  create: 'Да, создать',
+  chooseLogo: 'Выбери \n лого',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
   forgotPassword: 'Забыли пароль?',
-  createOrg: 'Создать организацию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
+  createOrganization: 'Создать организацию',
 };
 
 const forgotPassText = {
@@ -73,7 +82,9 @@ const setNewPassword = {
 const errors = {
   login: {
     name: 'Введите имя',
-    email: 'Неверный формат электронной почты',
+    orgName: 'Введите название вашей организации',
+    email: 'Вы указали неверный email',
+    emailEmpty: 'Введите email',
     password:
       'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
     mobile: 'Неверный формат номера телефона',
@@ -87,6 +98,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
+  newOrganization: 'Создание новой \n организации',
 };
 
 const text = {

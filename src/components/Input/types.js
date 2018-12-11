@@ -1,4 +1,5 @@
 // @flow
+import * as React from 'react';
 
 import type { KeyboardType, ReturnKeyType } from 'global/types';
 
@@ -9,9 +10,11 @@ export type Props = {
     require: boolean,
   },
   value: string,
-  isWarning: boolean,
-  fieldRef: Object,
+  isWhite?: boolean,
+  fieldRef?: Object,
+  isWarning?: boolean,
   placeholder?: string,
+  children?: React.Node,
   onChangeText: Function,
   onSubmitForm?: Function,
   secureTextEntry?: boolean,
