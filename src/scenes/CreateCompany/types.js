@@ -3,9 +3,11 @@
 export type State = {
   companyName: string,
   invitees: Array<string>,
-  chosenPhotoUri: string,
-  isModalVisible: boolean,
   currentInvitee: string,
+  chosenPhotoUri: string,
+  invitees: Array<string>,
+  warnings: Array<string>,
+  isModalVisible: boolean,
 };
 
 export type Props = {

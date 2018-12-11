@@ -2,12 +2,12 @@
 
 import React, { PureComponent } from 'react';
 import {
-  TextInput,
-  Image,
-  View,
   Text,
-  TouchableOpacity,
+  View,
+  Image,
   FlatList,
+  StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 
 import R from 'ramda';
@@ -16,11 +16,15 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import ImageResizer from 'react-native-image-resizer';
 
+import Input from 'components/Input';
 import Button from 'components/Button';
+import Warning from 'components/Warning';
 import AddButton from 'components/AddButton';
+import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
+import utils from 'global/utils';
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
@@ -43,7 +47,14 @@ const RemoveInviteeButton = props => (
 );
 class CreateCompany extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: [globalStyles.authHeaderStyle && styles.newOrganizationHeader],
+    headerStyle: [
+      globalStyles.authHeaderStyle,
+      { backgroundColor: colors.white },
+    ],
+    headerTitle: HeaderTitle({
+      title: constants.headers.newOrganization,
+      color: colors.header.newOrganization,
+    }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
     }),
@@ -55,6 +66,7 @@ class CreateCompany extends PureComponent<Props, State> {
     this.state = {
       invitees: [],
       companyName: '',
+      warnings: [],
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
@@ -70,11 +82,14 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleAddInvitee = () => {
+    this.checkValue();
     const { invitees, currentInvitee } = this.state;
-    this.setState({
-      currentInvitee: '',
-      invitees: R.concat(invitees, [currentInvitee]),
-    });
+    if (utils.isValid(currentInvitee, constants.regExp.email)) {
+      this.setState({
+        currentInvitee: '',
+        invitees: R.concat(invitees, [currentInvitee]),
+      });
+    }
   };
 
   handleRemoveInvitee = (index: number) => {
@@ -144,17 +159,67 @@ class CreateCompany extends PureComponent<Props, State> {
     </View>
   );
 
+  onChangeField = (field: string, value: string) => {
+    this.setState({
+      warnings: [],
+      [field]: value,
+    });
+  };
+
+  focusField = (ref: Object) => {
+    if (ref.input === undefined) {
+      ref.focus();
+    } else {
+      ref.input.focus();
+    }
+  };
+
+  checkValue = () => {
+    const { companyName, currentInvitee } = this.state;
+    const warnings = [];
+    if (!companyName) {
+      warnings.push('companyName');
+    }
+    if (!currentInvitee) {
+      warnings.push('emailEmpty');
+    } else if (!utils.isValid(currentInvitee, constants.regExp.email)) {
+      warnings.push('email');
+    }
+    this.setState({ warnings }, () => {
+      if (R.empty(warnings)) this.handleCreateCompany();
+    });
+  };
+
+  checkForErrors = () => {
+    const { warnings } = this.state;
+    if (warnings.length) return true;
+    return false;
+  };
+
+  checkForWarnings = () => {
+    const { warnings } = this.state;
+    if (warnings.length) {
+      return constants.errors.login[warnings[0]];
+    }
+    return '';
+  };
+
+  emailRef: any;
+
   render() {
     const {
+      companyName,
       invitees,
+      warnings,
+      currentInvitee,
       isModalVisible,
       chosenPhotoUri,
-      currentInvitee,
     } = this.state;
+
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{constants.headers.newOrganization}</Text>
-        <View style={{ alignItems: 'center' }}>
+        <StatusBar barStyle="dark-content" />
+        <View style={{ alignItems: 'center', marginBottom: 10 }}>
           <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
             {chosenPhotoUri ? (
               <Image
@@ -167,48 +232,45 @@ class CreateCompany extends PureComponent<Props, State> {
               </Text>
             )}
           </TouchableOpacity>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitleText}>Название организации</Text>
-            <TextInput
-              style={{
-                backgroundColor: '#FAFAFA',
-              }}
-              onChangeText={this.handleInputCompanyName}
-              placeholder="Введите"
-              placeholderTextColor="#C8C8C8"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitleText}>Добавьте людей</Text>
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <TextInput
-                style={{
-                  backgroundColor: '#FAFAFA',
-                }}
-                value={currentInvitee}
-                placeholder="e-mail"
-                placeholderTextColor="#C8C8C8"
-                onChangeText={this.handleInputInvitee}
-              />
-              <AddButton
-                style={styles.inviteeRemove}
-                onPress={this.handleAddInvitee}
-              />
-            </View>
-          </View>
+          <Input
+            isWhite
+            value={companyName}
+            blurOnSubmit={false}
+            placeholder="Введите"
+            isWarning={warnings.includes('companyName')}
+            type={constants.inputTypes.companyName}
+            onSubmitEditing={() => this.focusField(this.emailRef)}
+            onChangeText={text => this.onChangeField('companyName', text)}
+          />
+          <Input
+            isWhite
+            value={currentInvitee}
+            fieldRef={ref => {
+              this.emailRef = ref;
+            }}
+            returnKeyType="go"
+            blurOnSubmit={false}
+            placeholder="e-mail"
+            onSubmitForm={this.handleAddInvitee}
+            type={constants.inputTypes.invitees}
+            isWarning={
+              warnings.includes('emailEmpty') || warnings.includes('email')
+            }
+            onChangeText={text => this.onChangeField('currentInvitee', text)}
+          >
+            <AddButton onPress={this.handleAddInvitee} />
+          </Input>
         </View>
         <FlatList
           horizontal
           data={invitees}
           style={styles.inviteeList}
-          renderItem={this.renderInvitee}
           keyExtractor={item => item}
+          renderItem={this.renderInvitee}
           showsHorizontalScrollIndicator={false}
         />
         <Button
-          onPress={this.handleCreateCompany}
+          onPress={this.checkValue}
           title={constants.buttonTitles.createOrganization}
         />
         <PickPhotoModal
@@ -216,6 +278,10 @@ class CreateCompany extends PureComponent<Props, State> {
           toggleModalCallback={this.toggleModal}
           navigationCallback={this.handleOpenCamera}
           setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
+        />
+        <Warning
+          isVisible={this.checkForErrors()}
+          title={this.checkForWarnings()}
         />
       </View>
     );

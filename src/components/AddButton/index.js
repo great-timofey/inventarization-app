@@ -2,20 +2,21 @@
 
 import React from 'react';
 
-import IonIcon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from 'global/colors';
 import type { Props } from './types';
 
 const AddButton = (props: Props) => (
-  <IonIcon.Button
+  <Icon.Button
     {...props}
     size={34}
     name="ios-add-circle"
-    color={colors.green}
+    color={colors.buttonGreen}
     activeOpacity={0.5}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
+    iconStyle={{ marginRight: 0 }}
   />
 );
 

@@ -1,7 +1,6 @@
 // @flow
 
 export type Props = {
-  isEmail: boolean,
-  notMatch?: boolean,
+  title: string,
   isVisible: boolean,
 };

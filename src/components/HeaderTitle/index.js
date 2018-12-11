@@ -6,9 +6,9 @@ import { Text, View } from 'react-native';
 import styles from './styles';
 import type { Props } from './types';
 
-const HeaderTitle = ({ title }: Props) => (
+const HeaderTitle = ({ title, color }: Props) => (
   <View style={styles.headerTitle}>
-    <Text style={styles.headerTitleText} numberOfLines={2}>
+    <Text style={[styles.headerTitleText, { color }]} numberOfLines={2}>
       {title}
     </Text>
   </View>
