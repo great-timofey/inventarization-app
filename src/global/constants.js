@@ -45,9 +45,10 @@ const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
   login: 'Войти',
-  create: 'Да, создать',
   cancel: 'Отмена',
   update: 'Обновить',
+  skip: 'Пропустить',
+  create: 'Да, создать',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
@@ -87,12 +88,14 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
+  qrscanner: 'Сканер',
 };
 
 const text = {
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
+  qrhint: 'Поместите штрих-код или QR-код в центр экрана',
 };
 export default {
   text,
