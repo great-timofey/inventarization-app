@@ -181,6 +181,31 @@ class Login extends PureComponent<Props, State> {
     return false;
   };
 
+  warning = () => {
+    let warning = null;
+    const {
+      warnings: { email, password, name, mobile },
+    } = this.state;
+    switch (true) {
+      case name:
+        warning = constants.errors.login.name;
+        break;
+      case email:
+        warning = constants.errors.login.email;
+        break;
+      case password:
+        warning = constants.errors.login.password;
+        break;
+      case mobile:
+        warning = constants.errors.login.mobile;
+        break;
+      default:
+        warning = '';
+        break;
+    }
+    return warning;
+  };
+
   checkValue = () => {
     const { name, email, password, mobile } = this.state;
     this.setState({
@@ -335,7 +360,7 @@ class Login extends PureComponent<Props, State> {
           navigationCallback={this.handleOpenCamera}
           setPhotoUriCallback={this.setPhotoUriCallback}
         />
-        <Warning isVisible={this.isWarning()} isEmail={warnings.email} />
+        <Warning isVisible={this.isWarning()} title={this.warning()} />
       </ScrollViewContainer>
     );
   }
