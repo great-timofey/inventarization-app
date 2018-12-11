@@ -56,6 +56,7 @@
 		B26F225321B7CD1600E31CAB /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B26F225121B7CD1600E31CAB /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B482EF3960C84FEDB9307E1B /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6CFD4D4C2CC47039540D896 /* libRNImagePicker.a */; };
 		CED3A1C021BF6EC000CC0520 /* libReactNativePermissions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CED3A1BF21BF6EA700CC0520 /* libReactNativePermissions.a */; };
+		CED3A1DE21BF8B9F00CC0520 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CED3A1DB21BF8B9700CC0520 /* libART.a */; };
 		DDE80BE6B6314E9C8E694112 /* SFProDisplay-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 622CCC5224C0424DB633A052 /* SFProDisplay-Medium.ttf */; };
 		EDE42626E5064ED1BF4758E0 /* SFProText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B3C5BDBAF5ED4F7FB716639D /* SFProText-Regular.ttf */; };
 		FF3AE547C49E4BB6B17B2E7E /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A069B2FC5B04AB39E9C80D3 /* libBVLinearGradient.a */; };
@@ -426,6 +427,20 @@
 			remoteGlobalIDString = 9D23B34F1C767B80008B4819;
 			remoteInfo = ReactNativePermissions;
 		};
+		CED3A1DA21BF8B9700CC0520 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CED3A1D521BF8B9700CC0520 /* ART.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0CF68AC11AF0540F00FF9E5C;
+			remoteInfo = ART;
+		};
+		CED3A1DC21BF8B9700CC0520 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CED3A1D521BF8B9700CC0520 /* ART.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 323A12871E5F266B004975B8;
+			remoteInfo = "ART-tvOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -505,6 +520,7 @@
 		C2FF7D966FF64F0892F1ED41 /* SFProDisplay-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Light.ttf"; path = "../assets/fonts/SFProDisplay-Light.ttf"; sourceTree = "<group>"; };
 		C358B56B43AF4FA7BBFBEE0B /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
 		CED3A1BA21BF6EA700CC0520 /* ReactNativePermissions.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativePermissions.xcodeproj; path = "../node_modules/react-native-permissions/ios/ReactNativePermissions.xcodeproj"; sourceTree = "<group>"; };
+		CED3A1D521BF8B9700CC0520 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
 		D04058E7DF5F43ABA85B493F /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNImagePicker.xcodeproj; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; };
 		DF47AA28ADC740BEA0EC3AE9 /* libRNDeviceInfo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNDeviceInfo-tvOS.a"; sourceTree = "<group>"; };
 		FBE3B371E22F4BDDB14BC8B7 /* libRNTextInputMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNTextInputMask.a; sourceTree = "<group>"; };
@@ -536,6 +552,7 @@
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
+				CED3A1DE21BF8B9F00CC0520 /* libART.a in Frameworks */,
 				A58F898521B11B3300AFA800 /* libRNVectorIcons.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
@@ -712,6 +729,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				CED3A1D521BF8B9700CC0520 /* ART.xcodeproj */,
 				CED3A1BA21BF6EA700CC0520 /* ReactNativePermissions.xcodeproj */,
 				B26F224521B7CCB300E31CAB /* RNTextInputMask.xcodeproj */,
 				A5629BA921B516A6007F5987 /* RNCamera.xcodeproj */,
@@ -904,6 +922,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CED3A1D621BF8B9700CC0520 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CED3A1DB21BF8B9700CC0520 /* libART.a */,
+				CED3A1DD21BF8B9700CC0520 /* libART-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -976,6 +1003,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = CED3A1D621BF8B9700CC0520 /* Products */;
+					ProjectRef = CED3A1D521BF8B9700CC0520 /* ART.xcodeproj */;
+				},
 				{
 					ProductGroup = A5047DBC21AE2F9D0040FD0C /* Products */;
 					ProjectRef = 36589474590F43ECAFDB60A8 /* BVLinearGradient.xcodeproj */;
@@ -1429,6 +1460,20 @@
 			fileType = archive.ar;
 			path = libReactNativePermissions.a;
 			remoteRef = CED3A1BE21BF6EA700CC0520 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CED3A1DB21BF8B9700CC0520 /* libART.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libART.a;
+			remoteRef = CED3A1DA21BF8B9700CC0520 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CED3A1DD21BF8B9700CC0520 /* libART-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libART-tvOS.a";
+			remoteRef = CED3A1DC21BF8B9700CC0520 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

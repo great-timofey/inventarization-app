@@ -9,7 +9,6 @@ import Input from 'components/Input';
 import Button from 'components/Button';
 import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
-import PickPhotoModal from 'components/PickPhotoModal';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';

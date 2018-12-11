@@ -1,8 +1,8 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-
+import { Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import Barcode from 'react-native-barcode-builder';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import utils from 'global/utils';
@@ -17,14 +17,21 @@ import type { Props, State } from './types';
 class QRCode extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {};
+    this.state = {
+      barcode: '',
+    };
   }
 
   render() {
+    const { barcode } = this.state;
     return (
       <QRCodeScanner
+        reactivate
+        reactivateTimeout={1000}
         onRead={e => {
           console.log(e);
+          console.log('base64 string:', btoa(e.data));
+          this.setState({ barcode: e.data });
         }}
         topContent={
           <Text style={styles.centerText}>
@@ -35,7 +42,11 @@ class QRCode extends PureComponent<Props, State> {
         }
         bottomContent={
           <TouchableOpacity style={styles.buttonTouchable}>
-            <Text style={styles.buttonText}>OK. Got it!</Text>
+            {barcode.length === 0 ? (
+              <ActivityIndicator />
+            ) : (
+              <Barcode value={barcode} format="EAN13" flat />
+            )}
           </TouchableOpacity>
         }
       />
