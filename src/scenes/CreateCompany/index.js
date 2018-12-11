@@ -52,8 +52,8 @@ class CreateCompany extends PureComponent<Props, State> {
       { backgroundColor: colors.white },
     ],
     headerTitle: HeaderTitle({
-      title: constants.headers.newOrganization,
-      color: colors.header.newOrganization,
+      title: constants.headers.createCompany,
+      color: colors.header.createCompany,
     }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
@@ -65,8 +65,8 @@ class CreateCompany extends PureComponent<Props, State> {
 
     this.state = {
       invitees: [],
-      companyName: '',
       warnings: [],
+      companyName: '',
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
@@ -82,7 +82,7 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleAddInvitee = () => {
-    this.checkValue();
+    this.validateInput();
     const { invitees, currentInvitee } = this.state;
     if (utils.isValid(currentInvitee, constants.regExp.email)) {
       this.setState({
@@ -132,7 +132,7 @@ class CreateCompany extends PureComponent<Props, State> {
         variables: { name, logo: file, inviters },
       });
       console.log('result of creating: ', result);
-      await setAuthMutationClient({ variables: { isAuthed: true } });
+      // await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.dir(error);
     }
@@ -174,9 +174,10 @@ class CreateCompany extends PureComponent<Props, State> {
     }
   };
 
-  checkValue = () => {
-    const { companyName, currentInvitee } = this.state;
+  validateInput = () => {
+    const { companyName, currentInvitee, invitees } = this.state;
     const warnings = [];
+    console.log(invitees);
     if (!companyName) {
       warnings.push('companyName');
     }
@@ -186,7 +187,8 @@ class CreateCompany extends PureComponent<Props, State> {
       warnings.push('email');
     }
     this.setState({ warnings }, () => {
-      if (R.empty(warnings)) this.handleCreateCompany();
+      if (!this.checkForErrors()) console.log('no errors');
+      else console.log('error');
     });
   };
 
@@ -208,9 +210,9 @@ class CreateCompany extends PureComponent<Props, State> {
 
   render() {
     const {
-      companyName,
       invitees,
       warnings,
+      companyName,
       currentInvitee,
       isModalVisible,
       chosenPhotoUri,
@@ -248,10 +250,8 @@ class CreateCompany extends PureComponent<Props, State> {
             fieldRef={ref => {
               this.emailRef = ref;
             }}
-            returnKeyType="go"
             blurOnSubmit={false}
             placeholder="e-mail"
-            onSubmitForm={this.handleAddInvitee}
             type={constants.inputTypes.invitees}
             isWarning={
               warnings.includes('emailEmpty') || warnings.includes('email')
@@ -270,8 +270,8 @@ class CreateCompany extends PureComponent<Props, State> {
           showsHorizontalScrollIndicator={false}
         />
         <Button
-          onPress={this.checkValue}
-          title={constants.buttonTitles.createOrganization}
+          onPress={this.validateInput}
+          title={constants.buttonTitles.createCompany}
         />
         <PickPhotoModal
           isModalVisible={isModalVisible}

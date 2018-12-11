@@ -135,16 +135,11 @@ class Login extends PureComponent<Props, State> {
       name: fullName,
       mobile: phoneNumber,
     } = this.state;
-<<<<<<< HEAD
-
-    const { navigation, signInMutation, signUpMutation } = this.props;
-=======
     const {
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
     } = this.props;
->>>>>>> 1be836242ef315477cbfd2799a17caf8d3347e4e
 
     /** 'Promise.resolve' and 'await' below used because of async setState in this.checkValue and this.checkForErrors */
 
@@ -171,11 +166,8 @@ class Login extends PureComponent<Props, State> {
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
-<<<<<<< HEAD
-        navigation.navigate('CreateCompany');
-=======
+        this.props.navigation.navigate('CreateCompany');
         // await setAuthMutationClient({ variables: { isAuthed: true } });
->>>>>>> 1be836242ef315477cbfd2799a17caf8d3347e4e
       } catch (error) {
         Alert.alert(error.message);
       }

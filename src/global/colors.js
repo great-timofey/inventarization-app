@@ -28,7 +28,7 @@ export default {
     placeholderWhite: '#C8C8C8',
   },
   header: {
-    newOrganization: '#414B6A',
+    createCompany: '#414B6A',
     grayButtonText: '#5C5C5C',
     bluebuttonText: '#42BCF8',
   },

@@ -21,7 +21,7 @@ export default StyleSheet.create({
     textAlign: 'center',
     marginBottom: normalize(25),
     fontFamily: fonts.proDisplay.light,
-    color: colors.header.newOrganization,
+    color: colors.header.createCompany,
   },
   inviteeContainer: {
     height: normalize(40),

@@ -25,7 +25,7 @@ const inputTypes = {
     label: 'Имя',
     require: false,
   },
-  orgName: {
+  companyName: {
     label: 'Название организации',
     require: false,
   },
@@ -70,7 +70,7 @@ const buttonTitles = {
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
-  createOrganization: 'Создать организацию',
+  createCompany: 'Создать организацию',
 };
 
 const forgotPassText = {
@@ -88,7 +88,7 @@ const setNewPassword = {
 const errors = {
   login: {
     name: 'Введите имя',
-    orgName: 'Введите название вашей организации',
+    companyName: 'Введите название вашей организации',
     email: 'Вы указали неверный email',
     emailEmpty: 'Введите email',
     password:
@@ -104,7 +104,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
-  newOrganization: 'Создание новой \n организации',
+  newCompany: 'Создание новой \n организации',
 };
 
 const text = {

@@ -98,13 +98,8 @@ const authStack = {
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
-<<<<<<< HEAD
   [SCENE_NAMES.CreateCompanySceneName]: {
     screen: CreateCompany,
-=======
-  [SCENE_NAMES.CreateOrganizationSceneName]: {
-    screen: CreateOrganization,
->>>>>>> 1be836242ef315477cbfd2799a17caf8d3347e4e
   },
   [SCENE_NAMES.UnorganizedSceneName]: {
     screen: Unorganized,
