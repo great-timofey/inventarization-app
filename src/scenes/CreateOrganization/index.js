@@ -171,6 +171,7 @@ class CreateOrganization extends PureComponent<Props, State> {
       isModalVisible,
       chosenPhotoUri,
     } = this.state;
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" />
@@ -220,8 +221,8 @@ class CreateOrganization extends PureComponent<Props, State> {
           horizontal
           data={invitees}
           style={styles.inviteeList}
-          renderItem={this.renderInvitee}
           keyExtractor={item => item}
+          renderItem={this.renderInvitee}
           showsHorizontalScrollIndicator={false}
         />
         <Button
