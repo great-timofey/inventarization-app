@@ -7,15 +7,16 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 
+import QRScene from 'scenes/QRScan';
 import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
-import Question from 'scenes/Auth/Question';
+import PlacesScene from 'scenes/Places';
 import PeopleScene from 'scenes/People';
 import CameraScene from 'scenes/Camera';
-import PlacesScene from 'scenes/Places';
-import Organisation from 'scenes/Auth/Organisation';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
+import Question from 'scenes/Auth/Question';
+import Organisation from 'scenes/Auth/Organisation';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
 import * as SCENE_NAMES from 'navigation/scenes';
@@ -111,6 +112,9 @@ const authStack = {
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: CameraScene,
+  },
+  [SCENE_NAMES.QRScanSceneName]: {
+    screen: QRScene,
   },
 };
 

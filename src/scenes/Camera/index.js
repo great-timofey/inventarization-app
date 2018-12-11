@@ -71,14 +71,6 @@ class CameraScene extends Component<CameraSceneProps, CameraSceneState> {
             </Text>
           </TouchableOpacity>
         </View>
-        <RNCamera
-          ref={ref => {
-            this.camera = ref;
-          }}
-          type={type}
-          flashMode={flashMode}
-          style={styles.preview}
-        />
         <View style={styles.bottomSection}>
           <TouchableOpacity onPress={this.returnBack}>
             <Text style={{ color: colors.white }}>

@@ -32,7 +32,8 @@
     "react-native-swipeout": "^2.3.6",
     "react-native-text-input-mask": "github:allmaxgit/react-native-text-input-mask",
     "react-native-vector-icons": "^6.1.0",
-    "react-navigation": "^3.0.0"
+    "react-navigation": "^3.0.0",
+    "react-native-qrcode-scanner": "^1.1.0"
   },
   "devDependencies": {
     "apollo-link-error": "^1.1.2",

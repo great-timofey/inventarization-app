@@ -304,10 +304,8 @@ class Login extends PureComponent<Props, State> {
                 ? constants.buttonTitles.reg
                 : constants.buttonTitles.login
             }
-            isDisable={
-              !utils.isValidLoginForm(email, password, name, isRegForm)
-            }
-            onPress={this.onSubmitForm}
+            isDisable={false}
+            onPress={() => this.props.navigation.navigate('QRScan')}
           />
         </KeyboardAwareScrollView>
         <PickPhotoModal
