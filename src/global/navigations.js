@@ -104,9 +104,6 @@ const authStack = {
   [SCENE_NAMES.QuestionSceneName]: {
     screen: Question,
   },
-  [SCENE_NAMES.SetNewPasswordSceneName]: {
-    screen: SetNewPassword,
-  },
   [SCENE_NAMES.ForgotPasswordSceneName]: {
     screen: ForgotPassword,
   },
