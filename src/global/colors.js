@@ -25,11 +25,16 @@ export default {
     blue: '#42BCF8',
     inputTitle: '#616161',
     placeholder: '#3F3F3F',
+    placeholderWhite: '#C8C8C8',
   },
   header: {
     newOrganization: '#414B6A',
     grayButtonText: '#5C5C5C',
     bluebuttonText: '#42BCF8',
+  },
+  input: {
+    whiteBG: '#FBFBFB',
+    whiteTitle: '#B9B9B9',
   },
   border: '#E4E4E4',
 };

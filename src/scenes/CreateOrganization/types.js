@@ -1,10 +1,12 @@
 // @flow
 
 export type State = {
-  invitees: Array<string>,
-  chosenPhotoUri: string,
-  isModalVisible: boolean,
+  orgName: string,
   currentInvitee: string,
+  chosenPhotoUri: string,
+  invitees: Array<string>,
+  warnings: Array<string>,
+  isModalVisible: boolean,
 };
 
 export type Props = {

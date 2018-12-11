@@ -12,7 +12,9 @@ export default StyleSheet.create({
     backgroundColor: colors.backGroundBlack,
   },
   bigLogo: {
+    alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: normalize(50),
   },
   logoImage: {
     width: normalize(82),

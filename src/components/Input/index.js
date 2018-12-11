@@ -2,9 +2,7 @@
 
 import React, { Component } from 'react';
 import TextInputMask from 'react-native-text-input-mask';
-import { View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
-
-import utils from 'global/utils';
+import { View, Text, TextInput } from 'react-native';
 
 import colors from 'global/colors';
 
@@ -16,8 +14,6 @@ const KEY_TYPES = {
   NEXT: 'next',
 };
 
-const isEmpty = value => value === '';
-
 class Input extends Component<Props> {
   static defaultProps = {
     autoCorrect: false,
@@ -26,8 +22,15 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { value } = this.props;
-    return !(nextProps.value === value);
+    const { returnKeyType, value, isWarning } = this.props;
+    if (
+      nextProps.value !== value ||
+      nextProps.returnKeyType !== returnKeyType ||
+      nextProps.isWarning !== isWarning
+    ) {
+      return true;
+    }
+    return false;
   }
 
   render() {
@@ -35,41 +38,48 @@ class Input extends Component<Props> {
       mask,
       type,
       value,
+      isWhite,
       fieldRef,
-      focusField,
-      returnKeyType,
+      children,
+      isWarning,
       onSubmitForm,
+      returnKeyType,
       onSubmitEditing,
       ...textInputProps
     } = this.props;
 
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
 
-    let isValideValue = true;
-    if (type.require && !isEmpty(value)) {
-      isValideValue = utils.isValid(value, type);
-    }
-
     return (
-      <TouchableWithoutFeedback onPress={focusField}>
-        <View
-          style={[styles.container, !isValideValue && styles.invalidContainer]}
+      <View
+        style={[
+          styles.container,
+          isWhite && styles.whiteContainer,
+          children && styles.withButton,
+          isWarning && styles.invalidContainer,
+        ]}
+      >
+        <Text
+          style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}
         >
-          <Text style={styles.inputTitleText}>{type.label}</Text>
-          <CustomTextInput
-            {...textInputProps}
-            mask={mask}
-            value={value}
-            ref={fieldRef}
-            style={styles.input}
-            returnKeyType={returnKeyType}
-            placeholderTextColor={colors.text.placeholder}
-            onSubmitEditing={
-              returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
-            }
-          />
-        </View>
-      </TouchableWithoutFeedback>
+          {type.label}
+        </Text>
+        <CustomTextInput
+          {...textInputProps}
+          mask={mask}
+          value={value}
+          ref={fieldRef}
+          style={[styles.input, isWhite && styles.inputWhite]}
+          returnKeyType={returnKeyType}
+          placeholderTextColor={
+            isWhite ? colors.text.placeholderWhite : colors.text.placeholder
+          }
+          onSubmitEditing={
+            returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
+          }
+        />
+        {children}
+      </View>
     );
   }
 }

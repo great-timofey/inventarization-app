@@ -2,6 +2,7 @@
 
 export type State = {
   email: string,
+  warning: boolean,
   isRecoveryMailSend: boolean,
 };
 

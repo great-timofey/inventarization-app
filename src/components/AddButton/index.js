@@ -12,10 +12,11 @@ const AddButton = (props: Props) => (
     {...props}
     size={34}
     name="ios-add-circle"
-    color={colors.green}
+    color={colors.buttonGreen}
     activeOpacity={0.5}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
+    iconStyle={{ marginRight: 0 }}
   />
 );
 

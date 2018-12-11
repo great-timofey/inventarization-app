@@ -2,28 +2,33 @@
 
 import React, { PureComponent } from 'react';
 import {
-  TextInput,
-  Image,
-  View,
   Text,
-  TouchableOpacity,
+  View,
+  Image,
   FlatList,
+  StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 
 import R from 'ramda';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
+import Input from 'components/Input';
 import Button from 'components/Button';
+import Warning from 'components/Warning';
 import AddButton from 'components/AddButton';
+import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
+import utils from 'global/utils';
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
-import type { Props, State, InviteeProps } from './types';
+
 import styles from './styles';
+import type { Props, State, InviteeProps } from './types';
 
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
@@ -39,7 +44,14 @@ const RemoveInviteeButton = props => (
 );
 class CreateOrganization extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: [globalStyles.authHeaderStyle && styles.newOrganizationHeader],
+    headerStyle: [
+      globalStyles.authHeaderStyle,
+      { backgroundColor: colors.white },
+    ],
+    headerTitle: HeaderTitle({
+      title: constants.headers.newOrganization,
+      color: colors.header.newOrganization,
+    }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
     }),
@@ -49,7 +61,9 @@ class CreateOrganization extends PureComponent<Props, State> {
     super(props);
 
     this.state = {
+      orgName: '',
       invitees: [],
+      warnings: [],
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
@@ -103,11 +117,63 @@ class CreateOrganization extends PureComponent<Props, State> {
     </View>
   );
 
+  onChangeField = (field: string, value: string) => {
+    this.setState({
+      warnings: [],
+      [field]: value,
+    });
+  };
+
+  focusField = (ref: Object) => {
+    if (ref.input === undefined) {
+      ref.focus();
+    } else {
+      ref.input.focus();
+    }
+  };
+
+  checkValue = () => {
+    const { orgName, currentInvitee } = this.state;
+    const warnings = [];
+    if (!orgName) {
+      warnings.push('orgName');
+    }
+    if (!currentInvitee) {
+      warnings.push('emailEmpty');
+    } else if (!utils.isValid(currentInvitee, constants.regExp.email)) {
+      warnings.push('email');
+    }
+    this.setState({ warnings });
+  };
+
+  checkForErrors = () => {
+    const { warnings } = this.state;
+    if (warnings.length) return true;
+    return false;
+  };
+
+  checkForWarnings = () => {
+    const { warnings } = this.state;
+    if (warnings.length) {
+      return constants.errors.login[warnings[0]];
+    }
+    return '';
+  };
+
+  emailRef: any;
+
   render() {
-    const { invitees, isModalVisible, chosenPhotoUri } = this.state;
+    const {
+      orgName,
+      invitees,
+      warnings,
+      currentInvitee,
+      isModalVisible,
+      chosenPhotoUri,
+    } = this.state;
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{constants.headers.newOrganization}</Text>
+        <StatusBar barStyle="dark-content" />
         <View style={{ alignItems: 'center', marginBottom: 10 }}>
           <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
             {chosenPhotoUri ? (
@@ -121,35 +187,34 @@ class CreateOrganization extends PureComponent<Props, State> {
               </Text>
             )}
           </TouchableOpacity>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitleText}>Название организации</Text>
-            <TextInput
-              style={{
-                backgroundColor: '#FAFAFA',
-              }}
-              placeholder="Введите"
-              placeholderTextColor="#C8C8C8"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputTitleText}>Добавьте людей</Text>
-            <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            >
-              <TextInput
-                style={{
-                  backgroundColor: '#FAFAFA',
-                }}
-                placeholder="e-mail"
-                placeholderTextColor="#C8C8C8"
-                onChangeText={this.handleInputInvitee}
-              />
-              <AddButton
-                style={styles.inviteeRemove}
-                onPress={this.handleAddInvitee}
-              />
-            </View>
-          </View>
+          <Input
+            isWhite
+            value={orgName}
+            blurOnSubmit={false}
+            placeholder="Введите"
+            isWarning={warnings.includes('orgName')}
+            type={constants.inputTypes.orgName}
+            onSubmitEditing={() => this.focusField(this.emailRef)}
+            onChangeText={text => this.onChangeField('orgName', text)}
+          />
+          <Input
+            isWhite
+            value={currentInvitee}
+            fieldRef={ref => {
+              this.emailRef = ref;
+            }}
+            returnKeyType="go"
+            blurOnSubmit={false}
+            placeholder="e-mail"
+            onSubmitForm={this.handleAddInvitee}
+            type={constants.inputTypes.invitees}
+            isWarning={
+              warnings.includes('emailEmpty') || warnings.includes('email')
+            }
+            onChangeText={text => this.onChangeField('currentInvitee', text)}
+          >
+            <AddButton onPress={this.handleAddInvitee} />
+          </Input>
         </View>
         <FlatList
           horizontal
@@ -160,7 +225,7 @@ class CreateOrganization extends PureComponent<Props, State> {
           showsHorizontalScrollIndicator={false}
         />
         <Button
-          onPress={() => {}}
+          onPress={this.checkValue}
           title={constants.buttonTitles.createOrganization}
         />
         <PickPhotoModal
@@ -168,6 +233,10 @@ class CreateOrganization extends PureComponent<Props, State> {
           toggleModalCallback={this.toggleModal}
           navigationCallback={this.handleOpenCamera}
           setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
+        />
+        <Warning
+          isVisible={this.checkForErrors()}
+          title={this.checkForWarnings()}
         />
       </View>
     );

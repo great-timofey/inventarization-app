@@ -8,26 +8,26 @@ import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   buttonHeader: {
-    borderWidth: 1,
     borderRadius: 16,
     alignSelf: 'flex-start',
     marginTop: normalize(17),
     paddingVertical: normalize(7),
+    backgroundColor: colors.white,
     marginHorizontal: normalize(30),
     paddingHorizontal: normalize(14),
-    borderColor: colors.header.bluebuttonText,
   },
   inactiveHeaderBtn: {
-    borderColor: colors.black,
+    borderWidth: 1,
+    borderColor: colors.buttonBlue,
     backgroundColor: colors.black,
   },
   buttonText: {
     fontSize: normalize(14),
     lineHeight: normalize(16),
     fontFamily: fonts.proDisplay.regular,
-    color: colors.header.bluebuttonText,
+    color: colors.black,
   },
   inactiveHeaderBtnText: {
-    color: colors.header.grayButtonText,
+    color: colors.header.bluebuttonText,
   },
 });
