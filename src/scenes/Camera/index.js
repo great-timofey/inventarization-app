@@ -1,6 +1,6 @@
 //  @flow
 import React, { Component } from 'react';
-import { Text, Image, View, TouchableOpacity } from 'react-native';
+import { StatusBar, Text, Image, View, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
@@ -65,13 +65,14 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
     const { flashMode, type } = this.state;
     return (
       <View style={styles.container}>
+        <StatusBar hidden />
         <View style={styles.topSection}>
           <TouchableOpacity
             style={styles.flashButton}
             onPress={this.toggleFlash}
           >
             <Image source={icons.flash} style={styles.flashImage} />
-            <Text style={styles.flashTitle}>
+            <Text style={styles.buttonText}>
               {flashMode
                 ? constants.buttonTitles.on
                 : constants.buttonTitles.off}
@@ -88,17 +89,17 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
         />
         <View style={styles.bottomSection}>
           <TouchableOpacity onPress={this.returnBack}>
-            <Text style={{ color: colors.white }}>
+            <Text style={styles.buttonText}>
               {constants.buttonTitles.cancel}
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
-            <View style={styles.captureInner} />
           </TouchableOpacity>
           <TouchableOpacity onPress={this.flipCamera}>
             <Image source={icons.flip} style={styles.flipImage} />
           </TouchableOpacity>
         </View>
+        <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
+          <View style={styles.captureInner} />
+        </TouchableOpacity>
       </View>
     );
   }
