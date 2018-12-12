@@ -15,7 +15,7 @@ export const platformSelect = (ios?: Object, android?: Object) =>
 export const isEmpty = (value: string) => R.isEmpty(R.trim(value));
 
 export const isValid = (value: string, reg: RegExp) => {
-  if (!value) {
+  if (isEmpty(value)) {
     return false;
   }
   if (reg && reg.test(value)) {

@@ -37,6 +37,7 @@ import styles from './styles';
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
     {...props}
+    iconStyle={{ marginRight: 0 }}
     name="cancel"
     activeOpacity={0.5}
     color={colors.white}
@@ -248,8 +249,8 @@ class CreateCompany extends PureComponent<Props, State> {
             placeholder="e-mail"
             type={constants.inputTypes.invitees}
             isWarning={R.or(
-              R.includes('emailEmpty', warnings),
-              R.includes('email', warnings)
+              R.includes('email', warnings),
+              R.includes('emailEmpty', warnings)
             )}
             onChangeText={text => this.onChangeField('currentInvitee', text)}
             onSubmitEditing={() => Keyboard.dismiss()}
