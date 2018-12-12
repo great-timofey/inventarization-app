@@ -12,11 +12,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import R from 'ramda';
 import { graphql, compose } from 'react-apollo';
 import ImageResizer from 'react-native-image-resizer';
 import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
 import Input from 'components/Input';
 import Button from 'components/Button';
@@ -26,11 +26,11 @@ import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
-import { normalize, isValid } from 'global/utils';
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
+import { normalize, isValid } from 'global/utils';
 import * as MUTATIONS from 'graphql/auth/mutations';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
@@ -89,11 +89,11 @@ class CreateCompany extends PureComponent<Props, State> {
     if (isValid(currentInvitee, constants.regExp.email)) {
       this.setState({
         currentInvitee: '',
-        invitees: R.concat(invitees, [currentInvitee]),
+        invitees: concat(invitees, [currentInvitee]),
       });
     } else {
       this.setState(state =>
-        R.assoc(['warnings'], R.concat(state.warnings, ['email']), state)
+        assoc(['warnings'], concat(state.warnings, ['email']), state)
       );
     }
   };
@@ -101,7 +101,7 @@ class CreateCompany extends PureComponent<Props, State> {
   handleRemoveInvitee = (index: number) => {
     const { invitees } = this.state;
     this.setState({
-      invitees: R.remove(index, 1, invitees),
+      invitees: remove(index, 1, invitees),
     });
   };
 
@@ -186,12 +186,12 @@ class CreateCompany extends PureComponent<Props, State> {
     const { companyName } = this.state;
     const warnings = [];
 
-    if (!R.trim(companyName)) {
+    if (!trim(companyName)) {
       warnings.push('companyName');
     }
 
     this.setState({ warnings }, () => {
-      if (R.isEmpty(warnings)) this.handleCreateCompany();
+      if (isEmpty(warnings)) this.handleCreateCompany();
     });
   };
 
@@ -236,7 +236,7 @@ class CreateCompany extends PureComponent<Props, State> {
             value={companyName}
             blurOnSubmit={false}
             placeholder="Введите"
-            isWarning={R.includes('companyName', warnings)}
+            isWarning={includes('companyName', warnings)}
             type={constants.inputTypes.companyName}
             onSubmitEditing={() => this.focusField(this.emailRef)}
             onChangeText={text => this.onChangeField('companyName', text)}
@@ -250,9 +250,9 @@ class CreateCompany extends PureComponent<Props, State> {
             blurOnSubmit={false}
             placeholder="e-mail"
             type={constants.inputTypes.invitees}
-            isWarning={R.or(
-              R.includes('email', warnings),
-              R.includes('emailEmpty', warnings)
+            isWarning={or(
+              includes('email', warnings),
+              includes('emailEmpty', warnings)
             )}
             onChangeText={text => this.onChangeField('currentInvitee', text)}
             onSubmitEditing={() => Keyboard.dismiss()}
