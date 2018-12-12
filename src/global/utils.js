@@ -44,6 +44,8 @@ export const normalizeInt = (value: any) => Math.round(value * scale);
 export default {
   isEmpty,
   isValid,
+  normalize,
+  normalizeInt,
   getPlaceholder,
   platformSelect,
   isValidPassword,
