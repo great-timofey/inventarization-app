@@ -104,7 +104,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
-  newCompany: 'Создание новой \n организации',
+  createNewCompany: 'Создание новой \n организации',
 };
 
 const text = {

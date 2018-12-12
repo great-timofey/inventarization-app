@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
+  Alert,
   Image,
   Keyboard,
   FlatList,
@@ -55,7 +56,7 @@ class CreateCompany extends PureComponent<Props, State> {
     ],
     headerTitle: HeaderTitle({
       color: colors.header.createCompany,
-      title: constants.headers.newCompany,
+      title: constants.headers.createNewCompany,
     }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
@@ -117,7 +118,9 @@ class CreateCompany extends PureComponent<Props, State> {
     try {
       let file = '';
       if (chosenPhotoUri) {
-        const type = chosenPhotoUri.slice(-3);
+        const type = chosenPhotoUri
+          .slice(chosenPhotoUri.lastIndexOf('=') + 1)
+          .toUpperCase();
         const response = await ImageResizer.createResizedImage(
           chosenPhotoUri,
           constants.uploadCreateCompanyImages.width,
@@ -133,14 +136,13 @@ class CreateCompany extends PureComponent<Props, State> {
         });
       }
 
-      const result = await createCompany({
+      await createCompany({
         variables: { name, logo: file, inviters },
       });
-      console.log('result of creating: ', result);
 
       await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
-      console.dir(error);
+      Alert.alert(error.message);
     }
   };
 
