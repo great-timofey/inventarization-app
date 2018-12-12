@@ -1,6 +1,9 @@
 // @flow
-import constants from 'global/constants';
+
+import { isEmpty as rIsEmpty, trim } from 'ramda';
+
 import { Platform } from 'react-native';
+import constants from 'global/constants';
 import { deviceWidth } from 'global/device';
 
 export const getPlaceholder = (size: number) =>
@@ -9,10 +12,10 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const isEmpty = (value: string) => value === '';
+export const isEmpty = (value: string) => rIsEmpty(trim(value));
 
-const isValid = (value: string, reg: RegExp) => {
-  if (!value) {
+export const isValid = (value: string, reg: RegExp) => {
+  if (isEmpty(value)) {
     return false;
   }
   if (reg && reg.test(value)) {
@@ -21,7 +24,7 @@ const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-const isValidPassword = (password: string, confirmPassword: string) => {
+export const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid =
     password && isValid(password, constants.regExp.password);
   const isConfirmPasswordValid =
@@ -44,6 +47,8 @@ export const normalizeInt = (value: any) => Math.round(value * scale);
 export default {
   isEmpty,
   isValid,
+  normalize,
+  normalizeInt,
   getPlaceholder,
   platformSelect,
   isValidPassword,

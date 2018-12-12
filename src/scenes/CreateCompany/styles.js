@@ -10,26 +10,26 @@ import { deviceWidth, deviceHeight } from 'global/device';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: normalize(30),
     paddingTop: normalize(23),
-    paddingHorizontal: normalize(20),
+    paddingBottom: normalize(30),
     backgroundColor: colors.white,
     justifyContent: 'space-between',
+    paddingHorizontal: normalize(20),
   },
   title: {
-    fontSize: normalize(22),
     textAlign: 'center',
+    fontSize: normalize(22),
     marginBottom: normalize(25),
     fontFamily: fonts.proDisplay.light,
-    color: colors.header.newOrganization,
+    color: colors.header.createCompany,
   },
   inviteeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     height: normalize(40),
     marginLeft: normalize(10),
     paddingLeft: normalize(20),
     borderRadius: normalize(30),
-    flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.buttonInvitee,
   },
@@ -38,18 +38,19 @@ export default StyleSheet.create({
   },
   inviteeRemove: {
     padding: 0,
+    marginRight: normalize(3),
   },
   inviteeTitle: {
     color: colors.white,
   },
   photo: {
-    width: normalize(110),
-    height: normalize(110),
-    borderRadius: normalize(55),
-    marginBottom: normalize(30),
     overflow: 'hidden',
     alignItems: 'center',
+    width: normalize(110),
+    height: normalize(110),
     justifyContent: 'center',
+    borderRadius: normalize(55),
+    marginBottom: normalize(30),
     backgroundColor: colors.buttonChooseLogo,
   },
   chosenPhoto: {
@@ -57,9 +58,9 @@ export default StyleSheet.create({
     height: deviceHeight,
   },
   photoHint: {
-    fontSize: normalize(18),
     color: '#818181',
     textAlign: 'center',
+    fontSize: normalize(18),
     fontFamily: fonts.proDisplay.light,
   },
 });

@@ -18,7 +18,7 @@ import Question from 'scenes/Auth/Question';
 import Unorganized from 'scenes/Unorganized';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
-import CreateOrganization from 'scenes/CreateOrganization';
+import CreateCompany from 'scenes/CreateCompany';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';
@@ -98,8 +98,8 @@ const authStack = {
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
-  [SCENE_NAMES.CreateOrganizationSceneName]: {
-    screen: CreateOrganization,
+  [SCENE_NAMES.CreateCompanySceneName]: {
+    screen: CreateCompany,
   },
   [SCENE_NAMES.UnorganizedSceneName]: {
     screen: Unorganized,

@@ -10,6 +10,12 @@ const masks = {
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
+const uploadCreateCompanyImages = {
+  width: 110,
+  height: 110,
+  quality: 0.5,
+};
+
 const placeHolders = {
   mobileNumber: '+7 (___) ___-__-__',
 };
@@ -19,7 +25,7 @@ const inputTypes = {
     label: 'Имя',
     require: false,
   },
-  orgName: {
+  companyName: {
     label: 'Название организации',
     require: false,
   },
@@ -64,7 +70,7 @@ const buttonTitles = {
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
-  createOrganization: 'Создать организацию',
+  createCompany: 'Создать организацию',
 };
 
 const forgotPassText = {
@@ -82,7 +88,7 @@ const setNewPassword = {
 const errors = {
   login: {
     name: 'Введите имя',
-    orgName: 'Введите название вашей организации',
+    companyName: 'Введите название вашей организации',
     email: 'Вы указали неверный email',
     emailEmpty: 'Введите email',
     password:
@@ -98,7 +104,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
-  newOrganization: 'Создание новой \n организации',
+  createNewCompany: 'Создание новой \n организации',
 };
 
 const text = {
@@ -117,4 +123,5 @@ export default {
   placeHolders,
   forgotPassText,
   setNewPassword,
+  uploadCreateCompanyImages,
 };

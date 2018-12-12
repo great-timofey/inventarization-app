@@ -2,6 +2,8 @@
 
 import React, { PureComponent } from 'react';
 import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
+
+import R from 'ramda';
 import { compose, graphql } from 'react-apollo';
 
 import Logo from 'components/Logo';
@@ -11,9 +13,9 @@ import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
-import utils from 'global/utils';
 import Styles from 'global/styles';
 import constants from 'global/constants';
+import { isValid, isEmpty } from 'global/utils';
 import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
 
@@ -84,10 +86,9 @@ class Login extends PureComponent<Props, State> {
   onToggleForm = (isRegForm: boolean) => {
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
-    this.setState({
-      ...initialState,
-      isRegForm: !isRegForm,
-    });
+    this.setState(state =>
+      R.assoc('isRegForm', !state.isRegForm, initialState)
+    );
     Keyboard.dismiss();
   };
 
@@ -108,19 +109,19 @@ class Login extends PureComponent<Props, State> {
   checkValue = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
     const warnings = [];
-    if (isRegForm && utils.isEmpty(name)) {
+    if (isRegForm && isEmpty(name)) {
       warnings.push('name');
     }
-    if (!utils.isValid(email, constants.regExp.email)) {
+    if (!isValid(email, constants.regExp.email)) {
       warnings.push('email');
     }
-    if (!utils.isValid(password, constants.regExp.password)) {
+    if (!isValid(password, constants.regExp.password)) {
       warnings.push('password');
     }
     if (
       isRegForm &&
       mobile &&
-      !utils.isValid(mobile, constants.regExp.mobileNumber)
+      !isValid(mobile, constants.regExp.mobileNumber)
     ) {
       warnings.push('mobile');
     }
@@ -129,13 +130,14 @@ class Login extends PureComponent<Props, State> {
 
   onSubmitForm = async () => {
     const {
-      isRegForm,
       email,
       password,
+      isRegForm,
       name: fullName,
       mobile: phoneNumber,
     } = this.state;
     const {
+      navigation,
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
@@ -149,19 +151,23 @@ class Login extends PureComponent<Props, State> {
 
     if (!isFormInvalid) {
       try {
-        const variables = { email, password, fullName };
+        const variables = {
+          email,
+          password,
+          fullName,
+        };
         if (phoneNumber) variables.phoneNumber = phoneNumber;
 
         const { data } = await (isRegForm
           ? signUpMutation({ variables })
           : signInMutation({ variables }));
 
-        console.log(data);
-
         await AsyncStorage.setItem(
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
+
+        navigation.navigate('CreateCompany');
         // await setAuthMutationClient({ variables: { isAuthed: true } });
       } catch (error) {
         Alert.alert(error.message);

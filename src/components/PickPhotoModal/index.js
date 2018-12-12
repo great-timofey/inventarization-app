@@ -4,6 +4,7 @@ import {
   Text,
   View,
   Alert,
+  Image,
   FlatList,
   CameraRoll,
   ImageBackground,
@@ -12,11 +13,13 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
+import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 
 import assets from 'global/assets';
 import constants from 'global/constants';
 import type { ModalProps, ModalState, PhotoType } from './types';
+
 import styles from './styles';
 
 class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
@@ -29,7 +32,9 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
     CameraRoll.getPhotos({
       first: 20,
       assetType: 'All',
-    }).then(data => this.setState({ photos: [photos[0], ...data.edges] }));
+    }).then(data => {
+      this.setState({ photos: [photos[0], ...data.edges] });
+    });
   }
 
   handleTakePhoto = () => {
@@ -43,12 +48,15 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
   };
 
   handleOpenImageGallery = () => {
+    const options = {
+      quality: 0.5,
+    };
     //  $FlowFixMe
-    ImagePicker.launchImageLibrary({}, response => {
+    ImagePicker.launchImageLibrary(options, response => {
       if (response.error) {
         Alert.alert(constants.errors.camera.photo);
       } else {
-        this.handleChoosePhoto(response.uri);
+        this.handleChoosePhoto(response.origURL);
       }
     });
   };
@@ -68,7 +76,13 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
           style={styles.photoBackgroundImage}
         />
       ) : (
-        <ImageBackground source={assets.camera} style={styles.cameraIcon} />
+        <ImageBackground
+          source={assets.camera}
+          style={styles.cameraIconContainer}
+        >
+          <RNCamera />
+          <Image source={assets.cameraIcon} style={styles.cameraIcon} />
+        </ImageBackground>
       )}
     </TouchableOpacity>
   );

@@ -1,7 +1,8 @@
 // @flow
 
 export type State = {
-  orgName: string,
+  companyName: string,
+  invitees: Array<string>,
   currentInvitee: string,
   chosenPhotoUri: string,
   invitees: Array<string>,
@@ -11,6 +12,8 @@ export type State = {
 
 export type Props = {
   navigation: Object,
+  createCompany: Function,
+  setAuthMutationClient: Function,
 };
 
 export type InviteeProps = {

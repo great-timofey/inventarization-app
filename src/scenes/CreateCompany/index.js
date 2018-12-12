@@ -4,14 +4,19 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
+  Alert,
   Image,
+  Keyboard,
   FlatList,
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
 
-import R from 'ramda';
+import { graphql, compose } from 'react-apollo';
+import ImageResizer from 'react-native-image-resizer';
+import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
 import Input from 'components/Input';
 import Button from 'components/Button';
@@ -21,36 +26,37 @@ import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
-import utils from 'global/utils';
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
-
-import styles from './styles';
+import { normalize, isValid } from 'global/utils';
+import * as MUTATIONS from 'graphql/auth/mutations';
 import type { Props, State, InviteeProps } from './types';
+import styles from './styles';
 
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
     {...props}
-    size={34}
+    iconStyle={{ marginRight: 0 }}
     name="cancel"
     activeOpacity={0.5}
     color={colors.white}
+    size={normalize(34)}
     style={styles.inviteeRemove}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
   />
 );
-class CreateOrganization extends PureComponent<Props, State> {
+class CreateCompany extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [
       globalStyles.authHeaderStyle,
       { backgroundColor: colors.white },
     ],
     headerTitle: HeaderTitle({
-      title: constants.headers.newOrganization,
-      color: colors.header.newOrganization,
+      color: colors.header.createCompany,
+      title: constants.headers.createNewCompany,
     }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
@@ -61,9 +67,9 @@ class CreateOrganization extends PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      orgName: '',
       invitees: [],
       warnings: [],
+      companyName: '',
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
@@ -79,25 +85,66 @@ class CreateOrganization extends PureComponent<Props, State> {
   };
 
   handleAddInvitee = () => {
-    this.checkValue();
     const { invitees, currentInvitee } = this.state;
-    if (utils.isValid(currentInvitee, constants.regExp.email)) {
+    if (isValid(currentInvitee, constants.regExp.email)) {
       this.setState({
         currentInvitee: '',
-        invitees: R.concat(invitees, [currentInvitee]),
+        invitees: concat(invitees, [currentInvitee]),
       });
+    } else {
+      this.setState(state =>
+        assoc(['warnings'], concat(state.warnings, ['email']), state)
+      );
     }
   };
 
   handleRemoveInvitee = (index: number) => {
     const { invitees } = this.state;
     this.setState({
-      invitees: R.remove(index, 1, invitees),
+      invitees: remove(index, 1, invitees),
     });
   };
 
   handleInputInvitee = (currentInvitee: string) =>
     this.setState({ currentInvitee });
+
+  handleInputCompanyName = (companyName: string) =>
+    this.setState({ companyName });
+
+  handleCreateCompany = async () => {
+    const { createCompany, setAuthMutationClient } = this.props;
+    const { invitees, companyName: name, chosenPhotoUri } = this.state;
+    const inviters = invitees.map(email => ({ email, role: 'employee' }));
+    try {
+      let file = '';
+      if (chosenPhotoUri) {
+        const type = chosenPhotoUri
+          .slice(chosenPhotoUri.lastIndexOf('=') + 1)
+          .toUpperCase();
+        const response = await ImageResizer.createResizedImage(
+          chosenPhotoUri,
+          constants.uploadCreateCompanyImages.width,
+          constants.uploadCreateCompanyImages.height,
+          type === 'JPG' ? 'JPEG' : type,
+          constants.uploadCreateCompanyImages.quality
+        );
+
+        file = new ReactNativeFile({
+          uri: response.uri.replace('file://', ''),
+          name: 'a.jpg',
+          type: type === 'JPG' ? 'image/jpeg' : 'image/png',
+        });
+      }
+
+      await createCompany({
+        variables: { name, logo: file, inviters },
+      });
+
+      await setAuthMutationClient({ variables: { isAuthed: true } });
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
 
   setPhotoUriCameraCallback = (uri: string) => {
     this.setState({ chosenPhotoUri: uri });
@@ -135,24 +182,17 @@ class CreateOrganization extends PureComponent<Props, State> {
     }
   };
 
-  checkValue = () => {
-    const { orgName, currentInvitee } = this.state;
+  validateInput = () => {
+    const { companyName } = this.state;
     const warnings = [];
-    if (!orgName) {
-      warnings.push('orgName');
-    }
-    if (!currentInvitee) {
-      warnings.push('emailEmpty');
-    } else if (!utils.isValid(currentInvitee, constants.regExp.email)) {
-      warnings.push('email');
-    }
-    this.setState({ warnings });
-  };
 
-  checkForErrors = () => {
-    const { warnings } = this.state;
-    if (warnings.length) return true;
-    return false;
+    if (!trim(companyName)) {
+      warnings.push('companyName');
+    }
+
+    this.setState({ warnings }, () => {
+      if (isEmpty(warnings)) this.handleCreateCompany();
+    });
   };
 
   checkForWarnings = () => {
@@ -167,9 +207,9 @@ class CreateOrganization extends PureComponent<Props, State> {
 
   render() {
     const {
-      orgName,
       invitees,
       warnings,
+      companyName,
       currentInvitee,
       isModalVisible,
       chosenPhotoUri,
@@ -193,13 +233,13 @@ class CreateOrganization extends PureComponent<Props, State> {
           </TouchableOpacity>
           <Input
             isWhite
-            value={orgName}
+            value={companyName}
             blurOnSubmit={false}
             placeholder="Введите"
-            isWarning={warnings.includes('orgName')}
-            type={constants.inputTypes.orgName}
+            isWarning={includes('companyName', warnings)}
+            type={constants.inputTypes.companyName}
             onSubmitEditing={() => this.focusField(this.emailRef)}
-            onChangeText={text => this.onChangeField('orgName', text)}
+            onChangeText={text => this.onChangeField('companyName', text)}
           />
           <Input
             isWhite
@@ -207,15 +247,15 @@ class CreateOrganization extends PureComponent<Props, State> {
             fieldRef={ref => {
               this.emailRef = ref;
             }}
-            returnKeyType="go"
             blurOnSubmit={false}
             placeholder="e-mail"
-            onSubmitForm={this.handleAddInvitee}
             type={constants.inputTypes.invitees}
-            isWarning={
-              warnings.includes('emailEmpty') || warnings.includes('email')
-            }
+            isWarning={or(
+              includes('email', warnings),
+              includes('emailEmpty', warnings)
+            )}
             onChangeText={text => this.onChangeField('currentInvitee', text)}
+            onSubmitEditing={() => Keyboard.dismiss()}
           >
             <AddButton onPress={this.handleAddInvitee} />
           </Input>
@@ -229,8 +269,8 @@ class CreateOrganization extends PureComponent<Props, State> {
           showsHorizontalScrollIndicator={false}
         />
         <Button
-          onPress={this.checkValue}
-          title={constants.buttonTitles.createOrganization}
+          onPress={this.validateInput}
+          title={constants.buttonTitles.createCompany}
         />
         <PickPhotoModal
           isModalVisible={isModalVisible}
@@ -239,7 +279,7 @@ class CreateOrganization extends PureComponent<Props, State> {
           setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
         />
         <Warning
-          isVisible={this.checkForErrors()}
+          isVisible={warnings.length > 0}
           title={this.checkForWarnings()}
         />
       </View>
@@ -247,4 +287,11 @@ class CreateOrganization extends PureComponent<Props, State> {
   }
 }
 
-export default CreateOrganization;
+export default compose(
+  graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
+    name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.CREATE_COMPANY_MUTATION, {
+    name: 'createCompany',
+  })
+)(CreateCompany);
