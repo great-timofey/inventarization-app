@@ -183,7 +183,7 @@ class CreateCompany extends PureComponent<Props, State> {
     const { companyName } = this.state;
     const warnings = [];
 
-    if (!companyName.trim()) {
+    if (!R.trim(companyName)) {
       warnings.push('companyName');
     }
 

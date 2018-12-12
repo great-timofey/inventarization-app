@@ -1,7 +1,9 @@
 // @flow
 
-import constants from 'global/constants';
+import R from 'ramda';
+
 import { Platform } from 'react-native';
+import constants from 'global/constants';
 import { deviceWidth } from 'global/device';
 
 export const getPlaceholder = (size: number) =>
@@ -10,7 +12,7 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const isEmpty = (value: string) => value === '';
+export const isEmpty = (value: string) => R.isEmpty(R.trim(value));
 
 export const isValid = (value: string, reg: RegExp) => {
   if (!value) {
