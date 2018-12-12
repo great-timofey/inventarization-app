@@ -1,7 +1,11 @@
+//  @flow
+
 import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
+import { normalize } from 'global/utils';
+import { deviceWidth, deviceHeight } from 'global/device';
 
 export default StyleSheet.create({
   header: {
@@ -17,6 +21,7 @@ export default StyleSheet.create({
   backButton: {
     width: 28,
     height: 20,
+    tintColor: colors.white,
   },
   skipButtonText: {
     fontSize: 18,
@@ -27,34 +32,53 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     position: 'relative',
-    backgroundColor: colors.black,
+    backgroundColor: colors.green,
+  },
+  overlay: {
+    top: 0,
+    zIndex: 3,
+    width: deviceWidth,
+    borderTopWidth: 90,
+    borderLeftWidth: 50,
+    borderRightWidth: 50,
+    position: 'absolute',
+    borderBottomWidth: 120,
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(0, 0, 0, 0.3)',
+    height: deviceHeight - normalize(165),
+  },
+  overlayInner: {
+    zIndex: 2,
+    borderRadius: 20,
+    top: normalize(105),
+    left: normalize(50),
+    overflow: 'hidden',
+    position: 'absolute',
+    width: normalize(276),
+    height: normalize(278),
+    backgroundColor: 'red',
   },
   hintContainer: {
-    height: 80,
-    marginTop: 20,
     paddingVertical: 15,
     paddingHorizontal: 30,
+    height: normalize(80),
+    marginTop: normalize(20),
   },
   hintText: {
-    fontSize: 18,
+    fontSize: normalize(18),
     color: colors.white,
     textAlign: 'center',
     fontFamily: fonts.proDisplay.regular,
   },
-  // scannerContainer: {
-  //   flex: 1,
-  //   overflow: 'hidden',
-  //   alignItems: 'center',
-  //   backgroundColor: 'rgba(0,0,0,0.1)',
-  // },
   scannerCameraStyle: {
     flex: 1,
     alignSelf: 'center',
   },
   makePhotoButton: {
-    width: 66,
-    height: 66,
-    bottom: 110,
+    width: normalize(66),
+    height: normalize(66),
+    bottom: normalize(110),
+    zIndex: 5,
     borderRadius: 33,
     position: 'absolute',
     alignItems: 'center',
@@ -68,8 +92,9 @@ export default StyleSheet.create({
     tintColor: colors.backGroundBlack,
   },
   flashButton: {
+    zIndex: 5,
     left: 60,
-    bottom: 110,
+    bottom: normalize(110),
     position: 'absolute',
   },
   flashIcon: {

@@ -1,19 +1,20 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   View,
-  Image,
   Text,
-  ActivityIndicator,
+  Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
+import Modal from 'react-native-modal';
 import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
-import QRView from 'react-native-qrcode-svg';
-import { RNCamera } from 'react-native-camera';
-import Barcode from 'react-native-barcode-builder';
+// import QRView from 'react-native-qrcode-svg';
+// import { RNCamera } from 'react-native-camera';
+// import Barcode from 'react-native-barcode-builder';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import assets from 'global/assets';
@@ -23,25 +24,21 @@ import type { Props, State } from './types';
 import styles from './styles';
 
 class QRCode extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: { navigation: Object }) => {
-    return {
-      title: constants.headers.qrscanner,
-      headerTitleStyle: styles.headerTitleStyle,
-      headerStyle: styles.header,
-      headerLeft: (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={assets.headerBackArrow} style={styles.backButton} />
-        </TouchableOpacity>
-      ),
-      headerRight: (
-        <TouchableOpacity>
-          <Text style={styles.skipButtonText}>
-            {constants.buttonTitles.skip}
-          </Text>
-        </TouchableOpacity>
-      ),
-    };
-  };
+  static navigationOptions = ({ navigation }: Props) => ({
+    title: constants.headers.qrscanner,
+    headerTitleStyle: styles.headerTitleStyle,
+    headerStyle: styles.header,
+    headerLeft: (
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Image source={assets.headerBackArrow} style={styles.backButton} />
+      </TouchableOpacity>
+    ),
+    headerRight: (
+      <TouchableOpacity>
+        <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
+      </TouchableOpacity>
+    ),
+  });
 
   constructor(props: Props) {
     super(props);
@@ -52,14 +49,16 @@ class QRCode extends PureComponent<Props, State> {
   }
 
   toggleTorch = () => {
-    this.setState(state => assoc(state.isTorchOn, !state.isTorchOn, state));
+    const { isTorchOn } = this.state;
+    this.setState(state => assoc('isTorchOn', !state.isTorchOn, state));
     Torch.switchState(isTorchOn);
   };
 
   render() {
-    const { barcode, torchEnabled } = this.state;
     return (
       <View style={styles.container}>
+        <View style={styles.overlay} />
+        <View style={styles.overlayInner} />
         <QRCodeScanner
           reactivate
           reactivateTimeout={1000}
