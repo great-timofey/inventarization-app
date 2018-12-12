@@ -15,7 +15,7 @@ import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import Styles from 'global/styles';
 import constants from 'global/constants';
-import { isValid, isEmpty } from 'global/utils';
+import { isValid } from 'global/utils';
 import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
 
@@ -109,7 +109,7 @@ class Login extends PureComponent<Props, State> {
   checkValue = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
     const warnings = [];
-    if (isRegForm && isEmpty(name)) {
+    if (isRegForm && !name.trim()) {
       warnings.push('name');
     }
     if (!isValid(email, constants.regExp.email)) {

@@ -1,7 +1,5 @@
 // @flow
 
-import { isEmpty as rIsEmpty, trim } from 'ramda';
-
 import { Platform } from 'react-native';
 import constants from 'global/constants';
 import { deviceWidth } from 'global/device';
@@ -12,10 +10,8 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-export const isEmpty = (value: string) => rIsEmpty(trim(value));
-
 export const isValid = (value: string, reg: RegExp) => {
-  if (isEmpty(value)) {
+  if (!value.trim()) {
     return false;
   }
   if (reg && reg.test(value)) {
@@ -45,7 +41,6 @@ export const normalize = (value: any) => value * scale;
 export const normalizeInt = (value: any) => Math.round(value * scale);
 
 export default {
-  isEmpty,
   isValid,
   normalize,
   normalizeInt,
