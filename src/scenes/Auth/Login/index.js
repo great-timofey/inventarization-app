@@ -129,13 +129,14 @@ class Login extends PureComponent<Props, State> {
 
   onSubmitForm = async () => {
     const {
-      isRegForm,
       email,
       password,
+      isRegForm,
       name: fullName,
       mobile: phoneNumber,
     } = this.state;
     const {
+      navigation,
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
@@ -150,8 +151,8 @@ class Login extends PureComponent<Props, State> {
     if (!isFormInvalid) {
       try {
         const variables = {
-          email: 'tim@allmax.team',
-          password: 'Qwerty123',
+          email,
+          password,
           fullName,
         };
         if (phoneNumber) variables.phoneNumber = phoneNumber;
@@ -160,13 +161,12 @@ class Login extends PureComponent<Props, State> {
           ? signUpMutation({ variables })
           : signInMutation({ variables }));
 
-        console.log(data);
-
         await AsyncStorage.setItem(
           'token',
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
-        this.props.navigation.navigate('CreateCompany');
+
+        navigation.navigate('CreateCompany');
         // await setAuthMutationClient({ variables: { isAuthed: true } });
       } catch (error) {
         Alert.alert(error.message);
