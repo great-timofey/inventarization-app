@@ -1,4 +1,5 @@
 // @flow
+
 import constants from 'global/constants';
 import { Platform } from 'react-native';
 import { deviceWidth } from 'global/device';
@@ -11,7 +12,7 @@ export const platformSelect = (ios?: Object, android?: Object) =>
 
 const isEmpty = (value: string) => value === '';
 
-const isValid = (value: string, reg: RegExp) => {
+export const isValid = (value: string, reg: RegExp) => {
   if (!value) {
     return false;
   }
@@ -21,7 +22,7 @@ const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-const isValidPassword = (password: string, confirmPassword: string) => {
+export const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid =
     password && isValid(password, constants.regExp.password);
   const isConfirmPasswordValid =

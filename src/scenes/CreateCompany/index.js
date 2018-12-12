@@ -5,6 +5,7 @@ import {
   Text,
   View,
   Image,
+  Keyboard,
   FlatList,
   StatusBar,
   TouchableOpacity,
@@ -12,9 +13,9 @@ import {
 
 import R from 'ramda';
 import { graphql, compose } from 'react-apollo';
+import ImageResizer from 'react-native-image-resizer';
 import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import ImageResizer from 'react-native-image-resizer';
 
 import Input from 'components/Input';
 import Button from 'components/Button';
@@ -24,7 +25,7 @@ import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
 
-import utils from 'global/utils';
+import { normalize, isValid } from 'global/utils';
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
@@ -36,10 +37,10 @@ import styles from './styles';
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
     {...props}
-    size={34}
     name="cancel"
     activeOpacity={0.5}
     color={colors.white}
+    size={normalize(34)}
     style={styles.inviteeRemove}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
@@ -52,8 +53,8 @@ class CreateCompany extends PureComponent<Props, State> {
       { backgroundColor: colors.white },
     ],
     headerTitle: HeaderTitle({
-      title: constants.headers.createCompany,
       color: colors.header.createCompany,
+      title: constants.headers.newCompany,
     }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
@@ -82,13 +83,16 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleAddInvitee = () => {
-    this.validateInput();
     const { invitees, currentInvitee } = this.state;
-    if (utils.isValid(currentInvitee, constants.regExp.email)) {
+    if (isValid(currentInvitee, constants.regExp.email)) {
       this.setState({
         currentInvitee: '',
         invitees: R.concat(invitees, [currentInvitee]),
       });
+    } else {
+      this.setState(state =>
+        R.assoc(['warnings'], R.concat(state.warnings, ['email']), state)
+      );
     }
   };
 
@@ -124,7 +128,7 @@ class CreateCompany extends PureComponent<Props, State> {
         file = new ReactNativeFile({
           uri: response.uri.replace('file://', ''),
           name: 'a.jpg',
-          type: 'image/jpeg',
+          type: type === 'JPG' ? 'image/jpeg' : 'image/png',
         });
       }
 
@@ -132,7 +136,8 @@ class CreateCompany extends PureComponent<Props, State> {
         variables: { name, logo: file, inviters },
       });
       console.log('result of creating: ', result);
-      // await setAuthMutationClient({ variables: { isAuthed: true } });
+
+      await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.dir(error);
     }
@@ -175,27 +180,16 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   validateInput = () => {
-    const { companyName, currentInvitee, invitees } = this.state;
+    const { companyName } = this.state;
     const warnings = [];
-    console.log(invitees);
-    if (!companyName) {
+
+    if (!companyName.trim()) {
       warnings.push('companyName');
     }
-    if (!currentInvitee) {
-      warnings.push('emailEmpty');
-    } else if (!utils.isValid(currentInvitee, constants.regExp.email)) {
-      warnings.push('email');
-    }
-    this.setState({ warnings }, () => {
-      if (!this.checkForErrors()) console.log('no errors');
-      else console.log('error');
-    });
-  };
 
-  checkForErrors = () => {
-    const { warnings } = this.state;
-    if (warnings.length) return true;
-    return false;
+    this.setState({ warnings }, () => {
+      if (R.isEmpty(warnings)) this.handleCreateCompany();
+    });
   };
 
   checkForWarnings = () => {
@@ -239,7 +233,7 @@ class CreateCompany extends PureComponent<Props, State> {
             value={companyName}
             blurOnSubmit={false}
             placeholder="Введите"
-            isWarning={warnings.includes('companyName')}
+            isWarning={R.includes('companyName', warnings)}
             type={constants.inputTypes.companyName}
             onSubmitEditing={() => this.focusField(this.emailRef)}
             onChangeText={text => this.onChangeField('companyName', text)}
@@ -253,10 +247,12 @@ class CreateCompany extends PureComponent<Props, State> {
             blurOnSubmit={false}
             placeholder="e-mail"
             type={constants.inputTypes.invitees}
-            isWarning={
-              warnings.includes('emailEmpty') || warnings.includes('email')
-            }
+            isWarning={R.or(
+              R.includes('emailEmpty', warnings),
+              R.includes('email', warnings)
+            )}
             onChangeText={text => this.onChangeField('currentInvitee', text)}
+            onSubmitEditing={() => Keyboard.dismiss()}
           >
             <AddButton onPress={this.handleAddInvitee} />
           </Input>
@@ -280,7 +276,7 @@ class CreateCompany extends PureComponent<Props, State> {
           setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
         />
         <Warning
-          isVisible={this.checkForErrors()}
+          isVisible={warnings.length > 0}
           title={this.checkForWarnings()}
         />
       </View>
