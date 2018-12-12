@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
 import QRView from 'react-native-qrcode-svg';
 import { RNCamera } from 'react-native-camera';
@@ -46,14 +47,13 @@ class QRCode extends PureComponent<Props, State> {
     super(props);
     this.state = {
       barcode: '',
-      isTorchedOn: false,
+      isTorchOn: false,
     };
   }
 
   toggleTorch = () => {
-    const { isTorchedOn } = this.state;
-    this.setState({ isTorchedOn: !isTorchedOn });
-    Torch.switchState(isTorchedOn);
+    this.setState(state => assoc(state.isTorchOn, !state.isTorchOn, state));
+    Torch.switchState(isTorchOn);
   };
 
   render() {
