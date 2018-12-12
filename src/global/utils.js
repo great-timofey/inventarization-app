@@ -1,6 +1,7 @@
 // @flow
-import constants from 'global/constants';
+
 import { Platform } from 'react-native';
+import constants from 'global/constants';
 import { deviceWidth } from 'global/device';
 
 export const getPlaceholder = (size: number) =>
@@ -9,10 +10,8 @@ export const getPlaceholder = (size: number) =>
 export const platformSelect = (ios?: Object, android?: Object) =>
   Platform.select({ ios, android });
 
-const isEmpty = (value: string) => value === '';
-
-const isValid = (value: string, reg: RegExp) => {
-  if (!value) {
+export const isValid = (value: string, reg: RegExp) => {
+  if (!value.trim()) {
     return false;
   }
   if (reg && reg.test(value)) {
@@ -21,29 +20,7 @@ const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-const isValidLoginForm = (email: string, password: string) => {
-  if (
-    isValid(email, constants.regExp.email) &&
-    isValid(password, constants.regExp.password)
-  ) {
-    return true;
-  }
-  return false;
-};
-
-const isValidRegForm = (
-  name: string,
-  email: string,
-  mobile: string,
-  password: string
-) => {
-  const login = null;
-  if (name && password) {
-    
-  }
-};
-
-const isValidPassword = (password: string, confirmPassword: string) => {
+export const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid =
     password && isValid(password, constants.regExp.password);
   const isConfirmPasswordValid =
@@ -64,11 +41,10 @@ export const normalize = (value: any) => value * scale;
 export const normalizeInt = (value: any) => Math.round(value * scale);
 
 export default {
-  isEmpty,
   isValid,
+  normalize,
+  normalizeInt,
   getPlaceholder,
   platformSelect,
-  isValidRegForm,
   isValidPassword,
-  isValidLoginForm,
 };

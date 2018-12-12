@@ -1,11 +1,12 @@
 //  @flow
+
 import { AsyncStorage } from 'react-native';
 
 import ApolloClient from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import DeviceInfo from 'react-native-device-info';
-import { createHttpLink } from 'apollo-link-http';
+import { createUploadLink } from 'apollo-upload-client';
 import { withClientState } from 'apollo-link-state';
 import { persistCache } from 'apollo-cache-persist';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -14,7 +15,7 @@ import { inventoryApiUrl } from 'global/constants';
 
 const cache = new InMemoryCache();
 
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
   uri: inventoryApiUrl,
 });
 

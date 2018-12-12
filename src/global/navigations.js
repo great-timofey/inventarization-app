@@ -12,13 +12,14 @@ import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
 import PlacesScene from 'scenes/Places';
 import PeopleScene from 'scenes/People';
-import CameraScene from 'scenes/Camera';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
 import Question from 'scenes/Auth/Question';
-import Organisation from 'scenes/Auth/Organisation';
+import Camera from 'scenes/Camera';
+import Unorganized from 'scenes/Unorganized';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
+import CreateCompany from 'scenes/CreateCompany';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';
@@ -101,8 +102,11 @@ const authStack = {
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
-  [SCENE_NAMES.OrganisationSceneName]: {
-    screen: Organisation,
+  [SCENE_NAMES.CreateCompanySceneName]: {
+    screen: CreateCompany,
+  },
+  [SCENE_NAMES.UnorganizedSceneName]: {
+    screen: Unorganized,
   },
   [SCENE_NAMES.QuestionSceneName]: {
     screen: Question,
@@ -111,7 +115,7 @@ const authStack = {
     screen: ForgotPassword,
   },
   [SCENE_NAMES.CameraSceneName]: {
-    screen: CameraScene,
+    screen: Camera,
   },
 };
 

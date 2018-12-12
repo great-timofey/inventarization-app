@@ -13,6 +13,8 @@ export default {
   blue: '#5AC8FA',
   buttonBlue: '#35CEF1',
   buttonGray: '#333333',
+  buttonInvitee: '#67B8F3',
+  buttonChooseLogo: '#EFEFEF',
   red: '#FF2D55',
   gray: '#F6F6F6',
   invalidBorder: '#D54A0F',
@@ -23,10 +25,16 @@ export default {
     blue: '#42BCF8',
     inputTitle: '#616161',
     placeholder: '#3F3F3F',
+    placeholderWhite: '#C8C8C8',
   },
   header: {
+    createCompany: '#414B6A',
     grayButtonText: '#5C5C5C',
     bluebuttonText: '#42BCF8',
+  },
+  input: {
+    whiteBG: '#FBFBFB',
+    whiteTitle: '#B9B9B9',
   },
   border: '#E4E4E4',
 };

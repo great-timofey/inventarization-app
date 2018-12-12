@@ -38,7 +38,9 @@ class Input extends Component<Props> {
       mask,
       type,
       value,
+      isWhite,
       fieldRef,
+      children,
       isWarning,
       onSubmitForm,
       returnKeyType,
@@ -49,20 +51,34 @@ class Input extends Component<Props> {
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
 
     return (
-      <View style={[styles.container, isWarning && styles.invalidContainer]}>
-        <Text style={styles.inputTitleText}>{type.label}</Text>
+      <View
+        style={[
+          styles.container,
+          isWhite && styles.whiteContainer,
+          children && styles.withButton,
+          isWarning && styles.invalidContainer,
+        ]}
+      >
+        <Text
+          style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}
+        >
+          {type.label}
+        </Text>
         <CustomTextInput
           {...textInputProps}
           mask={mask}
           value={value}
           ref={fieldRef}
-          style={styles.input}
+          style={[styles.input, isWhite && styles.inputWhite]}
           returnKeyType={returnKeyType}
-          placeholderTextColor={colors.text.placeholder}
+          placeholderTextColor={
+            isWhite ? colors.text.placeholderWhite : colors.text.placeholder
+          }
           onSubmitEditing={
             returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
           }
         />
+        {children}
       </View>
     );
   }

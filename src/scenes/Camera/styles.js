@@ -1,7 +1,11 @@
+//  @flow
+
 import { StyleSheet } from 'react-native';
 
+import { fonts } from 'global/styles';
 import colors from 'global/colors';
 import { normalize } from 'global/utils';
+import { deviceWidth } from 'global/device';
 
 export default StyleSheet.create({
   container: {
@@ -16,17 +20,20 @@ export default StyleSheet.create({
   },
   capture: {
     borderRadius: 35,
+    position: 'absolute',
     alignItems: 'center',
-    width: normalize(70),
-    height: normalize(70),
+    width: normalize(65),
+    height: normalize(65),
+    bottom: normalize(20),
     justifyContent: 'center',
     backgroundColor: colors.white,
+    left: deviceWidth / 2 - normalize(65) / 2,
   },
   captureInner: {
-    borderWidth: 1,
-    borderRadius: 30,
-    width: normalize(60),
-    height: normalize(60),
+    borderWidth: 2,
+    borderRadius: 27.5,
+    width: normalize(55),
+    height: normalize(55),
     borderColor: colors.black,
     backgroundColor: colors.white,
   },
@@ -46,17 +53,20 @@ export default StyleSheet.create({
     width: normalize(25),
     height: normalize(25),
   },
-  flashTitle: {
-    color: colors.white,
-  },
   flipImage: {
     width: normalize(32),
     height: normalize(34),
+  },
+  buttonText: {
+    fontSize: 18,
+    color: colors.white,
+    fontFamily: fonts.proDisplay.light,
   },
   bottomSection: {
     flex: 0,
     flexDirection: 'row',
     alignItems: 'center',
+    height: normalize(100),
     marginHorizontal: normalize(30),
     justifyContent: 'space-between',
   },

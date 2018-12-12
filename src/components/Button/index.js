@@ -12,8 +12,8 @@ const Button = ({ title, onPress, isDisable, isGreen }: Props) => (
     onPress={onPress}
     style={[
       styles.container,
-      isDisable && styles.disable,
       isGreen && styles.green,
+      isDisable && styles.disable,
     ]}
   >
     <Text style={[styles.titleText, isDisable && styles.titleTextDisable]}>
