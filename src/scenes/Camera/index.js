@@ -4,9 +4,8 @@ import { StatusBar, Text, Image, View, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
-import colors from 'global/colors';
-import constants from 'global/constants';
 import icons from 'global/assets';
+import constants from 'global/constants';
 import type { CameraSceneProps, CameraSceneState } from './types';
 import styles from './styles';
 
