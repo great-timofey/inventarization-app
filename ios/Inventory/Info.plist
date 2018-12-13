@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>10</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -37,12 +37,22 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Приложение хочет использовать AppleMusic</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Приложение хочет использовать bluetooth </string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Приложение хочет вносить изменения в ваш календарь</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Приложению необходим доступ к камере</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Приложение хочет использовать вашу геолокацию</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Приложение хочет следить за вашими движениями</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Приложению необходим доступ к фотографиям</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Приложение хочет распозновать вашу речь</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>inventory-font-v1.ttf</string>
