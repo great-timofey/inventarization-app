@@ -112,9 +112,15 @@ const text = {
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
 };
+
+const hints = {
+  makePhotos: 'Сделайте фотографии вашего предмета',
+};
+
 export default {
   text,
   masks,
+  hints,
   errors,
   regExp,
   headers,
