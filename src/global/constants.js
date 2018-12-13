@@ -58,6 +58,7 @@ const inputTypes = {
 const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
+  next: 'Далее',
   login: 'Войти',
   cancel: 'Отмена',
   update: 'Обновить',
@@ -106,6 +107,7 @@ const errors = {
 const headers = {
   items: 'Предметы',
   qrscanner: 'Сканер',
+  newItem: 'Новый предмет',
   createNewCompany: 'Создание новой \n организации',
 };
 

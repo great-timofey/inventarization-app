@@ -18,6 +18,7 @@ import AddItemScene from 'scenes/AddItem';
 import Question from 'scenes/Auth/Question';
 import Unorganized from 'scenes/Unorganized';
 import CreateCompany from 'scenes/CreateCompany';
+import AddItemPhotos from 'scenes/AddItemPhotos';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
 import * as SCENE_NAMES from 'navigation/scenes';
@@ -96,6 +97,9 @@ const rootTabs = {
 };
 
 const authStack = {
+  [SCENE_NAMES.AddItemPhotosSceneName]: {
+    screen: AddItemPhotos,
+  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },

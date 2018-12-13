@@ -8,6 +8,7 @@ export const ProfileSceneName = 'Profile';
 export const QRScanSceneName = 'QRScan';
 export const AddItemSceneName = 'AddItem';
 export const QuestionSceneName = 'Question';
+export const AddItemPhotosSceneName = 'AddItems';
 export const UnorganizedSceneName = 'Unorganized';
 export const CreateCompanySceneName = 'CreateCompany';
 export const ForgotPasswordSceneName = 'ForgotPassword';

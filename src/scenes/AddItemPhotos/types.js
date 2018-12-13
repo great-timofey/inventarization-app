@@ -6,4 +6,5 @@ export type Props = {
 
 export type State = {
   flashMode: number,
+  isHintOpened: boolean,
 };
