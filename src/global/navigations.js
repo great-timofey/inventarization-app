@@ -7,6 +7,7 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 
+import Camera from 'scenes/Camera';
 import QRScene from 'scenes/QRScan';
 import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
@@ -15,11 +16,10 @@ import PeopleScene from 'scenes/People';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
 import Question from 'scenes/Auth/Question';
-import Camera from 'scenes/Camera';
 import Unorganized from 'scenes/Unorganized';
+import CreateCompany from 'scenes/CreateCompany';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
-import CreateCompany from 'scenes/CreateCompany';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';

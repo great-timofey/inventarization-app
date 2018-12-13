@@ -9,12 +9,12 @@ import { normalize } from 'global/utils';
 export default StyleSheet.create({
   header: {
     borderBottomWidth: 0,
-    marginHorizontal: 15,
     backgroundColor: colors.black,
+    marginHorizontal: normalize(15),
   },
   headerTitleStyle: {
-    fontSize: 18,
     color: colors.white,
+    fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
   },
   backButton: {
@@ -34,10 +34,10 @@ export default StyleSheet.create({
     backgroundColor: colors.black,
   },
   hintContainer: {
-    paddingVertical: 15,
-    paddingHorizontal: 30,
     height: normalize(80),
     marginTop: normalize(20),
+    paddingVertical: normalize(15),
+    paddingHorizontal: normalize(30),
   },
   hintText: {
     color: colors.white,
@@ -51,7 +51,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   makePhotoButton: {
-    zIndex: 5,
+    zIndex: 2,
     position: 'absolute',
     alignItems: 'center',
     width: normalize(66),
@@ -68,8 +68,8 @@ export default StyleSheet.create({
     tintColor: colors.backGroundBlack,
   },
   torchButton: {
-    left: 60,
-    zIndex: 5,
+    zIndex: 2,
+    left: normalize(60),
     position: 'absolute',
     bottom: normalize(125),
   },

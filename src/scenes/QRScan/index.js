@@ -55,10 +55,10 @@ class QRCode extends PureComponent<Props, State> {
       <View style={styles.container}>
         <QRCodeScanner
           reactivate
-          reactivateTimeout={1000}
-          onRead={e => {}}
-          cameraStyle={styles.scannerCameraStyle}
           showMarker
+          onRead={e => {}}
+          reactivateTimeout={1000}
+          cameraStyle={styles.scannerCameraStyle}
           customMarker={<Mask opacity={0.4} color={colors.black} />}
         />
         <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>

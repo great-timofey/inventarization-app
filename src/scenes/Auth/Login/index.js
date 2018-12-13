@@ -265,7 +265,7 @@ class Login extends PureComponent<Props, State> {
               />
               <AdditionalButton
                 title={constants.buttonTitles.registration}
-                onPress={() => navigation.state.params.onPressButton(isRegForm)}
+                onPress={() => navigation.state.params.onToggleForm(isRegForm)}
               />
             </View>
           )}
