@@ -5,6 +5,7 @@ export const PeopleSceneName = 'People';
 export const CameraSceneName = 'Camera';
 export const PlacesSceneName = 'Places';
 export const ProfileSceneName = 'Profile';
+export const QRScanSceneName = 'QRScan';
 export const AddItemSceneName = 'AddItem';
 export const QuestionSceneName = 'Question';
 export const UnorganizedSceneName = 'Unorganized';

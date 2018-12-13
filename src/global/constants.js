@@ -61,6 +61,7 @@ const buttonTitles = {
   login: 'Войти',
   cancel: 'Отмена',
   update: 'Обновить',
+  skip: 'Пропустить',
   create: 'Да, создать',
   chooseLogo: 'Выбери \n лого',
   reg: 'Зарегистрироваться',
@@ -104,6 +105,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
+  qrscanner: 'Сканер',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -111,6 +113,7 @@ const text = {
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
+  qrhint: 'Поместите штрих-код или QR-код в центр экрана',
 };
 
 const hints = {

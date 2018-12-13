@@ -4,6 +4,7 @@ import android.app.Application;
 
 import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
@@ -31,6 +32,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+          new SvgPackage(),
           new SplashScreenReactPackage(),
           new RNTextInputMaskPackage(),
           new RNDeviceInfo(),
