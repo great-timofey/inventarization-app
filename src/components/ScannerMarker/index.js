@@ -13,7 +13,7 @@ const windowPadY = (deviceHeight - windowWidth) / 2 - normalize(40);
 const radius = 20;
 const bottomOffset = 80;
 
-function ScannerMask({ opacity, color }: { opacity: number, color: string }) {
+function ScannerMarker({ opacity, color }: { opacity: number, color: string }) {
   return (
     <Svg height={deviceHeight} width={deviceWidth}>
       <Path
@@ -33,4 +33,4 @@ function ScannerMask({ opacity, color }: { opacity: number, color: string }) {
   );
 }
 
-export default ScannerMask;
+export default ScannerMarker;
