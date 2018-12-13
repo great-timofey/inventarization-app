@@ -6,6 +6,8 @@ const chair = require('assets/chair.png');
 const camera = require('assets/camera.png');
 const people = require('assets/people.png');
 const appName = require('assets/appName.png');
+const torchOn = require('assets/torch-on.png');
+const torchOff = require('assets/torch-off.png');
 const grayLogo = require('assets/grayLogo.png');
 const editIcon = require('assets/editIcon.png');
 const location = require('assets/location.png');
@@ -14,14 +16,16 @@ const deleteIcon = require('assets/deleteIcon.png');
 const headerBackArrow = require('assets/headerBackArrow.png');
 
 export default {
+  flip,
   user,
   logo,
-  flip,
   flash,
   chair,
   camera,
   people,
   appName,
+  torchOn,
+  torchOff,
   grayLogo,
   location,
   editIcon,

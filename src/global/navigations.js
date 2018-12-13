@@ -8,17 +8,18 @@ import {
 } from 'react-navigation';
 
 import Camera from 'scenes/Camera';
+import QRScene from 'scenes/QRScan';
 import Login from 'scenes/Auth/Login';
 import ItemsScene from 'scenes/Items';
-import PeopleScene from 'scenes/People';
 import PlacesScene from 'scenes/Places';
+import PeopleScene from 'scenes/People';
 import ProfileScene from 'scenes/Profile';
 import AddItemScene from 'scenes/AddItem';
 import Question from 'scenes/Auth/Question';
 import Unorganized from 'scenes/Unorganized';
+import CreateCompany from 'scenes/CreateCompany';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 import SetNewPassword from 'scenes/Auth/SetNewPassword';
-import CreateCompany from 'scenes/CreateCompany';
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';
@@ -112,6 +113,9 @@ const authStack = {
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: Camera,
+  },
+  [SCENE_NAMES.QRScanSceneName]: {
+    screen: QRScene,
   },
 };
 

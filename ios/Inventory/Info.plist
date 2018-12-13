@@ -40,7 +40,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Приложению необходим доступ к камере</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Приложению необходим доступ к фотографиям</string>
 	<key>UIAppFonts</key>

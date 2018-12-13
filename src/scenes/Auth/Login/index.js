@@ -29,7 +29,6 @@ const initialState = {
   password: '',
   warnings: [],
   isRegForm: false,
-  isModalVisible: false,
   isKeyboardActive: false,
 };
 
