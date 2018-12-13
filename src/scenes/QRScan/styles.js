@@ -5,7 +5,6 @@ import { StyleSheet } from 'react-native';
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
 import { normalize } from 'global/utils';
-import { deviceWidth, deviceHeight } from 'global/device';
 
 export default StyleSheet.create({
   header: {
@@ -41,9 +40,9 @@ export default StyleSheet.create({
     marginTop: normalize(20),
   },
   hintText: {
-    fontSize: normalize(18),
     color: colors.white,
     textAlign: 'center',
+    fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
   scannerCameraStyle: {
@@ -53,13 +52,13 @@ export default StyleSheet.create({
   },
   makePhotoButton: {
     zIndex: 5,
-    borderRadius: 33,
     position: 'absolute',
     alignItems: 'center',
     width: normalize(66),
     height: normalize(66),
     bottom: normalize(120),
     justifyContent: 'center',
+    borderRadius: normalize(33),
     backgroundColor: colors.white,
   },
   makePhotoButtonImage: {
@@ -69,10 +68,10 @@ export default StyleSheet.create({
     tintColor: colors.backGroundBlack,
   },
   torchButton: {
-    zIndex: 5,
     left: 60,
-    bottom: normalize(125),
+    zIndex: 5,
     position: 'absolute',
+    bottom: normalize(125),
   },
   torchIcon: {
     width: 50,

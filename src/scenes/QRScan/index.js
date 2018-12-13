@@ -1,43 +1,30 @@
 // @flow
 
-import React, { PureComponent, Fragment } from 'react';
-import Svg, { Path } from 'react-native-svg';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import React, { PureComponent } from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 
-import Modal from 'react-native-modal';
 import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
-// import QRView from 'react-native-qrcode-svg';
-// import { RNCamera } from 'react-native-camera';
-// import Barcode from 'react-native-barcode-builder';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
+import Mask from 'components/Mask';
+
+import colors from 'global/colors';
 import assets from 'global/assets';
-import Icon from 'assets/InventoryIcon';
 import constants from 'global/constants';
 import type { Props, State } from './types';
 import styles from './styles';
 
-const CustomMarker = () => (
-  <Svg
-    style={{ marginTop: -125 }}
-    height={583}
-    width={333}
-    viewBox="0 0 100 100"
-  >
-    <Path
-      opacity=".5"
-      d=" M0 0 h100 v200 H0V0 z m16 18 a4 4 0 0 0 -4 4 v62 a4 4 0 0 0 4 4 h68 a4 4 0 0 0 4 -4 V22 a4 4 0 0 0 -4 -4 H50 z "
-      fillRule="evenodd"
-      fill="#000"
-    />
-  </Svg>
+const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
+  </TouchableOpacity>
+);
+
+const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
+  <TouchableOpacity onPress={onPress}>
+    <Image source={assets.headerBackArrow} style={styles.backButton} />
+  </TouchableOpacity>
 );
 
 class QRCode extends PureComponent<Props, State> {
@@ -45,22 +32,13 @@ class QRCode extends PureComponent<Props, State> {
     title: constants.headers.qrscanner,
     headerTitleStyle: styles.headerTitleStyle,
     headerStyle: styles.header,
-    headerLeft: (
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Image source={assets.headerBackArrow} style={styles.backButton} />
-      </TouchableOpacity>
-    ),
-    headerRight: (
-      <TouchableOpacity>
-        <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
-      </TouchableOpacity>
-    ),
+    headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
+    headerRight: <HeaderSkipButton onPress={() => {}} />,
   });
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      barcode: '',
       isTorchOn: true,
     };
   }
@@ -78,14 +56,10 @@ class QRCode extends PureComponent<Props, State> {
         <QRCodeScanner
           reactivate
           reactivateTimeout={1000}
-          onRead={e => {
-            console.log(e);
-            // const toDecode = btoa(e.data);
-            // console.log('base64 string:', toDecode);
-          }}
+          onRead={e => {}}
           cameraStyle={styles.scannerCameraStyle}
           showMarker
-          customMarker={<CustomMarker />}
+          customMarker={<Mask opacity={0.4} color={colors.black} />}
         />
         <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>
           <Image
@@ -103,6 +77,5 @@ class QRCode extends PureComponent<Props, State> {
     );
   }
 }
-// <Barcode value={barcode} format="EAN13" flat />
 
 export default QRCode;
