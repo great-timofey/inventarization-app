@@ -1,27 +1,7 @@
 // @flow
 
 import React, { PureComponent, Fragment } from 'react';
-import Svg, {
-  Circle,
-  Ellipse,
-  G,
-  TSpan,
-  TextPath,
-  Path,
-  Polygon,
-  Polyline,
-  Line,
-  Rect,
-  Use,
-  Symbol,
-  Defs,
-  LinearGradient,
-  RadialGradient,
-  Stop,
-  ClipPath,
-  Pattern,
-  Mask,
-} from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import {
   View,
   Text,
@@ -44,6 +24,22 @@ import constants from 'global/constants';
 import type { Props, State } from './types';
 import styles from './styles';
 
+const CustomMarker = () => (
+  <Svg
+    style={{ marginTop: -125 }}
+    height={583}
+    width={333}
+    viewBox="0 0 100 100"
+  >
+    <Path
+      opacity=".5"
+      d=" M0 0 h100 v200 H0V0 z m16 18 a4 4 0 0 0 -4 4 v62 a4 4 0 0 0 4 4 h68 a4 4 0 0 0 4 -4 V22 a4 4 0 0 0 -4 -4 H50 z "
+      fillRule="evenodd"
+      fill="#000"
+    />
+  </Svg>
+);
+
 class QRCode extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     title: constants.headers.qrscanner,
@@ -65,7 +61,7 @@ class QRCode extends PureComponent<Props, State> {
     super(props);
     this.state = {
       barcode: '',
-      isTorchOn: false,
+      isTorchOn: true,
     };
   }
 
@@ -76,10 +72,9 @@ class QRCode extends PureComponent<Props, State> {
   };
 
   render() {
+    const { isTorchOn } = this.state;
     return (
       <View style={styles.container}>
-        {/* <View style={styles.overlay} /> */}
-        {/* <View style={styles.overlayInner} /> */}
         <QRCodeScanner
           reactivate
           reactivateTimeout={1000}
@@ -88,26 +83,14 @@ class QRCode extends PureComponent<Props, State> {
             // const toDecode = btoa(e.data);
             // console.log('base64 string:', toDecode);
           }}
-          // cameraStyle={styles.scannerCameraStyle}
+          cameraStyle={styles.scannerCameraStyle}
           showMarker
-          customMarker={(
-<Svg height={333} width={333} viewBox="0 0 100 100">
-              <Path
-                opacity=".5"
-                d="M0 0h100v100H0V0zm9 5a4 4 0 0 0-4 4v82a4 4 0 0 0 4 4h82a4 4 0 0 0 4-4V9a4 4 0 0 0-4-4H9z"
-                fillRule="evenodd"
-                fill="#000"
-              />
-            </Svg>
-)}
+          customMarker={<CustomMarker />}
         />
-        <TouchableOpacity style={styles.flashButton} onPress={this.toggleTorch}>
-          <Icon
-            size={33}
-            color="white"
-            name="flash-off"
-            style={styles.flashIcon}
-            backgroundColor="transparent"
+        <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>
+          <Image
+            source={isTorchOn ? assets.torchOn : assets.torchOff}
+            style={styles.torchIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.makePhotoButton} disabled>
