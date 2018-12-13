@@ -96,9 +96,6 @@ const rootTabs = {
 };
 
 const authStack = {
-  [SCENE_NAMES.QRScanSceneName]: {
-    screen: QRScene,
-  },
   [SCENE_NAMES.LoginSceneName]: {
     screen: Login,
   },
@@ -116,6 +113,9 @@ const authStack = {
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: Camera,
+  },
+  [SCENE_NAMES.QRScanSceneName]: {
+    screen: QRScene,
   },
 };
 
