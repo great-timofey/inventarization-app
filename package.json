@@ -33,7 +33,7 @@
     "react-native-qrcode-scanner": "^1.1.0",
     "react-native-qrcode-svg": "^5.1.1",
     "react-native-splash-screen": "^3.1.1",
-    "react-native-svg": "^8.0.9",
+    "react-native-svg": "^8.0.10",
     "react-native-swipeout": "^2.3.6",
     "react-native-text-input-mask": "github:allmaxgit/react-native-text-input-mask",
     "react-native-torch": "^1.1.5",

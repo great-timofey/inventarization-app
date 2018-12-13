@@ -1,6 +1,27 @@
 // @flow
 
 import React, { PureComponent, Fragment } from 'react';
+import Svg, {
+  Circle,
+  Ellipse,
+  G,
+  TSpan,
+  TextPath,
+  Path,
+  Polygon,
+  Polyline,
+  Line,
+  Rect,
+  Use,
+  Symbol,
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Stop,
+  ClipPath,
+  Pattern,
+  Mask,
+} from 'react-native-svg';
 import {
   View,
   Text,
@@ -57,8 +78,8 @@ class QRCode extends PureComponent<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.overlay} />
-        <View style={styles.overlayInner} />
+        {/* <View style={styles.overlay} /> */}
+        {/* <View style={styles.overlayInner} /> */}
         <QRCodeScanner
           reactivate
           reactivateTimeout={1000}
@@ -67,7 +88,18 @@ class QRCode extends PureComponent<Props, State> {
             // const toDecode = btoa(e.data);
             // console.log('base64 string:', toDecode);
           }}
-          cameraStyle={styles.scannerCameraStyle}
+          // cameraStyle={styles.scannerCameraStyle}
+          showMarker
+          customMarker={(
+<Svg height={333} width={333} viewBox="0 0 100 100">
+              <Path
+                opacity=".5"
+                d="M0 0h100v100H0V0zm9 5a4 4 0 0 0-4 4v82a4 4 0 0 0 4 4h82a4 4 0 0 0 4-4V9a4 4 0 0 0-4-4H9z"
+                fillRule="evenodd"
+                fill="#000"
+              />
+            </Svg>
+)}
         />
         <TouchableOpacity style={styles.flashButton} onPress={this.toggleTorch}>
           <Icon
