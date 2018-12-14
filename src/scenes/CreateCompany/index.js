@@ -339,7 +339,7 @@ class CreateCompany extends PureComponent<Props, State> {
           <Button
             onPress={this.checkValue}
             isDisable={!companyName || !invitees.length}
-            title={constants.buttonTitles.createOrganization}
+            title={constants.buttonTitles.createCompany}
           />
           <PickPhotoModal
             isModalVisible={isModalVisible}

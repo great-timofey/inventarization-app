@@ -1,7 +1,6 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
 import R from 'ramda';
 import { compose, graphql } from 'react-apollo';
@@ -23,10 +22,8 @@ import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 import Styles from 'global/styles';
 import colors from 'global/colors';
 import constants from 'global/constants';
-import { isValid } from 'global/utils';
-import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
-import utils, { normalize, isSmallDevice } from 'global/utils';
+import { normalize, isSmallDevice, isValid } from 'global/utils';
 
 import styles from './styles';
 import type { Props, State } from './types';
