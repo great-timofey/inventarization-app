@@ -22,6 +22,13 @@ export default StyleSheet.create({
     marginBottom: normalize(4),
     fontFamily: fonts.proDisplay.bold,
   },
+  headerTitle: {
+    color: 'transparent',
+    fontSize: normalize(18),
+    lineHeight: normalize(21),
+    paddingLeft: normalize(60),
+    fontFamily: fonts.proDisplay.regular,
+  },
   headerRightButtonsContainer: {
     flexDirection: 'row',
     paddingRight: normalize(10),

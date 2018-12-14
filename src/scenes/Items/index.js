@@ -1,4 +1,5 @@
 //  @flow
+
 import React, { Fragment, PureComponent } from 'react';
 import {
   Text,
@@ -23,6 +24,7 @@ import globalStyles from 'global/styles';
 import * as QUERIES from 'graphql/auth/queries';
 
 import styles from './styles';
+import type { Props, State } from './types';
 
 const iconProps = {
   borderRadius: 0,
@@ -30,9 +32,6 @@ const iconProps = {
   iconStyle: globalStyles.iconStyle,
   backgroundColor: colors.transparent,
 };
-
-type Props = { client: Object };
-type State = { data: ?Object, loading: boolean };
 
 const data = [
   'Компьютеры',
@@ -71,32 +70,50 @@ const CategoryList = ({ children }) => (
 );
 
 class ItemsScene extends PureComponent<Props, State> {
-  static navigationOptions = () => ({
-    header: () => (
-      <View style={styles.headerContainer}>
-        <Icon.Button
-          {...iconProps}
-          name="grid"
-          color={colors.accent}
-          backgroundColor={colors.transparent}
-        />
-        <View style={styles.headerRightButtonsContainer}>
-          <InventoryIcon.Button
+  static navigationOptions = ({ navigation }: { navigation: Object }) => {
+    const { state } = navigation;
+    const isTitleVisible = state.params && state.params.isTitleVisible;
+    return {
+      header: () => (
+        <View style={styles.headerContainer}>
+          <Icon.Button
             {...iconProps}
-            name="dashboard"
+            name="grid"
             color={colors.accent}
             backgroundColor={colors.transparent}
           />
-          <InventoryIcon.Button
-            {...iconProps}
-            name="search"
-            color={colors.accent}
-            backgroundColor={colors.transparent}
-          />
+          <Text
+            style={[styles.headerTitle, isTitleVisible && { color: 'black' }]}
+          >
+            {constants.headers.items}
+          </Text>
+          <View style={styles.headerRightButtonsContainer}>
+            <InventoryIcon.Button
+              {...iconProps}
+              name="dashboard"
+              color={colors.accent}
+              backgroundColor={colors.transparent}
+            />
+            <InventoryIcon.Button
+              {...iconProps}
+              name="search"
+              color={colors.accent}
+              backgroundColor={colors.transparent}
+            />
+          </View>
         </View>
-      </View>
-    ),
-  });
+      ),
+    };
+  };
+
+  constructor(props: Props) {
+    super(props);
+    const { navigation } = this.props;
+
+    navigation.setParams({
+      isTitleVisible: false,
+    });
+  }
 
   renderTab = ({ item, index }) => (
     <TouchableOpacity>
@@ -113,10 +130,27 @@ class ItemsScene extends PureComponent<Props, State> {
     </TouchableOpacity>
   );
 
+  handleScroll = (event: Object) => {
+    const { navigation } = this.props;
+    if (event.nativeEvent.contentOffset.y >= 40) {
+      navigation.setParams({
+        isTitleVisible: true,
+      });
+    } else {
+      navigation.setParams({
+        isTitleVisible: false,
+      });
+    }
+  };
+
   render() {
     return (
       <Fragment>
-        <ScrollView style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          onScroll={this.handleScroll}
+          scrollEventThrottle={16}
+        >
           {/* <Query query={QUERIES.GET_CURRENT_USER}>
         {({ loading, error, data }) => {
           if (loading) return <Text>Loading...</Text>;

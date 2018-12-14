@@ -19,8 +19,11 @@ const SortButton = () => (
   <View style={styles.container}>
     <InventoryIcon.Button
       {...iconProps}
+      onPress={() => {}}
+      activeOpacity={0.5}
       color={colors.white}
       name="button-sort-name"
+      underlayColor="transparent"
       style={{ margin: 0, padding: 0 }}
     />
   </View>
