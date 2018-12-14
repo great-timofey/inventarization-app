@@ -23,35 +23,33 @@ const placeHolders = {
 const inputTypes = {
   name: {
     label: 'Имя',
-    require: false,
+    warning: 'Введите имя',
   },
   companyName: {
     label: 'Название организации',
-    require: false,
+    warning: 'Введите название вашей организации',
   },
   invitees: {
     label: 'Добавьте людей:',
-    require: false,
   },
   email: {
     label: 'e-mail',
-    require: true,
+    warning: 'Вы указали неверный email',
   },
   password: {
     label: 'Пароль',
-    require: true,
+    warning:
+      'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
   },
   mobileNumber: {
     label: 'Телефон',
-    require: true,
+    warning: 'Неверный формат номера телефона',
   },
   confirmPassword: {
     label: 'Повторите пароль',
-    require: true,
   },
   setNewPassword: {
     label: 'Введите новый пароль',
-    require: true,
   },
 };
 

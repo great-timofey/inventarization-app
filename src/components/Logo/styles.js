@@ -28,5 +28,6 @@ export default StyleSheet.create({
   logoText: {
     width: normalize(167),
     height: normalize(35),
+    marginBottom: normalize(48),
   },
 });

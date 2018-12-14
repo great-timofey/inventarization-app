@@ -7,7 +7,7 @@ export type Props = {
   mask?: string,
   type: {
     label: string,
-    require: boolean,
+    warning: string,
   },
   value: string,
   isWhite?: boolean,

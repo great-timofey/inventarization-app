@@ -51,7 +51,7 @@ const RemoveInviteeButton = props => (
 class CreateCompany extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [
-      globalStyles.authHeaderStyle,
+      globalStyles.authHeaderStyleBig,
       { backgroundColor: colors.white },
     ],
     headerTitle: HeaderTitle({

@@ -10,7 +10,8 @@ export default StyleSheet.create({
   buttonHeader: {
     borderRadius: 16,
     alignSelf: 'flex-start',
-    marginTop: normalize(17),
+    marginTop: normalize(20),
+    marginBottom: normalize(10),
     paddingVertical: normalize(7),
     backgroundColor: colors.white,
     marginHorizontal: normalize(30),

@@ -2,7 +2,7 @@
 
 import { Platform } from 'react-native';
 import constants from 'global/constants';
-import { deviceWidth } from 'global/device';
+import { deviceWidth, deviceHeight } from 'global/device';
 
 export const getPlaceholder = (size: number) =>
   `https://via.placeholder.com/${size}x${size}`;
@@ -35,15 +35,19 @@ export const isValidPassword = (password: string, confirmPassword: string) => {
   return false;
 };
 
-const designWidth = 375;
+export const designWidth = 375;
+export const designHeight = 667;
+
 export const scale = deviceWidth / designWidth;
-export const normalize = (value: any) => value * scale;
-export const normalizeInt = (value: any) => Math.round(value * scale);
+export const isSmallDevice = () => deviceHeight < designHeight;
+export const normalize = (value: number) => parseInt(value * scale);
+export const normalizeInt = (value: number) => Math.round(value * scale);
 
 export default {
   isValid,
   normalize,
   normalizeInt,
+  isSmallDevice,
   getPlaceholder,
   platformSelect,
   isValidPassword,

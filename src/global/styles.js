@@ -16,6 +16,11 @@ const Styles = StyleSheet.create({
     marginRight: 0,
   },
   authHeaderStyle: {
+    height: normalize(60),
+    borderBottomWidth: 0,
+    backgroundColor: colors.backGroundBlack,
+  },
+  authHeaderStyleBig: {
     height: normalize(90),
     borderBottomWidth: 0,
     backgroundColor: colors.backGroundBlack,

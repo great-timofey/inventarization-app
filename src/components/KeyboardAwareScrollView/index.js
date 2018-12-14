@@ -8,7 +8,9 @@ import type { Props } from './types';
 
 const ScrollViewContainer = ({ children }: Props) => (
   <KeyboardAwareScrollView
+    bottomOffset={216}
     style={styles.color}
+    disableAutomaticScroll
     contentContainerStyle={styles.container}
   >
     {children}
