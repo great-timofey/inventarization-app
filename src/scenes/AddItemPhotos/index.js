@@ -1,18 +1,33 @@
 //  @flow
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Text,
   View,
+  Alert,
   Image,
   FlatList,
   CameraRoll,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
-import { concat, assoc, remove } from 'ramda';
 import { RNCamera } from 'react-native-camera';
+import {
+  not,
+  forEach,
+  keys,
+  values,
+  equals,
+  all,
+  pickBy,
+  propEq,
+  concat,
+  assoc,
+  remove,
+} from 'ramda';
+import Permissions from 'react-native-permissions';
 
 import assets from 'global/assets';
 import constants from 'global/constants';
@@ -42,7 +57,11 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   state = {
     photos: [],
+    permissions: [],
+    isLoading: false,
     isHintOpened: true,
+    ableToTakePicture: false,
+    needToAskPermissions: true,
     flashMode: RNCamera.Constants.FlashMode.off,
   };
 
@@ -53,32 +72,72 @@ class AddItemPhotos extends PureComponent<Props, State> {
     );
   }
 
+  checkPermissionsStatus = (permissions: Object) =>
+    all(equals('authorized'), values(permissions));
+
+  askPermissions = async () => {
+    console.log('checking permissions');
+    const { needToAskPermissions } = this.state;
+
+    const permissions = await Permissions.checkMultiple(['location', 'camera']);
+
+    if (!this.checkPermissionsStatus(permissions)) {
+      const notGrantedKeys = keys(
+        pickBy(val => val !== 'authorized', permissions)
+      );
+      notGrantedKeys.forEach(item => Permissions.request(item));
+      const userPermissions = await Promise.all(notGrantedKeys);
+
+      const result = this.checkPermissionsStatus(userPermissions);
+      if (!result) return null;
+    }
+
+    if (needToAskPermissions) {
+      console.log('ok');
+      this.setState({ needToAskPermissions: false, ableToTakePicture: true });
+    }
+
+    return null;
+  };
+
   takePicture = async () => {
-    if (this.camera) {
-      const { isHintOpened } = this.state;
+    const { isHintOpened, needToAskPermissions } = this.state;
+    this.setState({ isLoading: true });
+
+    if (needToAskPermissions) {
+      console.log('sd');
+      await this.askPermissions();
+    }
+
+    const { ableToTakePicture } = this.state;
+
+    if (this.camera && ableToTakePicture) {
       const options = { quality: 0.5, base64: true };
       const { base64, uri } = await this.camera.takePictureAsync(options);
 
-      if (isHintOpened)
-        this.setState(state => assoc('isHintOpened', false, state));
+      if (isHintOpened) this.setState({ isHintOpened: false });
 
       this.setState(state =>
         assoc('photos', concat(state.photos, [{ base64, uri }]), state)
       );
+    } else {
+      Alert.alert(
+        'Не можем сделать фотографию без доступа к вашему местоположению и фотокамере'
+      );
     }
+
+    this.setState({ isLoading: false });
   };
 
   removePicture = async (index: number) => {
     const { photos } = this.state;
     const { uri } = photos[index];
 
-    RNFS.unlink(uri)
-      .then(() => {
-        console.log('FILE DELETED');
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
+    try {
+      RNFS.unlink(uri);
+    } catch (error) {
+      console.log(error.message);
+    }
 
     this.setState(state =>
       assoc('photos', remove(index, 1, state.photos), state)
@@ -95,8 +154,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
       <Image
-        source={{ uri: `data:image/jpeg;base64,${base64}` }}
         style={styles.photoImage}
+        source={{ uri: `data:image/jpeg;base64,${base64}` }}
       />
     </View>
   );
@@ -119,36 +178,41 @@ class AddItemPhotos extends PureComponent<Props, State> {
   camera: ?RNCamera;
 
   render() {
-    const { flashMode, isHintOpened, photos } = this.state;
+    const { flashMode, isHintOpened, photos, isLoading } = this.state;
     return (
       <View style={styles.container}>
-        {isHintOpened && (
-          <View style={styles.hint}>
+        <Fragment>
+          <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
             <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
           </View>
-        )}
-        <RNCamera
-          ref={ref => {
-            this.camera = ref;
-          }}
-          flashMode={flashMode}
-          style={styles.preview}
-        />
-        <TouchableOpacity
-          onPress={this.toggleFlash}
-          style={flashMode ? styles.flashOnButton : styles.flashOffButton}
-        >
-          <Image
-            source={flashMode ? assets.flashOff : assets.flashOn}
-            style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+          {isLoading && (
+            <View style={styles.hint}>
+              <ActivityIndicator />
+            </View>
+          )}
+          <RNCamera
+            ref={ref => {
+              this.camera = ref;
+            }}
+            flashMode={flashMode}
+            style={styles.preview}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={this.takePicture}
-          style={styles.makePhotoButton}
-        >
-          <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.toggleFlash}
+            style={flashMode ? styles.flashOnButton : styles.flashOffButton}
+          >
+            <Image
+              source={flashMode ? assets.flashOff : assets.flashOn}
+              style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.takePicture}
+            style={styles.makePhotoButton}
+          >
+            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+          </TouchableOpacity>
+        </Fragment>
         <View style={styles.bottomSection}>
           <FlatList
             horizontal

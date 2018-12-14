@@ -115,12 +115,12 @@ const authStack = {
   [SCENE_NAMES.ForgotPasswordSceneName]: {
     screen: ForgotPassword,
   },
-  [SCENE_NAMES.CameraSceneName]: {
-    screen: Camera,
-  },
-  [SCENE_NAMES.QRScanSceneName]: {
-    screen: QRScene,
-  },
+  // [SCENE_NAMES.CameraSceneName]: {
+  //   screen: Camera,
+  // },
+  // [SCENE_NAMES.QRScanSceneName]: {
+  //   screen: QRScene,
+  // },
 };
 
 const rootConfig = {

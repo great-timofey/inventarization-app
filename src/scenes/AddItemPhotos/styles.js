@@ -58,7 +58,7 @@ export default StyleSheet.create({
   bottomSection: {
     overflow: 'visible',
     height: normalize(80),
-    backgroundColor: colors.white,
+    backgroundColor: colors.black,
   },
   makePhotoButton: {
     zIndex: 2,
@@ -99,7 +99,7 @@ export default StyleSheet.create({
   photoContainer: {
     width: normalize(76),
     height: normalize(76),
-    marginLeft: normalize(8),
+    marginLeft: normalize(10),
   },
   photoImage: {
     borderRadius: 15,
