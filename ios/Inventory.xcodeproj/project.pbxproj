@@ -1660,13 +1660,9 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 			);
 			name = "Work around InputMask.xcodeproj embedding an extra set of Swift libraries";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1820,6 +1816,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.allmax.inventory;
 				PRODUCT_NAME = Inventory;
+				PROVISIONING_PROFILE = "4278c0ec-35a4-4976-9a3f-4a81269af062";
 				PROVISIONING_PROFILE_SPECIFIER = "com allmax inventory__dev";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1852,6 +1849,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.allmax.inventory;
 				PRODUCT_NAME = Inventory;
+				PROVISIONING_PROFILE = "461c63d9-98e1-44af-aefb-3fa8be8217eb";
 				PROVISIONING_PROFILE_SPECIFIER = "com allmax inventory__dist";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

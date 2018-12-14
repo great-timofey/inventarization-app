@@ -1,12 +1,14 @@
 // @flow
 
 export type State = {
+  paddingTop: any,
+  marginBottom: any,
   companyName: string,
-  invitees: Array<string>,
+  keyboardPadding: any,
   currentInvitee: string,
   chosenPhotoUri: string,
-  invitees: Array<string>,
   warnings: Array<string>,
+  invitees: Array<string>,
   isModalVisible: boolean,
 };
 

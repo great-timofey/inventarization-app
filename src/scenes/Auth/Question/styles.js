@@ -14,7 +14,6 @@ export default StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    justifyContent: 'flex-start',
   },
   headerLeft: {
     alignSelf: 'flex-start',
@@ -24,7 +23,6 @@ export default StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: normalize(18),
-    marginTop: normalize(35),
     color: colors.text.questionGray,
     fontFamily: fonts.proDisplay.light,
   },

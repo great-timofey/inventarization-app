@@ -15,7 +15,7 @@ import type { Props } from './types';
 
 class Question extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: Styles.authHeaderStyle,
+    headerStyle: Styles.authHeaderStyleBig,
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
     }),
@@ -28,7 +28,11 @@ class Question extends PureComponent<Props, {}> {
           <Logo isSmall />
           <Text style={styles.text}>{constants.text.question}</Text>
         </View>
-        <Button title={constants.buttonTitles.create} onPress={() => {}} />
+        <Button
+          title={constants.buttonTitles.create}
+          onPress={() => {}}
+          customStyle={{ marginBottom: 15 }}
+        />
         <Button
           isGreen
           onPress={() => {}}

@@ -1,10 +1,11 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput } from 'react-native';
 
 import colors from 'global/colors';
+import Warning from 'components/Warning';
 
 import type { Props } from './types';
 import styles from './styles';
@@ -51,35 +52,42 @@ class Input extends Component<Props> {
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
 
     return (
-      <View
-        style={[
-          styles.container,
-          isWhite && styles.whiteContainer,
-          children && styles.withButton,
-          isWarning && styles.invalidContainer,
-        ]}
-      >
-        <Text
-          style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}
+      <Fragment>
+        <View
+          style={[
+            styles.container,
+            isWhite && styles.whiteContainer,
+            children && styles.withButton,
+            isWarning && styles.invalidContainer,
+          ]}
         >
-          {type.label}
-        </Text>
-        <CustomTextInput
-          {...textInputProps}
-          mask={mask}
-          value={value}
-          ref={fieldRef}
-          style={[styles.input, isWhite && styles.inputWhite]}
-          returnKeyType={returnKeyType}
-          placeholderTextColor={
-            isWhite ? colors.text.placeholderWhite : colors.text.placeholder
-          }
-          onSubmitEditing={
-            returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
-          }
-        />
-        {children}
-      </View>
+          <Text
+            style={[
+              styles.inputTitleText,
+              isWhite && styles.inputTitleTextWhite,
+            ]}
+          >
+            {type.label}
+          </Text>
+          <CustomTextInput
+            {...textInputProps}
+            mask={mask}
+            value={value}
+            ref={fieldRef}
+            textContentType="none"
+            returnKeyType={returnKeyType}
+            style={[styles.input, isWhite && styles.inputWhite]}
+            placeholderTextColor={
+              isWhite ? colors.text.placeholderWhite : colors.text.placeholder
+            }
+            onSubmitEditing={
+              returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
+            }
+          />
+          {children}
+        </View>
+        <Warning isVisible={isWarning || false} title={type.warning} />
+      </Fragment>
     );
   }
 }

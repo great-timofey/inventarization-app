@@ -5,4 +5,5 @@ export type Props = {
   isGreen?: boolean,
   onPress: Function,
   isDisable?: boolean,
+  customStyle?: Object,
 };

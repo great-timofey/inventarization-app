@@ -12,7 +12,6 @@ export default StyleSheet.create({
     borderRadius: 7,
     alignItems: 'center',
     height: normalize(54),
-    marginTop: normalize(15),
     justifyContent: 'center',
     backgroundColor: colors.buttonBlue,
   },
@@ -29,6 +28,6 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.light,
   },
   titleTextDisable: {
-    color: colors.text.bigGray,
+    color: colors.white,
   },
 });

@@ -1,23 +1,29 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { Alert, View, Text, Keyboard, AsyncStorage } from 'react-native';
 
 import R from 'ramda';
 import { compose, graphql } from 'react-apollo';
+import {
+  Alert,
+  View,
+  Text,
+  Keyboard,
+  Animated,
+  AsyncStorage,
+} from 'react-native';
 
 import Logo from 'components/Logo';
 import Input from 'components/Input';
 import Button from 'components/Button';
-import Warning from 'components/Warning';
 import HeaderButton from 'components/HeaderButton';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import Styles from 'global/styles';
+import colors from 'global/colors';
 import constants from 'global/constants';
-import { isValid } from 'global/utils';
-import * as SCENE_NAMES from 'navigation/scenes';
 import * as MUTATIONS from 'graphql/auth/mutations';
+import { normalize, isSmallDevice, isValid } from 'global/utils';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -26,10 +32,12 @@ const initialState = {
   name: '',
   email: '',
   mobile: '',
-  password: '',
   warnings: [],
+  password: '',
   isRegForm: false,
   isKeyboardActive: false,
+  keyboardPadding: new Animated.Value(0),
+  paddingContainer: new Animated.Value(normalize(30)),
 };
 
 const AdditionalButton = ({
@@ -75,34 +83,55 @@ class Login extends PureComponent<Props, State> {
     this.state = { ...initialState };
   }
 
+  componentDidMount() {
+    const { keyboardPadding, paddingContainer } = this.state;
+    const listenerShow = 'keyboardWillShow';
+    const listenerHide = 'keyboardWillHide';
+    Keyboard.addListener(listenerShow, event => {
+      Animated.parallel([
+        Animated.timing(keyboardPadding, {
+          duration: 250,
+          toValue: -event.endCoordinates.height,
+        }),
+        Animated.timing(paddingContainer, {
+          duration: 250,
+          toValue: isSmallDevice() ? normalize(57) : normalize(30),
+        }),
+      ]).start();
+    });
+    Keyboard.addListener(listenerHide, () => {
+      Animated.parallel([
+        Animated.timing(keyboardPadding, {
+          duration: 250,
+          toValue: 0,
+        }),
+        Animated.timing(paddingContainer, {
+          duration: 250,
+          toValue: normalize(30),
+        }),
+      ]).start();
+    });
+  }
+
   onChangeField = (field: string, value: string) => {
     this.setState({
-      warnings: [],
       [field]: value,
     });
   };
 
   onToggleForm = (isRegForm: boolean) => {
+    Keyboard.dismiss();
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState(state =>
       R.assoc('isRegForm', !state.isRegForm, initialState)
     );
-    Keyboard.dismiss();
   };
 
   checkForErrors = () => {
     const { warnings } = this.state;
     if (warnings.length) return true;
     return false;
-  };
-
-  checkForWarnings = () => {
-    const { warnings } = this.state;
-    if (warnings.length) {
-      return constants.errors.login[warnings[0]];
-    }
-    return '';
   };
 
   checkValue = () => {
@@ -192,97 +221,120 @@ class Login extends PureComponent<Props, State> {
 
   render() {
     const { navigation } = this.props;
-    const { name, email, mobile, password, warnings, isRegForm } = this.state;
+    const {
+      name,
+      email,
+      mobile,
+      password,
+      warnings,
+      isRegForm,
+      keyboardPadding,
+      paddingContainer,
+    } = this.state;
 
     return (
-      <ScrollViewContainer>
-        <Logo isSmall />
-        <View style={styles.formContainer}>
-          {isRegForm && (
+      <ScrollViewContainer bgColor={colors.backGroundBlack}>
+        <Animated.View
+          style={[
+            styles.container,
+            {
+              transform: [
+                {
+                  translateY: keyboardPadding,
+                },
+              ],
+            },
+            { paddingVertical: paddingContainer },
+          ]}
+        >
+          <Animated.View
+            style={[
+              styles.regForm,
+              (isRegForm || warnings.length) && styles.form,
+            ]}
+          >
+            <Logo isSmall />
+            {isRegForm && (
+              <Input
+                value={name}
+                fieldRef={ref => {
+                  this.nameRef = ref;
+                }}
+                blurOnSubmit={false}
+                type={constants.inputTypes.name}
+                isWarning={warnings.includes('name')}
+                onSubmitEditing={() => this.focusField(this.emailRef)}
+                onChangeText={text => this.onChangeField('name', text)}
+              />
+            )}
             <Input
-              value={name}
+              value={email}
               fieldRef={ref => {
-                this.nameRef = ref;
+                this.emailRef = ref;
               }}
               blurOnSubmit={false}
-              isWarning={warnings.includes('name')}
-              type={constants.inputTypes.name}
-              onSubmitEditing={() => this.focusField(this.emailRef)}
-              onChangeText={text => this.onChangeField('name', text)}
+              keyboardType="email-address"
+              type={constants.inputTypes.email}
+              isWarning={warnings.includes('email')}
+              onChangeText={text => this.onChangeField('email', text)}
+              onSubmitEditing={() => this.focusField(this.passwordRef)}
             />
-          )}
-          <Input
-            value={email}
-            fieldRef={ref => {
-              this.emailRef = ref;
-            }}
-            blurOnSubmit={false}
-            isWarning={warnings.includes('email')}
-            keyboardType="email-address"
-            type={constants.inputTypes.email}
-            onChangeText={text => this.onChangeField('email', text)}
-            onSubmitEditing={() => this.focusField(this.passwordRef)}
-          />
-          <Input
-            secureTextEntry
-            value={password}
-            fieldRef={ref => {
-              this.passwordRef = ref;
-            }}
-            blurOnSubmit={false}
-            isWarning={warnings.includes('password')}
-            onSubmitForm={this.onSubmitForm}
-            type={constants.inputTypes.password}
-            keyboardType="numbers-and-punctuation"
-            returnKeyType={!isRegForm ? 'go' : undefined}
-            onSubmitEditing={() => this.focusField(this.mobileRef)}
-            onChangeText={text => this.onChangeField('password', text)}
-          />
-          {isRegForm && (
             <Input
-              value={mobile}
-              returnKeyType="go"
+              secureTextEntry
+              value={password}
               fieldRef={ref => {
-                this.mobileRef = ref;
+                this.passwordRef = ref;
               }}
               blurOnSubmit={false}
-              isWarning={warnings.includes('mobile')}
               onSubmitForm={this.onSubmitForm}
-              mask={constants.masks.mobileNumber}
+              type={constants.inputTypes.password}
               keyboardType="numbers-and-punctuation"
-              type={constants.inputTypes.mobileNumber}
-              placeholder={constants.placeHolders.mobileNumber}
-              onChangeText={text => this.onChangeField('mobile', text)}
+              isWarning={warnings.includes('password')}
+              returnKeyType={!isRegForm ? 'go' : undefined}
+              onSubmitEditing={() => this.focusField(this.mobileRef)}
+              onChangeText={text => this.onChangeField('password', text)}
             />
-          )}
-          {!isRegForm && (
-            <View style={styles.additionalButtons}>
-              <AdditionalButton
-                title={constants.buttonTitles.forgotPassword}
-                onPress={() =>
-                  navigation.navigate(SCENE_NAMES.ForgotPasswordSceneName)
-                }
+            {isRegForm && (
+              <Input
+                value={mobile}
+                returnKeyType="go"
+                fieldRef={ref => {
+                  this.mobileRef = ref;
+                }}
+                blurOnSubmit={false}
+                onSubmitForm={this.onSubmitForm}
+                mask={constants.masks.mobileNumber}
+                keyboardType="numbers-and-punctuation"
+                isWarning={warnings.includes('mobile')}
+                type={constants.inputTypes.mobileNumber}
+                placeholder={constants.placeHolders.mobileNumber}
+                onChangeText={text => this.onChangeField('mobile', text)}
               />
-              <AdditionalButton
-                title={constants.buttonTitles.registration}
-                onPress={() => navigation.state.params.onToggleForm(isRegForm)}
-              />
-            </View>
-          )}
-        </View>
-        <Button
-          title={
-            isRegForm
-              ? constants.buttonTitles.reg
-              : constants.buttonTitles.login
-          }
-          isDisable={this.checkForErrors()}
-          onPress={this.onSubmitForm}
-        />
-        <Warning
-          isVisible={this.checkForErrors()}
-          title={this.checkForWarnings()}
-        />
+            )}
+            {!isRegForm && (
+              <View style={styles.additionalButtons}>
+                <AdditionalButton
+                  title={constants.buttonTitles.forgotPassword}
+                  onPress={() => {}}
+                />
+                <AdditionalButton
+                  title={constants.buttonTitles.registration}
+                  onPress={() =>
+                    navigation.state.params.onToggleForm(isRegForm)
+                  }
+                />
+              </View>
+            )}
+          </Animated.View>
+          <Button
+            title={
+              isRegForm
+                ? constants.buttonTitles.reg
+                : constants.buttonTitles.login
+            }
+            onPress={this.onSubmitForm}
+          />
+        </Animated.View>
       </ScrollViewContainer>
     );
   }

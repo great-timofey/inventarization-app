@@ -14,6 +14,7 @@ import HeaderBackbutton from 'components/HeaderBackButton';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';
+import colors from 'global/colors';
 import Styles from 'global/styles';
 import constants from 'global/constants';
 import { RESET_PASSWORD_MUTATION } from 'graphql/auth/mutations';
@@ -23,8 +24,11 @@ import type { State, Props } from './types';
 
 class ForgotPassword extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: Styles.authHeaderStyle,
-    headerTitle: HeaderTitle({ title: constants.forgotPassText.headerTitle }),
+    headerStyle: Styles.authHeaderStyleBig,
+    headerTitle: HeaderTitle({
+      title: constants.forgotPassText.headerTitle,
+      color: colors.white,
+    }),
     headerLeft: HeaderBackbutton({
       onPress: () => navigation.goBack(),
     }),
