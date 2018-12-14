@@ -19,7 +19,7 @@ export default StyleSheet.create({
   },
   header: {
     fontSize: normalize(34),
-    marginBottom: normalize(15),
+    marginBottom: normalize(4),
     fontFamily: fonts.proDisplay.bold,
   },
   headerRightButtonsContainer: {
@@ -49,6 +49,7 @@ export default StyleSheet.create({
   categoryListContainer: {
     height: normalize(50),
     alignContent: 'center',
+    marginBottom: normalize(10),
   },
   categoryButton: {
     zIndex: 2,
@@ -69,5 +70,10 @@ export default StyleSheet.create({
     width: normalize(30),
     height: normalize(30),
     backgroundColor: colors.blue,
+  },
+  itemsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
 });

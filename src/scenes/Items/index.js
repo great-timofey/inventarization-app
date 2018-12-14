@@ -12,12 +12,14 @@ import { Query } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
+import Item from 'components/Item';
+import InventoryIcon from 'assets/InventoryIcon';
+
 import colors from 'global/colors';
 import { normalize } from 'global/utils';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as QUERIES from 'graphql/auth/queries';
-import InventoryIcon from 'assets/InventoryIcon';
 
 import styles from './styles';
 
@@ -95,7 +97,7 @@ class ItemsScene extends PureComponent<Props, State> {
     ),
   });
 
-  renderTab = ({ item, index }: InviteeProps) => (
+  renderTab = ({ item, index }) => (
     <TouchableOpacity>
       <LinearGradient
         useAngle
@@ -113,6 +115,18 @@ class ItemsScene extends PureComponent<Props, State> {
   render() {
     return (
       <ScrollView style={styles.container}>
+        {/* <Query query={QUERIES.GET_CURRENT_USER}>
+        {({ loading, error, data }) => {
+          if (loading) return <Text>Loading...</Text>;
+          if (error) return <Text>{error.message}</Text>;
+
+          return (
+            <Text>
+              name: {data.current.fullName}, id: {data.current.id}
+            </Text>
+          );
+        }}
+      </Query> */}
         <Text style={styles.header}>{constants.headers.items}</Text>
         <CategoryList>
           <FlatList
@@ -124,19 +138,14 @@ class ItemsScene extends PureComponent<Props, State> {
             contentContainerStyle={styles.horizontalFlatList}
           />
         </CategoryList>
-
-        {/* <Query query={QUERIES.GET_CURRENT_USER}>
-            {({ loading, error, data }) => {
-              if (loading) return <Text>Loading...</Text>;
-              if (error) return <Text>{error.message}</Text>;
-
-              return (
-                <Text>
-                  name: {data.current.fullName}, id: {data.current.id}
-                </Text>
-              );
-            }}
-          </Query> */}
+        <View style={styles.itemsGrid}>
+          <Item />
+          <Item />
+          <Item />
+          <Item />
+          <Item />
+          <Item />
+        </View>
       </ScrollView>
     );
   }
