@@ -39,7 +39,7 @@ export const designWidth = 375;
 export const designHeight = 667;
 
 export const scale = deviceWidth / designWidth;
-export const isSmallDevice = () => deviceHeight < designHeight;
+export const isSmallDevice = deviceHeight < designHeight;
 export const normalize = (value: number) => parseInt(value * scale);
 export const normalizeInt = (value: number) => Math.round(value * scale);
 

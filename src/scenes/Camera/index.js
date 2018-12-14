@@ -70,7 +70,7 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
             style={styles.flashButton}
             onPress={this.toggleFlash}
           >
-            <Image source={icons.flash} style={styles.flashImage} />
+            <Image source={icons.flashCircled} style={styles.flashImage} />
             <Text style={styles.buttonText}>
               {flashMode
                 ? constants.buttonTitles.on
