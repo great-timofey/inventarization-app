@@ -15,6 +15,7 @@ const torchOff = require('assets/torch-off.png');
 const logologin = require('assets/logoLogin.png');
 const deleteIcon = require('assets/deleteIcon.png');
 const flashCircled = require('assets/flash-circled.png');
+const deletePhoto = require('assets/delete-photo.png');
 const headerBackArrow = require('assets/headerBackArrow.png');
 
 export default {
@@ -33,6 +34,7 @@ export default {
   location,
   editIcon,
   logologin,
+  deletePhoto,
   deleteIcon,
   flashCircled,
   headerBackArrow,

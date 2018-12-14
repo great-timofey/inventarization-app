@@ -56,8 +56,9 @@ export default StyleSheet.create({
     flex: 1,
   },
   bottomSection: {
+    overflow: 'visible',
     height: normalize(80),
-    backgroundColor: colors.black,
+    backgroundColor: colors.white,
   },
   makePhotoButton: {
     zIndex: 2,
@@ -94,5 +95,30 @@ export default StyleSheet.create({
   flashIconOff: {
     width: normalize(33),
     height: normalize(33),
+  },
+  photoContainer: {
+    width: normalize(76),
+    height: normalize(76),
+    marginLeft: normalize(8),
+  },
+  photoImage: {
+    borderRadius: 15,
+    position: 'relative',
+    width: normalize(76),
+    height: normalize(76),
+  },
+  removePhotoIcon: {
+    zIndex: 1,
+    top: normalize(-6),
+    right: normalize(-6),
+    position: 'absolute',
+    width: normalize(26),
+    height: normalize(26),
+  },
+  photosOuter: {
+    overflow: 'visible',
+  },
+  photosInner: {
+    alignItems: 'center',
   },
 });

@@ -1,15 +1,21 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import { Text, Image, FlatList, View, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  View,
+  Image,
+  FlatList,
+  CameraRoll,
+  TouchableOpacity,
+} from 'react-native';
 
-import { assoc } from 'ramda';
+import { concat, assoc, remove } from 'ramda';
 import { RNCamera } from 'react-native-camera';
 
 import assets from 'global/assets';
-import { normalize } from 'global/utils';
 import constants from 'global/constants';
-import type { Props, State } from './types';
+import type { Props, State, PhotoProps } from './types';
 import styles from './styles';
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
@@ -23,6 +29,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
     <Image source={assets.headerBackArrow} style={styles.backButton} />
   </TouchableOpacity>
 );
+
 class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: styles.header,
@@ -33,6 +40,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   });
 
   state = {
+    photos: [],
     isHintOpened: true,
     flashMode: RNCamera.Constants.FlashMode.off,
   };
@@ -47,11 +55,33 @@ class AddItemPhotos extends PureComponent<Props, State> {
   takePicture = async () => {
     if (this.camera) {
       const options = { quality: 0.5, base64: true };
-      const shoot = await this.camera.takePictureAsync(options);
+      const { uri } = await this.camera.takePictureAsync(options);
       this.setState(state => assoc('isHintOpened', false, state));
-      console.log(shoot);
+      CameraRoll.saveToCameraRoll(uri);
+      this.setState(state =>
+        assoc('photos', concat(state.photos, [uri]), state)
+      );
     }
   };
+
+  removePicture = (index: number) => {
+    this.setState(state =>
+      assoc('photos', remove(index, 1, state.photos), state)
+    );
+  };
+
+  renderPhoto = ({ item, index }: PhotoProps) => (
+    <View style={styles.photoContainer}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={styles.removePhotoIcon}
+        onPress={() => this.removePicture(index)}
+      >
+        <Image source={assets.deletePhoto} />
+      </TouchableOpacity>
+      <Image source={{ uri: item }} style={styles.photoImage} />
+    </View>
+  );
 
   toggleFlash = () => {
     const { flashMode } = this.state;
@@ -70,10 +100,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   camera: ?RNCamera;
 
-  //  TODO: add photo previews
-
   render() {
-    const { flashMode, isHintOpened } = this.state;
+    const { flashMode, isHintOpened, photos } = this.state;
     return (
       <View style={styles.container}>
         {isHintOpened && (
@@ -104,7 +132,14 @@ class AddItemPhotos extends PureComponent<Props, State> {
           <Image source={assets.logo} style={styles.makePhotoButtonImage} />
         </TouchableOpacity>
         <View style={styles.bottomSection}>
-          <FlatList data={[]} renderItem={() => {}} />
+          <FlatList
+            horizontal
+            data={photos}
+            style={styles.photosOuter}
+            renderItem={this.renderPhoto}
+            contentContainerStyle={styles.photosInner}
+            keyExtractor={(_, index) => index.toString()}
+          />
         </View>
       </View>
     );
