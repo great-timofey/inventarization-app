@@ -70,6 +70,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   camera: ?RNCamera;
 
+  //  TODO: add photo previews
+
   render() {
     const { flashMode, isHintOpened } = this.state;
     return (
