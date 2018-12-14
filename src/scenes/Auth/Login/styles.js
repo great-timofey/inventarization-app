@@ -6,7 +6,6 @@ import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: normalize(30),
     backgroundColor: colors.backGroundBlack,
   },

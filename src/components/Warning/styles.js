@@ -4,13 +4,12 @@ import { StyleSheet } from 'react-native';
 
 import colors from 'global/colors';
 import { fonts } from 'global/styles';
-import { deviceWidth } from 'global/device';
 import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   visibleContainer: {
-    width: deviceWidth,
-    paddingLeft: normalize(50),
+    width: '100%',
+    paddingLeft: normalize(20),
     marginBottom: normalize(20),
     paddingRight: normalize(20),
   },
