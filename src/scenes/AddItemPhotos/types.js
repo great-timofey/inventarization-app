@@ -4,13 +4,18 @@ export type Props = {
   navigation: Object,
 };
 
-export type State = {
-  flashMode: number,
-  photos: Array<string>,
-  isHintOpened: boolean,
+type Photo = {
+  uri: string,
+  base64: string,
 };
 
-export type PhotoProps = {
-  item: string,
+export type PhotosProps = {
+  item: Photo,
   index: number,
+};
+
+export type State = {
+  flashMode: number,
+  photos: Array<Photo>,
+  isHintOpened: boolean,
 };

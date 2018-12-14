@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import RNFS from 'react-native-fs';
 import { concat, assoc, remove } from 'ramda';
 import { RNCamera } from 'react-native-camera';
 
 import assets from 'global/assets';
 import constants from 'global/constants';
-import type { Props, State, PhotoProps } from './types';
+import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
@@ -54,23 +55,37 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   takePicture = async () => {
     if (this.camera) {
+      const { isHintOpened } = this.state;
       const options = { quality: 0.5, base64: true };
-      const { uri } = await this.camera.takePictureAsync(options);
-      this.setState(state => assoc('isHintOpened', false, state));
-      CameraRoll.saveToCameraRoll(uri);
+      const { base64, uri } = await this.camera.takePictureAsync(options);
+
+      if (isHintOpened)
+        this.setState(state => assoc('isHintOpened', false, state));
+
       this.setState(state =>
-        assoc('photos', concat(state.photos, [uri]), state)
+        assoc('photos', concat(state.photos, [{ base64, uri }]), state)
       );
     }
   };
 
-  removePicture = (index: number) => {
+  removePicture = async (index: number) => {
+    const { photos } = this.state;
+    const { uri } = photos[index];
+
+    RNFS.unlink(uri)
+      .then(() => {
+        console.log('FILE DELETED');
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+
     this.setState(state =>
       assoc('photos', remove(index, 1, state.photos), state)
     );
   };
 
-  renderPhoto = ({ item, index }: PhotoProps) => (
+  renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
     <View style={styles.photoContainer}>
       <TouchableOpacity
         activeOpacity={0.5}
@@ -79,7 +94,10 @@ class AddItemPhotos extends PureComponent<Props, State> {
       >
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-      <Image source={{ uri: item }} style={styles.photoImage} />
+      <Image
+        source={{ uri: `data:image/jpeg;base64,${base64}` }}
+        style={styles.photoImage}
+      />
     </View>
   );
 
