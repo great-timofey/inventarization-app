@@ -7,7 +7,6 @@ import {
   Alert,
   Image,
   FlatList,
-  CameraRoll,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
@@ -15,17 +14,14 @@ import {
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import {
-  not,
-  forEach,
-  keys,
-  values,
-  equals,
   all,
-  pickBy,
-  propEq,
-  concat,
+  keys,
   assoc,
   remove,
+  pickBy,
+  concat,
+  values,
+  equals,
 } from 'ramda';
 import Permissions from 'react-native-permissions';
 
@@ -73,7 +69,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
     all(equals('authorized'), values(permissions));
 
   askPermissions = async () => {
-    console.log('checking permissions');
     const { needToAskPermissions } = this.state;
 
     const permissions = await Permissions.checkMultiple(['location', 'camera']);
@@ -112,10 +107,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
       this.setState(state =>
         assoc('photos', concat(state.photos, [{ base64, uri }]), state)
       );
-    } else {
-      Alert.alert(
-        'Не можем сделать фотографию без доступа к вашему местоположению и фотокамере'
-      );
     }
 
     this.setState({ isLoading: false });
@@ -128,7 +119,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     try {
       RNFS.unlink(uri);
     } catch (error) {
-      console.log(error.message);
+      Alert.alert(error.message);
     }
 
     this.setState(state =>
