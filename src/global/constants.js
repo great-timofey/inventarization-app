@@ -31,10 +31,11 @@ const inputTypes = {
   },
   invitees: {
     label: 'Добавьте людей:',
+    warning: 'Неверный формат электронной почты',
   },
   email: {
     label: 'e-mail',
-    warning: 'Вы указали неверный email',
+    warning: 'Неверный формат электронной почты',
   },
   password: {
     label: 'Пароль',

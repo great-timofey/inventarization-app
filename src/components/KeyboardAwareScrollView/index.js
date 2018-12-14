@@ -6,10 +6,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import styles from './styles';
 import type { Props } from './types';
 
-const ScrollViewContainer = ({ children }: Props) => (
+const ScrollViewContainer = ({ children, bgColor }: Props) => (
   <KeyboardAwareScrollView
     bottomOffset={216}
-    style={styles.color}
+    style={{ backgroundColor: bgColor }}
     disableAutomaticScroll
     contentContainerStyle={styles.container}
   >

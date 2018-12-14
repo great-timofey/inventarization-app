@@ -10,8 +10,9 @@ import { normalize } from 'global/utils';
 export default StyleSheet.create({
   visibleContainer: {
     width: deviceWidth,
+    paddingLeft: normalize(50),
     marginBottom: normalize(20),
-    paddingHorizontal: normalize(20),
+    paddingRight: normalize(20),
   },
   hiddenContainer: {
     display: 'none',

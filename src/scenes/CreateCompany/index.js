@@ -6,8 +6,9 @@ import {
   View,
   Alert,
   Image,
-  Keyboard,
   FlatList,
+  Keyboard,
+  Animated,
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
@@ -20,18 +21,18 @@ import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
 import Input from 'components/Input';
 import Button from 'components/Button';
-import Warning from 'components/Warning';
 import AddButton from 'components/AddButton';
 import HeaderTitle from 'components/HeaderTitle';
 import PickPhotoModal from 'components/PickPhotoModal';
 import HeaderBackbutton from 'components/HeaderBackButton';
+import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import colors from 'global/colors';
 import constants from 'global/constants';
 import globalStyles from 'global/styles';
 import * as SCENE_NAMES from 'navigation/scenes';
-import { normalize, isValid } from 'global/utils';
 import * as MUTATIONS from 'graphql/auth/mutations';
+import { normalize, isValid } from 'global/utils';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
@@ -73,7 +74,48 @@ class CreateCompany extends PureComponent<Props, State> {
       chosenPhotoUri: '',
       currentInvitee: '',
       isModalVisible: false,
+      keyboardPadding: new Animated.Value(0),
+      paddingTop: new Animated.Value(normalize(10)),
+      marginBottom: new Animated.Value(normalize(105)),
     };
+  }
+
+  componentDidMount() {
+    const { keyboardPadding, marginBottom, paddingTop } = this.state;
+    const listenerShow = 'keyboardWillShow';
+    const listenerHide = 'keyboardWillHide';
+    Keyboard.addListener(listenerShow, event => {
+      Animated.parallel([
+        Animated.timing(keyboardPadding, {
+          duration: 250,
+          toValue: -event.endCoordinates.height,
+        }),
+        Animated.timing(marginBottom, {
+          duration: 250,
+          toValue: normalize(10),
+        }),
+        Animated.timing(paddingTop, {
+          duration: 250,
+          toValue: normalize(event.endCoordinates.height - 90),
+        }),
+      ]).start();
+    });
+    Keyboard.addListener(listenerHide, () => {
+      Animated.parallel([
+        Animated.timing(keyboardPadding, {
+          duration: 250,
+          toValue: 0,
+        }),
+        Animated.timing(marginBottom, {
+          duration: 250,
+          toValue: normalize(105),
+        }),
+        Animated.timing(paddingTop, {
+          duration: 250,
+          toValue: normalize(10),
+        }),
+      ]).start();
+    });
   }
 
   handleOpenCamera = () => {
@@ -189,6 +231,16 @@ class CreateCompany extends PureComponent<Props, State> {
     if (!trim(companyName)) {
       warnings.push('companyName');
     }
+  };
+
+  checkValue = () => {
+    const { currentInvitee } = this.state;
+    const warnings = [];
+    if (!currentInvitee) {
+      warnings.push('emailEmpty');
+    } else if (!isValid(currentInvitee, constants.regExp.email)) {
+      warnings.push('email');
+    }
 
     this.setState({ warnings }, () => {
       if (isEmpty(warnings)) this.handleCreateCompany();
@@ -210,79 +262,93 @@ class CreateCompany extends PureComponent<Props, State> {
       invitees,
       warnings,
       companyName,
+      paddingTop,
+      marginBottom,
       currentInvitee,
       isModalVisible,
       chosenPhotoUri,
+      keyboardPadding,
     } = this.state;
 
     return (
-      <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
-        <View style={{ alignItems: 'center', marginBottom: 10 }}>
-          <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
-            {chosenPhotoUri ? (
-              <Image
-                style={styles.chosenPhoto}
-                source={{ uri: chosenPhotoUri }}
-              />
-            ) : (
-              <Text style={styles.photoHint}>
-                {constants.buttonTitles.chooseLogo}
-              </Text>
-            )}
-          </TouchableOpacity>
-          <Input
-            isWhite
-            value={companyName}
-            blurOnSubmit={false}
-            placeholder="Введите"
-            isWarning={includes('companyName', warnings)}
-            type={constants.inputTypes.companyName}
-            onSubmitEditing={() => this.focusField(this.emailRef)}
-            onChangeText={text => this.onChangeField('companyName', text)}
+      <ScrollViewContainer bgColor={colors.white}>
+        <Animated.View
+          style={[
+            styles.container,
+            {
+              transform: [
+                {
+                  translateY: keyboardPadding,
+                },
+              ],
+            },
+            { paddingTop },
+          ]}
+        >
+          <StatusBar barStyle="dark-content" />
+          <Animated.View style={[styles.wrapper, { marginBottom }]}>
+            <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
+              {chosenPhotoUri ? (
+                <Image
+                  style={styles.chosenPhoto}
+                  source={{ uri: chosenPhotoUri }}
+                />
+              ) : (
+                <Text style={styles.photoHint}>
+                  {constants.buttonTitles.chooseLogo}
+                </Text>
+              )}
+            </TouchableOpacity>
+            <Input
+              isWhite
+              value={companyName}
+              blurOnSubmit={false}
+              placeholder="Введите"
+              isWarning={warnings.includes('orgName')}
+              type={constants.inputTypes.companyName}
+              onSubmitEditing={() => this.focusField(this.emailRef)}
+              onChangeText={text => this.onChangeField('orgName', text)}
+            />
+            <Input
+              isWhite
+              value={currentInvitee}
+              fieldRef={ref => {
+                this.emailRef = ref;
+              }}
+              returnKeyType="go"
+              blurOnSubmit={false}
+              placeholder="e-mail"
+              onSubmitForm={this.handleAddInvitee}
+              type={constants.inputTypes.invitees}
+              isWarning={
+                warnings.includes('emailEmpty') || warnings.includes('email')
+              }
+              onChangeText={text => this.onChangeField('currentInvitee', text)}
+            >
+              <AddButton onPress={this.handleAddInvitee} />
+            </Input>
+            <FlatList
+              horizontal
+              data={invitees}
+              style={styles.inviteeList}
+              keyExtractor={item => item}
+              renderItem={this.renderInvitee}
+              showsHorizontalScrollIndicator={false}
+            />
+          </Animated.View>
+          <Button
+            onPress={this.checkValue}
+            isDisable={!companyName || !invitees.length}
+            title={constants.buttonTitles.createOrganization}
           />
-          <Input
-            isWhite
-            value={currentInvitee}
-            fieldRef={ref => {
-              this.emailRef = ref;
-            }}
-            blurOnSubmit={false}
-            placeholder="e-mail"
-            type={constants.inputTypes.invitees}
-            isWarning={or(
-              includes('email', warnings),
-              includes('emailEmpty', warnings)
-            )}
-            onChangeText={text => this.onChangeField('currentInvitee', text)}
-            onSubmitEditing={() => Keyboard.dismiss()}
-          >
-            <AddButton onPress={this.handleAddInvitee} />
-          </Input>
-        </View>
-        <FlatList
-          horizontal
-          data={invitees}
-          style={styles.inviteeList}
-          keyExtractor={item => item}
-          renderItem={this.renderInvitee}
-          showsHorizontalScrollIndicator={false}
-        />
-        <Button
-          onPress={this.validateInput}
-          title={constants.buttonTitles.createCompany}
-        />
-        <PickPhotoModal
-          isModalVisible={isModalVisible}
-          toggleModalCallback={this.toggleModal}
-          navigationCallback={this.handleOpenCamera}
-          setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
-        />
-        <Warning
-          isVisible={warnings.length > 0}
-          title={this.checkForWarnings()}
-        />
-      </View>
+          <PickPhotoModal
+            isModalVisible={isModalVisible}
+            toggleModalCallback={this.toggleModal}
+            navigationCallback={this.handleOpenCamera}
+            setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
+          />
+        </Animated.View>
+      </ScrollViewContainer>
     );
   }
 }

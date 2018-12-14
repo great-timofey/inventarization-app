@@ -12,7 +12,7 @@ export default {
   accent: '#42BCF8',
   blue: '#5AC8FA',
   buttonBlue: '#35CEF1',
-  buttonGray: '#333333',
+  buttonGray: '#DAE4E6',
   buttonInvitee: '#67B8F3',
   buttonChooseLogo: '#EFEFEF',
   red: '#FF2D55',

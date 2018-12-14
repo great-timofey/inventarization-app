@@ -9,12 +9,13 @@ import { deviceWidth, deviceHeight } from 'global/device';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: normalize(23),
     paddingBottom: normalize(30),
+    paddingHorizontal: normalize(30),
     backgroundColor: colors.white,
-    justifyContent: 'space-between',
-    paddingHorizontal: normalize(20),
+  },
+  wrapper: {
+    height: normalize(360),
+    alignItems: 'center',
   },
   title: {
     textAlign: 'center',
@@ -27,14 +28,16 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: normalize(40),
-    marginLeft: normalize(10),
     paddingLeft: normalize(20),
+    marginRight: normalize(10),
     borderRadius: normalize(30),
     justifyContent: 'space-between',
     backgroundColor: colors.buttonInvitee,
   },
   inviteeList: {
-    marginHorizontal: normalize(-20),
+    height: normalize(40),
+    alignSelf: 'flex-start',
+    marginTop: normalize(10),
   },
   inviteeRemove: {
     padding: 0,

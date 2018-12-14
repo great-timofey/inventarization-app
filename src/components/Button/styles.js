@@ -28,6 +28,6 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.light,
   },
   titleTextDisable: {
-    color: colors.text.bigGray,
+    color: colors.white,
   },
 });

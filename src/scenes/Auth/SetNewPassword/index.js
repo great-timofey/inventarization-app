@@ -6,7 +6,6 @@ import { View } from 'react-native';
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
-import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
@@ -114,14 +113,6 @@ class SetNewPassword extends PureComponent<Props, State> {
           title={constants.buttonTitles.setNewPass}
           onPress={() => this.onSubmitForm(password, confirmPassword)}
           isDisable={this.checkForErrors()}
-        />
-        <Warning
-          isVisible={this.checkForErrors()}
-          title={
-            warnings[0] === 'notMatch'
-              ? constants.errors.login.notMatch
-              : constants.errors.login.password
-          }
         />
       </ScrollViewContainer>
     );

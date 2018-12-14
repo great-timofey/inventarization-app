@@ -21,6 +21,7 @@ import HeaderButton from 'components/HeaderButton';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import Styles from 'global/styles';
+import colors from 'global/colors';
 import constants from 'global/constants';
 import { isValid } from 'global/utils';
 import * as SCENE_NAMES from 'navigation/scenes';
@@ -235,7 +236,7 @@ class Login extends PureComponent<Props, State> {
     } = this.state;
 
     return (
-      <ScrollViewContainer>
+      <ScrollViewContainer bgColor={colors.backGroundBlack}>
         <Animated.View
           style={[
             styles.container,
