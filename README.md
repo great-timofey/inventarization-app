@@ -17,7 +17,7 @@ or
         * Tap on _Play_ button or use Xcode hotkey **⌘R** for build iOS
 
 
-## Run scripts for 
+## Run scripts for InputMask.framework
 
 В Xcode добавлены автоматические [скрипты](https://github.com/react-native-community/react-native-text-input-mask/issues/22#issuecomment-353659910) для избежания проблемы **ERROR ITMS-90206: "Invalid Bundle. The bundle at 'myapp.app/Frameworks/InputMask.framework' contains disallowed file 'Frameworks'."** при выкладке в iTunesConnect. Их можно найти:
 
