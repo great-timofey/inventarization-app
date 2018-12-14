@@ -20,7 +20,7 @@ import Unorganized from 'scenes/Unorganized';
 import CreateCompany from 'scenes/CreateCompany';
 import AddItemPhotos from 'scenes/AddItemPhotos';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
-import SetNewPassword from 'scenes/Auth/SetNewPassword';
+
 import * as SCENE_NAMES from 'navigation/scenes';
 
 import colors from 'global/colors';

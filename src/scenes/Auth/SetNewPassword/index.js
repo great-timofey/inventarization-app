@@ -6,12 +6,12 @@ import { View } from 'react-native';
 import Logo from 'components/Logo';
 import Input from 'components/Input/index';
 import Button from 'components/Button/index';
-import Warning from 'components/Warning';
 import HeaderTitle from 'components/HeaderTitle';
 import ScrollViewContainer from 'components/KeyboardAwareScrollView';
 
 import utils from 'global/utils';
 import Styles from 'global/styles';
+import colors from 'global/colors';
 import constants from 'global/constants';
 
 import styles from './styles';
@@ -20,8 +20,11 @@ import type { State, Props } from './types';
 
 class SetNewPassword extends PureComponent<Props, State> {
   static navigationOptions = () => ({
-    headerStyle: Styles.authHeaderStyle,
-    headerTitle: HeaderTitle({ title: constants.setNewPassword.create }),
+    headerStyle: Styles.authHeaderStyleBig,
+    headerTitle: HeaderTitle({
+      title: constants.setNewPassword.create,
+      color: colors.white,
+    }),
   });
 
   constructor(props: Props) {
@@ -110,14 +113,6 @@ class SetNewPassword extends PureComponent<Props, State> {
           title={constants.buttonTitles.setNewPass}
           onPress={() => this.onSubmitForm(password, confirmPassword)}
           isDisable={this.checkForErrors()}
-        />
-        <Warning
-          isVisible={this.checkForErrors()}
-          title={
-            warnings[0] === 'notMatch'
-              ? constants.errors.login.notMatch
-              : constants.errors.login.password
-          }
         />
       </ScrollViewContainer>
     );

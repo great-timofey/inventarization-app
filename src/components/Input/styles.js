@@ -8,16 +8,16 @@ import { normalize } from 'global/utils';
 
 export default StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     width: '100%',
     borderWidth: 1,
     borderRadius: 7,
-    height: normalize(52),
-    marginBottom: normalize(10),
-    paddingHorizontal: normalize(20),
+    flexDirection: 'row',
+    height: normalize(54),
     borderColor: colors.black,
+    marginBottom: normalize(10),
     backgroundColor: colors.black,
+    justifyContent: 'space-between',
+    paddingHorizontal: normalize(20),
   },
   whiteContainer: {
     borderColor: colors.input.whiteBG,
@@ -30,9 +30,9 @@ export default StyleSheet.create({
     borderColor: colors.invalidBorder,
   },
   inputTitleText: {
+    zIndex: 2,
     top: normalize(5),
     left: normalize(20),
-    zIndex: 2,
     position: 'absolute',
     fontSize: normalize(13),
     lineHeight: normalize(15),
