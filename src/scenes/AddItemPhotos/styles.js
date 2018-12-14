@@ -58,7 +58,7 @@ export default StyleSheet.create({
   bottomSection: {
     overflow: 'visible',
     height: normalize(80),
-    backgroundColor: colors.black,
+    backgroundColor: colors.white,
   },
   makePhotoButton: {
     zIndex: 2,
@@ -109,11 +109,14 @@ export default StyleSheet.create({
   },
   removePhotoIcon: {
     zIndex: 1,
-    top: normalize(-6),
-    right: normalize(-6),
+    top: normalize(-3),
+    right: normalize(-3),
     position: 'absolute',
     width: normalize(26),
     height: normalize(26),
+  },
+  smallerIcon: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   photosOuter: {
     overflow: 'visible',

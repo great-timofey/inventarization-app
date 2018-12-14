@@ -31,6 +31,7 @@ import Permissions from 'react-native-permissions';
 
 import assets from 'global/assets';
 import constants from 'global/constants';
+import { isSmallDevice } from 'global/utils';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -57,7 +58,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   state = {
     photos: [],
-    permissions: [],
     isLoading: false,
     isHintOpened: true,
     ableToTakePicture: false,
@@ -66,13 +66,10 @@ class AddItemPhotos extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
-    setTimeout(
-      () => this.setState(state => assoc('isHintOpened', false, state)),
-      3000
-    );
+    setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkPermissionsStatus = (permissions: Object) =>
+  checkEveryPermissionStatus = (permissions: Object) =>
     all(equals('authorized'), values(permissions));
 
   askPermissions = async () => {
@@ -81,21 +78,19 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
     const permissions = await Permissions.checkMultiple(['location', 'camera']);
 
-    if (!this.checkPermissionsStatus(permissions)) {
+    if (!this.checkEveryPermissionStatus(permissions)) {
       const notGrantedKeys = keys(
         pickBy(val => val !== 'authorized', permissions)
       );
       notGrantedKeys.forEach(item => Permissions.request(item));
       const userPermissions = await Promise.all(notGrantedKeys);
 
-      const result = this.checkPermissionsStatus(userPermissions);
-      if (!result) return null;
+      const isAllOk = this.checkEveryPermissionStatus(userPermissions);
+      if (!isAllOk) return null;
     }
 
-    if (needToAskPermissions) {
-      console.log('ok');
+    if (needToAskPermissions)
       this.setState({ needToAskPermissions: false, ableToTakePicture: true });
-    }
 
     return null;
   };
@@ -104,10 +99,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
-    if (needToAskPermissions) {
-      console.log('sd');
-      await this.askPermissions();
-    }
+    if (needToAskPermissions) await this.askPermissions();
 
     const { ableToTakePicture } = this.state;
 
@@ -148,7 +140,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     <View style={styles.photoContainer}>
       <TouchableOpacity
         activeOpacity={0.5}
-        style={styles.removePhotoIcon}
+        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
         onPress={() => this.removePicture(index)}
       >
         <Image source={assets.deletePhoto} />
