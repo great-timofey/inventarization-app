@@ -17,7 +17,7 @@ export default StyleSheet.create({
     width: normalize(158),
     height: normalize(158),
     marginBottom: normalize(6),
-    backgroundColor: colors.darkGreen,
+    backgroundColor: colors.gray,
   },
   title: {
     letterSpacing: -0.2,

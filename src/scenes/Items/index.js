@@ -1,5 +1,5 @@
 //  @flow
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import {
   Text,
   View,
@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from 'components/Item';
+import SortButton from 'components/SortButton';
 import InventoryIcon from 'assets/InventoryIcon';
 
 import colors from 'global/colors';
@@ -114,8 +115,9 @@ class ItemsScene extends PureComponent<Props, State> {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        {/* <Query query={QUERIES.GET_CURRENT_USER}>
+      <Fragment>
+        <ScrollView style={styles.container}>
+          {/* <Query query={QUERIES.GET_CURRENT_USER}>
         {({ loading, error, data }) => {
           if (loading) return <Text>Loading...</Text>;
           if (error) return <Text>{error.message}</Text>;
@@ -127,26 +129,28 @@ class ItemsScene extends PureComponent<Props, State> {
           );
         }}
       </Query> */}
-        <Text style={styles.header}>{constants.headers.items}</Text>
-        <CategoryList>
-          <FlatList
-            horizontal
-            data={data}
-            keyExtractor={item => item}
-            renderItem={this.renderTab}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalFlatList}
-          />
-        </CategoryList>
-        <View style={styles.itemsGrid}>
-          <Item />
-          <Item />
-          <Item />
-          <Item />
-          <Item />
-          <Item />
-        </View>
-      </ScrollView>
+          <Text style={styles.header}>{constants.headers.items}</Text>
+          <CategoryList>
+            <FlatList
+              horizontal
+              data={data}
+              keyExtractor={item => item}
+              renderItem={this.renderTab}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalFlatList}
+            />
+          </CategoryList>
+          <View style={styles.itemsGrid}>
+            <Item />
+            <Item />
+            <Item />
+            <Item />
+            <Item />
+            <Item />
+          </View>
+        </ScrollView>
+        <SortButton />
+      </Fragment>
     );
   }
 }
