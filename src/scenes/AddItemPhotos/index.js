@@ -25,9 +25,9 @@ import {
 } from 'ramda';
 import Permissions from 'react-native-permissions';
 
-import assets from 'global/assets';
-import constants from 'global/constants';
-import { isSmallDevice } from 'global/utils';
+import assets from '~/global/assets';
+import constants from '~/global/constants';
+import { isSmallDevice } from '~/global/utils';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -65,8 +65,10 @@ class AddItemPhotos extends PureComponent<Props, State> {
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkEveryPermissionStatus = (permissions: Object) =>
-    all(equals('authorized'), values(permissions));
+  checkEveryPermissionStatus = (permissions: Object) => all(
+    equals('authorized'),
+    values(permissions),
+  );
 
   askPermissions = async () => {
     const { needToAskPermissions } = this.state;
@@ -75,7 +77,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
     if (!this.checkEveryPermissionStatus(permissions)) {
       const notGrantedKeys = keys(
-        pickBy(val => val !== 'authorized', permissions)
+        pickBy(val => val !== 'authorized', permissions),
       );
       notGrantedKeys.forEach(item => Permissions.request(item));
       const userPermissions = await Promise.all(notGrantedKeys);
@@ -84,8 +86,9 @@ class AddItemPhotos extends PureComponent<Props, State> {
       if (!isAllOk) return null;
     }
 
-    if (needToAskPermissions)
+    if (needToAskPermissions) {
       this.setState({ needToAskPermissions: false, ableToTakePicture: true });
+    }
 
     return null;
   };
@@ -104,9 +107,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state =>
-        assoc('photos', concat(state.photos, [{ base64, uri }]), state)
-      );
+      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state));
     }
 
     this.setState({ isLoading: false });
@@ -122,9 +123,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state =>
-      assoc('photos', remove(index, 1, state.photos), state)
-    );
+    this.setState(state => assoc('photos', remove(index, 1, state.photos), state));
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
@@ -174,9 +173,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
             </View>
           )}
           <RNCamera
-            ref={ref => {
-              this.camera = ref;
-            }}
+            ref={(ref) => { this.camera = ref; }}
             flashMode={flashMode}
             style={styles.preview}
           />

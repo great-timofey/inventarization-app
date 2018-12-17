@@ -7,11 +7,11 @@ import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
-import ScannerMarker from 'components/ScannerMarker';
+import ScannerMarker from '~/components/ScannerMarker';
 
-import colors from 'global/colors';
-import assets from 'global/assets';
-import constants from 'global/constants';
+import colors from '~/global/colors';
+import assets from '~/global/assets';
+import constants from '~/global/constants';
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -56,7 +56,7 @@ class QRCode extends PureComponent<Props, State> {
         <QRCodeScanner
           reactivate
           showMarker
-          onRead={e => {}}
+          onRead={() => {}}
           reactivateTimeout={1000}
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}

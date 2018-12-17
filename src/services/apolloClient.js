@@ -11,7 +11,7 @@ import { withClientState } from 'apollo-link-state';
 import { persistCache } from 'apollo-cache-persist';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-import { inventoryApiUrl } from 'global/constants';
+import { inventoryApiUrl } from '~/global/constants';
 
 const cache = new InMemoryCache();
 

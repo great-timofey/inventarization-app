@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
-import colors from 'global/colors';
+import colors from '~/global/colors';
 import styles from './styles';
 
 function Loader() {

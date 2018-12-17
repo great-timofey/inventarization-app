@@ -2,7 +2,7 @@
 
 import { StyleSheet } from 'react-native';
 
-import { normalize } from 'global/utils';
+import { normalize } from '~/global/utils';
 import colors from '../../global/colors';
 
 export default StyleSheet.create({
