@@ -4,9 +4,9 @@ import React from 'react';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import { normalize } from 'global/utils';
+import { normalize } from '~/global/utils';
 
-import colors from 'global/colors';
+import colors from '~/global/colors';
 import type { Props } from './types';
 
 const AddButton = (props: Props) => (

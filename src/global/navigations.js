@@ -7,24 +7,24 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 
-import Camera from 'scenes/Camera';
-import QRScene from 'scenes/QRScan';
-import Login from 'scenes/Auth/Login';
-import ItemsScene from 'scenes/Items';
-import PlacesScene from 'scenes/Places';
-import PeopleScene from 'scenes/People';
-import ProfileScene from 'scenes/Profile';
-// import AddItemScene from 'scenes/AddItem';
-import Question from 'scenes/Auth/Question';
-import Unorganized from 'scenes/Unorganized';
-import CreateCompany from 'scenes/CreateCompany';
-import AddItemPhotos from 'scenes/AddItemPhotos';
-import AddItemDefects from 'scenes/AddItemDefects';
-import ForgotPassword from 'scenes/Auth/ForgotPassword';
+import Camera from '~/scenes/Camera';
+import QRScene from '~/scenes/QRScan';
+import Login from '~/scenes/Auth/Login';
+import ItemsScene from '~/scenes/Items';
+import PlacesScene from '~/scenes/Places';
+import PeopleScene from '~/scenes/People';
+import ProfileScene from '~/scenes/Profile';
+// import AddItemScene from '~/scenes/AddItem';
+import Question from '~/scenes/Auth/Question';
+import Unorganized from '~/scenes/Unorganized';
+import CreateCompany from '~/scenes/CreateCompany';
+import AddItemPhotos from '~/scenes/AddItemPhotos';
+import AddItemDefects from '~/scenes/AddItemDefects';
+import ForgotPassword from '~/scenes/Auth/ForgotPassword';
 
-import * as SCENE_NAMES from 'navigation/scenes';
+import * as SCENE_NAMES from '~/navigation/scenes';
 
-import colors from 'global/colors';
+import colors from '~/global/colors';
 import styles from './styles';
 import assets from './assets';
 
@@ -32,11 +32,15 @@ type iconType = {
   focused: Boolean,
 };
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) =>
-  createStackNavigator(RouteConfigs, StackNavigatorConfig);
+const generateStack = (RouteConfigs, StackNavigatorConfig) => createStackNavigator(
+  RouteConfigs,
+  StackNavigatorConfig,
+);
 
-const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) =>
-  createBottomTabNavigator(RouteConfigs, StackNavigatorConfig);
+const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) => createBottomTabNavigator(
+  RouteConfigs,
+  StackNavigatorConfig,
+);
 
 const generateAppContainer = navigator => createAppContainer(navigator);
 

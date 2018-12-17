@@ -7,12 +7,12 @@ import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
-import ScannerMarker from 'components/ScannerMarker';
+import ScannerMarker from '~/components/ScannerMarker';
 
-import * as SCENE_NAMES from 'navigation/scenes';
-import colors from 'global/colors';
-import assets from 'global/assets';
-import constants from 'global/constants';
+import colors from '~/global/colors';
+import assets from '~/global/assets';
+import constants from '~/global/constants';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -34,14 +34,10 @@ class QRCode extends PureComponent<Props, State> {
     headerTitleStyle: styles.headerTitleStyle,
     headerStyle: styles.header,
     headerLeft: (
-      <HeaderBackButton
-        onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)}
-      />
+      <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
     ),
     headerRight: (
-      <HeaderSkipButton
-        onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)}
-      />
+      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
     ),
   });
 
@@ -76,16 +72,13 @@ class QRCode extends PureComponent<Props, State> {
         <QRCodeScanner
           reactivate
           showMarker
-          onRead={e => {}}
+          onRead={() => {}}
           reactivateTimeout={1000}
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
         <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>
-          <Image
-            source={isTorchOn ? assets.torchOn : assets.torchOff}
-            style={styles.torchIcon}
-          />
+          <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.makePhotoButton} disabled>
           <Image source={assets.logo} style={styles.makePhotoButtonImage} />

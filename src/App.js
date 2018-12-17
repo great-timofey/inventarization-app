@@ -1,11 +1,11 @@
 //  @flow
 import React, { Component } from 'react';
 
-import AppNavigator from 'navigation';
+import AppNavigator from '~/navigation';
 import { ApolloProvider } from 'react-apollo';
-import getApolloClient from 'services/apolloClient';
+import getApolloClient from '~/services/apolloClient';
 
-import Loader from 'components/Loader';
+import Loader from '~/components/Loader';
 
 type Props = {};
 type State = { client: ?Object, loading: boolean };

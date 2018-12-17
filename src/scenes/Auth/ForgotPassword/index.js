@@ -5,19 +5,19 @@ import { Alert, View, Text } from 'react-native';
 
 import { graphql } from 'react-apollo';
 
-import Logo from 'components/Logo';
-import Warning from 'components/Warning';
-import Input from 'components/Input/index';
-import Button from 'components/Button/index';
-import HeaderTitle from 'components/HeaderTitle';
-import HeaderBackbutton from 'components/HeaderBackButton';
-import ScrollViewContainer from 'components/KeyboardAwareScrollView';
+import Logo from '~/components/Logo';
+import Warning from '~/components/Warning';
+import Input from '~/components/Input/index';
+import Button from '~/components/Button/index';
+import HeaderTitle from '~/components/HeaderTitle';
+import HeaderBackbutton from '~/components/HeaderBackButton';
+import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
 
-import utils from 'global/utils';
-import colors from 'global/colors';
-import Styles from 'global/styles';
-import constants from 'global/constants';
-import { RESET_PASSWORD_MUTATION } from 'graphql/auth/mutations';
+import utils from '~/global/utils';
+import colors from '~/global/colors';
+import Styles from '~/global/styles';
+import constants from '~/global/constants';
+import { RESET_PASSWORD_MUTATION } from '~/graphql/auth/mutations';
 
 import styles from './styles';
 import type { State, Props } from './types';
@@ -48,8 +48,9 @@ class ForgotPassword extends PureComponent<Props, State> {
 
   checkValue = () => {
     const { email } = this.state;
-    if (!utils.isValid(email, constants.regExp.email))
+    if (!utils.isValid(email, constants.regExp.email)) {
       this.setState({ warning: true });
+    }
   };
 
   onSendRecoveryMail = async () => {
@@ -86,7 +87,7 @@ class ForgotPassword extends PureComponent<Props, State> {
           {!isRecoveryMailSend && (
             <Input
               value={email}
-              fieldRef={ref => {
+              fieldRef={(ref) => {
                 this.emailRef = ref;
               }}
               isWarning={warning}

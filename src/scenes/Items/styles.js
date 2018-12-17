@@ -1,9 +1,9 @@
 //  @flow
 
-import colors from 'global/colors';
-import { fonts } from 'global/styles';
-import { normalize } from 'global/utils';
-import { isIphoneX } from 'global/device';
+import colors from '~/global/colors';
+import { fonts } from '~/global/styles';
+import { normalize } from '~/global/utils';
+import { isIphoneX } from '~/global/device';
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({

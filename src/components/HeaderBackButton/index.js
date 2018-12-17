@@ -3,7 +3,7 @@
 import React from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 
-import assets from 'global/assets';
+import assets from '~/global/assets';
 
 import type { Props } from './types';
 import styles from './styles';

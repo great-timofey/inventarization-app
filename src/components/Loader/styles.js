@@ -2,8 +2,8 @@
 
 import { StyleSheet } from 'react-native';
 
-import colors from 'global/colors';
-import { deviceHeight, deviceWidth } from 'global/device';
+import colors from '~/global/colors';
+import { deviceHeight, deviceWidth } from '~/global/device';
 
 export default StyleSheet.create({
   container: {
