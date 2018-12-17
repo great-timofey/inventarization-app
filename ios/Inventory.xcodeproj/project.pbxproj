@@ -55,8 +55,7 @@
 		B26F225221B7CD1600E31CAB /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B26F225121B7CD1600E31CAB /* InputMask.framework */; };
 		B26F225321B7CD1600E31CAB /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B26F225121B7CD1600E31CAB /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B482EF3960C84FEDB9307E1B /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6CFD4D4C2CC47039540D896 /* libRNImagePicker.a */; };
-		CE3A533E21C3734F0086AEEB /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3A533B21C373360086AEEB /* libRNFS.a */; };
-		CE3A533F21C3734F0086AEEB /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3A533D21C373360086AEEB /* libRNFS.a */; };
+		CE7B98FB21C74F7C004A9DA4 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE3A533B21C373360086AEEB /* libRNFS.a */; };
 		CEC9B57721BE25C00035C192 /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC9B57621BE258E0035C192 /* libRCTImageResizer.a */; };
 		CED3A1C021BF6EC000CC0520 /* libReactNativePermissions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CED3A1BF21BF6EA700CC0520 /* libReactNativePermissions.a */; };
 		CED3A1DE21BF8B9F00CC0520 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CED3A1DB21BF8B9700CC0520 /* libART.a */; };
@@ -597,6 +596,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7B98FB21C74F7C004A9DA4 /* libRNFS.a in Frameworks */,
 				B26F224C21B7CCC400E31CAB /* libRNTextInputMask.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */,
@@ -612,8 +612,6 @@
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				CED3A1E821BF8E2F00CC0520 /* libRNSVG.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
-				CE3A533E21C3734F0086AEEB /* libRNFS.a in Frameworks */,
-				CE3A533F21C3734F0086AEEB /* libRNFS.a in Frameworks */,
 				CED3A1DE21BF8B9F00CC0520 /* libART.a in Frameworks */,
 				A58F898521B11B3300AFA800 /* libRNVectorIcons.a in Frameworks */,
 				CEC9B57721BE25C00035C192 /* libRCTImageResizer.a in Frameworks */,
