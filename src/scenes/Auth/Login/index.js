@@ -166,7 +166,7 @@ class Login extends PureComponent<Props, State> {
       navigation,
       signInMutation,
       signUpMutation,
-      // setAuthMutationClient,
+      setAuthMutationClient,
     } = this.props;
 
     /**
