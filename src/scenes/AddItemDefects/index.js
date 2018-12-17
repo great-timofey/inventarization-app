@@ -28,13 +28,12 @@ import Permissions from 'react-native-permissions';
 import assets from 'global/assets';
 import constants from 'global/constants';
 import { isSmallDevice } from 'global/utils';
-import * as SCENE_NAMES from 'navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
-    <Text style={styles.skipButtonText}>{constants.buttonTitles.next}</Text>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.ready}</Text>
   </TouchableOpacity>
 );
 
@@ -44,17 +43,13 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-class AddItemPhotos extends PureComponent<Props, State> {
+class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: styles.header,
-    title: constants.headers.newItem,
+    title: constants.headers.defects,
     headerTitleStyle: styles.headerTitleStyle,
     headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: (
-      <HeaderSkipButton
-        onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName)}
-      />
-    ),
+    headerRight: <HeaderSkipButton onPress={() => {}} />,
   });
 
   state = {
@@ -148,6 +143,14 @@ class AddItemPhotos extends PureComponent<Props, State> {
     </View>
   );
 
+  componentDidMount() {
+    console.log('mount');
+  }
+
+  componentWillUnmount() {
+    console.log('unmont');
+  }
+
   toggleFlash = () => {
     const { flashMode } = this.state;
     this.setState({
@@ -171,7 +174,9 @@ class AddItemPhotos extends PureComponent<Props, State> {
       <View style={styles.container}>
         <Fragment>
           <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
+            <Text style={styles.hintText}>
+              {constants.hints.makeDefectsPhotos}
+            </Text>
           </View>
           {isLoading && (
             <View style={styles.hint}>
@@ -216,4 +221,4 @@ class AddItemPhotos extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemPhotos;
+export default AddItemDefects;

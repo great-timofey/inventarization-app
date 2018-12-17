@@ -59,6 +59,7 @@ const buttonTitles = {
   off: 'Выкл',
   next: 'Далее',
   login: 'Войти',
+  ready: 'Готово',
   cancel: 'Отмена',
   update: 'Обновить',
   skip: 'Пропустить',
@@ -105,6 +106,7 @@ const errors = {
 
 const headers = {
   items: 'Предметы',
+  defects: 'Дефекты',
   qrscanner: 'Сканер',
   newItem: 'Новый предмет',
   createNewCompany: 'Создание новой \n организации',
@@ -119,6 +121,7 @@ const text = {
 
 const hints = {
   makePhotos: 'Сделайте фотографии вашего предмета',
+  makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
 
 export default {

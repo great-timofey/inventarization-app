@@ -14,11 +14,12 @@ import ItemsScene from 'scenes/Items';
 import PlacesScene from 'scenes/Places';
 import PeopleScene from 'scenes/People';
 import ProfileScene from 'scenes/Profile';
-import AddItemScene from 'scenes/AddItem';
+// import AddItemScene from 'scenes/AddItem';
 import Question from 'scenes/Auth/Question';
 import Unorganized from 'scenes/Unorganized';
 import CreateCompany from 'scenes/CreateCompany';
 import AddItemPhotos from 'scenes/AddItemPhotos';
+import AddItemDefects from 'scenes/AddItemDefects';
 import ForgotPassword from 'scenes/Auth/ForgotPassword';
 
 import * as SCENE_NAMES from 'navigation/scenes';
@@ -53,7 +54,8 @@ const profileStack = generateStack({
 });
 const addItemStack = generateStack({
   [SCENE_NAMES.QRScanSceneName]: QRScene,
-  [SCENE_NAMES.AddItemSceneName]: AddItemPhotos,
+  [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
+  [SCENE_NAMES.AddItemDefectsSceneName]: AddItemDefects,
 });
 
 const rootTabs = {
