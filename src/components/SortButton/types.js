@@ -6,5 +6,7 @@ export type Props = {
   iconColor?: string,
   onPress: () => void,
   customStyle?: Object,
+  isDisabled?: boolean,
+  isCloseButton?: boolean,
   customPosition?: Object,
 };

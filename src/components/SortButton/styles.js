@@ -2,8 +2,8 @@
 
 import { StyleSheet } from 'react-native';
 
-import colors from 'global/colors';
-import { normalize } from 'global/utils';
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
   container: {

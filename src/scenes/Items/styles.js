@@ -87,6 +87,5 @@ export default StyleSheet.create({
     position: 'absolute',
     right: normalize(30),
     bottom: normalize(40),
-    paddingLeft: normalize(3),
   },
 });

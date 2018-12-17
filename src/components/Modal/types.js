@@ -1,6 +1,8 @@
 // @flow
 
 export type Props = {
+  isSortByName: boolean,
   isModalVisible: boolean,
-  onPress: () => void,
+  toggleSortMethod: () => void,
+  toggleModalVisible: () => void,
 };

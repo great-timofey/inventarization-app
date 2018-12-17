@@ -112,6 +112,7 @@ class ItemsScene extends PureComponent<Props, State> {
 
     this.state = {
       isModalVisible: false,
+      isSortByName: true,
     };
 
     navigation.setParams({
@@ -147,15 +148,24 @@ class ItemsScene extends PureComponent<Props, State> {
     }
   };
 
-  onPressSortButton = () => {
+  toggleModalVisible = () => {
     const { isModalVisible } = this.state;
     this.setState({
       isModalVisible: !isModalVisible,
     });
   };
 
+  toggleSortMethod = () => {
+    const { isSortByName } = this.state;
+    this.setState({
+      isSortByName: !isSortByName,
+    },
+    this.toggleModalVisible);
+  }
+
   render() {
-    const { isModalVisible } = this.state;
+    const { isModalVisible, isSortByName } = this.state;
+    console.log(isModalVisible, isSortByName);
 
     return (
       <Fragment>
@@ -186,15 +196,20 @@ class ItemsScene extends PureComponent<Props, State> {
         </ScrollView>
         {!isModalVisible && (
           <SortButton
-            size={50}
-            iconName="button-sort-name"
-            onPress={this.onPressSortButton}
-            customStyle={styles.sortButtonCustomStyle}
+            size={isSortByName ? 50 : 70}
+            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+            onPress={this.toggleModalVisible}
+            customStyle={[
+              styles.sortButtonCustomStyle, isSortByName && { paddingLeft: normalize(3) },
+            ]}
+            customPosition={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
           />
         )}
         <SortModal
+          isSortByName={isSortByName}
           isModalVisible={isModalVisible}
-          onPress={this.onPressSortButton}
+          toggleSortMethod={this.toggleSortMethod}
+          toggleModalVisible={this.toggleModalVisible}
         />
       </Fragment>
     );
