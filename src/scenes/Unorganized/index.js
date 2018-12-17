@@ -3,11 +3,11 @@
 import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
 
-import Button from 'components/Button';
-import HeaderBackbutton from 'components/HeaderBackButton';
+import Button from '~/components/Button';
+import HeaderBackbutton from '~/components/HeaderBackButton';
 
-import Styles from 'global/styles';
-import constants from 'global/constants';
+import Styles from '~/global/styles';
+import constants from '~/global/constants';
 
 import type { Props } from './types';
 import styles from './styles';

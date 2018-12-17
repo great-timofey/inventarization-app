@@ -16,8 +16,8 @@ import Modal from 'react-native-modal';
 import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 
-import assets from 'global/assets';
-import constants from 'global/constants';
+import assets from '~/global/assets';
+import constants from '~/global/constants';
 import type { ModalProps, ModalState, PhotoType } from './types';
 
 import styles from './styles';
@@ -32,7 +32,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
     CameraRoll.getPhotos({
       first: 20,
       assetType: 'All',
-    }).then(data => {
+    }).then((data) => {
       this.setState({ photos: [photos[0], ...data.edges] });
     });
   }
@@ -52,7 +52,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
       quality: 0.5,
     };
     //  $FlowFixMe
-    ImagePicker.launchImageLibrary(options, response => {
+    ImagePicker.launchImageLibrary(options, (response) => {
       if (response.error) {
         Alert.alert(constants.errors.camera.photo);
       } else {
@@ -64,11 +64,11 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
   renderItem = ({ item, index }: PhotoType) => (
     <TouchableOpacity
       style={styles.photo}
-      onPress={() =>
+      onPress={() => (
         index === 0
           ? this.handleTakePhoto()
           : this.handleChoosePhoto(item.node.image.uri)
-      }
+      )}
     >
       {index > 0 ? (
         <ImageBackground
@@ -81,7 +81,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
           style={styles.cameraIconContainer}
         >
           <RNCamera />
-          <Image source={assets.cameraIcon} style={styles.cameraIcon} />
+          <Image source={assets.camera} style={styles.cameraIcon} />
         </ImageBackground>
       )}
     </TouchableOpacity>
@@ -107,9 +107,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
                 data={photos}
                 renderItem={this.renderItem}
                 contentContainerStyle={styles.photos}
-                keyExtractor={(item, index) =>
-                  index > 0 ? item.node.image.uri : 'key'
-                }
+                keyExtractor={(item, index) => (index > 0 ? item.node.image.uri : 'key')}
                 showsHorizontalScrollIndicator={false}
               />
               <TouchableOpacity

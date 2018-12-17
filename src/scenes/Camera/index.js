@@ -4,8 +4,8 @@ import { StatusBar, Text, Image, View, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
-import icons from 'global/assets';
-import constants from 'global/constants';
+import icons from '~/global/assets';
+import constants from '~/global/constants';
 import type { CameraSceneProps, CameraSceneState } from './types';
 import styles from './styles';
 
@@ -26,7 +26,7 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
       const { uri } = await this.camera.takePictureAsync(options);
       const setPhotoUriCameraCallback = navigation.getParam(
         'setPhotoUriCameraCallback',
-        'none'
+        'none',
       );
       setPhotoUriCameraCallback(uri);
       navigation.goBack();
@@ -70,7 +70,7 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
             style={styles.flashButton}
             onPress={this.toggleFlash}
           >
-            <Image source={icons.flash} style={styles.flashImage} />
+            <Image source={icons.flashCircled} style={styles.flashImage} />
             <Text style={styles.buttonText}>
               {flashMode
                 ? constants.buttonTitles.on
@@ -79,7 +79,7 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
           </TouchableOpacity>
         </View>
         <RNCamera
-          ref={ref => {
+          ref={(ref) => {
             this.camera = ref;
           }}
           type={type}

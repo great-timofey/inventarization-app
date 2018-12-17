@@ -57,6 +57,7 @@ const inputTypes = {
 const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
+  next: 'Далее',
   login: 'Войти',
   cancel: 'Отмена',
   update: 'Обновить',
@@ -110,6 +111,7 @@ const errors = {
 const headers = {
   items: 'Предметы',
   qrscanner: 'Сканер',
+  newItem: 'Новый предмет',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -119,10 +121,16 @@ const text = {
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
 };
+
+const hints = {
+  makePhotos: 'Сделайте фотографии вашего предмета',
+};
+
 export default {
   sort,
   text,
   masks,
+  hints,
   errors,
   regExp,
   headers,

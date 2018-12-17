@@ -2,9 +2,9 @@
 
 import { StyleSheet } from 'react-native';
 
-import colors from 'global/colors';
-import { fonts } from 'global/styles';
-import { normalize } from 'global/utils';
+import colors from '~/global/colors';
+import { fonts } from '~/global/styles';
+import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
   header: {
@@ -62,9 +62,9 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
   },
   makePhotoButtonImage: {
-    width: 36,
-    height: 41,
     opacity: 0.3,
+    width: normalize(36),
+    height: normalize(41),
     tintColor: colors.backGroundBlack,
   },
   torchButton: {

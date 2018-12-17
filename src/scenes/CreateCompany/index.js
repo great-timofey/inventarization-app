@@ -19,20 +19,20 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
-import Input from 'components/Input';
-import Button from 'components/Button';
-import AddButton from 'components/AddButton';
-import HeaderTitle from 'components/HeaderTitle';
-import PickPhotoModal from 'components/PickPhotoModal';
-import HeaderBackbutton from 'components/HeaderBackButton';
-import ScrollViewContainer from 'components/KeyboardAwareScrollView';
+import Input from '~/components/Input';
+import Button from '~/components/Button';
+import AddButton from '~/components/AddButton';
+import HeaderTitle from '~/components/HeaderTitle';
+import PickPhotoModal from '~/components/PickPhotoModal';
+import HeaderBackbutton from '~/components/HeaderBackButton';
+import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
 
-import colors from 'global/colors';
-import constants from 'global/constants';
-import globalStyles from 'global/styles';
-import * as SCENE_NAMES from 'navigation/scenes';
-import * as MUTATIONS from 'graphql/auth/mutations';
-import { normalize, isValid } from 'global/utils';
+import colors from '~/global/colors';
+import constants from '~/global/constants';
+import globalStyles from '~/global/styles';
+import * as SCENE_NAMES from '~/navigation/scenes';
+import * as MUTATIONS from '~/graphql/auth/mutations';
+import { normalize, isValid } from '~/global/utils';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
@@ -84,7 +84,7 @@ class CreateCompany extends PureComponent<Props, State> {
     const { keyboardPadding, marginBottom, paddingTop } = this.state;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
-    Keyboard.addListener(listenerShow, event => {
+    Keyboard.addListener(listenerShow, (event) => {
       Animated.parallel([
         Animated.timing(keyboardPadding, {
           duration: 250,
@@ -134,9 +134,7 @@ class CreateCompany extends PureComponent<Props, State> {
         invitees: concat(invitees, [currentInvitee]),
       });
     } else {
-      this.setState(state =>
-        assoc(['warnings'], concat(state.warnings, ['email']), state)
-      );
+      this.setState(state => assoc(['warnings'], concat(state.warnings, ['email']), state));
     }
   };
 
@@ -147,11 +145,9 @@ class CreateCompany extends PureComponent<Props, State> {
     });
   };
 
-  handleInputInvitee = (currentInvitee: string) =>
-    this.setState({ currentInvitee });
+  handleInputInvitee = (currentInvitee: string) => this.setState({ currentInvitee });
 
-  handleInputCompanyName = (companyName: string) =>
-    this.setState({ companyName });
+  handleInputCompanyName = (companyName: string) => this.setState({ companyName });
 
   handleCreateCompany = async () => {
     const { createCompany, setAuthMutationClient } = this.props;
@@ -168,7 +164,7 @@ class CreateCompany extends PureComponent<Props, State> {
           constants.uploadCreateCompanyImages.width,
           constants.uploadCreateCompanyImages.height,
           type === 'JPG' ? 'JPEG' : type,
-          constants.uploadCreateCompanyImages.quality
+          constants.uploadCreateCompanyImages.quality,
         );
 
         file = new ReactNativeFile({
@@ -312,7 +308,7 @@ class CreateCompany extends PureComponent<Props, State> {
             <Input
               isWhite
               value={currentInvitee}
-              fieldRef={ref => {
+              fieldRef={(ref) => {
                 this.emailRef = ref;
               }}
               returnKeyType="go"
@@ -359,5 +355,5 @@ export default compose(
   }),
   graphql(MUTATIONS.CREATE_COMPANY_MUTATION, {
     name: 'createCompany',
-  })
+  }),
 )(CreateCompany);

@@ -2,10 +2,10 @@
 
 import { StyleSheet } from 'react-native';
 
-import { fonts } from 'global/styles';
-import colors from 'global/colors';
-import { normalize } from 'global/utils';
-import { deviceWidth } from 'global/device';
+import { fonts } from '~/global/styles';
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
+import { deviceWidth } from '~/global/device';
 
 export default StyleSheet.create({
   container: {

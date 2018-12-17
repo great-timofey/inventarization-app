@@ -13,17 +13,16 @@ import { Query } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
-import Item from 'components/Item';
-import SortModal from 'components/Modal';
-import SortButton from 'components/SortButton';
-import InventoryIcon from 'assets/InventoryIcon';
+import Item from '~/components/Item';
+import SortModal from '~/components/Modal';
+import SortButton from '~/components/SortButton';
+import InventoryIcon from '~/assets/InventoryIcon';
 
-import colors from 'global/colors';
-import { normalize } from 'global/utils';
-import constants from 'global/constants';
-import globalStyles from 'global/styles';
-import * as QUERIES from 'graphql/auth/queries';
-
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
+import constants from '~/global/constants';
+import globalStyles from '~/global/styles';
+import * as QUERIES from '~/graphql/auth/queries';
 import styles from './styles';
 import type { Props, State } from './types';
 
