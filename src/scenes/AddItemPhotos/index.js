@@ -12,16 +12,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import gql from 'graphql-tag';
 import RNFS from 'react-native-fs';
+import { graphql, compose } from 'react-apollo';
 import { RNCamera } from 'react-native-camera';
-import { all, keys, assoc, remove, pickBy, concat, values, equals } from 'ramda';
-// $FlowFixMe
-import Permissions from 'react-native-permissions';
+import { assoc, remove, concat } from 'ramda';
 
+import * as MUTATIONS from '~/graphql/auth/mutations';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { isSmallDevice, checkPermissions, askPermissions } from '~/global/utils';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -61,25 +62,25 @@ class AddItemPhotos extends PureComponent<Props, State> {
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkEveryPermissionStatus = (permissions: Object) => all(equals('authorized'), values(permissions));
-
   askPermissions = async () => {
-    const { needToAskPermissions } = this.state;
+    const {
+      data: { permissions: {camera, location} },
+      setPermissionClient,
+    } = this.props;
+    const {permissions} = this.props;
 
-    const permissions = await Permissions.checkMultiple(['location', 'camera']);
+    // const allIsOk = checkPermissions({camera, location});
 
-    if (!this.checkEveryPermissionStatus(permissions)) {
-      const notGrantedKeys = keys(pickBy(val => val !== 'authorized', permissions));
-      notGrantedKeys.forEach(item => Permissions.request(item));
-      const userPermissions = await Promise.all(notGrantedKeys);
+    // if (!allIsOk) {
+      const toUpdate = await askPermissions({camera, location});
+      console.log(toUpdate)
+      // Object.keys(toUpdate).forEach(permKey => setPermissionClient({ variables: { permission: ({ [ permKey ]: permissions[permKey] }) } }));
+    // }
 
-      const isAllOk = this.checkEveryPermissionStatus(userPermissions);
-      if (!isAllOk) return null;
-    }
-
-    if (needToAskPermissions) {
-      this.setState({ needToAskPermissions: false, ableToTakePicture: true });
-    }
+    // console.log(permissions);
+    // if (needToAskPermissions && allIsOk) {
+    //   this.setState({ needToAskPermissions: false, ableToTakePicture: true });
+    // }
 
     return null;
   };
@@ -195,4 +196,16 @@ class AddItemPhotos extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemPhotos;
+export default compose(
+  graphql(
+    gql`
+      {
+        permissions @client {
+          camera
+          location
+        }
+      }
+    `,
+  ),
+  graphql(MUTATIONS.SET_PERMISSION_MUTATION_CLIENT, { name: 'setPermissionClient' }),
+)(AddItemPhotos);

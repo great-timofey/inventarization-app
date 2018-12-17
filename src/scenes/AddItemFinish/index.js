@@ -1,19 +1,10 @@
 //  @flow
 
-import React, { PureComponent, Fragment } from 'react';
-import {
-  Text,
-  SafeAreaView,
-  View,
-  Alert,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import React, { PureComponent } from 'react';
+import { Text, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 
-import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -43,9 +34,12 @@ class AddItemFinish extends PureComponent<Props, State> {
     ),
   });
 
-  handleGoToItemForm = () => {};
+  handleGoToItemForm = () => console.log('navigate to item form');
 
-  handleAddMoreItems = () => {};
+  handleAddMoreItems = () => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.QRScanSceneName);
+  };
 
   camera: ?RNCamera;
 

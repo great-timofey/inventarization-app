@@ -167,6 +167,7 @@ class Login extends PureComponent<Props, State> {
       signInMutation,
       signUpMutation,
       setAuthMutationClient,
+      setInitialPermissionsMutationClient,
     } = this.props;
 
     /**
@@ -204,6 +205,7 @@ class Login extends PureComponent<Props, State> {
         );
 
         await setAuthMutationClient({ variables: { isAuthed: true } });
+        await setInitialPermissionsMutationClient();
       } catch (error) {
         Alert.alert(error.message);
       }
@@ -348,6 +350,9 @@ class Login extends PureComponent<Props, State> {
 export default compose(
   graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
     name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.SET_INITIAL_PERMISSIONS_MUTATION_CLIENT, {
+    name: 'setInitialPermissionsMutationClient',
   }),
   graphql(MUTATIONS.SIGN_IN_MUTATION, {
     name: 'signInMutation',

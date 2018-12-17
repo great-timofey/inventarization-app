@@ -2,8 +2,10 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView, StatusBar } from 'react-native';
 
-import { Query } from 'react-apollo';
+import { Query, graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
+
+import gql from 'graphql-tag';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
@@ -55,6 +57,7 @@ class ItemsScene extends Component<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
+    console.log(this.props.data.permissions);
   }
 
   componentWillUnmount() {
@@ -89,4 +92,13 @@ class ItemsScene extends Component<Props, State> {
   }
 }
 
-export default ItemsScene;
+export default graphql(
+  gql`
+    {
+      permissions @client {
+        camera
+        location
+      }
+    }
+  `,
+)(ItemsScene);

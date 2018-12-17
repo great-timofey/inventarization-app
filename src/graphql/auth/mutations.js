@@ -22,12 +22,7 @@ export const SIGN_UP_MUTATION = gql`
     $phoneNumber: String
   ) {
     signUpUser(
-      input: {
-        email: $email
-        password: $password
-        fullName: $fullName
-        phoneNumber: $phoneNumber
-      }
+      input: { email: $email, password: $password, fullName: $fullName, phoneNumber: $phoneNumber }
     ) {
       message
       token
@@ -48,15 +43,8 @@ export const RESET_PASSWORD_MUTATION = gql`
 `;
 
 export const CREATE_COMPANY_MUTATION = gql`
-  mutation CreateCompany(
-    $name: String!
-    $logo: Upload
-    $inviters: [InviteAttr!]
-  ) {
-    createCompany(
-      attributes: { name: $name, logo: $logo }
-      inviters: $inviters
-    ) {
+  mutation CreateCompany($name: String!, $logo: Upload, $inviters: [InviteAttr!]) {
+    createCompany(attributes: { name: $name, logo: $logo }, inviters: $inviters) {
       company {
         id
         name
@@ -71,8 +59,20 @@ export const CREATE_COMPANY_MUTATION = gql`
 `;
 
 export const SET_AUTH_MUTATION_CLIENT = gql`
-  mutation setAuth($isAuthed: Boolean) {
+  mutation setAuth($isAuthed: Boolean!) {
     setAuth(isAuthed: $isAuthed) @client
+  }
+`;
+
+export const SET_INITIAL_PERMISSIONS_MUTATION_CLIENT = gql`
+  mutation setInitialPermissions {
+    setInitialPermissions @client
+  }
+`;
+
+export const SET_PERMISSION_MUTATION_CLIENT = gql`
+  mutation setPermission($permission: String!, $value: String!) {
+    setPermission(permission: $permission, value: $value) @client
   }
 `;
 
@@ -81,4 +81,6 @@ export default {
   SIGN_UP_MUTATION,
   RESET_PASSWORD_MUTATION,
   SET_AUTH_MUTATION_CLIENT,
+  SET_PERMISSION_MUTATION_CLIENT,
+  SET_INITIAL_PERMISSIONS_MUTATION_CLIENT,
 };
