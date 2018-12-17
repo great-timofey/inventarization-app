@@ -85,6 +85,11 @@ const setNewPassword = {
   create: 'Создание нового \n пароля',
 };
 
+const sort = {
+  name: 'Сортировать по имени',
+  price: 'Сортировать по цене',
+  close: 'Закрыть',
+};
 const errors = {
   login: {
     name: 'Введите имя',
@@ -115,6 +120,7 @@ const text = {
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
 };
 export default {
+  sort,
   text,
   masks,
   errors,

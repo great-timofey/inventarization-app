@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from 'components/Item';
+import SortModal from 'components/Modal';
 import SortButton from 'components/SortButton';
 import InventoryIcon from 'assets/InventoryIcon';
 
@@ -110,6 +111,10 @@ class ItemsScene extends PureComponent<Props, State> {
     super(props);
     const { navigation } = this.props;
 
+    this.state = {
+      isModalVisible: false,
+    };
+
     navigation.setParams({
       isTitleVisible: false,
     });
@@ -143,7 +148,16 @@ class ItemsScene extends PureComponent<Props, State> {
     }
   };
 
+  onPressSortButton = () => {
+    const { isModalVisible } = this.state;
+    this.setState({
+      isModalVisible: !isModalVisible,
+    });
+  };
+
   render() {
+    const { isModalVisible } = this.state;
+
     return (
       <Fragment>
         <ScrollView
@@ -151,18 +165,6 @@ class ItemsScene extends PureComponent<Props, State> {
           onScroll={this.handleScroll}
           scrollEventThrottle={16}
         >
-          {/* <Query query={QUERIES.GET_CURRENT_USER}>
-        {({ loading, error, data }) => {
-          if (loading) return <Text>Loading...</Text>;
-          if (error) return <Text>{error.message}</Text>;
-
-          return (
-            <Text>
-              name: {data.current.fullName}, id: {data.current.id}
-            </Text>
-          );
-        }}
-      </Query> */}
           <Text style={styles.header}>{constants.headers.items}</Text>
           <CategoryList>
             <FlatList
@@ -183,7 +185,18 @@ class ItemsScene extends PureComponent<Props, State> {
             <Item />
           </View>
         </ScrollView>
-        <SortButton />
+        {!isModalVisible && (
+          <SortButton
+            size={50}
+            iconName="button-sort-name"
+            onPress={this.onPressSortButton}
+            customStyle={styles.sortButtonCustomStyle}
+          />
+        )}
+        <SortModal
+          isModalVisible={isModalVisible}
+          onPress={this.onPressSortButton}
+        />
       </Fragment>
     );
   }

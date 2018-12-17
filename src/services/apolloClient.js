@@ -33,7 +33,7 @@ const authLink = setContext(async (_, { headers }) => {
 const stateLink = withClientState({
   cache,
   defaults: {
-    isAuthed: false,
+    isAuthed: true,
   },
   resolvers: {
     Mutation: {

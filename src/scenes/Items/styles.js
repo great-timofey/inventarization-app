@@ -83,4 +83,10 @@ export default StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
+  sortButtonCustomStyle: {
+    position: 'absolute',
+    right: normalize(30),
+    bottom: normalize(40),
+    paddingLeft: normalize(3),
+  },
 });

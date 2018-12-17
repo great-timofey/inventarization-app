@@ -4,6 +4,7 @@ export default {
   transparent: 'transparent',
   backGroundBlack: '#0D0D0D',
   white: '#FFFFFF',
+  whiteOpacity: 'rgba(255, 255, 255, .3)',
   black: '#000000',
   green: '#39FA90',
   buttonGreen: '#1CD25A',
@@ -26,6 +27,9 @@ export default {
     inputTitle: '#616161',
     placeholder: '#3F3F3F',
     placeholderWhite: '#C8C8C8',
+  },
+  button: {
+    close: '#3D3D3D',
   },
   header: {
     createCompany: '#414B6A',

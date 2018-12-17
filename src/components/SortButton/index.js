@@ -1,30 +1,35 @@
 // @flow
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 
-import InventoryIcon from 'assets/InventoryIcon';
+import Icon from 'assets/InventoryIcon';
 
 import colors from 'global/colors';
 import { normalize } from 'global/utils';
 
 import styles from './styles';
+import type { Props } from './types';
 
-const iconProps = {
-  size: normalize(55),
-  backgroundColor: colors.transparent,
-};
-
-const SortButton = () => (
-  <View style={styles.container}>
-    <InventoryIcon.Button
-      {...iconProps}
-      onPress={() => {}}
+const SortButton = ({
+  size,
+  onPress,
+  iconName,
+  iconColor,
+  customStyle,
+  customPosition,
+}: Props) => (
+  <View style={[styles.container, customStyle]}>
+    <Icon.Button
+      name={iconName}
       activeOpacity={0.5}
-      color={colors.white}
-      name="button-sort-name"
+      size={normalize(size)}
+      style={styles.wrapper}
       underlayColor="transparent"
-      style={{ margin: 0, padding: 0 }}
+      color={iconColor || colors.white}
+      backgroundColor={colors.transparent}
+      onPress={onPress ? () => onPress() : () => {}}
+      iconStyle={[{ marginRight: 0 }, customPosition]}
     />
   </View>
 );
