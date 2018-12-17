@@ -4,8 +4,8 @@ import React, { Component, Fragment } from 'react';
 import TextInputMask from 'react-native-text-input-mask';
 import { View, Text, TextInput } from 'react-native';
 
-import colors from 'global/colors';
-import Warning from 'components/Warning';
+import colors from '~/global/colors';
+import Warning from '~/components/Warning';
 
 import type { Props } from './types';
 import styles from './styles';
@@ -25,9 +25,9 @@ class Input extends Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     const { returnKeyType, value, isWarning } = this.props;
     if (
-      nextProps.value !== value ||
-      nextProps.returnKeyType !== returnKeyType ||
-      nextProps.isWarning !== isWarning
+      nextProps.value !== value
+      || nextProps.returnKeyType !== returnKeyType
+      || nextProps.isWarning !== isWarning
     ) {
       return true;
     }

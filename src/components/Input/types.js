@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 
-import type { KeyboardType, ReturnKeyType } from 'global/types';
+import type { KeyboardType, ReturnKeyType } from '~/global/types';
 
 export type Props = {
   mask?: string,

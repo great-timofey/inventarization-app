@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { View, Text, Image, FlatList } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
-import colors from 'global/colors';
-import assets from 'global/assets';
+import colors from '~/global/colors';
+import assets from '~/global/assets';
 import styles from './styles';
 
 type State = {
@@ -30,10 +30,11 @@ class SwipebleListItem extends PureComponent<Props, State> {
 
   onSwipeClose = (id: number) => {
     // TODO:
-    if (id)
+    if (id) {
       this.setState({
         scrollEnabled: true,
       });
+    }
   };
 
   renderSwipeRow = (itemId: number, activeRowId: any) => {
@@ -58,12 +59,12 @@ class SwipebleListItem extends PureComponent<Props, State> {
         autoClose
         right={swipeoutBtns}
         close={itemId !== activeRowId}
-        onOpen={(sectionID, rowId, direction: string) =>
+        onOpen={(sectionID, rowId, direction: string) => (
           direction !== undefined ? this.onSwipeOpen(itemId) : null
-        }
-        onClose={(sectionID, rowId, direction: string) =>
+        )}
+        onClose={(sectionID, rowId, direction: string) => (
           direction !== undefined ? this.onSwipeClose(itemId) : null
-        }
+        )}
       >
         <View>
           <View style={styles.rowItem}>

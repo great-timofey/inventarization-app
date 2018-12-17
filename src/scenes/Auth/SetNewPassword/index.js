@@ -1,18 +1,18 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 
-import Logo from 'components/Logo';
-import Input from 'components/Input/index';
-import Button from 'components/Button/index';
-import HeaderTitle from 'components/HeaderTitle';
-import ScrollViewContainer from 'components/KeyboardAwareScrollView';
+import Logo from '~/components/Logo';
+import Input from '~/components/Input/index';
+import Button from '~/components/Button/index';
+import HeaderTitle from '~/components/HeaderTitle';
+import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
 
-import utils from 'global/utils';
-import Styles from 'global/styles';
-import colors from 'global/colors';
-import constants from 'global/constants';
+import utils from '~/global/utils';
+import Styles from '~/global/styles';
+import colors from '~/global/colors';
+import constants from '~/global/constants';
 
 import styles from './styles';
 
@@ -70,7 +70,7 @@ class SetNewPassword extends PureComponent<Props, State> {
   onSubmitForm = (password: string, confirmPassword: string) => {
     this.checkValue();
     if (utils.isValidPassword(password, confirmPassword)) {
-      alert('click');
+      Alert.alert('click');
     }
   };
 
@@ -87,7 +87,7 @@ class SetNewPassword extends PureComponent<Props, State> {
         <View style={styles.formContainer}>
           <Input
             value={password}
-            fieldRef={ref => {
+            fieldRef={(ref) => {
               this.passwordRef = ref;
             }}
             secureTextEntry
@@ -98,7 +98,7 @@ class SetNewPassword extends PureComponent<Props, State> {
           />
           <Input
             value={confirmPassword}
-            fieldRef={ref => {
+            fieldRef={(ref) => {
               this.confirmPasswordRef = ref;
             }}
             secureTextEntry

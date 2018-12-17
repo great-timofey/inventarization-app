@@ -5,12 +5,12 @@ import { Text, View, ScrollView } from 'react-native';
 import { Query } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
 
-import colors from 'global/colors';
-import { normalize } from 'global/utils';
-import constants from 'global/constants';
-import globalStyles from 'global/styles';
-import * as QUERIES from 'graphql/auth/queries';
-import InventoryIcon from 'assets/InventoryIcon';
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
+import constants from '~/global/constants';
+import globalStyles from '~/global/styles';
+import * as QUERIES from '~/graphql/auth/queries';
+import InventoryIcon from '~/assets/InventoryIcon';
 import styles from './styles';
 
 const iconProps = {

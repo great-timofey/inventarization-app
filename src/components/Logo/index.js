@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Image } from 'react-native';
 
-import assets from 'global/assets';
+import assets from '~/global/assets';
 
 import styles from './styles';
 

@@ -13,17 +13,17 @@ import {
   AsyncStorage,
 } from 'react-native';
 
-import Logo from 'components/Logo';
-import Input from 'components/Input';
-import Button from 'components/Button';
-import HeaderButton from 'components/HeaderButton';
-import ScrollViewContainer from 'components/KeyboardAwareScrollView';
+import Logo from '~/components/Logo';
+import Input from '~/components/Input';
+import Button from '~/components/Button';
+import HeaderButton from '~/components/HeaderButton';
+import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
 
-import Styles from 'global/styles';
-import colors from 'global/colors';
-import constants from 'global/constants';
-import * as MUTATIONS from 'graphql/auth/mutations';
-import { normalize, isSmallDevice, isValid } from 'global/utils';
+import Styles from '~/global/styles';
+import colors from '~/global/colors';
+import constants from '~/global/constants';
+import * as MUTATIONS from '~/graphql/auth/mutations';
+import { normalize, isSmallDevice, isValid } from '~/global/utils';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -87,7 +87,7 @@ class Login extends PureComponent<Props, State> {
     const { keyboardPadding, paddingContainer } = this.state;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
-    Keyboard.addListener(listenerShow, event => {
+    Keyboard.addListener(listenerShow, (event) => {
       Animated.parallel([
         Animated.timing(keyboardPadding, {
           duration: 250,
@@ -95,7 +95,7 @@ class Login extends PureComponent<Props, State> {
         }),
         Animated.timing(paddingContainer, {
           duration: 250,
-          toValue: isSmallDevice() ? normalize(57) : normalize(30),
+          toValue: isSmallDevice ? normalize(57) : normalize(30),
         }),
       ]).start();
     });
@@ -123,9 +123,7 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
-    this.setState(state =>
-      R.assoc('isRegForm', !state.isRegForm, initialState)
-    );
+    this.setState(state => R.assoc('isRegForm', !state.isRegForm, initialState));
   };
 
   checkForErrors = () => {
@@ -147,9 +145,9 @@ class Login extends PureComponent<Props, State> {
       warnings.push('password');
     }
     if (
-      isRegForm &&
-      mobile &&
-      !isValid(mobile, constants.regExp.mobileNumber)
+      isRegForm
+      && mobile
+      && !isValid(mobile, constants.regExp.mobileNumber)
     ) {
       warnings.push('mobile');
     }
@@ -168,10 +166,13 @@ class Login extends PureComponent<Props, State> {
       navigation,
       signInMutation,
       signUpMutation,
-      setAuthMutationClient,
+      // setAuthMutationClient,
     } = this.props;
 
-    /** 'Promise.resolve' and 'await' below used because of async setState in this.checkValue and this.checkForErrors */
+    /**
+     * 'Promise.resolve' and 'await' below used because of async setState
+     * in this.checkValue and this.checkForErrors
+     */
 
     const isFormInvalid = await Promise.resolve()
       .then(_ => this.checkValue())
@@ -179,12 +180,19 @@ class Login extends PureComponent<Props, State> {
 
     if (!isFormInvalid) {
       try {
-        const variables = {
+        const variables: {|
+          email: string,
+          password: string,
+          fullName: string,
+          phoneNumber?: string,
+        |} = {
           email,
           password,
           fullName,
         };
-        if (phoneNumber) variables.phoneNumber = phoneNumber;
+        if (phoneNumber) {
+          variables.phoneNumber = phoneNumber;
+        }
 
         const { data } = await (isRegForm
           ? signUpMutation({ variables })
@@ -192,7 +200,7 @@ class Login extends PureComponent<Props, State> {
 
         await AsyncStorage.setItem(
           'token',
-          isRegForm ? data.signUpUser.token : data.signInUser.token
+          isRegForm ? data.signUpUser.token : data.signInUser.token,
         );
 
         navigation.navigate('CreateCompany');
@@ -257,7 +265,7 @@ class Login extends PureComponent<Props, State> {
             {isRegForm && (
               <Input
                 value={name}
-                fieldRef={ref => {
+                fieldRef={(ref) => {
                   this.nameRef = ref;
                 }}
                 blurOnSubmit={false}
@@ -269,7 +277,7 @@ class Login extends PureComponent<Props, State> {
             )}
             <Input
               value={email}
-              fieldRef={ref => {
+              fieldRef={(ref) => {
                 this.emailRef = ref;
               }}
               blurOnSubmit={false}
@@ -282,7 +290,7 @@ class Login extends PureComponent<Props, State> {
             <Input
               secureTextEntry
               value={password}
-              fieldRef={ref => {
+              fieldRef={(ref) => {
                 this.passwordRef = ref;
               }}
               blurOnSubmit={false}
@@ -298,7 +306,7 @@ class Login extends PureComponent<Props, State> {
               <Input
                 value={mobile}
                 returnKeyType="go"
-                fieldRef={ref => {
+                fieldRef={(ref) => {
                   this.mobileRef = ref;
                 }}
                 blurOnSubmit={false}
@@ -319,9 +327,7 @@ class Login extends PureComponent<Props, State> {
                 />
                 <AdditionalButton
                   title={constants.buttonTitles.registration}
-                  onPress={() =>
-                    navigation.state.params.onToggleForm(isRegForm)
-                  }
+                  onPress={() => navigation.state.params.onToggleForm(isRegForm)}
                 />
               </View>
             )}
@@ -349,5 +355,5 @@ export default compose(
   }),
   graphql(MUTATIONS.SIGN_UP_MUTATION, {
     name: 'signUpMutation',
-  })
+  }),
 )(Login);
