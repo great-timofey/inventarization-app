@@ -19,6 +19,7 @@ import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
 import CreateCompany from '~/scenes/CreateCompany';
 import AddItemPhotos from '~/scenes/AddItemPhotos';
+import AddItemFinish from '~/scenes/AddItemFinish';
 import AddItemDefects from '~/scenes/AddItemDefects';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
 
@@ -59,6 +60,7 @@ const profileStack = generateStack({
 const addItemStack = generateStack({
   [SCENE_NAMES.QRScanSceneName]: QRScene,
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
+  [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
   [SCENE_NAMES.AddItemDefectsSceneName]: AddItemDefects,
 });
 

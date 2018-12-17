@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import { graphql, compose } from 'react-apollo';
+//  $FlowFixMe
 import ImageResizer from 'react-native-image-resizer';
 import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -300,7 +301,7 @@ class CreateCompany extends PureComponent<Props, State> {
               value={companyName}
               blurOnSubmit={false}
               placeholder="Введите"
-              isWarning={warnings.includes('orgName')}
+              isWarning={includes('orgName', warnings)}
               type={constants.inputTypes.companyName}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('orgName', text)}
@@ -316,10 +317,8 @@ class CreateCompany extends PureComponent<Props, State> {
               placeholder="e-mail"
               onSubmitForm={this.handleAddInvitee}
               type={constants.inputTypes.invitees}
-              isWarning={
-                warnings.includes('emailEmpty') || warnings.includes('email')
-              }
               onChangeText={text => this.onChangeField('currentInvitee', text)}
+              isWarning={or(includes('emailEmpty', warnings), includes('email', warnings))}
             >
               <AddButton onPress={this.handleAddInvitee} />
             </Input>

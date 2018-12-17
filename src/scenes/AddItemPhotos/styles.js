@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceHeight, deviceWidth } from '~/global/device';
+import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
@@ -67,26 +67,26 @@ export default StyleSheet.create({
     alignItems: 'center',
     width: normalize(66),
     height: normalize(66),
-    bottom: normalize(120),
     justifyContent: 'center',
     borderRadius: normalize(33),
     backgroundColor: colors.white,
+    bottom: isIphoneX ? normalize(140) : normalize(120),
   },
   makePhotoButtonImage: {
     width: normalize(36),
     height: normalize(41),
   },
-  flashOnButton: {
+  flashButton: {
     zIndex: 2,
     left: normalize(60),
     position: 'absolute',
-    bottom: normalize(130),
   },
-  flashOffButton: {
-    zIndex: 2,
+  flashOn: {
+    bottom: isIphoneX ? normalize(150) : normalize(130),
+  },
+  flashOff: {
     left: normalize(70),
-    position: 'absolute',
-    bottom: normalize(130),
+    bottom: isIphoneX ? normalize(150) : normalize(130),
   },
   flashIconOn: {
     width: normalize(15),

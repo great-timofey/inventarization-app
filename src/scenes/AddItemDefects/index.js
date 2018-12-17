@@ -7,27 +7,21 @@ import {
   Alert,
   Image,
   FlatList,
+  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
-import {
-  all,
-  keys,
-  assoc,
-  remove,
-  pickBy,
-  concat,
-  values,
-  equals,
-} from 'ramda';
+import { all, keys, assoc, remove, pickBy, concat, values, equals } from 'ramda';
+// $FlowFixMe
 import Permissions from 'react-native-permissions';
 
-import assets from 'global/assets';
-import constants from 'global/constants';
-import { isSmallDevice } from 'global/utils';
+import assets from '~/global/assets';
+import constants from '~/global/constants';
+import { isSmallDevice } from '~/global/utils';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -49,7 +43,9 @@ class AddItemDefects extends PureComponent<Props, State> {
     title: constants.headers.defects,
     headerTitleStyle: styles.headerTitleStyle,
     headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: <HeaderSkipButton onPress={() => {}} />,
+    headerRight: (
+      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemFinishSceneName)} />
+    ),
   });
 
   state = {
@@ -62,11 +58,11 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    console.log('mount');
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkEveryPermissionStatus = (permissions: Object) =>
-    all(equals('authorized'), values(permissions));
+  checkEveryPermissionStatus = (permissions: Object) => all(equals('authorized'), values(permissions));
 
   askPermissions = async () => {
     const { needToAskPermissions } = this.state;
@@ -74,9 +70,7 @@ class AddItemDefects extends PureComponent<Props, State> {
     const permissions = await Permissions.checkMultiple(['location', 'camera']);
 
     if (!this.checkEveryPermissionStatus(permissions)) {
-      const notGrantedKeys = keys(
-        pickBy(val => val !== 'authorized', permissions)
-      );
+      const notGrantedKeys = keys(pickBy(val => val !== 'authorized', permissions));
       notGrantedKeys.forEach(item => Permissions.request(item));
       const userPermissions = await Promise.all(notGrantedKeys);
 
@@ -84,8 +78,9 @@ class AddItemDefects extends PureComponent<Props, State> {
       if (!isAllOk) return null;
     }
 
-    if (needToAskPermissions)
+    if (needToAskPermissions) {
       this.setState({ needToAskPermissions: false, ableToTakePicture: true });
+    }
 
     return null;
   };
@@ -104,9 +99,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state =>
-        assoc('photos', concat(state.photos, [{ base64, uri }]), state)
-      );
+      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state));
     }
 
     this.setState({ isLoading: false });
@@ -122,9 +115,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state =>
-      assoc('photos', remove(index, 1, state.photos), state)
-    );
+    this.setState(state => assoc('photos', remove(index, 1, state.photos), state));
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
@@ -136,16 +127,9 @@ class AddItemDefects extends PureComponent<Props, State> {
       >
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-      <Image
-        style={styles.photoImage}
-        source={{ uri: `data:image/jpeg;base64,${base64}` }}
-      />
+      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
     </View>
   );
-
-  componentDidMount() {
-    console.log('mount');
-  }
 
   componentWillUnmount() {
     console.log('unmont');
@@ -171,12 +155,10 @@ class AddItemDefects extends PureComponent<Props, State> {
   render() {
     const { flashMode, isHintOpened, photos, isLoading } = this.state;
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Fragment>
           <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>
-              {constants.hints.makeDefectsPhotos}
-            </Text>
+            <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
           </View>
           {isLoading && (
             <View style={styles.hint}>
@@ -184,7 +166,7 @@ class AddItemDefects extends PureComponent<Props, State> {
             </View>
           )}
           <RNCamera
-            ref={ref => {
+            ref={(ref) => {
               this.camera = ref;
             }}
             flashMode={flashMode}
@@ -192,17 +174,14 @@ class AddItemDefects extends PureComponent<Props, State> {
           />
           <TouchableOpacity
             onPress={this.toggleFlash}
-            style={flashMode ? styles.flashOnButton : styles.flashOffButton}
+            style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
           >
             <Image
               source={flashMode ? assets.flashOff : assets.flashOn}
               style={flashMode ? styles.flashIconOff : styles.flashIconOn}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.takePicture}
-            style={styles.makePhotoButton}
-          >
+          <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
             <Image source={assets.logo} style={styles.makePhotoButtonImage} />
           </TouchableOpacity>
         </Fragment>
@@ -216,7 +195,7 @@ class AddItemDefects extends PureComponent<Props, State> {
             keyExtractor={(_, index) => index.toString()}
           />
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

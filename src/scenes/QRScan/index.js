@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import { assoc } from 'ramda';
+//  $FlowFixMe
 import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
@@ -48,15 +49,17 @@ class QRCode extends PureComponent<Props, State> {
     };
   }
 
+  navListener: any;
+
   componentDidMount() {
     const { navigation } = this.props;
-    this._navListener = navigation.addListener('didFocus', () => {
+    this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
     });
   }
 
   componentWillUnmount() {
-    this._navListener.remove();
+    this.navListener.remove();
   }
 
   toggleTorch = () => {

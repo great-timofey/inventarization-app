@@ -7,22 +7,15 @@ import {
   Alert,
   Image,
   FlatList,
+  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
-import {
-  all,
-  keys,
-  assoc,
-  remove,
-  pickBy,
-  concat,
-  values,
-  equals,
-} from 'ramda';
+import { all, keys, assoc, remove, pickBy, concat, values, equals } from 'ramda';
+// $FlowFixMe
 import Permissions from 'react-native-permissions';
 
 import assets from '~/global/assets';
@@ -51,9 +44,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     headerTitleStyle: styles.headerTitleStyle,
     headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
     headerRight: (
-      <HeaderSkipButton
-        onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName)}
-      />
+      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName)} />
     ),
   });
 
@@ -70,10 +61,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkEveryPermissionStatus = (permissions: Object) => all(
-    equals('authorized'),
-    values(permissions),
-  );
+  checkEveryPermissionStatus = (permissions: Object) => all(equals('authorized'), values(permissions));
 
   askPermissions = async () => {
     const { needToAskPermissions } = this.state;
@@ -81,9 +69,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const permissions = await Permissions.checkMultiple(['location', 'camera']);
 
     if (!this.checkEveryPermissionStatus(permissions)) {
-      const notGrantedKeys = keys(
-        pickBy(val => val !== 'authorized', permissions),
-      );
+      const notGrantedKeys = keys(pickBy(val => val !== 'authorized', permissions));
       notGrantedKeys.forEach(item => Permissions.request(item));
       const userPermissions = await Promise.all(notGrantedKeys);
 
@@ -140,10 +126,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       >
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-      <Image
-        style={styles.photoImage}
-        source={{ uri: `data:image/jpeg;base64,${base64}` }}
-      />
+      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
     </View>
   );
 
@@ -167,7 +150,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   render() {
     const { flashMode, isHintOpened, photos, isLoading } = this.state;
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Fragment>
           <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
             <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
@@ -178,23 +161,22 @@ class AddItemPhotos extends PureComponent<Props, State> {
             </View>
           )}
           <RNCamera
-            ref={(ref) => { this.camera = ref; }}
+            ref={(ref) => {
+              this.camera = ref;
+            }}
             flashMode={flashMode}
             style={styles.preview}
           />
           <TouchableOpacity
             onPress={this.toggleFlash}
-            style={flashMode ? styles.flashOnButton : styles.flashOffButton}
+            style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
           >
             <Image
               source={flashMode ? assets.flashOff : assets.flashOn}
               style={flashMode ? styles.flashIconOff : styles.flashIconOn}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.takePicture}
-            style={styles.makePhotoButton}
-          >
+          <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
             <Image source={assets.logo} style={styles.makePhotoButtonImage} />
           </TouchableOpacity>
         </Fragment>
@@ -208,7 +190,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
             keyExtractor={(_, index) => index.toString()}
           />
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

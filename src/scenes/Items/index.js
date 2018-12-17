@@ -11,6 +11,7 @@ import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 import * as QUERIES from '~/graphql/auth/queries';
 import InventoryIcon from '~/assets/InventoryIcon';
+import type { Props, State } from './types';
 import styles from './styles';
 
 const iconProps = {
@@ -19,9 +20,6 @@ const iconProps = {
   iconStyle: globalStyles.iconStyle,
   backgroundColor: colors.transparent,
 };
-
-type Props = { client: Object };
-type State = { data: ?Object, loading: boolean };
 class ItemsScene extends Component<Props, State> {
   static navigationOptions = () => ({
     header: () => (
@@ -50,15 +48,17 @@ class ItemsScene extends Component<Props, State> {
     ),
   });
 
+  navListener: any;
+
   componentDidMount() {
     const { navigation } = this.props;
-    this._navListener = navigation.addListener('didFocus', () => {
+    this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
   }
 
   componentWillUnmount() {
-    this._navListener.remove();
+    this.navListener.remove();
   }
 
   render() {
@@ -73,7 +73,12 @@ class ItemsScene extends Component<Props, State> {
 
               return (
                 <Text>
-                  name: {data.current.fullName}, id: {data.current.id}
+                  name:
+                  {' '}
+                  {data.current.fullName}
+, id:
+                  {' '}
+                  {data.current.id}
                 </Text>
               );
             }}
