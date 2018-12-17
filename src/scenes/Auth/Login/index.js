@@ -95,7 +95,7 @@ class Login extends PureComponent<Props, State> {
         }),
         Animated.timing(paddingContainer, {
           duration: 250,
-          toValue: isSmallDevice() ? normalize(57) : normalize(30),
+          toValue: isSmallDevice ? normalize(57) : normalize(30),
         }),
       ]).start();
     });
@@ -195,8 +195,7 @@ class Login extends PureComponent<Props, State> {
           isRegForm ? data.signUpUser.token : data.signInUser.token
         );
 
-        navigation.navigate('CreateCompany');
-        // await setAuthMutationClient({ variables: { isAuthed: true } });
+        await setAuthMutationClient({ variables: { isAuthed: true } });
       } catch (error) {
         Alert.alert(error.message);
       }

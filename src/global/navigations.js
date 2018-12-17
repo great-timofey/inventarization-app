@@ -52,7 +52,8 @@ const profileStack = generateStack({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
 const addItemStack = generateStack({
-  [SCENE_NAMES.AddItemSceneName]: AddItemScene,
+  [SCENE_NAMES.QRScanSceneName]: QRScene,
+  [SCENE_NAMES.AddItemSceneName]: AddItemPhotos,
 });
 
 const rootTabs = {
@@ -76,6 +77,7 @@ const rootTabs = {
     screen: addItemStack,
     navigationOptions: {
       tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
+      tabBarVisible: false,
     },
   },
   [SCENE_NAMES.PeopleSceneName]: {
@@ -114,12 +116,6 @@ const authStack = {
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: Camera,
-  },
-  [SCENE_NAMES.QRScanSceneName]: {
-    screen: QRScene,
-  },
-  [SCENE_NAMES.AddItemPhotosSceneName]: {
-    screen: AddItemPhotos,
   },
 };
 

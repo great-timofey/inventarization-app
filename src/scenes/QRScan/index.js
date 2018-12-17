@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import { assoc } from 'ramda';
 import Torch from 'react-native-torch';
@@ -9,6 +9,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import ScannerMarker from 'components/ScannerMarker';
 
+import * as SCENE_NAMES from 'navigation/scenes';
 import colors from 'global/colors';
 import assets from 'global/assets';
 import constants from 'global/constants';
@@ -32,8 +33,16 @@ class QRCode extends PureComponent<Props, State> {
     title: constants.headers.qrscanner,
     headerTitleStyle: styles.headerTitleStyle,
     headerStyle: styles.header,
-    headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: <HeaderSkipButton onPress={() => {}} />,
+    headerLeft: (
+      <HeaderBackButton
+        onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)}
+      />
+    ),
+    headerRight: (
+      <HeaderSkipButton
+        onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)}
+      />
+    ),
   });
 
   constructor(props: Props) {
@@ -41,6 +50,17 @@ class QRCode extends PureComponent<Props, State> {
     this.state = {
       isTorchOn: true,
     };
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this._navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
+  }
+
+  componentWillUnmount() {
+    this._navListener.remove();
   }
 
   toggleTorch = () => {

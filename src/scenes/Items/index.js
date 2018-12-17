@@ -1,6 +1,6 @@
 //  @flow
-import React, { PureComponent } from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, ScrollView, StatusBar } from 'react-native';
 
 import { Query } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
@@ -22,7 +22,7 @@ const iconProps = {
 
 type Props = { client: Object };
 type State = { data: ?Object, loading: boolean };
-class ItemsScene extends PureComponent<Props, State> {
+class ItemsScene extends Component<Props, State> {
   static navigationOptions = () => ({
     header: () => (
       <View style={styles.headerContainer}>
@@ -49,6 +49,17 @@ class ItemsScene extends PureComponent<Props, State> {
       </View>
     ),
   });
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this._navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('dark-content');
+    });
+  }
+
+  componentWillUnmount() {
+    this._navListener.remove();
+  }
 
   render() {
     return (
