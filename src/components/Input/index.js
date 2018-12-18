@@ -61,12 +61,7 @@ class Input extends Component<Props> {
             isWarning && styles.invalidContainer,
           ]}
         >
-          <Text
-            style={[
-              styles.inputTitleText,
-              isWhite && styles.inputTitleTextWhite,
-            ]}
-          >
+          <Text style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}>
             {type.label}
           </Text>
           <CustomTextInput
@@ -77,12 +72,8 @@ class Input extends Component<Props> {
             textContentType="none"
             returnKeyType={returnKeyType}
             style={[styles.input, isWhite && styles.inputWhite]}
-            placeholderTextColor={
-              isWhite ? colors.text.placeholderWhite : colors.text.placeholder
-            }
-            onSubmitEditing={
-              returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing
-            }
+            placeholderTextColor={isWhite ? colors.text.placeholderWhite : colors.text.placeholder}
+            onSubmitEditing={returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing}
           />
           {children}
         </View>

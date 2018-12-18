@@ -60,18 +60,46 @@ export default StyleSheet.create({
     backgroundColor: colors.buttonBlue,
   },
   previewModeText: {
-    fontSize: 14,
     color: colors.black,
+    fontSize: normalize(14),
     fontFamily: fonts.proDisplay.light,
   },
   previewModeTextActive: {
-    fontSize: 14,
     color: colors.white,
+    fontSize: normalize(14),
     fontFamily: fonts.proDisplay.light,
   },
   previewText: {
-    fontSize: 18,
+    fontSize: normalize(18),
     color: colors.text.darkGrey,
+    fontFamily: fonts.proDisplay.regular,
+  },
+  formContainer: {
+    flex: 1,
+  },
+  formName: {
+    paddingTop: normalize(20),
+    paddingHorizontal: normalize(20),
+  },
+  formNameHint: {
+    fontSize: normalize(13),
+    fontFamily: fonts.proDisplay.light,
+  },
+  formNameInput: {
+    fontSize: normalize(24),
+    marginBottom: normalize(5),
+    fontFamily: fonts.proDisplay.bold,
+  },
+  formSectionHeader: {
+    width: '100%',
+    height: normalize(28),
+    justifyContent: 'center',
+    paddingLeft: normalize(20),
+    marginBottom: normalize(10),
+  },
+  formSectionHeaderText: {
+    color: colors.white,
+    fontSize: normalize(13),
     fontFamily: fonts.proDisplay.regular,
   },
 });
