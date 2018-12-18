@@ -31,7 +31,13 @@ class AddItemFinish extends PureComponent<Props, State> {
     headerTitleStyle: styles.headerTitleStyle,
     headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
     headerRight: (
-      <HeaderExitButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+      <HeaderExitButton
+        onPress={() => {
+          const resetAction = StackActions.popToTop();
+          navigation.dispatch(resetAction);
+          navigation.navigate(SCENE_NAMES.ItemsSceneName);
+        }}
+      />
     ),
   });
 
