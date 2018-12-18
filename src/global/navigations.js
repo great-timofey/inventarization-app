@@ -83,8 +83,8 @@ const rootTabs = {
   [SCENE_NAMES.AddItemSceneName]: {
     screen: addItemStack,
     navigationOptions: {
-      tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
       tabBarVisible: false,
+      tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
     },
   },
   [SCENE_NAMES.PeopleSceneName]: {

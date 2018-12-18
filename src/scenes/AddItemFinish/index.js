@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { Text, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
@@ -30,7 +31,13 @@ class AddItemFinish extends PureComponent<Props, State> {
     headerTitleStyle: styles.headerTitleStyle,
     headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
     headerRight: (
-      <HeaderExitButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+      <HeaderExitButton
+        onPress={() => {
+          const resetAction = StackActions.popToTop();
+          navigation.dispatch(resetAction);
+          navigation.navigate(SCENE_NAMES.ItemsSceneName);
+        }}
+      />
     ),
   });
 
@@ -55,9 +62,7 @@ class AddItemFinish extends PureComponent<Props, State> {
           }}
           style={styles.preview}
         />
-        <View
-          style={styles.buttonContainer}
-        >
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={this.handleGoToItemForm}
             style={[styles.button, styles.topButton]}
