@@ -1,13 +1,12 @@
 // @flow
 
 export type State = {
-  loading: boolean,
-  data: Array<String>,
+  isSortByName: boolean,
+  isModalVisible: boolean,
+  isListViewStyle: boolean,
+  currentSelectItem: number | null,
 };
 
 export type Props = {
-  client: Object,
   navigation: Object,
-  createCompany: Function,
-  setAuthMutationClient: Function,
 };

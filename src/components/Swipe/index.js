@@ -2,10 +2,14 @@
 
 import React, { PureComponent } from 'react';
 import { View, Text, Image, FlatList } from 'react-native';
+
 import Swipeout from 'react-native-swipeout';
 
+import IconButton from '~/components/IconButton';
+
 import colors from '~/global/colors';
-import assets from '~/global/assets';
+import { normalize } from '~/global/utils';
+
 import styles from './styles';
 
 type State = {
@@ -29,7 +33,6 @@ class SwipebleListItem extends PureComponent<Props, State> {
   };
 
   onSwipeClose = (id: number) => {
-    // TODO:
     if (id) {
       this.setState({
         scrollEnabled: true,
@@ -42,14 +45,26 @@ class SwipebleListItem extends PureComponent<Props, State> {
       {
         component: (
           <View style={[styles.buttonStyle, { backgroundColor: colors.blue }]}>
-            <Image source={assets.editIcon} />
+            <IconButton
+              size={25}
+              isCustomIcon
+              iconName="pencil"
+              onPress={() => {}}
+            />
           </View>
         ),
       },
       {
         component: (
           <View style={[styles.buttonStyle, { backgroundColor: colors.red }]}>
-            <Image source={assets.deleteIcon} />
+            <IconButton
+              size={50}
+              iconName="ios-close"
+              onPress={() => {}}
+              iconColor={colors.white}
+              customIconStyle={{ top: normalize(3) }}
+              customContStyle={{ backgroundColor: colors.transparent }}
+            />
           </View>
         ),
       },
@@ -100,15 +115,12 @@ class SwipebleListItem extends PureComponent<Props, State> {
       { key: 'bdsagdshdsahsadh', id: 6 },
     ];
     return (
-      <View style={styles.container}>
-        <FlatList
-          scrollEnabled={scrollEnabled}
-          style={{ flex: 1, width: '100%' }}
-          data={data}
-          renderItem={({ item }) => this.renderSwipeRow(item.id, activeRowId)}
-          keyExtractor={this.keyExtractor}
-        />
-      </View>
+      <FlatList
+        data={data}
+        scrollEnabled={scrollEnabled}
+        keyExtractor={this.keyExtractor}
+        renderItem={({ item }) => this.renderSwipeRow(item.id, activeRowId)}
+      />
     );
   }
 }

@@ -1,9 +1,23 @@
 //  @flow
-import React, { Component } from 'react';
-import { Text, View, ScrollView, StatusBar } from 'react-native';
+
+import React, { Fragment, PureComponent } from 'react';
+import {
+  Text,
+  View,
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import { Query, graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
+import LinearGradient from 'react-native-linear-gradient';
+
+import Item from '~/components/Item';
+import SortModal from '~/components/SortModal';
+import IconButton from '~/components/IconButton';
+import InventoryIcon from '~/assets/InventoryIcon';
+import SwipebleListItem from '~/components/Swipe';
 
 import gql from 'graphql-tag';
 
@@ -12,43 +26,177 @@ import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 import * as QUERIES from '~/graphql/auth/queries';
-import InventoryIcon from '~/assets/InventoryIcon';
-import type { Props, State } from './types';
 import styles from './styles';
+import type { Props, State } from './types';
 
 const iconProps = {
   borderRadius: 0,
+  activeOpacity: 0.5,
   size: normalize(25),
   iconStyle: globalStyles.iconStyle,
+  underlayColor: colors.transparent,
   backgroundColor: colors.transparent,
 };
-class ItemsScene extends Component<Props, State> {
-  static navigationOptions = () => ({
-    header: () => (
-      <View style={styles.headerContainer}>
-        <Icon.Button
-          {...iconProps}
-          name="grid"
-          color={colors.accent}
-          backgroundColor={colors.transparent}
-        />
-        <View style={styles.headerRightButtonsContainer}>
-          <InventoryIcon.Button
+
+const data = [
+  'Компьютеры',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+];
+
+const CategoryList = ({ children }) => (
+  <View style={styles.categoryListContainer}>
+    <View style={styles.categoryButton}>
+      <InventoryIcon.Button
+        {...iconProps}
+        name="menu"
+        onPress={() => {}}
+        style={styles.icon}
+        activeOpacity={0.5}
+        size={normalize(30)}
+        color={colors.white}
+        iconStyle={{ margin: 0 }}
+        underlayColor="transparent"
+        backgroundColor={colors.transparent}
+      />
+    </View>
+    {children}
+  </View>
+);
+
+class ItemsScene extends PureComponent<Props, State> {
+  static navigationOptions = ({ navigation }: { navigation: Object }) => {
+    const { state } = navigation;
+    const isTitleVisible = state.params && state.params.isTitleVisible;
+    const toggleViewStyle = state.params && state.params.toggleViewStyle;
+    const isListViewStyle = state.params && state.params.isListViewStyle;
+
+    return {
+      header: () => (
+        <View style={styles.headerContainer}>
+          <Icon.Button
             {...iconProps}
-            name="dashboard"
             color={colors.accent}
+            onPress={toggleViewStyle}
             backgroundColor={colors.transparent}
+            name={isListViewStyle ? 'list' : 'grid'}
           />
-          <InventoryIcon.Button
-            {...iconProps}
-            name="search"
-            color={colors.accent}
-            backgroundColor={colors.transparent}
-          />
+          <Text
+            style={[styles.headerTitle, isTitleVisible && { color: 'black' }]}
+          >
+            {constants.headers.items}
+          </Text>
+          <View style={styles.headerRightButtonsContainer}>
+            <InventoryIcon.Button
+              {...iconProps}
+              name="dashboard"
+              color={colors.accent}
+              backgroundColor={colors.transparent}
+            />
+            <InventoryIcon.Button
+              {...iconProps}
+              name="search"
+              color={colors.accent}
+              backgroundColor={colors.transparent}
+            />
+          </View>
         </View>
-      </View>
-    ),
-  });
+      ),
+    };
+  };
+
+  constructor(props: Props) {
+    super(props);
+    const { navigation } = this.props;
+
+    this.state = {
+      isSortByName: true,
+      isModalVisible: false,
+      isListViewStyle: false,
+      currentSelectItem: null,
+    };
+
+    navigation.setParams({
+      isTitleVisible: false,
+      isListViewStyle: false,
+      toggleViewStyle: this.toggleViewStyle,
+    });
+  }
+
+  renderTab = ({ item, index }) => (
+    <TouchableOpacity>
+      <LinearGradient
+        useAngle
+        angle={339}
+        end={{ x: 0, y: 0 }}
+        start={{ x: 1, y: 1 }}
+        style={styles.tabContainer}
+        colors={colors.catButton[index]}
+      >
+        <Text style={styles.tabText}>{item}</Text>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+
+  handleScroll = (event: Object) => {
+    const { navigation } = this.props;
+    if (event.nativeEvent.contentOffset.y >= 40) {
+      navigation.setParams({
+        isTitleVisible: true,
+      });
+    } else {
+      navigation.setParams({
+        isTitleVisible: false,
+      });
+    }
+  };
+
+  toggleModalVisible = () => {
+    const { isModalVisible } = this.state;
+    this.setState({
+      isModalVisible: !isModalVisible,
+    });
+  };
+
+  toggleViewStyle = () => {
+    const { navigation } = this.props;
+    const { isListViewStyle } = this.state;
+
+    this.setState({
+      isListViewStyle: !isListViewStyle,
+      currentSelectItem: null,
+    });
+
+    navigation.setParams({
+      isListViewStyle: !isListViewStyle,
+    });
+  };
+
+  toggleSortMethod = () => {
+    const { isSortByName } = this.state;
+    this.setState({
+      isSortByName: !isSortByName,
+    },
+    this.toggleModalVisible);
+  }
+
+  selectItem = (id: number) => {
+    this.setState({
+      currentSelectItem: id,
+    });
+  }
+
+  keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   navListener: any;
 
@@ -64,29 +212,67 @@ class ItemsScene extends Component<Props, State> {
   }
 
   render() {
-    return (
-      <ScrollView>
-        <Text style={styles.header}>{constants.headers.items}</Text>
-        <View style={{ alignItems: 'center' }}>
-          <Query query={QUERIES.GET_CURRENT_USER}>
-            {({ loading, error, data }) => {
-              if (loading) return <Text>Loading...</Text>;
-              if (error) return <Text>{error.message}</Text>;
+    const {
+      isSortByName,
+      isModalVisible,
+      isListViewStyle,
+      currentSelectItem,
+    } = this.state;
 
-              return (
-                <Text>
-                  name:
-                  {' '}
-                  {data.current.fullName}
-, id:
-                  {' '}
-                  {data.current.id}
-                </Text>
-              );
-            }}
-          </Query>
-        </View>
-      </ScrollView>
+    return (
+      <Fragment>
+        <ScrollView
+          scrollEventThrottle={16}
+          onScroll={this.handleScroll}
+        >
+          <Text style={styles.header}>{constants.headers.items}</Text>
+          { !isListViewStyle && (
+          <CategoryList>
+            <FlatList
+              horizontal
+              data={data}
+              renderItem={this.renderTab}
+              keyExtractor={this.keyExtractor}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalFlatList}
+            />
+          </CategoryList>
+          )}
+          {isListViewStyle ? <SwipebleListItem /> : (
+            <FlatList
+              data={data}
+              numColumns={2}
+              renderItem={item => (
+                <Item
+                  id={item.index}
+                  selectItem={this.selectItem}
+                  currentSelectItem={currentSelectItem}
+                />
+              )}
+              keyExtractor={this.keyExtractor}
+              extraData={currentSelectItem}
+              contentContainerStyle={styles.grid}
+            />
+          )}
+
+        </ScrollView>
+        {!isModalVisible && (
+          <IconButton
+            isCustomIcon
+            size={isSortByName ? 50 : 70}
+            onPress={this.toggleModalVisible}
+            customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
+            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+            customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
+          />
+        )}
+        <SortModal
+          isSortByName={isSortByName}
+          isModalVisible={isModalVisible}
+          toggleSortMethod={this.toggleSortMethod}
+          toggleModalVisible={this.toggleModalVisible}
+        />
+      </Fragment>
     );
   }
 }
