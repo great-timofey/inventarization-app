@@ -86,6 +86,11 @@ const setNewPassword = {
   create: 'Создание нового \n пароля',
 };
 
+const sort = {
+  name: 'Сортировать по имени',
+  price: 'Сортировать по цене',
+  close: 'Закрыть',
+};
 const errors = {
   login: {
     name: 'Введите имя',
@@ -122,6 +127,7 @@ const hints = {
 };
 
 export default {
+  sort,
   text,
   masks,
   hints,
