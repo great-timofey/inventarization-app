@@ -79,6 +79,50 @@ const buttonTitles = {
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
 
+const modalQuestion = {
+  itemDel: {
+    title: 'Удаление предмета',
+    question: 'Вы точно хотите удалить \n предмет?',
+    button: 'Удалить',
+  },
+  categotyDel: {
+    title: 'Удаление категории',
+    question: 'Вы точно хотите удалить \n категорию?',
+    button: 'Удалить',
+  },
+  subCategotyDel: {
+    title: 'Удаление подкатегории',
+    question: 'Вы точно хотите удалить \n подкатегорию?',
+    button: 'Удалить',
+  },
+  userNotFound: {
+    title: 'Завхоза не найдено',
+    question: 'Вы хотите назначить \n сотрудника на роль завхоза?',
+    button: 'Назначить',
+  },
+  orgDel: {
+    title: 'Удаление организации',
+    question: 'Все данные организации будут \n находиться в архиве в течение \n 30 дней, после чего будут \n автоматически удалены.',
+    button: 'Удалить',
+  },
+  orgRecovery: {
+    title: 'Восстановление организации',
+    question: 'Вы точно хотите восстановить \n организацию, все данные и \n сотрудников?',
+    button: 'Восстановить',
+  },
+  exit: {
+    title: 'Выход из аккаунта',
+    question: 'Вы точно хотите выйти из \n аккаунта?',
+    button: 'Выйти',
+  },
+  accNotBelong: {
+    title: 'Аккаунт не принадлежит ни к одной организации',
+    question: 'Хотите дождаться добавления \n в организацию или создать \n новую организацию?',
+    button: 'Создать',
+  },
+  cancel: 'Отмена',
+};
+
 const forgotPassText = {
   headerTitle: 'Восстановление \n пароля',
   enterEmail: 'Введите e-mail',
@@ -145,6 +189,7 @@ export default {
   inputTypes,
   buttonTitles,
   placeHolders,
+  modalQuestion,
   forgotPassText,
   setNewPassword,
   uploadCreateCompanyImages,

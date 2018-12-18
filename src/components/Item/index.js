@@ -12,7 +12,7 @@ import type { Props, State } from './types';
 
 class Item extends PureComponent<Props, State> {
   menu = () => {
-    const { selectItem } = this.props;
+    const { selectItem, toggleDelModal } = this.props;
     return (
       <View style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
         <IconButton
@@ -25,13 +25,13 @@ class Item extends PureComponent<Props, State> {
           size={20}
           iconColor={colors.white}
           iconName="ios-trash"
-          onPress={() => selectItem(null)}
+          onPress={() => toggleDelModal()}
           customContStyle={[styles.menu, { backgroundColor: colors.red }]}
         />
         <IconButton
           isCustomIcon
           iconName="pencil"
-          onPress={() => selectItem(null)}
+          onPress={() => {}}
           customContStyle={[styles.menu, { backgroundColor: colors.blue }]}
         />
       </View>

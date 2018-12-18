@@ -2,8 +2,9 @@
 
 export type State = {
   isSortByName: boolean,
-  isModalVisible: boolean,
   isListViewStyle: boolean,
+  isSortModalVisible: boolean,
+  isDeleteModalVisible: boolean,
   currentSelectItem: number | null,
 };
 

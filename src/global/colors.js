@@ -10,6 +10,7 @@ export default {
   cancel: '#6DC1EA',
   accent: '#42BCF8',
   darkGreen: '#19D191',
+  lightGray: '#727272',
   buttonBlue: '#35CEF1',
   buttonGray: '#DAE4E6',
   buttonGreen: '#1CD25A',
@@ -33,6 +34,7 @@ export default {
   },
   button: {
     close: '#3D3D3D',
+
   },
   header: {
     createCompany: '#414B6A',
