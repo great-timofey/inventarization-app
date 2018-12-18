@@ -18,7 +18,6 @@ import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
-import * as MUTATIONS from '~/graphql/auth/mutations';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -39,8 +38,11 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 );
 
 class AddItemPhotos extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => { 
-    const photosCount = navigation.state && navigation.state.params && navigation.state.params.photosCount;
+  static navigationOptions = ({ navigation }: Props) => {
+    const photosCount = 
+    navigation.state 
+    && navigation.state.params 
+    && navigation.state.params.photosCount;
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
@@ -49,7 +51,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       headerRight: (
         <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photosCount })} />
       ),
-    } 
+    }; 
   }
 
   state = {
@@ -64,7 +66,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   componentDidMount() {
     const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ photosCount: 0 })
+    navigation.setParams({ photosCount: 0 });
   }
 
   askPermissions = async () => {
@@ -108,7 +110,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ photosCount: this.state.photos.length }));
     } else {
-      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению')
+      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
 
     this.setState({ isLoading: false });

@@ -14,7 +14,7 @@ import {
 
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
-import { all, keys, assoc, remove, pickBy, concat, values, equals } from 'ramda';
+import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 
@@ -38,7 +38,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 );
 
 class AddItemDefects extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => { 
+  static navigationOptions = ({ navigation }: Props) => {
     const photosCount = navigation.getParam('photosCount', 0);
     const defectsCount = navigation.state && navigation.state.params && navigation.state.params.defectsCount;
     return {
@@ -49,7 +49,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       headerRight: (
         <HeaderSkipButton onPress={() => photosCount + defectsCount > 0 ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName) : Alert.alert('Требуется фото предмета или его дефектов для продолежния')} />
       ),
-    }
+    };
   };
 
   state = {
@@ -64,7 +64,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   componentDidMount() {
     const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ defectsCount: 0 })
+    navigation.setParams({ defectsCount: 0 });
   }
 
   askPermissions = async () => {
@@ -108,7 +108,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
     } else {
-      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению')
+      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
 
     this.setState({ isLoading: false });
