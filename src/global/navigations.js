@@ -14,7 +14,6 @@ import ItemsScene from '~/scenes/Items';
 import PlacesScene from '~/scenes/Places';
 import PeopleScene from '~/scenes/People';
 import ProfileScene from '~/scenes/Profile';
-// import AddItemScene from '~/scenes/AddItem';
 import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
 import CreateCompany from '~/scenes/CreateCompany';
