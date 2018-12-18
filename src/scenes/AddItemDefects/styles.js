@@ -49,7 +49,7 @@ export default StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
     fontSize: normalize(18),
-    paddingHorizontal: normalize(10),
+    paddingHorizontal: normalize(18),
     fontFamily: fonts.proDisplay.light,
   },
   preview: {

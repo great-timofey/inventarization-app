@@ -1,9 +1,10 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import { assoc } from 'ramda';
+//  $FlowFixMe
 import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
@@ -12,6 +13,7 @@ import ScannerMarker from '~/components/ScannerMarker';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -32,8 +34,12 @@ class QRCode extends PureComponent<Props, State> {
     title: constants.headers.qrscanner,
     headerTitleStyle: styles.headerTitleStyle,
     headerStyle: styles.header,
-    headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: <HeaderSkipButton onPress={() => {}} />,
+    headerLeft: (
+      <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+    ),
+    headerRight: (
+      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
+    ),
   });
 
   constructor(props: Props) {
@@ -41,6 +47,19 @@ class QRCode extends PureComponent<Props, State> {
     this.state = {
       isTorchOn: true,
     };
+  }
+
+  navListener: any;
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
   }
 
   toggleTorch = () => {
@@ -62,10 +81,7 @@ class QRCode extends PureComponent<Props, State> {
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
         <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>
-          <Image
-            source={isTorchOn ? assets.torchOn : assets.torchOff}
-            style={styles.torchIcon}
-          />
+          <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.makePhotoButton} disabled>
           <Image source={assets.logo} style={styles.makePhotoButtonImage} />

@@ -14,11 +14,12 @@ import ItemsScene from '~/scenes/Items';
 import PlacesScene from '~/scenes/Places';
 import PeopleScene from '~/scenes/People';
 import ProfileScene from '~/scenes/Profile';
-import AddItemScene from '~/scenes/AddItem';
 import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
 import CreateCompany from '~/scenes/CreateCompany';
 import AddItemPhotos from '~/scenes/AddItemPhotos';
+import AddItemFinish from '~/scenes/AddItemFinish';
+import AddItemDefects from '~/scenes/AddItemDefects';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -56,7 +57,10 @@ const profileStack = generateStack({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
 const addItemStack = generateStack({
-  [SCENE_NAMES.AddItemSceneName]: AddItemScene,
+  [SCENE_NAMES.QRScanSceneName]: QRScene,
+  [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
+  [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
+  [SCENE_NAMES.AddItemDefectsSceneName]: AddItemDefects,
 });
 
 const rootTabs = {
@@ -80,6 +84,7 @@ const rootTabs = {
     screen: addItemStack,
     navigationOptions: {
       tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
+      tabBarVisible: false,
     },
   },
   [SCENE_NAMES.PeopleSceneName]: {
@@ -118,12 +123,6 @@ const authStack = {
   },
   [SCENE_NAMES.CameraSceneName]: {
     screen: Camera,
-  },
-  [SCENE_NAMES.QRScanSceneName]: {
-    screen: QRScene,
-  },
-  [SCENE_NAMES.AddItemPhotosSceneName]: {
-    screen: AddItemPhotos,
   },
 };
 

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { Query } from 'react-apollo';
+import { Query, graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -19,12 +19,13 @@ import IconButton from '~/components/IconButton';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipebleListItem from '~/components/Swipe';
 
+import gql from 'graphql-tag';
+
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 import * as QUERIES from '~/graphql/auth/queries';
-
 import styles from './styles';
 import type { Props, State } from './types';
 
@@ -196,6 +197,19 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
+
+  navListener: any;
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('dark-content');
+    });
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
+  }
 
   render() {
     const {

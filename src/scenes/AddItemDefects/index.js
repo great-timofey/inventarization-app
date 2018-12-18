@@ -12,22 +12,22 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-//  $FlowFixMe
-import Permissions from 'react-native-permissions';
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
-import { all, equals, values, assoc, remove, concat } from 'ramda';
+import { all, assoc, remove, concat, values, equals } from 'ramda';
+// $FlowFixMe
+import Permissions from 'react-native-permissions';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import * as SCENE_NAMES from '~/navigation/scenes';
 import { isSmallDevice } from '~/global/utils';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
-    <Text style={styles.skipButtonText}>{constants.buttonTitles.next}</Text>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.ready}</Text>
   </TouchableOpacity>
 );
 
@@ -37,22 +37,20 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-class AddItemPhotos extends PureComponent<Props, State> {
+class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photosCount = 
-    navigation.state 
-    && navigation.state.params 
-    && navigation.state.params.photosCount;
+    const photosCount = navigation.getParam('photosCount', 0);
+    const defectsCount = navigation.state && navigation.state.params && navigation.state.params.defectsCount;
     return {
       headerStyle: styles.header,
-      title: constants.headers.newItem,
+      title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
       headerRight: (
-        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photosCount })} />
+        <HeaderSkipButton onPress={() => photosCount + defectsCount > 0 ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName) : Alert.alert('Требуется фото предмета или его дефектов для продолежния')} />
       ),
-    }; 
-  }
+    };
+  };
 
   state = {
     photos: [],
@@ -66,7 +64,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   componentDidMount() {
     const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ photosCount: 0 });
+    navigation.setParams({ defectsCount: 0 });
   }
 
   askPermissions = async () => {
@@ -108,7 +106,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ photosCount: this.state.photos.length }));
+      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
@@ -128,7 +126,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), () => navigation.setParams({ photosCount: this.state.photos.length }));
+    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
@@ -167,7 +165,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       <SafeAreaView style={styles.container}>
         <Fragment>
           <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
+            <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
           </View>
           {isLoading && (
             <View style={styles.hint}>
@@ -209,4 +207,4 @@ class AddItemPhotos extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemPhotos;
+export default AddItemDefects;

@@ -19,4 +19,5 @@ export type Props = {
   signInMutation: Function,
   signUpMutation: Function,
   setAuthMutationClient: Function,
+  setInitialPermissionsMutationClient: Function,
 };

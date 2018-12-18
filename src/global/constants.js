@@ -39,8 +39,7 @@ const inputTypes = {
   },
   password: {
     label: 'Пароль',
-    warning:
-      'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
+    warning: 'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
   },
   mobileNumber: {
     label: 'Телефон',
@@ -58,7 +57,9 @@ const buttonTitles = {
   on: 'Вкл',
   off: 'Выкл',
   next: 'Далее',
+  exit: 'Выйти',
   login: 'Войти',
+  ready: 'Готово',
   cancel: 'Отмена',
   update: 'Обновить',
   skip: 'Пропустить',
@@ -72,10 +73,12 @@ const buttonTitles = {
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
   createCompany: 'Создать организацию',
+  fillItemForm: 'Заполнить анкету предмета',
+  addAnotherYetItem: 'Добавить ещё один предмет',
 };
 
 const forgotPassText = {
-  headerTitle: `Восстановление \n пароля`,
+  headerTitle: 'Восстановление \n пароля',
   enterEmail: 'Введите e-mail',
   placeHolder: 'Ваш номер телефона',
   sendMail:
@@ -97,20 +100,20 @@ const errors = {
     companyName: 'Введите название вашей организации',
     email: 'Вы указали неверный email',
     emailEmpty: 'Введите email',
-    password:
-      'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
+    password: 'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
     mobile: 'Неверный формат номера телефона',
     notMatch: 'Пароли не совпадают',
   },
   camera: {
-    photo:
-      'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+    photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
   },
 };
 
 const headers = {
   items: 'Предметы',
+  defects: 'Дефекты',
   qrscanner: 'Сканер',
+  itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
   createNewCompany: 'Создание новой \n организации',
 };
@@ -124,6 +127,7 @@ const text = {
 
 const hints = {
   makePhotos: 'Сделайте фотографии вашего предмета',
+  makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
 
 export default {

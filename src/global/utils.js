@@ -1,6 +1,7 @@
 // @flow
 
 import { Platform } from 'react-native';
+
 import constants from '~/global/constants';
 import { deviceWidth, deviceHeight } from '~/global/device';
 
@@ -21,11 +22,7 @@ export const isValid = (value: string, reg: RegExp) => {
 export const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid = password && isValid(password, constants.regExp.password);
   const isConfirmPasswordValid = password && isValid(confirmPassword, constants.regExp.password);
-  if (
-    isPasswordValid
-    && isConfirmPasswordValid
-    && password === confirmPassword
-  ) {
+  if (isPasswordValid && isConfirmPasswordValid && password === confirmPassword) {
     return true;
   }
   return false;

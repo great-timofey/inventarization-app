@@ -166,7 +166,7 @@ class Login extends PureComponent<Props, State> {
       navigation,
       signInMutation,
       signUpMutation,
-      // setAuthMutationClient,
+      setAuthMutationClient,
     } = this.props;
 
     /**
@@ -203,8 +203,7 @@ class Login extends PureComponent<Props, State> {
           isRegForm ? data.signUpUser.token : data.signInUser.token,
         );
 
-        navigation.navigate('CreateCompany');
-        // await setAuthMutationClient({ variables: { isAuthed: true } });
+        await setAuthMutationClient({ variables: { isAuthed: true } });
       } catch (error) {
         Alert.alert(error.message);
       }

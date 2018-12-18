@@ -23,7 +23,7 @@ export default StyleSheet.create({
     tintColor: colors.white,
   },
   skipButtonText: {
-    fontSize: 18,
+    fontSize: normalize(18),
     color: colors.white,
     fontFamily: fonts.proDisplay.medium,
   },
