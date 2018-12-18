@@ -25,6 +25,7 @@ export default {
     gray: '#BDBDBD',
     blue: '#42BCF8',
     bigGray: '#747474',
+    darkGrey: '#B1B1B1',
     inputTitle: '#616161',
     placeholder: '#3F3F3F',
     questionGray: '#8A8A8A',

@@ -62,8 +62,10 @@ const buttonTitles = {
   ready: 'Готово',
   cancel: 'Отмена',
   update: 'Обновить',
+  defects: 'Дефекты',
   skip: 'Пропустить',
   create: 'Да, создать',
+  photos: 'Фотографии',
   chooseLogo: 'Выбери \n лого',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
@@ -115,6 +117,7 @@ const headers = {
   qrscanner: 'Сканер',
   itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
+  addingItem: 'Добавление предмета',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -126,6 +129,7 @@ const text = {
 };
 
 const hints = {
+  addPhoto: 'Добавить фото',
   makePhotos: 'Сделайте фотографии вашего предмета',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
