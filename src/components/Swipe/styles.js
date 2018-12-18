@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 
 import colors from '../../global/colors';
 import { normalize } from '~/global/utils';
-// import { deviceWidth } from '~/global/device.js';
 
 export default StyleSheet.create({
   rowItem: {
@@ -27,16 +26,16 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: normalize(78),
+    borderBottomWidth: 0.5,
     paddingLeft: normalize(10),
+    marginRight: normalize(20),
     justifyContent: 'space-between',
     borderBottomColor: colors.border,
-    borderBottomWidth: normalize(0.5),
   },
   count: {
     borderRadius: 15,
     padding: normalize(7),
     backgroundColor: '#F6F6F6',
-    marginRight: normalize(20),
   },
   countText: {
     color: colors.text.blue,
@@ -57,7 +56,7 @@ export default StyleSheet.create({
   },
   buttonStyle: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
