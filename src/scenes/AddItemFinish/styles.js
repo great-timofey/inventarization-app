@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceHeight, deviceWidth } from '~/global/device';
+import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
@@ -45,19 +45,24 @@ export default StyleSheet.create({
     height: normalize(114),
     justifyContent: 'center',
     borderRadius: normalize(57),
-    backgroundColor: 'rgba(127, 127, 127, 0.6)',
-    left: deviceWidth / 2 - normalize(114) / 2,
     top: deviceHeight / 2 - normalize(114),
+    left: deviceWidth / 2 - normalize(114) / 2,
+    backgroundColor: 'rgba(127, 127, 127, 0.6)',
   },
   checkImage: {
     width: normalize(54),
     height: normalize(54),
   },
-  button: {
+  buttonContainer: {
     width: '90%',
+    height: normalize(120),
+    justifyContent: 'space-between',
+    marginBottom: isIphoneX ? 0 : normalize(10),
+  },
+  button: {
+    flex: 1,
     borderRadius: 7,
     alignItems: 'center',
-    height: normalize(54),
     justifyContent: 'center',
   },
   topButton: {

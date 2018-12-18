@@ -64,23 +64,9 @@ export const SET_AUTH_MUTATION_CLIENT = gql`
   }
 `;
 
-export const SET_INITIAL_PERMISSIONS_MUTATION_CLIENT = gql`
-  mutation setInitialPermissions {
-    setInitialPermissions @client
-  }
-`;
-
-export const SET_PERMISSION_MUTATION_CLIENT = gql`
-  mutation setPermission($permission: String!, $value: String!) {
-    setPermission(permission: $permission, value: $value) @client
-  }
-`;
-
 export default {
   SIGN_IN_MUTATION,
   SIGN_UP_MUTATION,
   RESET_PASSWORD_MUTATION,
   SET_AUTH_MUTATION_CLIENT,
-  SET_PERMISSION_MUTATION_CLIENT,
-  SET_INITIAL_PERMISSIONS_MUTATION_CLIENT,
 };

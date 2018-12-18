@@ -55,19 +55,23 @@ class AddItemFinish extends PureComponent<Props, State> {
           }}
           style={styles.preview}
         />
-        <TouchableOpacity
-          onPress={this.handleGoToItemForm}
-          style={[styles.button, styles.topButton]}
+        <View
+          style={styles.buttonContainer}
         >
-          <Text style={styles.buttonText}>{constants.buttonTitles.fillItemForm}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={this.handleAddMoreItems}
-          style={[styles.button, styles.bottomButton]}
-        >
-          <Image source={assets.plus} style={styles.plus} />
-          <Text style={styles.buttonText}>{constants.buttonTitles.addAnotherYetItem}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.handleGoToItemForm}
+            style={[styles.button, styles.topButton]}
+          >
+            <Text style={styles.buttonText}>{constants.buttonTitles.fillItemForm}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={this.handleAddMoreItems}
+            style={[styles.button, styles.bottomButton]}
+          >
+            <Image source={assets.plus} style={styles.plus} />
+            <Text style={styles.buttonText}>{constants.buttonTitles.addAnotherYetItem}</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }

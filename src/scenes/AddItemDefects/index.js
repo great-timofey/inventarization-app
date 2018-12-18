@@ -58,29 +58,29 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
-    console.log('mount');
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
   }
 
-  checkEveryPermissionStatus = (permissions: Object) => all(equals('authorized'), values(permissions));
-
   askPermissions = async () => {
-    const { needToAskPermissions } = this.state;
+    const currentPermissions = await Permissions.checkMultiple(['location', 'camera']);
 
-    const permissions = await Permissions.checkMultiple(['location', 'camera']);
-
-    if (!this.checkEveryPermissionStatus(permissions)) {
-      const notGrantedKeys = keys(pickBy(val => val !== 'authorized', permissions));
-      notGrantedKeys.forEach(item => Permissions.request(item));
-      const userPermissions = await Promise.all(notGrantedKeys);
-
-      const isAllOk = this.checkEveryPermissionStatus(userPermissions);
-      if (!isAllOk) return null;
+    if (all(equals('authorized'), values(currentPermissions))) {
+      this.setState({ ableToTakePicture: true, needToAskPermissions: false });
+      return null;
     }
 
-    if (needToAskPermissions) {
-      this.setState({ needToAskPermissions: false, ableToTakePicture: true });
+    if (currentPermissions.camera !== 'authorized') {
+      await Permissions.request('camera');
     }
+    if (currentPermissions.location !== 'authorized') {
+      await Permissions.request('location');
+    }
+
+    const newPermissions = await Permissions.checkMultiple(['location', 'camera']);
+
+    if (all(equals('authorized'), values(newPermissions))) {
+      this.setState({ ableToTakePicture: true, needToAskPermissions: false });
+    };
 
     return null;
   };
@@ -100,6 +100,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       if (isHintOpened) this.setState({ isHintOpened: false });
 
       this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state));
+    } else {
+      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению')
     }
 
     this.setState({ isLoading: false });
@@ -130,10 +132,6 @@ class AddItemDefects extends PureComponent<Props, State> {
       <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
     </View>
   );
-
-  componentWillUnmount() {
-    console.log('unmont');
-  }
 
   toggleFlash = () => {
     const { flashMode } = this.state;

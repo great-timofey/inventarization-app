@@ -57,7 +57,6 @@ class ItemsScene extends Component<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
-    console.log(this.props.data.permissions);
   }
 
   componentWillUnmount() {
@@ -92,13 +91,4 @@ class ItemsScene extends Component<Props, State> {
   }
 }
 
-export default graphql(
-  gql`
-    {
-      permissions @client {
-        camera
-        location
-      }
-    }
-  `,
-)(ItemsScene);
+export default ItemsScene;
