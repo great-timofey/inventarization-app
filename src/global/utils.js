@@ -2,10 +2,6 @@
 
 import { Platform } from 'react-native';
 
-import { all, pickBy, keys, equals, values } from 'ramda';
-// $FlowFixMe
-import Permissions from 'react-native-permissions';
-
 import constants from '~/global/constants';
 import { deviceWidth, deviceHeight } from '~/global/device';
 
@@ -32,18 +28,6 @@ export const isValidPassword = (password: string, confirmPassword: string) => {
   return false;
 };
 
-export const checkPermissions = (permissions: Object) => all(equals('authorized'), values(permissions));
-
-export const askPermissions = async (permissionsToCheck: Object) => {
-  const notGrantedKeys = keys(pickBy(val => val !== 'authorized', permissionsToCheck));
-  const promises = notGrantedKeys.map(
-    item => new Promise(res => res({ key: item, value: Permissions.request(item) })),
-  );
-  const userPermissions = await Promise.all(promises);
-  console.log(userPermissions);
-  return userPermissions;
-};
-
 export const designWidth = 375;
 export const designHeight = 667;
 
@@ -57,9 +41,7 @@ export default {
   normalize,
   normalizeInt,
   isSmallDevice,
-  askPermissions,
   getPlaceholder,
   platformSelect,
   isValidPassword,
-  checkPermissions,
 };

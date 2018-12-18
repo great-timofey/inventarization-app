@@ -38,15 +38,19 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 );
 
 class AddItemDefects extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: styles.header,
-    title: constants.headers.defects,
-    headerTitleStyle: styles.headerTitleStyle,
-    headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: (
-      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemFinishSceneName)} />
-    ),
-  });
+  static navigationOptions = ({ navigation }: Props) => { 
+    const photosCount = navigation.getParam('photosCount', 0);
+    const defectsCount = navigation.state && navigation.state.params && navigation.state.params.defectsCount;
+    return {
+      headerStyle: styles.header,
+      title: constants.headers.defects,
+      headerTitleStyle: styles.headerTitleStyle,
+      headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
+      headerRight: (
+        <HeaderSkipButton onPress={() => photosCount + defectsCount > 0 ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName) : Alert.alert('Требуется фото предмета или его дефектов для продолежния')} />
+      ),
+    }
+  };
 
   state = {
     photos: [],
@@ -58,7 +62,9 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
+    navigation.setParams({ defectsCount: 0 })
   }
 
   askPermissions = async () => {
@@ -86,6 +92,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   takePicture = async () => {
+    const { navigation } = this.props;
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
@@ -99,7 +106,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state));
+      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению')
     }
@@ -109,6 +116,8 @@ class AddItemDefects extends PureComponent<Props, State> {
 
   removePicture = async (index: number) => {
     const { photos } = this.state;
+    const { navigation } = this.props;
+
     const { uri } = photos[index];
 
     try {
@@ -117,7 +126,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state => assoc('photos', remove(index, 1, state.photos), state));
+    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
