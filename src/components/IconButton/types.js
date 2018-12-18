@@ -4,7 +4,7 @@ export type Props = {
   size?: number,
   iconName: string,
   iconColor?: string,
-  onPress: () => void,
+  onPress?: () => void,
   isDisabled?: boolean,
   isCustomIcon?: boolean,
   customPosition?: Object,

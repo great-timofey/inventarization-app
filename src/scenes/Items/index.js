@@ -16,8 +16,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import Item from '~/components/Item';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
-import InventoryIcon from '~/assets/InventoryIcon';
 import SwipebleListItem from '~/components/Swipe';
+import InventoryIcon from '~/assets/InventoryIcon';
+import QuestionModal from '~/components/QuestionModal';
 
 import gql from 'graphql-tag';
 
@@ -121,9 +122,10 @@ class ItemsScene extends PureComponent<Props, State> {
 
     this.state = {
       isSortByName: true,
-      isModalVisible: false,
       isListViewStyle: false,
       currentSelectItem: null,
+      isSortModalVisible: false,
+      isDeleteModalVisible: false,
     };
 
     navigation.setParams({
@@ -161,10 +163,17 @@ class ItemsScene extends PureComponent<Props, State> {
     }
   };
 
-  toggleModalVisible = () => {
-    const { isModalVisible } = this.state;
+  toggleSortModalVisible = () => {
+    const { isSortModalVisible } = this.state;
     this.setState({
-      isModalVisible: !isModalVisible,
+      isSortModalVisible: !isSortModalVisible,
+    });
+  };
+
+  toggleDelModalVisible = () => {
+    const { isDeleteModalVisible } = this.state;
+    this.setState({
+      isDeleteModalVisible: !isDeleteModalVisible,
     });
   };
 
@@ -187,7 +196,7 @@ class ItemsScene extends PureComponent<Props, State> {
     this.setState({
       isSortByName: !isSortByName,
     },
-    this.toggleModalVisible);
+    this.toggleSortModalVisible);
   }
 
   selectItem = (id: number) => {
@@ -214,9 +223,10 @@ class ItemsScene extends PureComponent<Props, State> {
   render() {
     const {
       isSortByName,
-      isModalVisible,
       isListViewStyle,
       currentSelectItem,
+      isSortModalVisible,
+      isDeleteModalVisible,
     } = this.state;
 
     return (
@@ -238,7 +248,11 @@ class ItemsScene extends PureComponent<Props, State> {
             />
           </CategoryList>
           )}
-          {isListViewStyle ? <SwipebleListItem /> : (
+          {isListViewStyle ? (
+            <SwipebleListItem
+              toggleDelModal={this.toggleDelModalVisible}
+            />
+          ) : (
             <FlatList
               data={data}
               numColumns={2}
@@ -247,6 +261,7 @@ class ItemsScene extends PureComponent<Props, State> {
                   id={item.index}
                   selectItem={this.selectItem}
                   currentSelectItem={currentSelectItem}
+                  toggleDelModal={this.toggleDelModalVisible}
                 />
               )}
               keyExtractor={this.keyExtractor}
@@ -256,11 +271,11 @@ class ItemsScene extends PureComponent<Props, State> {
           )}
 
         </ScrollView>
-        {!isModalVisible && (
+        {!isSortModalVisible && (
           <IconButton
             isCustomIcon
             size={isSortByName ? 50 : 70}
-            onPress={this.toggleModalVisible}
+            onPress={this.toggleSortModalVisible}
             customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
             iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
             customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
@@ -268,9 +283,15 @@ class ItemsScene extends PureComponent<Props, State> {
         )}
         <SortModal
           isSortByName={isSortByName}
-          isModalVisible={isModalVisible}
+          isModalVisible={isSortModalVisible}
           toggleSortMethod={this.toggleSortMethod}
-          toggleModalVisible={this.toggleModalVisible}
+          toggleModalVisible={this.toggleSortModalVisible}
+        />
+        <QuestionModal
+          leftAction={this.toggleDelModalVisible}
+          rightAction={() => {}}
+          isModalVisible={isDeleteModalVisible}
+          data={constants.modalQuestion.itemDel}
         />
       </Fragment>
     );

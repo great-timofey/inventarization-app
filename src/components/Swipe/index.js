@@ -17,7 +17,9 @@ type State = {
   scrollEnabled: boolean,
 };
 
-type Props = {};
+type Props = {
+  toggleDelModal?: () => void,
+};
 
 class SwipebleListItem extends PureComponent<Props, State> {
   constructor(props: Props) {
@@ -41,31 +43,29 @@ class SwipebleListItem extends PureComponent<Props, State> {
   };
 
   renderSwipeRow = (itemId: number, activeRowId: any) => {
+    const { toggleDelModal } = this.props;
     const swipeoutBtns = [
       {
         component: (
-          <View style={[styles.buttonStyle, { backgroundColor: colors.blue }]}>
-            <IconButton
-              size={25}
-              isCustomIcon
-              iconName="pencil"
-              onPress={() => {}}
-            />
-          </View>
+          <IconButton
+            size={25}
+            isCustomIcon
+            iconName="pencil"
+            onPress={() => {}}
+            customContStyle={styles.leftSwipeButton}
+          />
         ),
       },
       {
         component: (
-          <View style={[styles.buttonStyle, { backgroundColor: colors.red }]}>
-            <IconButton
-              size={50}
-              iconName="ios-close"
-              onPress={() => {}}
-              iconColor={colors.white}
-              customIconStyle={{ top: normalize(3) }}
-              customContStyle={{ backgroundColor: colors.transparent }}
-            />
-          </View>
+          <IconButton
+            size={50}
+            iconName="ios-close"
+            onPress={() => toggleDelModal()}
+            iconColor={colors.white}
+            customIconStyle={{ top: normalize(3) }}
+            customContStyle={styles.rightSwipeButton}
+          />
         ),
       },
     ];

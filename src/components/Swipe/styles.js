@@ -59,4 +59,20 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  leftSwipeButton: {
+    flex: 1,
+    borderRadius: 0,
+    width: normalize(80),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.blue,
+  },
+  rightSwipeButton: {
+    flex: 1,
+    borderRadius: 0,
+    width: normalize(80),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.red,
+  },
 });
