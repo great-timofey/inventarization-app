@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { Text, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
+import { StackActions } from 'react-navigation';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
@@ -34,11 +35,11 @@ class AddItemFinish extends PureComponent<Props, State> {
     ),
   });
 
-  handleGoToItemForm = () => console.log('navigate to item form');
+  handleGoToItemForm = () => this.props.navigation.navigate(SCENE_NAMES.ItemFromSceneName);
 
   handleAddMoreItems = () => {
     const { navigation } = this.props;
-    navigation.navigate(SCENE_NAMES.QRScanSceneName);
+    navigation.dispatch(StackActions.popToTop());
   };
 
   camera: ?RNCamera;
@@ -55,9 +56,7 @@ class AddItemFinish extends PureComponent<Props, State> {
           }}
           style={styles.preview}
         />
-        <View
-          style={styles.buttonContainer}
-        >
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={this.handleGoToItemForm}
             style={[styles.button, styles.topButton]}
