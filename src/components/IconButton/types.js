@@ -1,12 +1,13 @@
 // @flow
 
 export type Props = {
-  size: number,
+  size?: number,
   iconName: string,
   iconColor?: string,
   onPress: () => void,
-  customStyle?: Object,
   isDisabled?: boolean,
-  isCloseButton?: boolean,
+  isCustomIcon?: boolean,
   customPosition?: Object,
+  customContStyle?: Array<Object> | Object,
+  customIconStyle?: Object,
 };

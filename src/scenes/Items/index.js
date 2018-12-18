@@ -14,22 +14,26 @@ import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from '~/components/Item';
-import SortModal from '~/components/Modal';
-import SortButton from '~/components/SortButton';
+import SortModal from '~/components/SortModal';
+import IconButton from '~/components/IconButton';
 import InventoryIcon from '~/assets/InventoryIcon';
+import SwipebleListItem from '~/components/Swipe';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 import * as QUERIES from '~/graphql/auth/queries';
+
 import styles from './styles';
 import type { Props, State } from './types';
 
 const iconProps = {
   borderRadius: 0,
+  activeOpacity: 0.5,
   size: normalize(25),
   iconStyle: globalStyles.iconStyle,
+  underlayColor: colors.transparent,
   backgroundColor: colors.transparent,
 };
 
@@ -54,14 +58,14 @@ const CategoryList = ({ children }) => (
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
         {...iconProps}
-        size={normalize(30)}
         name="menu"
-        color={colors.white}
-        style={styles.icon}
-        iconStyle={{ margin: 0 }}
         onPress={() => {}}
-        underlayColor="transparent"
+        style={styles.icon}
         activeOpacity={0.5}
+        size={normalize(30)}
+        color={colors.white}
+        iconStyle={{ margin: 0 }}
+        underlayColor="transparent"
         backgroundColor={colors.transparent}
       />
     </View>
@@ -73,14 +77,18 @@ class ItemsScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: { navigation: Object }) => {
     const { state } = navigation;
     const isTitleVisible = state.params && state.params.isTitleVisible;
+    const toggleViewStyle = state.params && state.params.toggleViewStyle;
+    const isListViewStyle = state.params && state.params.isListViewStyle;
+
     return {
       header: () => (
         <View style={styles.headerContainer}>
           <Icon.Button
             {...iconProps}
-            name="grid"
             color={colors.accent}
+            onPress={toggleViewStyle}
             backgroundColor={colors.transparent}
+            name={isListViewStyle ? 'list' : 'grid'}
           />
           <Text
             style={[styles.headerTitle, isTitleVisible && { color: 'black' }]}
@@ -111,12 +119,16 @@ class ItemsScene extends PureComponent<Props, State> {
     const { navigation } = this.props;
 
     this.state = {
-      isModalVisible: false,
       isSortByName: true,
+      isModalVisible: false,
+      isListViewStyle: false,
+      currentSelectItem: null,
     };
 
     navigation.setParams({
       isTitleVisible: false,
+      isListViewStyle: false,
+      toggleViewStyle: this.toggleViewStyle,
     });
   }
 
@@ -155,6 +167,20 @@ class ItemsScene extends PureComponent<Props, State> {
     });
   };
 
+  toggleViewStyle = () => {
+    const { navigation } = this.props;
+    const { isListViewStyle } = this.state;
+
+    this.setState({
+      isListViewStyle: !isListViewStyle,
+      currentSelectItem: null,
+    });
+
+    navigation.setParams({
+      isListViewStyle: !isListViewStyle,
+    });
+  };
+
   toggleSortMethod = () => {
     const { isSortByName } = this.state;
     this.setState({
@@ -163,46 +189,67 @@ class ItemsScene extends PureComponent<Props, State> {
     this.toggleModalVisible);
   }
 
+  selectItem = (id: number) => {
+    this.setState({
+      currentSelectItem: id,
+    });
+  }
+
+  keyExtractor = (el: any, index: number) => `${el.id || index}`;
+
   render() {
-    const { isModalVisible, isSortByName } = this.state;
-    console.log(isModalVisible, isSortByName);
+    const {
+      isSortByName,
+      isModalVisible,
+      isListViewStyle,
+      currentSelectItem,
+    } = this.state;
 
     return (
       <Fragment>
         <ScrollView
-          style={styles.container}
-          onScroll={this.handleScroll}
           scrollEventThrottle={16}
+          onScroll={this.handleScroll}
         >
           <Text style={styles.header}>{constants.headers.items}</Text>
+          { !isListViewStyle && (
           <CategoryList>
             <FlatList
               horizontal
               data={data}
-              keyExtractor={item => item}
               renderItem={this.renderTab}
+              keyExtractor={this.keyExtractor}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.horizontalFlatList}
             />
           </CategoryList>
-          <View style={styles.itemsGrid}>
-            <Item />
-            <Item />
-            <Item />
-            <Item />
-            <Item />
-            <Item />
-          </View>
+          )}
+          {isListViewStyle ? <SwipebleListItem /> : (
+            <FlatList
+              data={data}
+              numColumns={2}
+              renderItem={item => (
+                <Item
+                  id={item.index}
+                  selectItem={this.selectItem}
+                  currentSelectItem={currentSelectItem}
+                />
+              )}
+              keyExtractor={this.keyExtractor}
+              extraData={currentSelectItem}
+              contentContainerStyle={styles.grid}
+            />
+          )}
+
         </ScrollView>
         {!isModalVisible && (
-          <SortButton
+          <IconButton
+            isCustomIcon
             size={isSortByName ? 50 : 70}
-            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
             onPress={this.toggleModalVisible}
-            customStyle={[
-              styles.sortButtonCustomStyle, isSortByName && { paddingLeft: normalize(3) },
-            ]}
-            customPosition={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
+            customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
+            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+            customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
           />
         )}
         <SortModal

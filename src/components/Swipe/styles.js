@@ -2,22 +2,15 @@
 
 import { StyleSheet } from 'react-native';
 
-import { normalize } from '~/global/utils';
 import colors from '../../global/colors';
+import { normalize } from '~/global/utils';
+// import { deviceWidth } from '~/global/device.js';
 
 export default StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
   rowItem: {
-    flex: 1,
     flexDirection: 'row',
     height: normalize(78),
     alignItems: 'center',
-    padding: normalize(20),
     backgroundColor: colors.white,
     justifyContent: 'space-between',
   },
@@ -25,8 +18,9 @@ export default StyleSheet.create({
     borderRadius: 14,
     width: normalize(62),
     height: normalize(62),
-    backgroundColor: colors.green,
     marginRight: normalize(8),
+    marginLeft: normalize(20),
+    backgroundColor: colors.darkGreen,
   },
   description: {
     flex: 1,
@@ -42,6 +36,7 @@ export default StyleSheet.create({
     borderRadius: 15,
     padding: normalize(7),
     backgroundColor: '#F6F6F6',
+    marginRight: normalize(20),
   },
   countText: {
     color: colors.text.blue,

@@ -1,8 +1,8 @@
 // @flow
 
 export type Props = {
-  isSortByName: boolean,
+  isSortByName?: boolean,
   isModalVisible: boolean,
-  toggleSortMethod: () => void,
+  toggleSortMethod?: () => void,
   toggleModalVisible: () => void,
 };

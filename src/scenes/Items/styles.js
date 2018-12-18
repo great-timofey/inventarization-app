@@ -21,6 +21,7 @@ export default StyleSheet.create({
     fontSize: normalize(34),
     marginBottom: normalize(4),
     fontFamily: fonts.proDisplay.bold,
+    paddingHorizontal: normalize(20),
   },
   headerTitle: {
     color: 'transparent',
@@ -33,12 +34,10 @@ export default StyleSheet.create({
     flexDirection: 'row',
     paddingRight: normalize(10),
   },
-  container: {
-    paddingHorizontal: normalize(20),
-  },
   horizontalFlatList: {
     alignSelf: 'center',
     marginLeft: normalize(40),
+
   },
   tabContainer: {
     borderRadius: 22,
@@ -57,11 +56,12 @@ export default StyleSheet.create({
     height: normalize(50),
     alignContent: 'center',
     marginBottom: normalize(10),
+    paddingLeft: normalize(20),
   },
   categoryButton: {
     zIndex: 2,
-    left: -10,
     borderRadius: 25,
+    left: normalize(10),
     position: 'absolute',
     alignItems: 'center',
     width: normalize(50),
@@ -69,6 +69,9 @@ export default StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     backgroundColor: colors.white,
+  },
+  grid: {
+    paddingHorizontal: normalize(20),
   },
   icon: {
     margin: 0,
