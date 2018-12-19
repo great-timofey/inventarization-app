@@ -19,15 +19,16 @@ const QuestionModal = ({
     <View style={styles.container}>
       <Text style={styles.title}>{data.title}</Text>
       <Text style={styles.question}>{data.question}</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={leftAction} style={styles.leftButton}>
+          <Text style={styles.buttonText}>{constants.modalQuestion.cancel}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={rightAction} style={styles.rightButton}>
+          <Text style={styles.buttonText}>{data.button}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-    <View style={styles.buttonContainer}>
-      <TouchableOpacity onPress={leftAction} style={styles.leftButton}>
-        <Text style={styles.buttonText}>{constants.modalQuestion.cancel}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={rightAction} style={styles.rightButton}>
-        <Text style={styles.buttonText}>{data.button}</Text>
-      </TouchableOpacity>
-    </View>
+
   </Modal>
 );
 

@@ -18,6 +18,7 @@ const uploadCreateCompanyImages = {
 
 const placeHolders = {
   mobileNumber: '+7 (___) ___-__-__',
+  inputHeader: 'Введите название',
 };
 
 const inputTypes = {
@@ -64,10 +65,11 @@ const buttonTitles = {
   update: 'Обновить',
   skip: 'Пропустить',
   create: 'Да, создать',
-  chooseLogo: 'Выбери \n лого',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
+  addItem: 'Добавить предмет',
+  chooseLogo: 'Выбери \n лого',
   forgotPassword: 'Забыли пароль?',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
@@ -148,6 +150,7 @@ const errors = {
     mobile: 'Неверный формат номера телефона',
     notMatch: 'Пароли не совпадают',
   },
+  search: 'Подходящих результатов не найдено',
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
   },
@@ -167,6 +170,7 @@ const text = {
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
+  notItemsYet: 'Пока не добавлено ни одного предмета',
 };
 
 const hints = {
@@ -174,14 +178,51 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
 
+const category = [
+  'Новое',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Компьютеры',
+  'Мебель',
+  'Новое',
+  'Мебель',
+  'Новое',
+  'Компьютеры',
+  'Мебель',
+  'Новое',
+  'Мебель',
+];
+
+const items = [
+  {
+    title: 'MacBook Pro 13 Late',
+    price: '110000',
+  },
+  {
+    title: 'iPad Pro 12 2017',
+    price: '72000',
+  },
+  {
+    title: 'Apple Watch Series 3',
+    price: '32000',
+  },
+  {
+    title: 'Apple AirPods',
+    price: '25000',
+  },
+];
+
 export default {
   sort,
   text,
+  items,
   masks,
   hints,
   errors,
   regExp,
   headers,
+  category,
   inputTypes,
   buttonTitles,
   placeHolders,

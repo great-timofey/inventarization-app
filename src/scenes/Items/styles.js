@@ -3,41 +3,39 @@
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { isIphoneX } from '~/global/device';
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: normalize(65),
-    paddingTop: normalize(20),
-    borderTopColor: colors.white,
-    backgroundColor: colors.white,
-    justifyContent: 'space-between',
-    borderTopWidth: isIphoneX ? normalize(15) : 0,
-  },
   header: {
     fontSize: normalize(34),
     marginBottom: normalize(4),
-    fontFamily: fonts.proDisplay.bold,
     paddingHorizontal: normalize(20),
+    fontFamily: fonts.proDisplay.bold,
   },
-  headerTitle: {
-    color: 'transparent',
+  notItemsText: {
+    alignSelf: 'center',
+    textAlign: 'center',
+    width: normalize(209),
     fontSize: normalize(18),
-    lineHeight: normalize(21),
-    paddingLeft: normalize(60),
+    color: colors.text.gray,
+    marginTop: normalize(22),
     fontFamily: fonts.proDisplay.regular,
   },
-  headerRightButtonsContainer: {
-    flexDirection: 'row',
-    paddingRight: normalize(10),
+  button: {
+    borderRadius: 32,
+    alignSelf: 'center',
+    width: normalize(200),
+    marginTop: normalize(20),
+  },
+  image: {
+    width: normalize(104),
+    height: normalize(94),
+    alignSelf: 'center',
+    marginTop: normalize(120),
   },
   horizontalFlatList: {
     alignSelf: 'center',
     marginLeft: normalize(40),
-
   },
   tabContainer: {
     borderRadius: 22,
@@ -49,14 +47,14 @@ export default StyleSheet.create({
   },
   tabText: {
     fontSize: 14,
-    fontFamily: fonts.proDisplay.regular,
     color: colors.white,
+    fontFamily: fonts.proDisplay.regular,
   },
   categoryListContainer: {
     height: normalize(50),
     alignContent: 'center',
-    marginBottom: normalize(10),
     paddingLeft: normalize(20),
+    marginBottom: normalize(10),
   },
   categoryButton: {
     zIndex: 2,
@@ -82,8 +80,8 @@ export default StyleSheet.create({
     backgroundColor: colors.blue,
   },
   itemsGrid: {
-    flexDirection: 'row',
     flexWrap: 'wrap',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   sortButtonCustomStyle: {
