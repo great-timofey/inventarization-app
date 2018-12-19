@@ -11,11 +11,14 @@ import constants from '~/global/constants';
 import styles from './styles';
 import type { Props } from './types';
 
-const SearchHeader = ({ toggleSearch, onChangeSearchField }: Props) => (
+const SearchHeader = ({ toggleSearch, onChangeSearchField, searchValue }: Props) => (
   <View style={styles.headerContainer}>
     <TextInput
       autoFocus
       autoCorrect={false}
+      value={searchValue}
+      returnKeyType="search"
+      onSubmitEditing={toggleSearch}
       style={styles.searchInput}
       placeholderTextColor={colors.placeholder}
       placeholder={constants.placeHolders.inputHeader}
@@ -24,13 +27,10 @@ const SearchHeader = ({ toggleSearch, onChangeSearchField }: Props) => (
     <IconButton
       size={50}
       iconName="ios-close"
-      customContStyle={{
-        borderRadius: 0,
-        backgroundColor: colors.transparent,
-      }}
-      customIconStyle={{ color: colors.blue }}
-      customPosition={{ top: 5 }}
       onPress={toggleSearch}
+      customPosition={styles.customPosition}
+      customContStyle={styles.customContStyle}
+      customIconStyle={styles.customIconStyle}
     />
   </View>
 );

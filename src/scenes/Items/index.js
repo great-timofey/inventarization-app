@@ -4,6 +4,7 @@ import React, { Fragment, PureComponent } from 'react';
 import {
   Text,
   View,
+  Image,
   FlatList,
   StatusBar,
   ScrollView,
@@ -15,6 +16,7 @@ import { Query, graphql } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from '~/components/Item';
+import Button from '~/components/Button';
 import Search from '~/components/Search';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
@@ -23,32 +25,22 @@ import MainHeader from '~/scenes/Items/MainHeader';
 import InventoryIcon from '~/assets/InventoryIcon';
 import QuestionModal from '~/components/QuestionModal';
 import SearchHeader from '~/scenes/Items/SearchHeader';
-
 import gql from 'graphql-tag';
 
+import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
-import globalStyles from '~/global/styles';
 import * as QUERIES from '~/graphql/auth/queries';
+import * as SCENE_NAMES from '~/navigation/scenes';
 
 import styles from './styles';
 import type { Props, State } from './types';
-
-const iconProps = {
-  borderRadius: 0,
-  activeOpacity: 0.5,
-  size: normalize(25),
-  iconStyle: globalStyles.iconStyle,
-  underlayColor: colors.transparent,
-  backgroundColor: colors.transparent,
-};
 
 const CategoryList = ({ children }) => (
   <View style={styles.categoryListContainer}>
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
-        {...iconProps}
         name="menu"
         onPress={() => {}}
         style={styles.icon}
@@ -67,6 +59,7 @@ const CategoryList = ({ children }) => (
 class ItemsScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: { navigation: Object }) => {
     const { state } = navigation;
+    const searchValue = state.params && state.params.searchValue;
     const toggleSearch = state.params && state.params.toggleSearch;
     const isSearchActive = state.params && state.params.isSearchActive;
     const isTitleVisible = state.params && state.params.isTitleVisible;
@@ -78,6 +71,7 @@ class ItemsScene extends PureComponent<Props, State> {
       header: isSearchActive
         ? (
           <SearchHeader
+            searchValue={searchValue}
             toggleSearch={toggleSearch}
             onChangeSearchField={onChangeSearchField}
           />
@@ -97,7 +91,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const { navigation } = this.props;
 
     this.state = {
-      search: '',
+      searchValue: '',
       isSortByName: true,
       isSearchActive: false,
       isListViewStyle: false,
@@ -107,7 +101,7 @@ class ItemsScene extends PureComponent<Props, State> {
     };
 
     navigation.setParams({
-      search: '',
+      searchValue: '',
       isSearchActive: false,
       isTitleVisible: false,
       isListViewStyle: false,
@@ -178,11 +172,13 @@ class ItemsScene extends PureComponent<Props, State> {
     const { isSearchActive } = this.state;
 
     this.setState({
-      search: '',
+      searchValue: '',
+      currentSelectItem: null,
       isSearchActive: !isSearchActive,
     });
 
     navigation.setParams({
+      searchValue: '',
       isSearchActive: !isSearchActive,
     });
   };
@@ -202,8 +198,12 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 
   onChangeSearchField = (value: string) => {
+    const { navigation } = this.props;
+    navigation.setParams({
+      searchValue: value,
+    });
     this.setState({
-      search: value.toLowerCase().trim(),
+      searchValue: value.toLowerCase().trim(),
     });
   };
 
@@ -224,7 +224,7 @@ class ItemsScene extends PureComponent<Props, State> {
 
   render() {
     const {
-      search,
+      searchValue,
       isSortByName,
       isSearchActive,
       isListViewStyle,
@@ -232,48 +232,74 @@ class ItemsScene extends PureComponent<Props, State> {
       isSortModalVisible,
       isDeleteModalVisible,
     } = this.state;
+    const { navigation } = this.props;
+    const isEmptyList = !true;
 
     return (
       <Fragment>
-        <ScrollView
-          scrollEventThrottle={16}
-          onScroll={this.handleScroll}
-        >
-          <Text style={styles.header}>{constants.headers.items}</Text>
-          <CategoryList>
-            <FlatList
-              horizontal
-              data={constants.category}
-              renderItem={this.renderTab}
-              keyExtractor={this.keyExtractor}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalFlatList}
+        { isEmptyList ? (
+          <View>
+            <Text style={styles.header}>{constants.headers.items}</Text>
+            <Image
+              source={assets.noItemsYet}
+              style={styles.image}
             />
-          </CategoryList>
-          {isListViewStyle ? (
-            <SwipebleListItem
-              toggleDelModal={this.toggleDelModalVisible}
+            <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+            <Button
+              isGreen
+              title={constants.buttonTitles.addItem}
+              onPress={() => navigation.navigate(SCENE_NAMES.QRScanSceneName)}
+              customStyle={styles.button}
             />
-          ) : (
-            <FlatList
-              data={constants.category}
-              numColumns={2}
-              renderItem={item => (
-                <Item
-                  id={item.index}
-                  selectItem={this.selectItem}
-                  currentSelectItem={currentSelectItem}
-                  toggleDelModal={this.toggleDelModalVisible}
-                />
-              )}
-              keyExtractor={this.keyExtractor}
-              extraData={currentSelectItem}
-              contentContainerStyle={styles.grid}
-            />
-          )}
-        </ScrollView>
-        {isSearchActive && <Search items={constants.items} search={search} />}
-        {!isSortModalVisible && !isSearchActive && (
+          </View>
+        ) : (
+          <ScrollView
+            scrollEventThrottle={16}
+            onScroll={this.handleScroll}
+          >
+            <Text style={styles.header}>{constants.headers.items}</Text>
+            <CategoryList>
+              <FlatList
+                horizontal
+                data={constants.category}
+                renderItem={this.renderTab}
+                keyExtractor={this.keyExtractor}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalFlatList}
+              />
+            </CategoryList>
+            {isListViewStyle ? (
+              <SwipebleListItem
+                toggleDelModal={this.toggleDelModalVisible}
+              />
+            ) : (
+              <FlatList
+                data={constants.category}
+                numColumns={2}
+                renderItem={item => (
+                  <Item
+                    id={item.index}
+                    selectItem={this.selectItem}
+                    currentSelectItem={currentSelectItem}
+                    toggleDelModal={this.toggleDelModalVisible}
+                  />
+                )}
+                keyExtractor={this.keyExtractor}
+                extraData={currentSelectItem}
+                contentContainerStyle={styles.grid}
+              />
+            )}
+          </ScrollView>
+        )}
+        {isSearchActive
+        && (
+        <Search
+          items={constants.items}
+          searchValue={searchValue}
+          toggleSearch={this.toggleSearch}
+        />
+        )}
+        {!isSortModalVisible && !isSearchActive && !isEmptyList && (
           <IconButton
             isCustomIcon
             size={isSortByName ? 50 : 70}

@@ -23,4 +23,10 @@ export default StyleSheet.create({
     marginLeft: normalize(20),
     fontFamily: fonts.proDisplay.regular,
   },
+  customContStyle: {
+    borderRadius: 0,
+    backgroundColor: colors.transparent,
+  },
+  customPosition: { top: 5 },
+  customIconStyle: { color: colors.blue },
 });

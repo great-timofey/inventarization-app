@@ -1,6 +1,7 @@
 // @flow
 
 export type Props = {
-  search: string,
+  searchValue: string,
   items: Array<Object>,
+  toggleSearch: () => void,
 };

@@ -1,7 +1,7 @@
 // @flow
 
 export type State = {
-  search: string,
+  searchValue: string,
   isSortByName: boolean,
   isSearchActive: boolean,
   isListViewStyle: boolean,
