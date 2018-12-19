@@ -116,7 +116,7 @@ export default StyleSheet.create({
     height: normalize(26),
   },
   smallerIcon: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.7 }],
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
   },
   photosOuter: {
     overflow: 'visible',
