@@ -1,7 +1,7 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import { Text, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
+import { Text, CameraRoll, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 import { StackActions } from 'react-navigation';
@@ -41,7 +41,26 @@ class AddItemFinish extends PureComponent<Props, State> {
     ),
   });
 
-  handleGoToItemForm = () => this.props.navigation.navigate(SCENE_NAMES.ItemFromSceneName);
+  handleGoToItemForm = async () => {
+    const { navigation } = this.props;
+    const photos = navigation.getParam('photos', []);
+    const defectPhotos = navigation.getParam('defectPhotos', []);
+    const photosToSave = [...photos, ...defectPhotos];
+    // photosToSave.forEach((photo) => console.log(photo))
+    // console.log(photosToSave)
+    try {
+      const promises = photosToSave.map(photo => CameraRoll.saveToCameraRoll(photo.uri.replace('file://', '')));
+      await Promise.all(promises);
+      const data = await CameraRoll.getPhotos({
+        first: 10,
+        assetType: 'All',
+      });
+      console.log(data);
+    } catch (err) {
+      console.log(err)
+    }
+    // navigation.navigate(SCENE_NAMES.ItemFormSceneName);
+  };
 
   handleAddMoreItems = () => {
     const { navigation } = this.props;

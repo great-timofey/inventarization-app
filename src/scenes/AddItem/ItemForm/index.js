@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   ImageBackground,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 // $FlowFixMe
@@ -22,6 +23,7 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 
+import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -121,42 +123,47 @@ class ItemForm extends PureComponent<Props, State> {
     const { showPhotos, sections } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-          <View style={styles.preview}>
-            <View style={styles.previewModeButtons}>
-              <PreviewModeButton
-                isActive={showPhotos}
-                onPress={this.showPhotos}
-                title={constants.buttonTitles.photos}
+        <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={75} behavior="padding">
+          <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <View style={styles.preview}>
+              <View style={styles.previewModeButtons}>
+                <PreviewModeButton
+                  isActive={showPhotos}
+                  onPress={this.showPhotos}
+                  title={constants.buttonTitles.photos}
+                />
+                <PreviewModeButton
+                  isActive={!showPhotos}
+                  onPress={this.showDefects}
+                  title={constants.buttonTitles.defects}
+                />
+              </View>
+              <IonIcon.Button
+                size={64}
+                {...iconProps}
+                name="ios-add-circle"
+                color={colors.border}
+                onPress={() => alert('hi')}
               />
-              <PreviewModeButton
-                isActive={!showPhotos}
-                onPress={this.showDefects}
-                title={constants.buttonTitles.defects}
+              <Text style={styles.previewText}>{constants.hints.addPhoto}</Text>
+            </View>
+            <View style={styles.formContainer}>
+              <View style={styles.formName}>
+                <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
+              </View>
+              <SectionList
+                sections={sections}
+                renderItem={this.renderFormField}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={this.renderFormSectionHeader}
               />
             </View>
-            <IonIcon.Button
-              size={64}
-              {...iconProps}
-              name="ios-add-circle"
-              color={colors.border}
-              onPress={() => alert('hi')}
-            />
-            <Text style={styles.previewText}>{constants.hints.addPhoto}</Text>
-          </View>
-          <View style={styles.formContainer}>
-            <View style={styles.formName}>
-              <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-              <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
-            </View>
-            <SectionList
-              sections={sections}
-              renderItem={this.renderFormField}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={this.renderFormSectionHeader}
-            />
-          </View>
-        </ScrollView>
+            <TouchableOpacity style={styles.saveItem}>
+              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

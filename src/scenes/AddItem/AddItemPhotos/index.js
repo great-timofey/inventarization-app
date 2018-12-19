@@ -39,17 +39,16 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photosCount = 
-    navigation.state 
-    && navigation.state.params 
-    && navigation.state.params.photosCount;
+    const photos = 
+    navigation.state.params 
+    && navigation.state.params.photos;
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
       headerRight: (
-        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photosCount })} />
+        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photos })} />
       ),
     }; 
   }
@@ -66,7 +65,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   componentDidMount() {
     const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ photosCount: 0 });
+    navigation.setParams({ photos: [] });
   }
 
   askPermissions = async () => {
@@ -108,7 +107,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ photosCount: this.state.photos.length }));
+      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), 
+                    () => navigation.setParams({ photos: this.state.photos }));
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
@@ -128,7 +128,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), () => navigation.setParams({ photosCount: this.state.photos.length }));
+    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), 
+    () => navigation.setParams({ photos: this.state.photos }));
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (

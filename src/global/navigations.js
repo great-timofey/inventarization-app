@@ -58,11 +58,11 @@ const profileStack = generateStack({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
 const addItemStack = generateStack({
-  [SCENE_NAMES.ItemFormSceneName]: ItemForm,
   [SCENE_NAMES.QRScanSceneName]: QRScene,
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
   [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
   [SCENE_NAMES.AddItemDefectsSceneName]: AddItemDefects,
+  [SCENE_NAMES.ItemFormSceneName]: ItemForm,
 });
 
 const rootTabs = {

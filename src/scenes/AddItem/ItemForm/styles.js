@@ -102,4 +102,16 @@ export default StyleSheet.create({
     fontSize: normalize(13),
     fontFamily: fonts.proDisplay.regular,
   },
+  saveItem: {
+    width: deviceWidth,
+    alignItems: 'center',
+    height: normalize(54),
+    justifyContent: 'center',
+    backgroundColor: colors.text.blue,
+  },
+  saveItemText: {
+    color: colors.white,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.regular,
+  },
 });

@@ -26,7 +26,7 @@ import AddButton from '~/components/AddButton';
 import HeaderTitle from '~/components/HeaderTitle';
 import PickPhotoModal from '~/components/PickPhotoModal';
 import HeaderBackbutton from '~/components/HeaderBackButton';
-import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
+import ScrollViewContainer from '~/components/ScrollViewContainer';
 
 import colors from '~/global/colors';
 import constants from '~/global/constants';
