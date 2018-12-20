@@ -1,10 +1,11 @@
 // @flow
+import type { Item } from '~/global/types';
 
-export type Props ={
-  id: number,
-  selectItem: Function,
-  currentSelectItem: number | null,
+export type Props = {
+  item: Item,
   toggleDelModal?: () => void,
+  selectItem?: (x: number | null | string) => void,
+  currentSelectItem: number | string | null,
 }
 
 export type State ={

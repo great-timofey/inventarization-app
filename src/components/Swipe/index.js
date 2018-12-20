@@ -9,41 +9,14 @@ import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import type { Item } from '~/global/types';
 
 import styles from './styles';
+import type { Props } from './types';
 
-type State = {
-  activeRowId: null | number,
-  scrollEnabled: boolean,
-};
-
-type Props = {
-  toggleDelModal?: () => void,
-};
-
-class SwipebleListItem extends PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { activeRowId: null, scrollEnabled: true };
-  }
-
-  onSwipeOpen = (id: number) => {
-    this.setState({
-      activeRowId: id,
-      scrollEnabled: false,
-    });
-  };
-
-  onSwipeClose = (id: number) => {
-    if (id) {
-      this.setState({
-        scrollEnabled: true,
-      });
-    }
-  };
-
-  renderSwipeRow = (itemId: number, activeRowId: any) => {
-    const { toggleDelModal } = this.props;
+class SwipebleListItem extends PureComponent<Props, {}> {
+  renderSwipeRow = (item: Item, activeRowId: any) => {
+    const { toggleDelModal, selectItem } = this.props;
     const swipeoutBtns = [
       {
         component: (
@@ -73,12 +46,9 @@ class SwipebleListItem extends PureComponent<Props, State> {
       <Swipeout
         autoClose
         right={swipeoutBtns}
-        close={itemId !== activeRowId}
+        close={item.id !== activeRowId}
         onOpen={(sectionID, rowId, direction: string) => (
-          direction !== undefined ? this.onSwipeOpen(itemId) : null
-        )}
-        onClose={(sectionID, rowId, direction: string) => (
-          direction !== undefined ? this.onSwipeClose(itemId) : null
+          direction !== undefined ? selectItem(item.id) : null
         )}
       >
         <View>
@@ -86,11 +56,11 @@ class SwipebleListItem extends PureComponent<Props, State> {
             <Image style={styles.image} />
             <View style={styles.description}>
               <View>
-                <Text style={styles.topText}>Людмила Андропова</Text>
-                <Text style={styles.botText}>Ответственный</Text>
+                <Text style={styles.topText}>{item.name}</Text>
+                <Text style={styles.botText}>0 Фото</Text>
               </View>
               <View style={styles.count}>
-                <Text style={styles.countText}>4124</Text>
+                <Text style={styles.countText}>{item.purchasePrice}</Text>
               </View>
             </View>
           </View>
@@ -102,24 +72,15 @@ class SwipebleListItem extends PureComponent<Props, State> {
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
-    const {
-      state: { activeRowId, scrollEnabled },
-    } = this;
+    const { extraData, data } = this.props;
 
-    const data = [
-      { key: 'bdsagdshdsahsadh', id: 1 },
-      { key: 'bdsagdshdsahsadh', id: 2 },
-      { key: 'bdsagdshdsahsadh', id: 3 },
-      { key: 'bdsagdshdsahsadh', id: 4 },
-      { key: 'bdsagdshdsahsadh', id: 5 },
-      { key: 'bdsagdshdsahsadh', id: 6 },
-    ];
     return (
       <FlatList
         data={data}
-        scrollEnabled={scrollEnabled}
+        scrollEnabled={false}
+        extraData={{ extraData }}
         keyExtractor={this.keyExtractor}
-        renderItem={({ item }) => this.renderSwipeRow(item.id, activeRowId)}
+        renderItem={({ item }) => this.renderSwipeRow(item, extraData.currentSelectItem)}
       />
     );
   }

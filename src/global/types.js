@@ -6,3 +6,9 @@ export type {
 export type {
   ReturnKeyType,
 } from 'react-native/Libraries/Components/TextInput/TextInput';
+
+export type Item = {
+  id: string | number,
+  name: string,
+  purchasePrice?: number,
+}

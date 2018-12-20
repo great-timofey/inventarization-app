@@ -7,7 +7,7 @@ export type State = {
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
   isDeleteModalVisible: boolean,
-  currentSelectItem: number | null,
+  currentSelectItem: number | string | null,
 };
 
 export type Props = {

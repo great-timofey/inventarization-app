@@ -191,7 +191,7 @@ class ItemsScene extends PureComponent<Props, State> {
     this.toggleSortModalVisible);
   }
 
-  selectItem = (id: number) => {
+  selectItem = (id: number | string) => {
     this.setState({
       currentSelectItem: id,
     });
@@ -234,6 +234,14 @@ class ItemsScene extends PureComponent<Props, State> {
     } = this.state;
     const { navigation } = this.props;
     const isEmptyList = !true;
+    const sortData = isSortByName
+      ? constants.data.assets.sort((a, b) => {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
+        if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
+        return 0;
+      })
+      : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
+
 
     return (
       <Fragment>
@@ -247,9 +255,9 @@ class ItemsScene extends PureComponent<Props, State> {
             <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
             <Button
               isGreen
+              customStyle={styles.button}
               title={constants.buttonTitles.addItem}
               onPress={() => navigation.navigate(SCENE_NAMES.QRScanSceneName)}
-              customStyle={styles.button}
             />
           </View>
         ) : (
@@ -270,22 +278,25 @@ class ItemsScene extends PureComponent<Props, State> {
             </CategoryList>
             {isListViewStyle ? (
               <SwipebleListItem
+                data={sortData}
+                selectItem={this.selectItem}
                 toggleDelModal={this.toggleDelModalVisible}
+                extraData={{ currentSelectItem, isSortByName }}
               />
             ) : (
               <FlatList
-                data={constants.category}
+                data={sortData}
                 numColumns={2}
-                renderItem={item => (
+                renderItem={({ item }) => (
                   <Item
-                    id={item.index}
+                    item={item}
                     selectItem={this.selectItem}
                     currentSelectItem={currentSelectItem}
                     toggleDelModal={this.toggleDelModalVisible}
                   />
                 )}
                 keyExtractor={this.keyExtractor}
-                extraData={currentSelectItem}
+                extraData={{ currentSelectItem, isSortByName }}
                 contentContainerStyle={styles.grid}
               />
             )}
