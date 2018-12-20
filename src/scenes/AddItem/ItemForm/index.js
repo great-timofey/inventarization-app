@@ -67,7 +67,7 @@ const HeaderTrashButton = ({ onPress }: { onPress: Function }) => (
     {...iconProps}
     onPress={onPress}
     color={colors.red}
-    style={{ marginRight: -10 }}
+    style={styles.trashIcon}
   />
 );
 
@@ -81,17 +81,16 @@ const NoItems = ({ additional } : { additional? : boolean }) => (
   <Fragment>
     {additional ? (
       <Image source={assets.noPhoto} style={{ width: 100, height: 93 }} />
+    ) : (
+      <IonIcon.Button
+        size={64}
+        {...iconProps}
+        name="ios-add-circle"
+        color={colors.border}
+        onPress={() => alert('hi')}
+      />
     )
-  : (
-    <IonIcon.Button
-      size={64}
-      {...iconProps}
-      name="ios-add-circle"
-      color={colors.border}
-      onPress={() => alert('hi')}
-    />
-  )
- }
+   }
     <Text style={styles.previewText}>{additional ? constants.hints.noPhotos : constants.hints.addPhoto}</Text>
   </Fragment>
 );

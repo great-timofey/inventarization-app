@@ -19,6 +19,9 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
   },
+  trashIcon: {
+    marginRight: -10,
+  },
   backButton: {
     width: 28,
     height: 20,
