@@ -39,19 +39,19 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photos = 
-    navigation.state.params 
-    && navigation.state.params.photos;
+    const photos = navigation.state.params && navigation.state.params.photos;
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
       headerRight: (
-        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photos })} />
+        <HeaderSkipButton
+          onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photos })}
+        />
       ),
-    }; 
-  }
+    };
+  };
 
   state = {
     photos: [],
@@ -69,7 +69,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
   }
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
+    const necessaryPermissions = ['location', 'camera'];
+    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -82,11 +83,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
     if (currentPermissions.location !== 'authorized') {
       await Permissions.request('location');
     }
-    if (currentPermissions.photos !== 'authorized') {
-      await Permissions.request('photo');
-    }
 
-    const newPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
+    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -125,8 +123,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
       const takenPhoto = { base64, uri, location };
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state), 
-        () => navigation.setParams({ photos: this.state.photos })
+        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        () => navigation.setParams({ photos: this.state.photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
@@ -148,8 +146,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
     }
 
     this.setState(
-      state => assoc('photos', remove(index, 1, state.photos), state), 
-      () => navigation.setParams({ photos: this.state.photos })
+      state => assoc('photos', remove(index, 1, state.photos), state),
+      () => navigation.setParams({ photos: this.state.photos }),
     );
   };
 

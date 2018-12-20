@@ -14,11 +14,16 @@ export type PhotosProps = {
   index: number,
 };
 
+export type Section = {
+  title: string,
+  index: number,
+  data: Array<string>,
+};
+
 export type State = {
-  flashMode: number,
-  isLoading: boolean,
+  showPhotos: boolean,
   photos: Array<Photo>,
-  isHintOpened: boolean,
-  ableToTakePicture: boolean,
-  needToAskPermissions: boolean,
+  defects: Array<Photo>,
+  sections: Array<Section>,
+  activePreviewIndex: number,
 };

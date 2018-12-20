@@ -185,6 +185,7 @@ const text = {
 const hints = {
   name: 'Название',
   addPhoto: 'Добавить фото',
+  noPhotos: 'Нет фотографий',
   enterName: 'Введите название',
   makePhotos: 'Сделайте фотографии вашего предмета',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',

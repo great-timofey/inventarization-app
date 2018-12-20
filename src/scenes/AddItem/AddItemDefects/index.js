@@ -72,7 +72,8 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
+    const necessaryPermissions = ['location', 'camera']
+    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -85,11 +86,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     if (currentPermissions.location !== 'authorized') {
       await Permissions.request('location');
     }
-    if (currentPermissions.photos !== 'authorized') {
-      await Permissions.request('photo');
-    }
 
-    const newPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
+    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });

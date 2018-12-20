@@ -17,9 +17,8 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
+import { isEmpty, and } from 'ramda';
 import Swiper from 'react-native-swiper';
-// $FlowFixMe
-import Permissions from 'react-native-permissions';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -43,13 +42,14 @@ const iconProps = {
   backgroundColor: colors.transparent,
 };
 
-const PreviewModeButton = ({ isActive, title, onPress }) => (
-  <TouchableOpacity
-    style={isActive ? styles.previewModeButtonActive : styles.previewModeButton}
-    onPress={onPress}
-  >
-    <Text style={isActive ? styles.previewModeTextActive : styles.previewModeText}>{title}</Text>
-  </TouchableOpacity>
+const PreviewModeButton = ({ isActive, title, onPress } : 
+  { isActive: boolean, title: string, onPress: Function }) => (
+    <TouchableOpacity
+      style={isActive ? styles.previewModeButtonActive : styles.previewModeButton}
+      onPress={onPress}
+    >
+      <Text style={isActive ? styles.previewModeTextActive : styles.previewModeText}>{title}</Text>
+    </TouchableOpacity>
 );
 
 const HeaderTrashButton = ({ onPress }: { onPress: Function }) => (
@@ -67,6 +67,25 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
   </TouchableOpacity>
+);
+
+const NoItems = ({ additional } : { additional? : boolean }) => (
+  <Fragment>
+    {additional ? (
+      <Image source={assets.noPhoto} style={{ width: 100, height: 93 }} />
+    )
+  : (
+    <IonIcon.Button
+      size={64}
+      {...iconProps}
+      name="ios-add-circle"
+      color={colors.border}
+      onPress={() => alert('hi')}
+    />
+  )
+ }
+    <Text style={styles.previewText}>{additional ? constants.hints.noPhotos : constants.hints.addPhoto}</Text>
+  </Fragment>
 );
 
 class ItemForm extends PureComponent<Props, State> {
@@ -106,11 +125,11 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener.remove();
   }
 
-  renderFormField = ({ item, index, section }) => (
+  renderFormField = ({ item } : { item: string }) => (
     <Input isWhite blurOnSubmit={false} type={{ label: item }} />
   );
 
-  renderFormSectionHeader = ({ section: { title, index } }) => (
+  renderFormSectionHeader = ({ section: { title, index } }: { title: string, index: number }) => (
     <LinearGradient
       start={index === 0 ? { x: 1, y: 0 } : {}}
       end={index === 0 ? { x: 0, y: 0 } : {}}
@@ -127,10 +146,9 @@ class ItemForm extends PureComponent<Props, State> {
 
   showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
 
-  //  TODO: add no photo/defects state simultaneously with some defects/photo
-
   render() {
     const { showPhotos, sections, photos, defects, activePreviewIndex } = this.state;
+    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={75} behavior="padding">
@@ -148,20 +166,10 @@ class ItemForm extends PureComponent<Props, State> {
                   title={constants.buttonTitles.defects}
                 />
               </View>
-              {!(photos.length + defects.length) ? (
-                <Fragment>
-                  <IonIcon.Button
-                    size={64}
-                    {...iconProps}
-                    name="ios-add-circle"
-                    color={colors.border}
-                    onPress={() => alert('hi')}
-                  />
-                  <Text style={styles.previewText}>{constants.hints.addPhoto}</Text>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <Swiper style={styles.wrapper} showsPagination={false} onIndexChanged={this.handleSwipePreview}>
+              <Fragment>
+                {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
+                {currentTypeIsEmpty ? <NoItems /> : (
+                  <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                     {(showPhotos ? photos : defects).map((photo, index) => (
                       <Image
                         key={photo.uri}
@@ -170,20 +178,22 @@ class ItemForm extends PureComponent<Props, State> {
                       />
                     ))}
                   </Swiper>
-                  <View style={styles.previewInfo}>
-                    <InventoryIcon
-                      size={16}
-                      name="photo"
-                      {...iconProps}
-                      color={colors.black}
-                      onPress={() => alert('hi')}
-                    />
-                    <Text style={styles.previewInfoText}>
-                      {activePreviewIndex + 1}/{showPhotos ? photos.length : defects.length}
-                    </Text>
-                  </View>
-                </Fragment>
-              )}
+                )}
+                <View style={styles.previewInfo}>
+                  <InventoryIcon
+                    size={16}
+                    name="photo"
+                    {...iconProps}
+                    color={colors.black}
+                    onPress={() => alert('hi')}
+                  />
+                  <Text style={styles.previewInfoText}>
+                    {currentTypeIsEmpty
+                      ? '0/0'
+                      : `${activePreviewIndex + 1} / ${showPhotos ? photos.length : defects.length}`}
+                  </Text>
+                </View>
+              </Fragment>
             </View>
             <View style={styles.formContainer}>
               <View style={styles.formName}>
