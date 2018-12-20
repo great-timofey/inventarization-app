@@ -21,9 +21,13 @@ export type Section = {
 };
 
 export type State = {
+  purchaseDate?: Date,
+  estimateDate?: Date,
+  warrantyDate?: Date,
   showPhotos: boolean,
   photos: Array<Photo>,
   defects: Array<Photo>,
   sections: Array<Section>,
   activePreviewIndex: number,
+  isDatepickerOpened: boolean,
 };

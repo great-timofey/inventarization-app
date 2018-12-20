@@ -136,4 +136,14 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
+  dateTimePickerCancelText: {
+    color: colors.white,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.light,
+  },
+  dateTimePickerConfirmText: {
+    color: colors.black,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.bold,
+  },
 });

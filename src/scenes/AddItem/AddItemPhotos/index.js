@@ -39,7 +39,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photos = navigation.state.params && navigation.state.params.photos;
+    const photos = navigation.state && navigation.state.params && navigation.state.params.photos;
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,

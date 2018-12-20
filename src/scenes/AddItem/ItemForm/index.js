@@ -17,11 +17,13 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, and } from 'ramda';
+import { isEmpty, and, includes } from 'ramda';
+import dayjs from 'dayjs';
 import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import InventoryIcon from '~/assets/InventoryIcon';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
@@ -34,6 +36,12 @@ import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
+
+const customFields = [
+  constants.itemForm.purchaseDate,
+  constants.itemForm.estimateDate,
+  constants.itemForm.warrantyPeriod,
+];
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -106,7 +114,12 @@ class ItemForm extends PureComponent<Props, State> {
     photos: [],
     defects: [],
     showPhotos: true,
+    purchaseDate: null,
+    estimateDate: null,
+    warrantyPeriod: null,
     activePreviewIndex: 0,
+    currentlyEditableDate: null,
+    isDateTimePickerOpened: false,
   };
 
   navListener: any;
@@ -125,19 +138,52 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener.remove();
   }
 
-  renderFormField = ({ item } : { item: string }) => (
-    <Input isWhite blurOnSubmit={false} type={{ label: item }} />
-  );
+  renderFormField = ({ item: { key, description } } : { key: string, description: string }) => {
+    let isCustomField = false;
+    const customProps = {};
+
+    if (includes(description, customFields)) {
+      isCustomField = true;
+      customProps.value = this.state[key];
+    }
+
+    return (
+      <Input
+        isWhite
+        customKey={key}
+        {...customProps}
+        blurOnSubmit={false}
+        type={{ label: description }}
+        containerCallback={isCustomField ? this.handleToggleDateTimePicker : null}
+      />
+    );
+  };
 
   renderFormSectionHeader = ({ section: { title, index } }: { title: string, index: number }) => (
     <LinearGradient
-      start={index === 0 ? { x: 1, y: 0 } : {}}
-      end={index === 0 ? { x: 0, y: 0 } : {}}
+      start={index === 0 ? { x: 1, y: 0 } : null}
+      end={index === 0 ? { x: 0, y: 0 } : null}
       style={styles.formSectionHeader}
       colors={colors.itemFormHeaders[index]}
     >
       <Text style={styles.formSectionHeaderText}>{title}</Text>
     </LinearGradient>
+  );
+
+  handleToggleDateTimePicker = (key: string) => this.setState(
+    ({ isDateTimePickerOpened }) => ({
+      isDateTimePickerOpened: !isDateTimePickerOpened,
+      currentlyEditableDate: key,
+    }),
+  );
+
+  handleChooseDate = (date: Date) => this.setState(
+    ({ currentlyEditableDate }) => ({
+      currentlyEditableDate: null,
+      isDateTimePickerOpened: false,
+      [currentlyEditableDate]:
+        `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(new Date(date)).format('DD.MM.YYYY')}`,
+    }),
   );
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
@@ -147,7 +193,7 @@ class ItemForm extends PureComponent<Props, State> {
   showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
 
   render() {
-    const { showPhotos, sections, photos, defects, activePreviewIndex } = this.state;
+    const { showPhotos, sections, photos, defects, isDateTimePickerOpened, activePreviewIndex } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -210,6 +256,16 @@ class ItemForm extends PureComponent<Props, State> {
             <TouchableOpacity style={styles.saveItem}>
               <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
             </TouchableOpacity>
+            <DateTimePicker
+              onConfirm={this.handleChooseDate}
+              isVisible={isDateTimePickerOpened}
+              titleIOS={constants.headers.pickDate}
+              onCancel={this.handleToggleDateTimePicker}
+              cancelTextIOS={constants.buttonTitles.cancel}
+              cancelTextStyle={styles.dateTimePickerCancelText}
+              confirmTextIOS={constants.buttonTitles.ready}
+              confirmTextStyle={styles.dateTimePickerConfirmText}
+            />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>

@@ -1,8 +1,9 @@
 // @flow
 
 import React, { Component, Fragment } from 'react';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+
 import TextInputMask from 'react-native-text-input-mask';
-import { View, Text, TextInput } from 'react-native';
 
 import colors from '~/global/colors';
 import Warning from '~/components/Warning';
@@ -43,17 +44,24 @@ class Input extends Component<Props> {
       fieldRef,
       children,
       isWarning,
+      customKey,
       onSubmitForm,
       returnKeyType,
       onSubmitEditing,
+      containerCallback,
       ...textInputProps
     } = this.props;
 
     const CustomTextInput: any = mask ? TextInputMask : TextInput;
+    const Wrapper: any = containerCallback ? TouchableOpacity : View;
 
     return (
-      <Fragment>
+      <Wrapper
+        onPress={containerCallback ? () => containerCallback(customKey) : null}
+        style={containerCallback ? styles.overflowView : null}
+      >
         <View
+          pointerEvents={containerCallback ? 'none' : null}
           style={[
             styles.container,
             isWhite && styles.whiteContainer,
@@ -67,8 +75,8 @@ class Input extends Component<Props> {
           <CustomTextInput
             {...textInputProps}
             mask={mask}
-            value={value}
             ref={fieldRef}
+            value={value}
             textContentType="none"
             returnKeyType={returnKeyType}
             style={[styles.input, isWhite && styles.inputWhite]}
@@ -78,7 +86,7 @@ class Input extends Component<Props> {
           {children}
         </View>
         <Warning isVisible={isWarning || false} title={type.warning} />
-      </Fragment>
+      </Wrapper>
     );
   }
 }

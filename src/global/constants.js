@@ -73,7 +73,6 @@ const buttonTitles = {
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   addItem: 'Добавить предмет',
-  chooseLogo: 'Выбери \n лого',
   forgotPassword: 'Забыли пароль?',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
@@ -167,6 +166,7 @@ const headers = {
   qrscanner: 'Сканер',
   itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
+  pickDate: 'Выберите дату',
   price: 'Покупка и стоимость',
   mainInfo: 'Основная информация',
   addingItem: 'Добавление предмета',
@@ -209,7 +209,10 @@ const itemForm = {
   category: 'Категория',
 };
 
-const itemFormFields = Object.values(itemForm);
+const itemFormFields = Object.keys(itemForm).map(
+  objKey => ({ key: objKey, description: itemForm[objKey] }),
+);
+
 const category = [
   'Новое',
   'Мебель',
@@ -254,6 +257,7 @@ export default {
   errors,
   regExp,
   headers,
+  itemForm,
   category,
   inputTypes,
   buttonTitles,
