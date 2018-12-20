@@ -194,30 +194,69 @@ const category = [
   'Мебель',
 ];
 
-const items = [
-  {
-    title: 'MacBook Pro 13 Late',
-    price: '110000',
-  },
-  {
-    title: 'iPad Pro 12 2017',
-    price: '72000',
-  },
-  {
-    title: 'Apple Watch Series 3',
-    price: '32000',
-  },
-  {
-    title: 'Apple AirPods',
-    price: '25000',
-  },
-];
+const data = {
+  assets: [
+    {
+      id: '1',
+      name: 'iPhone 6s',
+      purchasePrice: 55000,
+    },
+    {
+      id: '2',
+      name: 'iPhone X',
+      purchasePrice: 4,
+    },
+    {
+      id: '3',
+      name: 'MacBook Pro 13 Late',
+      purchasePrice: 1700,
+    },
+    {
+      id: '4',
+      name: 'iPhone 5c',
+      purchasePrice: 8000,
+    },
+    {
+      id: '5',
+      name: 'iPhone 4S',
+      purchasePrice: 67000,
+    },
+    {
+      id: '6',
+      name: 'iPhone xs Max',
+      purchasePrice: 900000,
+    },
+    {
+      id: '7',
+      name: 'iPad Pro 12 2017',
+      purchasePrice: 6000,
+    },
+    {
+      id: '8',
+      name: 'Apple AirPods',
+      purchasePrice: 30000,
+    },
+    {
+      id: '9',
+      name: 'Apple Watch Series 3',
+      purchasePrice: 78000,
+    },
+  ],
+};
+
+const users = {
+  admin: 'admin',
+  manager: 'manager',
+  observer: 'observer',
+  employee: 'employee',
+};
 
 export default {
+  data,
   sort,
   text,
-  items,
   masks,
+  users,
   hints,
   errors,
   regExp,

@@ -18,7 +18,7 @@ class Search extends PureComponent<Props, {}> {
         style={styles.searchResultContainer}
       >
         <Text style={styles.searchResultText}>
-          {item.title}
+          {item.name}
         </Text>
       </TouchableOpacity>
     );
@@ -30,7 +30,7 @@ class Search extends PureComponent<Props, {}> {
     const { items, searchValue } = this.props;
     let result = [];
     if (searchValue.length >= 2) {
-      result = items.filter(x => x.title.toLowerCase().trim().indexOf(searchValue) !== -1);
+      result = items.filter(x => x.name.toLowerCase().trim().indexOf(searchValue) !== -1);
     }
     return (
       <BlurView

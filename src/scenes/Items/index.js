@@ -191,7 +191,7 @@ class ItemsScene extends PureComponent<Props, State> {
     this.toggleSortModalVisible);
   }
 
-  selectItem = (id: number) => {
+  selectItem = (id: number | string) => {
     this.setState({
       currentSelectItem: id,
     });
@@ -233,7 +233,15 @@ class ItemsScene extends PureComponent<Props, State> {
       isDeleteModalVisible,
     } = this.state;
     const { navigation } = this.props;
-    const isEmptyList = !true;
+    const isEmptyList = true;
+    const sortData = isSortByName
+      ? constants.data.assets.sort((a, b) => {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
+        if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
+        return 0;
+      })
+      : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
+    const currentUser = constants.users.admin;
 
     return (
       <Fragment>
@@ -247,9 +255,11 @@ class ItemsScene extends PureComponent<Props, State> {
             <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
             <Button
               isGreen
-              title={constants.buttonTitles.addItem}
-              onPress={() => navigation.navigate(SCENE_NAMES.QRScanSceneName)}
               customStyle={styles.button}
+              title={constants.buttonTitles.addItem}
+              onPress={currentUser !== constants.users.observer
+                ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+                : () => {}}
             />
           </View>
         ) : (
@@ -270,22 +280,27 @@ class ItemsScene extends PureComponent<Props, State> {
             </CategoryList>
             {isListViewStyle ? (
               <SwipebleListItem
+                data={sortData}
+                currentUser={currentUser}
+                selectItem={this.selectItem}
                 toggleDelModal={this.toggleDelModalVisible}
+                extraData={{ currentSelectItem, isSortByName }}
               />
             ) : (
               <FlatList
-                data={constants.category}
+                data={sortData}
                 numColumns={2}
-                renderItem={item => (
+                renderItem={({ item }) => (
                   <Item
-                    id={item.index}
+                    item={item}
+                    currentUser={currentUser}
                     selectItem={this.selectItem}
                     currentSelectItem={currentSelectItem}
                     toggleDelModal={this.toggleDelModalVisible}
                   />
                 )}
                 keyExtractor={this.keyExtractor}
-                extraData={currentSelectItem}
+                extraData={{ currentSelectItem, isSortByName }}
                 contentContainerStyle={styles.grid}
               />
             )}
@@ -294,8 +309,8 @@ class ItemsScene extends PureComponent<Props, State> {
         {isSearchActive
         && (
         <Search
-          items={constants.items}
           searchValue={searchValue}
+          items={constants.data.assets}
           toggleSearch={this.toggleSearch}
         />
         )}
