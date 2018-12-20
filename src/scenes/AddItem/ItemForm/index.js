@@ -182,7 +182,7 @@ class ItemForm extends PureComponent<Props, State> {
       currentlyEditableDate: null,
       isDateTimePickerOpened: false,
       [currentlyEditableDate]:
-        `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(new Date(date)).format('DD.MM.YYYY')}`,
+        `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(new Date(date)).format(constants.formats.newItemDates)}`,
     }),
   );
 

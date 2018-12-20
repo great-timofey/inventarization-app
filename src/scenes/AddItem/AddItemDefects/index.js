@@ -25,6 +25,8 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
+const necessaryPermissions = ['location', 'camera']
+
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Text style={styles.skipButtonText}>{constants.buttonTitles.ready}</Text>
@@ -72,7 +74,6 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 
   askPermissions = async () => {
-    const necessaryPermissions = ['location', 'camera']
     const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(currentPermissions))) {

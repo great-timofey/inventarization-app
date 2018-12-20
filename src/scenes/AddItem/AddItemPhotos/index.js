@@ -25,6 +25,8 @@ import { isSmallDevice } from '~/global/utils';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
+const necessaryPermissions = ['location', 'camera'];
+
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Text style={styles.skipButtonText}>{constants.buttonTitles.next}</Text>
@@ -69,7 +71,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
   }
 
   askPermissions = async () => {
-    const necessaryPermissions = ['location', 'camera'];
     const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(currentPermissions))) {

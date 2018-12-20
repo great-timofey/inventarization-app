@@ -12,5 +12,5 @@
   "path-intellisense.mappings": {
     "~": "${workspaceRoot}/src"
   },
-  "flow.runOnEdit": false
+  "flow.runOnEdit": true
 }

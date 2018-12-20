@@ -213,6 +213,10 @@ const itemFormFields = Object.keys(itemForm).map(
   objKey => ({ key: objKey, description: itemForm[objKey] }),
 );
 
+const formats = {
+  newItemDates: 'DD.MM.YYYY',
+}
+
 const category = [
   'Новое',
   'Мебель',
@@ -257,6 +261,7 @@ export default {
   errors,
   regExp,
   headers,
+  formats,
   itemForm,
   category,
   inputTypes,
