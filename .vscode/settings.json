@@ -1,5 +1,6 @@
 {
   "javascript.validate.enable": false,
+  "editor.formatOnSave": true,
   "flow.useNPMPackagedFlow": true,
   "editor.rulers": [100],
   "prettier.useTabs": false,
@@ -9,6 +10,7 @@
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
   "prettier.eslintIntegration": true,
+
   "path-intellisense.mappings": {
     "~": "${workspaceRoot}/src"
   }

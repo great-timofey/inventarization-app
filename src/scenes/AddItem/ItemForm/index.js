@@ -199,77 +199,75 @@ class ItemForm extends PureComponent<Props, State> {
         <ScrollViewContainer
           bottomOffset={0}
           extraHeight={215}
-          contentContainerStyle={{ flex: 1 }}
+          style={styles.container}
         >
-          <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-            <View style={styles.preview}>
-              <View style={styles.previewModeButtons}>
-                <PreviewModeButton
-                  isActive={showPhotos}
-                  onPress={this.showPhotos}
-                  title={constants.buttonTitles.photos}
-                />
-                <PreviewModeButton
-                  isActive={!showPhotos}
-                  onPress={this.showDefects}
-                  title={constants.buttonTitles.defects}
-                />
-              </View>
-              <Fragment>
-                {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
-                {currentTypeIsEmpty ? <NoItems /> : (
-                  <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
-                    {(showPhotos ? photos : defects).map((photo, index) => (
-                      <Image
-                        key={photo.uri}
-                        style={styles.photo}
-                        source={{ uri: (showPhotos ? photos : defects)[index].uri }}
-                      />
-                    ))}
-                  </Swiper>
-                )}
-                <View style={styles.previewInfo}>
-                  <InventoryIcon
-                    size={16}
-                    name="photo"
-                    {...iconProps}
-                    color={colors.black}
-                    onPress={() => alert('hi')}
-                  />
-                  <Text style={styles.previewInfoText}>
-                    {currentTypeIsEmpty
-                      ? '0/0'
-                      : `${activePreviewIndex + 1} / ${showPhotos ? photos.length : defects.length}`}
-                  </Text>
-                </View>
-              </Fragment>
-            </View>
-            <View style={styles.formContainer}>
-              <View style={styles.formName}>
-                <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-                <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
-              </View>
-              <SectionList
-                sections={sections}
-                renderItem={this.renderFormField}
-                keyExtractor={(item, index) => item + index}
-                renderSectionHeader={this.renderFormSectionHeader}
+          <View style={styles.preview}>
+            <View style={styles.previewModeButtons}>
+              <PreviewModeButton
+                isActive={showPhotos}
+                onPress={this.showPhotos}
+                title={constants.buttonTitles.photos}
+              />
+              <PreviewModeButton
+                isActive={!showPhotos}
+                onPress={this.showDefects}
+                title={constants.buttonTitles.defects}
               />
             </View>
-            <TouchableOpacity style={styles.saveItem}>
-              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-            </TouchableOpacity>
-            <DateTimePicker
-              onConfirm={this.handleChooseDate}
-              isVisible={isDateTimePickerOpened}
-              titleIOS={constants.headers.pickDate}
-              onCancel={this.handleToggleDateTimePicker}
-              cancelTextIOS={constants.buttonTitles.cancel}
-              cancelTextStyle={styles.dateTimePickerCancelText}
-              confirmTextIOS={constants.buttonTitles.ready}
-              confirmTextStyle={styles.dateTimePickerConfirmText}
+            <Fragment>
+              {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
+              {currentTypeIsEmpty ? <NoItems /> : (
+                <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
+                  {(showPhotos ? photos : defects).map((photo, index) => (
+                    <Image
+                      key={photo.uri}
+                      style={styles.photo}
+                      source={{ uri: (showPhotos ? photos : defects)[index].uri }}
+                    />
+                  ))}
+                </Swiper>
+              )}
+              <View style={styles.previewInfo}>
+                <InventoryIcon
+                  size={16}
+                  name="photo"
+                  {...iconProps}
+                  color={colors.black}
+                  onPress={() => alert('hi')}
+                />
+                <Text style={styles.previewInfoText}>
+                  {currentTypeIsEmpty
+                    ? '0/0'
+                    : `${activePreviewIndex + 1} / ${showPhotos ? photos.length : defects.length}`}
+                </Text>
+              </View>
+            </Fragment>
+          </View>
+          <View style={styles.formContainer}>
+            <View style={styles.formName}>
+              <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+              <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
+            </View>
+            <SectionList
+              sections={sections}
+              renderItem={this.renderFormField}
+              keyExtractor={(item, index) => item + index}
+              renderSectionHeader={this.renderFormSectionHeader}
             />
-          </ScrollView>
+          </View>
+          <DateTimePicker
+            onConfirm={this.handleChooseDate}
+            isVisible={isDateTimePickerOpened}
+            titleIOS={constants.headers.pickDate}
+            onCancel={this.handleToggleDateTimePicker}
+            cancelTextIOS={constants.buttonTitles.cancel}
+            cancelTextStyle={styles.dateTimePickerCancelText}
+            confirmTextIOS={constants.buttonTitles.ready}
+            confirmTextStyle={styles.dateTimePickerConfirmText}
+          />
+          <TouchableOpacity style={styles.saveItem}>
+            <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+          </TouchableOpacity>
         </ScrollViewContainer>
       </SafeAreaView>
     );
