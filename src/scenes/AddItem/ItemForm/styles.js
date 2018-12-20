@@ -36,6 +36,7 @@ export default StyleSheet.create({
     backgroundColor: colors.buttonChooseLogo,
   },
   previewModeButtons: {
+    zIndex: 1,
     top: normalize(20),
     left: normalize(20),
     position: 'absolute',
@@ -73,6 +74,27 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     color: colors.text.darkGrey,
     fontFamily: fonts.proDisplay.regular,
+  },
+  previewInfo: {
+    left: 20,
+    bottom: 20,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: normalize(15),
+    backgroundColor: colors.white,
+    paddingVertical: normalize(5),
+    paddingHorizontal: normalize(13),
+  },
+  previewInfoText: {
+    marginLeft: 5,
+    color: colors.black,
+    fontSize: normalize(14),
+    fontFamily: fonts.proDisplay.regular,
+  },
+  photo: {
+    width: deviceWidth,
+    height: deviceWidth,
   },
   formContainer: {
     flex: 1,

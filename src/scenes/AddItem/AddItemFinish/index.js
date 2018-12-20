@@ -45,21 +45,7 @@ class AddItemFinish extends PureComponent<Props, State> {
     const { navigation } = this.props;
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
-    const photosToSave = [...photos, ...defectPhotos];
-    // photosToSave.forEach((photo) => console.log(photo))
-    // console.log(photosToSave)
-    try {
-      const promises = photosToSave.map(photo => CameraRoll.saveToCameraRoll(photo.uri.replace('file://', '')));
-      await Promise.all(promises);
-      const data = await CameraRoll.getPhotos({
-        first: 10,
-        assetType: 'All',
-      });
-      console.log(data);
-    } catch (err) {
-      console.log(err)
-    }
-    // navigation.navigate(SCENE_NAMES.ItemFormSceneName);
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos });
   };
 
   handleAddMoreItems = () => {

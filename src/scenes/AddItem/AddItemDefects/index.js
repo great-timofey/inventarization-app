@@ -72,7 +72,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(['location', 'camera']);
+    const currentPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -85,8 +85,11 @@ class AddItemDefects extends PureComponent<Props, State> {
     if (currentPermissions.location !== 'authorized') {
       await Permissions.request('location');
     }
+    if (currentPermissions.photos !== 'authorized') {
+      await Permissions.request('photo');
+    }
 
-    const newPermissions = await Permissions.checkMultiple(['location', 'camera']);
+    const newPermissions = await Permissions.checkMultiple(['location', 'camera', 'photo']);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -110,10 +113,24 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      const takenPhoto = { base64, uri };
+      let location = new Promise((res, rej) => {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords: { latitude: lat, longitude: lon } }) => {
+            location = { lat, lon };
+            res();
+          },
+          error => rej(error.message),
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+        );
+      });
 
-      this.setState(state => assoc('photos', concat(state.photos, [takenPhoto]), state), 
-      () => navigation.setParams({ defectPhotos: this.state.photos }));
+      await location;
+      const takenPhoto = { base64, uri, location };
+
+      this.setState(
+        state => assoc('photos', concat(state.photos, [takenPhoto]), state), 
+        () => navigation.setParams({ defectPhotos: this.state.photos })
+      );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
@@ -133,8 +150,10 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), 
-    () => navigation.setParams({ defectPhotos: this.state.photos }));
+    this.setState(
+      state => assoc('photos', remove(index, 1, state.photos), state), 
+      () => navigation.setParams({ defectPhotos: this.state.photos })
+    );
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (

@@ -17,12 +17,14 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
+import Swiper from 'react-native-swiper';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
+import InventoryIcon from '~/assets/InventoryIcon';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -82,7 +84,10 @@ class ItemForm extends PureComponent<Props, State> {
       { title: constants.headers.price, data: constants.itemFormFields.slice(4, 9), index: 1 },
       { title: constants.headers.storage, data: constants.itemFormFields.slice(9), index: 2 },
     ],
+    photos: [],
+    defects: [],
     showPhotos: true,
+    activePreviewIndex: 0,
   };
 
   navListener: any;
@@ -92,6 +97,9 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
+    const photos = navigation.getParam('photos', []);
+    const defects = navigation.getParam('defectPhotos', []);
+    this.setState({ photos, defects });
   }
 
   componentWillUnmount() {
@@ -113,14 +121,16 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
-  showPhotos = () => this.setState({ showPhotos: true });
+  handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
-  showDefects = () => this.setState({ showPhotos: false });
+  showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
 
-  renderPhoto = ({ item }: PhotosProps) => <View style={styles.photoContainer} />;
+  showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
+
+  //  TODO: add no photo/defects state simultaneously with some defects/photo
 
   render() {
-    const { showPhotos, sections } = this.state;
+    const { showPhotos, sections, photos, defects, activePreviewIndex } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={75} behavior="padding">
@@ -138,14 +148,42 @@ class ItemForm extends PureComponent<Props, State> {
                   title={constants.buttonTitles.defects}
                 />
               </View>
-              <IonIcon.Button
-                size={64}
-                {...iconProps}
-                name="ios-add-circle"
-                color={colors.border}
-                onPress={() => alert('hi')}
-              />
-              <Text style={styles.previewText}>{constants.hints.addPhoto}</Text>
+              {!(photos.length + defects.length) ? (
+                <Fragment>
+                  <IonIcon.Button
+                    size={64}
+                    {...iconProps}
+                    name="ios-add-circle"
+                    color={colors.border}
+                    onPress={() => alert('hi')}
+                  />
+                  <Text style={styles.previewText}>{constants.hints.addPhoto}</Text>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <Swiper style={styles.wrapper} showsPagination={false} onIndexChanged={this.handleSwipePreview}>
+                    {(showPhotos ? photos : defects).map((photo, index) => (
+                      <Image
+                        key={photo.uri}
+                        style={styles.photo}
+                        source={{ uri: (showPhotos ? photos : defects)[index].uri }}
+                      />
+                    ))}
+                  </Swiper>
+                  <View style={styles.previewInfo}>
+                    <InventoryIcon
+                      size={16}
+                      name="photo"
+                      {...iconProps}
+                      color={colors.black}
+                      onPress={() => alert('hi')}
+                    />
+                    <Text style={styles.previewInfoText}>
+                      {activePreviewIndex + 1}/{showPhotos ? photos.length : defects.length}
+                    </Text>
+                  </View>
+                </Fragment>
+              )}
             </View>
             <View style={styles.formContainer}>
               <View style={styles.formName}>
