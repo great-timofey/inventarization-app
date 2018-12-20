@@ -307,8 +307,8 @@ class ItemsScene extends PureComponent<Props, State> {
         {isSearchActive
         && (
         <Search
-          items={constants.items}
           searchValue={searchValue}
+          items={constants.data.assets}
           toggleSearch={this.toggleSearch}
         />
         )}
