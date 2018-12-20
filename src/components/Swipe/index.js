@@ -10,13 +10,15 @@ import IconButton from '~/components/IconButton';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import type { Item } from '~/global/types';
+import constants from '~/global/constants';
 
 import styles from './styles';
 import type { Props } from './types';
 
 class SwipebleListItem extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { toggleDelModal, selectItem } = this.props;
+    const { toggleDelModal, selectItem, currentUser } = this.props;
+    const disableLeftSwipe = currentUser === constants.users.observer;
     const swipeoutBtns = [
       {
         component: (
@@ -34,7 +36,7 @@ class SwipebleListItem extends PureComponent<Props, {}> {
           <IconButton
             size={50}
             iconName="ios-close"
-            onPress={() => toggleDelModal()}
+            onPress={toggleDelModal}
             iconColor={colors.white}
             customIconStyle={{ top: normalize(3) }}
             customContStyle={styles.rightSwipeButton}
@@ -46,6 +48,7 @@ class SwipebleListItem extends PureComponent<Props, {}> {
       <Swipeout
         autoClose
         right={swipeoutBtns}
+        disabled={disableLeftSwipe}
         close={item.id !== activeRowId}
         onOpen={(sectionID, rowId, direction: string) => (
           direction !== undefined ? selectItem(item.id) : null

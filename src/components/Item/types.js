@@ -3,9 +3,10 @@ import type { Item } from '~/global/types';
 
 export type Props = {
   item: Item,
+  currentUser: string,
   toggleDelModal?: () => void,
-  selectItem?: (x: number | null | string) => void,
   currentSelectItem: number | string | null,
+  selectItem?: (x: number | null | string) => void,
 }
 
 export type State ={

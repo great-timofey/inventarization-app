@@ -244,11 +244,19 @@ const data = {
   ],
 };
 
+const users = {
+  admin: 'admin',
+  manager: 'manager',
+  observer: 'observer',
+  employee: 'employee',
+};
+
 export default {
   data,
   sort,
   text,
   masks,
+  users,
   hints,
   errors,
   regExp,

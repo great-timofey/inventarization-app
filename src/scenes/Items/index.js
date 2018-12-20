@@ -241,7 +241,7 @@ class ItemsScene extends PureComponent<Props, State> {
         return 0;
       })
       : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
-
+    const currentUser = constants.users.observer;
 
     return (
       <Fragment>
@@ -279,6 +279,7 @@ class ItemsScene extends PureComponent<Props, State> {
             {isListViewStyle ? (
               <SwipebleListItem
                 data={sortData}
+                currentUser={currentUser}
                 selectItem={this.selectItem}
                 toggleDelModal={this.toggleDelModalVisible}
                 extraData={{ currentSelectItem, isSortByName }}
@@ -290,6 +291,7 @@ class ItemsScene extends PureComponent<Props, State> {
                 renderItem={({ item }) => (
                   <Item
                     item={item}
+                    currentUser={currentUser}
                     selectItem={this.selectItem}
                     currentSelectItem={currentSelectItem}
                     toggleDelModal={this.toggleDelModalVisible}
