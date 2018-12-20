@@ -241,7 +241,7 @@ class ItemsScene extends PureComponent<Props, State> {
         return 0;
       })
       : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
-    const currentUser = constants.users.observer;
+    const currentUser = constants.users.admin;
 
     return (
       <Fragment>
