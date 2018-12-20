@@ -6,6 +6,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
+import constants from '~/global/constants';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -25,7 +26,7 @@ class Item extends PureComponent<Props, State> {
           size={20}
           iconColor={colors.white}
           iconName="ios-trash"
-          onPress={() => toggleDelModal()}
+          onPress={toggleDelModal}
           customContStyle={[styles.menu, { backgroundColor: colors.red }]}
         />
         <IconButton
@@ -40,22 +41,28 @@ class Item extends PureComponent<Props, State> {
 
 
   render() {
-    const { currentSelectItem, selectItem, id } = this.props;
-    const isMenuOpen = currentSelectItem === id;
+    const {
+      item,
+      selectItem,
+      currentUser,
+      currentSelectItem,
+    } = this.props;
+    const isMenuOpen = currentSelectItem === item.id;
+    const showMenuButton = currentUser !== constants.users.observer;
 
     return (
       <View style={styles.container}>
         {isMenuOpen && this.menu()}
-        {!isMenuOpen && (
-        <TouchableOpacity onPress={() => selectItem(id)} style={styles.menuButton}>
+        {!isMenuOpen && showMenuButton && (
+        <TouchableOpacity onPress={() => selectItem(item.id)} style={styles.menuButton}>
           <View style={styles.menuButtonDot} />
           <View style={styles.menuButtonDot} />
           <View style={styles.menuButtonDot} />
         </TouchableOpacity>
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
-        <Text style={styles.title}>MacBook Pro 13 Late</Text>
-        <Text style={styles.price}>110 000 ₽</Text>
+        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.price}>{`${item.purchasePrice} ₽`}</Text>
       </View>
     );
   }

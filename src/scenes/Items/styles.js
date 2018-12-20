@@ -35,7 +35,7 @@ export default StyleSheet.create({
   },
   horizontalFlatList: {
     alignSelf: 'center',
-    marginLeft: normalize(40),
+    paddingLeft: normalize(40),
   },
   tabContainer: {
     borderRadius: 22,
