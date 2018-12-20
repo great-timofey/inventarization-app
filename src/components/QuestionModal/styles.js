@@ -11,11 +11,11 @@ export default StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
   container: {
+    borderRadius: 15,
     width: normalize(315),
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    minHeight: normalize(163),
+    minHeight: normalize(223),
     backgroundColor: colors.white,
+    justifyContent: 'space-between',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -49,7 +49,6 @@ export default StyleSheet.create({
     fontSize: normalize(22),
     marginTop: normalize(45),
     lineHeight: normalize(26),
-    marginBottom: normalize(20),
     fontFamily: fonts.proDisplay.light,
     color: colors.header.createCompany,
   },

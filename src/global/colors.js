@@ -13,6 +13,7 @@ export default {
   lightGray: '#727272',
   buttonBlue: '#35CEF1',
   buttonGray: '#DAE4E6',
+  placeholder: '#C1C1C1',
   buttonGreen: '#1CD25A',
   invalidBorder: '#D54A0F',
   buttonInvitee: '#67B8F3',

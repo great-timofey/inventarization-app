@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
 
 import Logo from '~/components/Logo';
-import Button from '~/components/Button/index';
+import Button from '~/components/Button';
 import HeaderBackbutton from '~/components/HeaderBackButton';
 
 import Styles from '~/global/styles';
