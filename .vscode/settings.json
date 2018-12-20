@@ -11,6 +11,5 @@
   "prettier.eslintIntegration": true,
   "path-intellisense.mappings": {
     "~": "${workspaceRoot}/src"
-  },
-  "flow.runOnEdit": true
+  }
 }
