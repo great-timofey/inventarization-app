@@ -233,7 +233,7 @@ class ItemsScene extends PureComponent<Props, State> {
       isDeleteModalVisible,
     } = this.state;
     const { navigation } = this.props;
-    const isEmptyList = !true;
+    const isEmptyList = true;
     const sortData = isSortByName
       ? constants.data.assets.sort((a, b) => {
         if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
@@ -257,7 +257,9 @@ class ItemsScene extends PureComponent<Props, State> {
               isGreen
               customStyle={styles.button}
               title={constants.buttonTitles.addItem}
-              onPress={() => navigation.navigate(SCENE_NAMES.QRScanSceneName)}
+              onPress={currentUser !== constants.users.observer
+                ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+                : () => {}}
             />
           </View>
         ) : (
