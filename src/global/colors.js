@@ -27,6 +27,7 @@ export default {
     gray: '#BDBDBD',
     blue: '#42BCF8',
     bigGray: '#747474',
+    darkGrey: '#B1B1B1',
     inputTitle: '#616161',
     placeholder: '#3F3F3F',
     questionGray: '#8A8A8A',
@@ -34,7 +35,6 @@ export default {
   },
   button: {
     close: '#3D3D3D',
-
   },
   header: {
     createCompany: '#414B6A',
@@ -43,7 +43,7 @@ export default {
   },
   input: {
     whiteBG: '#FBFBFB',
-    whiteTitle: '#B9B9B9',
+    whiteTitle: '#939393',
   },
   border: '#E4E4E4',
   catButton: [
@@ -64,4 +64,5 @@ export default {
     ['#ED94D4', '#FB5788'],
     ['#75ACFF', '#93FEB1'],
   ],
+  itemFormHeaders: [['#645AFF', '#A573FF'], ['#2DC9EB', '#14D2B8'], ['#FF8298', '#FFA073']],
 };

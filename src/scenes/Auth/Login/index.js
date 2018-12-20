@@ -17,7 +17,7 @@ import Logo from '~/components/Logo';
 import Input from '~/components/Input';
 import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
-import ScrollViewContainer from '~/components/KeyboardAwareScrollView';
+import ScrollViewContainer from '~/components/ScrollViewContainer';
 
 import Styles from '~/global/styles';
 import colors from '~/global/colors';

@@ -1,10 +1,10 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import { Text, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
+import { Text, CameraRoll, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
-import { StackActions, NavigationActions } from 'react-navigation';
+import { StackActions } from 'react-navigation';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
@@ -41,11 +41,16 @@ class AddItemFinish extends PureComponent<Props, State> {
     ),
   });
 
-  handleGoToItemForm = () => console.log('navigate to item form');
+  handleGoToItemForm = async () => {
+    const { navigation } = this.props;
+    const photos = navigation.getParam('photos', []);
+    const defectPhotos = navigation.getParam('defectPhotos', []);
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos });
+  };
 
   handleAddMoreItems = () => {
     const { navigation } = this.props;
-    navigation.navigate(SCENE_NAMES.QRScanSceneName);
+    navigation.dispatch(StackActions.popToTop());
   };
 
   camera: ?RNCamera;

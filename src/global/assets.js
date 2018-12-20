@@ -8,6 +8,7 @@ const chair = require('~/assets/chair.png');
 const camera = require('~/assets/camera.png');
 const people = require('~/assets/people.png');
 const appName = require('~/assets/appName.png');
+const noPhoto = require('~/assets/no-photo.png');
 const flashOn = require('~/assets/flash-on.png');
 const torchOn = require('~/assets/torch-on.png');
 const grayLogo = require('~/assets/grayLogo.png');
@@ -35,6 +36,7 @@ export default {
   flashOff,
   appName,
   torchOn,
+  noPhoto,
   torchOff,
   grayLogo,
   location,

@@ -16,11 +16,12 @@ import PeopleScene from '~/scenes/People';
 import ProfileScene from '~/scenes/Profile';
 import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
+import ItemForm from '~/scenes/AddItem/ItemForm';
 import CreateCompany from '~/scenes/CreateCompany';
-import AddItemPhotos from '~/scenes/AddItemPhotos';
-import AddItemFinish from '~/scenes/AddItemFinish';
-import AddItemDefects from '~/scenes/AddItemDefects';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
+import AddItemPhotos from '~/scenes/AddItem/AddItemPhotos';
+import AddItemFinish from '~/scenes/AddItem/AddItemFinish';
+import AddItemDefects from '~/scenes/AddItem/AddItemDefects';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 
@@ -61,6 +62,7 @@ const addItemStack = generateStack({
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
   [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
   [SCENE_NAMES.AddItemDefectsSceneName]: AddItemDefects,
+  [SCENE_NAMES.ItemFormSceneName]: ItemForm,
 });
 
 const rootTabs = {

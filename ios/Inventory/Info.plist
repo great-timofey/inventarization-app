@@ -39,6 +39,8 @@
 			</dict>
 		</dict>
 	</dict>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Приложение хочет добавлять фотографии в вашу библиотеку</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Приложение хочет использовать AppleMusic</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>

@@ -12,22 +12,24 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+//  $FlowFixMe
+import Permissions from 'react-native-permissions';
 import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
-import { all, assoc, remove, concat, values, equals } from 'ramda';
-// $FlowFixMe
-import Permissions from 'react-native-permissions';
+import { all, equals, values, assoc, remove, concat } from 'ramda';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { isSmallDevice } from '~/global/utils';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
+const necessaryPermissions = ['location', 'camera'];
+
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
-    <Text style={styles.skipButtonText}>{constants.buttonTitles.ready}</Text>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.next}</Text>
   </TouchableOpacity>
 );
 
@@ -37,17 +39,18 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-class AddItemDefects extends PureComponent<Props, State> {
+class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photosCount = navigation.getParam('photosCount', 0);
-    const defectsCount = navigation.state && navigation.state.params && navigation.state.params.defectsCount;
+    const photos = navigation.state && navigation.state.params && navigation.state.params.photos;
     return {
       headerStyle: styles.header,
-      title: constants.headers.defects,
+      title: constants.headers.newItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
       headerRight: (
-        <HeaderSkipButton onPress={() => photosCount + defectsCount > 0 ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName) : Alert.alert('Требуется фото предмета или его дефектов для продолежния')} />
+        <HeaderSkipButton
+          onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photos })}
+        />
       ),
     };
   };
@@ -64,11 +67,11 @@ class AddItemDefects extends PureComponent<Props, State> {
   componentDidMount() {
     const { navigation } = this.props;
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ defectsCount: 0 });
+    navigation.setParams({ photos: [] });
   }
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(['location', 'camera']);
+    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -82,11 +85,11 @@ class AddItemDefects extends PureComponent<Props, State> {
       await Permissions.request('location');
     }
 
-    const newPermissions = await Permissions.checkMultiple(['location', 'camera']);
+    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
-    };
+    }
 
     return null;
   };
@@ -106,7 +109,24 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 
-      this.setState(state => assoc('photos', concat(state.photos, [{ base64, uri }]), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
+      let location = new Promise((res, rej) => {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords: { latitude: lat, longitude: lon } }) => {
+            location = { lat, lon };
+            res();
+          },
+          error => rej(error.message),
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+        );
+      });
+
+      await location;
+      const takenPhoto = { base64, uri, location };
+
+      this.setState(
+        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        () => navigation.setParams({ photos: this.state.photos }),
+      );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
     }
@@ -126,7 +146,10 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(state => assoc('photos', remove(index, 1, state.photos), state), () => navigation.setParams({ defectsCount: this.state.photos.length }));
+    this.setState(
+      state => assoc('photos', remove(index, 1, state.photos), state),
+      () => navigation.setParams({ photos: this.state.photos }),
+    );
   };
 
   renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
@@ -165,7 +188,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       <SafeAreaView style={styles.container}>
         <Fragment>
           <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
+            <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
           </View>
           {isLoading && (
             <View style={styles.hint}>
@@ -207,4 +230,4 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemDefects;
+export default AddItemPhotos;

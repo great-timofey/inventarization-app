@@ -63,13 +63,16 @@ const buttonTitles = {
   ready: 'Готово',
   cancel: 'Отмена',
   update: 'Обновить',
+  defects: 'Дефекты',
   skip: 'Пропустить',
+  photos: 'Фотографии',
   create: 'Да, создать',
   reg: 'Зарегистрироваться',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
-  addItem: 'Добавить предмет',
   chooseLogo: 'Выбери \n лого',
+  saveItem: 'Сохранить предмет',
+  addItem: 'Добавить предмет',
   forgotPassword: 'Забыли пароль?',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
@@ -102,7 +105,8 @@ const modalQuestion = {
   },
   orgDel: {
     title: 'Удаление организации',
-    question: 'Все данные организации будут \n находиться в архиве в течение \n 30 дней, после чего будут \n автоматически удалены.',
+    question:
+      'Все данные организации будут \n находиться в архиве в течение \n 30 дней, после чего будут \n автоматически удалены.',
     button: 'Удалить',
   },
   orgRecovery: {
@@ -162,6 +166,11 @@ const headers = {
   qrscanner: 'Сканер',
   itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
+  pickDate: 'Выберите дату',
+  price: 'Покупка и стоимость',
+  mainInfo: 'Основная информация',
+  addingItem: 'Добавление предмета',
+  storage: 'Принадлежность и хранение',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -174,9 +183,39 @@ const text = {
 };
 
 const hints = {
+  name: 'Название',
+  addPhoto: 'Добавить фото',
+  noPhotos: 'Нет фотографий',
+  enterName: 'Введите название',
   makePhotos: 'Сделайте фотографии вашего предмета',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
+
+const itemForm = {
+  manufacturer: 'Производитель',
+  model: 'Модeль',
+  description: 'Описание',
+  qrcode: 'QR-код',
+  purchaseDate: 'Дата покупки',
+  purchasePrice: 'Цена покупки',
+  marketPrice: 'Рыночная цена',
+  estimateDate: 'Дата оценки',
+  warrantyPeriod: 'Гарантийный срок',
+  company: 'Организация',
+  location: 'Место',
+  coordinates: 'Координаты',
+  responsible: 'Ответственный',
+  onBalance: 'На балансе',
+  category: 'Категория',
+};
+
+const itemFormFields = Object.keys(itemForm).map(
+  objKey => ({ key: objKey, description: itemForm[objKey] }),
+);
+
+const formats = {
+  newItemDates: 'DD.MM.YYYY',
+}
 
 const category = [
   'Новое',
@@ -261,11 +300,14 @@ export default {
   errors,
   regExp,
   headers,
+  formats,
+  itemForm,
   category,
   inputTypes,
   buttonTitles,
   placeHolders,
   modalQuestion,
+  itemFormFields,
   forgotPassText,
   setNewPassword,
   uploadCreateCompanyImages,
