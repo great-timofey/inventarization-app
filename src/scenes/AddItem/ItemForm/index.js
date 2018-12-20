@@ -197,7 +197,11 @@ class ItemForm extends PureComponent<Props, State> {
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={75} behavior="padding">
+        <ScrollViewContainer
+          bottomOffset={0}
+          extraHeight={215}
+          contentContainerStyle={{ flex: 1 }}
+        >
           <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
             <View style={styles.preview}>
               <View style={styles.previewModeButtons}>
@@ -267,7 +271,7 @@ class ItemForm extends PureComponent<Props, State> {
               confirmTextStyle={styles.dateTimePickerConfirmText}
             />
           </ScrollView>
-        </KeyboardAvoidingView>
+        </ScrollViewContainer>
       </SafeAreaView>
     );
   }
