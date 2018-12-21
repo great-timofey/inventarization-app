@@ -44,15 +44,21 @@ class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const from = navigation.state && navigation.state.params && navigation.state.params.from;
     const photos = navigation.state && navigation.state.params && navigation.state.params.photos;
-    const photosToPass = from ? ({ additionalPhotos: photos }) : ({ photos });
+    const photosToPass = from ? { additionalPhotos: photos } : { photos };
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />,
+      headerLeft: (
+        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
+      ),
       headerRight: (
         <HeaderSkipButton
-          onPress={() => navigation.navigate(from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName, photosToPass)}
+          onPress={() => navigation.navigate(
+            from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
+            photosToPass,
+          )
+          }
         />
       ),
     };

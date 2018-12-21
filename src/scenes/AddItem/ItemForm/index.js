@@ -97,7 +97,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const NoItems = ({ additional, onPress } : { additional? : boolean, onPress: Function }) => (
+const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Function }) => (
   <Fragment>
     {additional ? (
       <IonIcon.Button
@@ -169,14 +169,26 @@ class ItemForm extends PureComponent<Props, State> {
 
   componentDidUpdate(prevProps) {
     const { navigation } = this.props;
-    const { activePreviewIndex, showPhotos, photos, defects } = this.state;
-    if (prevProps.navigation.state.params.additionalPhotos !== navigation.state.params.additionalPhotos) {
+    // const { activePreviewIndex, showPhotos, photos, defects } = this.state;
+    if (
+      prevProps.navigation.state.params.additionalPhotos
+      !== navigation.state.params.additionalPhotos
+    ) {
       // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
-      this.setState(({ photos }) => ({ photos: photos.concat(navigation.state.params.additionalPhotos), activePreviewIndex: 0 }));
+      this.setState(({ photos }) => ({
+        photos: photos.concat(navigation.state.params.additionalPhotos),
+        activePreviewIndex: 0,
+      }));
     }
-    if (prevProps.navigation.state.params.additionalDefects !== navigation.state.params.additionalDefects) {
+    if (
+      prevProps.navigation.state.params.additionalDefects
+      !== navigation.state.params.additionalDefects
+    ) {
       // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
-      this.setState(({ defects }) => ({ defects: defects.concat(navigation.state.params.additionalDefects), activePreviewIndex: 0 }));
+      this.setState(({ defects }) => ({
+        defects: defects.concat(navigation.state.params.additionalDefects),
+        activePreviewIndex: 0,
+      }));
     }
   }
 
@@ -212,37 +224,36 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (
-    base64 === '' ? (
-      <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
-        <IonIcon
-          size={26}
-          {...iconProps}
-          name="ios-add-circle"
-          color={colors.border}
-        />
+  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (base64 === '' ? (
+    <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+      <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
+    </TouchableOpacity>
+  ) : (
+    <View style={styles.photoContainer}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+        onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+      >
+        <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-    ) : (
-      <View style={styles.photoContainer}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-          onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
-        >
-          <Image source={assets.deletePhoto} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.photoImageContainer} onPress={() => this.handleSetIndexPreview(index)}>
-          <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
-        </TouchableOpacity>
-      </View>
-    )
-  );
+      <TouchableOpacity
+        style={styles.photoImageContainer}
+        onPress={() => this.handleSetIndexPreview(index)}
+      >
+        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+      </TouchableOpacity>
+    </View>
+  ));
 
   handleAddPhoto = () => {
     const { navigation } = this.props;
     const { showPhotos } = this.state;
-    navigation.push(showPhotos ? SCENE_NAMES.AddItemPhotosSceneName : SCENE_NAMES.AddItemDefectsSceneName, { from: SCENE_NAMES.AddItemPhotosSceneName });
-  }
+    navigation.push(
+      showPhotos ? SCENE_NAMES.AddItemPhotosSceneName : SCENE_NAMES.AddItemDefectsSceneName,
+      { from: SCENE_NAMES.AddItemPhotosSceneName },
+    );
+  };
 
   handleRemovePreviewPhotoBarItem = async (index: number) => {
     const { navigation } = this.props;
@@ -262,12 +273,10 @@ class ItemForm extends PureComponent<Props, State> {
     );
   };
 
-  handleToggleDateTimePicker = (key: string) => this.setState(
-    ({ isDateTimePickerOpened }) => ({
-      isDateTimePickerOpened: !isDateTimePickerOpened,
-      currentlyEditableDate: key,
-    }),
-  );
+  handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
+    isDateTimePickerOpened: !isDateTimePickerOpened,
+    currentlyEditableDate: key,
+  }));
 
   handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
 
@@ -286,7 +295,7 @@ class ItemForm extends PureComponent<Props, State> {
   handleSetIndexPreview = (newIndex: number) => {
     this.handleSwipePreview(newIndex);
     this.swiper.scrollBy(newIndex - this.state.activePreviewIndex, false);
-  }
+  };
 
   showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
 
@@ -313,11 +322,7 @@ class ItemForm extends PureComponent<Props, State> {
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollViewContainer
-          bottomOffset={0}
-          extraHeight={215}
-          style={styles.container}
-        >
+        <ScrollViewContainer bottomOffset={0} extraHeight={215} style={styles.container}>
           <View style={styles.preview}>
             <View style={styles.previewModeButtons}>
               <PreviewModeButton
@@ -332,9 +337,11 @@ class ItemForm extends PureComponent<Props, State> {
               />
             </View>
             <Fragment>
-              {currentTypeIsEmpty ? <NoItems additional onPress={this.handleAddPhoto} /> : (
+              {currentTypeIsEmpty ? (
+                <NoItems additional onPress={this.handleAddPhoto} />
+              ) : (
                 <Swiper
-                  ref={ref => {
+                  ref={(ref) => {
                     this.swiper = ref;
                   }}
                   loop={false}
@@ -351,12 +358,7 @@ class ItemForm extends PureComponent<Props, State> {
                 </Swiper>
               )}
               <View style={styles.previewInfo}>
-                <InventoryIcon
-                  size={16}
-                  name="photo"
-                  {...iconProps}
-                  color={colors.black}
-                />
+                <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
                 <Text style={styles.previewInfoText}>
                   {currentTypeIsEmpty
                     ? '0/0'
@@ -368,11 +370,15 @@ class ItemForm extends PureComponent<Props, State> {
           <FlatList
             horizontal
             style={styles.photosOuter}
-            data={showPhotos ? photos.concat({base64: ''}) : defects.concat({ base64:'' })}
+            data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
             showsHorizontalScrollIndicator={false}
             renderItem={this.renderPreviewPhotoBarItem}
             keyExtractor={(_, index) => index.toString()}
-            contentContainerStyle={[styles.photosInner, styles.previewPhotoBar, isEmpty(showPhotos ? photos : defects) && styles.hide]}
+            contentContainerStyle={[
+              styles.photosInner,
+              styles.previewPhotoBar,
+              isEmpty(showPhotos ? photos : defects) && styles.hide,
+            ]}
           />
           <View style={styles.formContainer}>
             <View style={styles.formName}>

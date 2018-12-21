@@ -26,7 +26,7 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
-const necessaryPermissions = ['location', 'camera']
+const necessaryPermissions = ['location', 'camera'];
 
 const HeaderFinishButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
@@ -45,23 +45,25 @@ class AddItemDefects extends PureComponent<Props, State> {
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
     const from = navigation.state && navigation.state.params && navigation.state.params.from;
-    const photosToPass = from ? ({ additionalDefects: defectPhotos }) : ({ photos, defectPhotos });
+    const photosToPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos };
     return {
       headerStyle: styles.header,
       title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />,
+      headerLeft: (
+        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
+      ),
       headerRight: (
-        <HeaderFinishButton onPress={() => {
-          if (from) {
-            navigation.navigate(SCENE_NAMES.ItemFormSceneName, photosToPass)
-          } else {
-            photos.length + defectPhotos.length
-              ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass)
-              : Alert.alert('Требуется фото предмета или его дефектов для продолежния');
-          }
-        }
-          }
+        <HeaderFinishButton
+          onPress={() => {
+            if (from) {
+              navigation.navigate(SCENE_NAMES.ItemFormSceneName, photosToPass);
+            } else {
+              photos.length + defectPhotos.length
+                ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass)
+                : Alert.alert('Требуется фото предмета или его дефектов для продолежния');
+            }
+          }}
         />
       ),
     };
@@ -141,8 +143,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       const takenPhoto = { base64, uri, location };
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state), 
-        () => navigation.setParams({ defectPhotos: this.state.photos })
+        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
@@ -164,8 +166,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     }
 
     this.setState(
-      state => assoc('photos', remove(index, 1, state.photos), state), 
-      () => navigation.setParams({ defectPhotos: this.state.photos })
+      state => assoc('photos', remove(index, 1, state.photos), state),
+      () => navigation.setParams({ defectPhotos: this.state.photos }),
     );
   };
 
