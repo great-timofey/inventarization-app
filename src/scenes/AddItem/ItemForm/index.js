@@ -80,8 +80,6 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 const NoItems = ({ additional } : { additional? : boolean }) => (
   <Fragment>
     {additional ? (
-      <Image source={assets.noPhoto} style={{ width: 100, height: 93 }} />
-    ) : (
       <IonIcon.Button
         size={64}
         {...iconProps}
@@ -89,9 +87,11 @@ const NoItems = ({ additional } : { additional? : boolean }) => (
         color={colors.border}
         onPress={() => alert('hi')}
       />
+    ) : (
+      <Image source={assets.noPhoto} style={styles.noPhoto} />
     )
    }
-    <Text style={styles.previewText}>{additional ? constants.hints.noPhotos : constants.hints.addPhoto}</Text>
+    <Text style={styles.previewText}>{additional ? constants.hints.addPhoto : constants.hints.noPhotos}</Text>
   </Fragment>
 );
 
@@ -216,7 +216,7 @@ class ItemForm extends PureComponent<Props, State> {
             </View>
             <Fragment>
               {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
-              {currentTypeIsEmpty ? <NoItems /> : (
+              {currentTypeIsEmpty ? <NoItems additional /> : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
