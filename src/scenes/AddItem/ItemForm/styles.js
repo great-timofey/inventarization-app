@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
-import { normalize } from '~/global/utils';
+import { normalize, isSmallDevice } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
@@ -113,6 +113,15 @@ export default StyleSheet.create({
   photosInner: {
     alignItems: 'center',
   },
+  addPhotoBarButton: {
+    borderRadius: 15,
+    alignItems: 'center',
+    width: normalize(76),
+    height: normalize(76),
+    justifyContent: 'center',
+    marginLeft: normalize(10),
+    backgroundColor: colors.buttonChooseLogo,
+  },
   removePhotoIcon: {
     zIndex: 1,
     top: normalize(-3),
@@ -220,9 +229,9 @@ export default StyleSheet.create({
     backgroundColor: colors.gray,
   },
   customCancelDateTimePickerButton: {
-    height: normalize(58),
+    height: isSmallDevice ? normalize(68) : normalize(58),
     justifyContent: 'center',
-    borderRadius: normalize(7),
+    borderRadius: isSmallDevice ? normalize(10) : normalize(7),
     backgroundColor: colors.cancel,
   },
   customCancelDateTimePickerText: {

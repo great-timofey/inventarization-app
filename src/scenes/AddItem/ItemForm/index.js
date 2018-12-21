@@ -23,6 +23,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
+import { isSmallDevice } from '~/global/utils';
 import InventoryIcon from '~/assets/InventoryIcon';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
@@ -30,7 +31,7 @@ import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State } from './types';
+import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
 const dateFields = [
@@ -96,7 +97,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const NoItems = ({ additional }: { additional?: boolean }) => (
+const NoItems = ({ additional, onPress } : { additional? : boolean, onPress: Function }) => (
   <Fragment>
     {additional ? (
       <IonIcon.Button
@@ -104,7 +105,7 @@ const NoItems = ({ additional }: { additional?: boolean }) => (
         {...iconProps}
         name="ios-add-circle"
         color={colors.border}
-        onPress={() => alert('hi')}
+        onPress={onPress}
       />
     ) : (
       <Image source={assets.noPhoto} style={styles.noPhoto} />
@@ -164,6 +165,16 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener.remove();
   }
 
+  componentDidUpdate(prevProps) {
+    const { navigation } = this.props;
+    if (prevProps.navigation.state.params.additionalPhotos !== navigation.state.params.additionalPhotos) {
+      this.setState(({ photos }) => ({ photos: photos.concat(navigation.state.params.additionalPhotos) }));
+    }
+    if (prevProps.navigation.state.params.additionalDefects !== navigation.state.params.additionalDefects) {
+      this.setState(({ defects }) => ({ defects: defects.concat(navigation.state.params.additionalDefects) }));
+    }
+  }
+
   renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
     let callback;
     const isLocationField = description === constants.itemForm.location;
@@ -197,17 +208,34 @@ class ItemForm extends PureComponent<Props, State> {
   );
 
   renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (
-    <View style={styles.photoContainer}>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-        onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
-      >
-        <Image source={assets.deletePhoto} />
+    base64 === '' ? (
+      <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+        <IonIcon
+          size={26}
+          {...iconProps}
+          name="ios-add-circle"
+          color={colors.border}
+        />
       </TouchableOpacity>
-      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
-    </View>
+    ) : (
+      <View style={styles.photoContainer}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+          onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+        >
+          <Image source={assets.deletePhoto} />
+        </TouchableOpacity>
+        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+      </View>
+    )
   );
+
+  handleAddPhoto = () => {
+    const { navigation } = this.props;
+    const { showPhotos } = this.state;
+    navigation.push(showPhotos ? SCENE_NAMES.AddItemPhotosSceneName : SCENE_NAMES.AddItemDefectsSceneName, { from: SCENE_NAMES.AddItemPhotosSceneName });
+  }
 
   handleRemovePreviewPhotoBarItem = async (index: number) => {
     const { navigation } = this.props;
@@ -290,7 +318,7 @@ class ItemForm extends PureComponent<Props, State> {
               />
             </View>
             <Fragment>
-              {currentTypeIsEmpty ? <NoItems additional /> : (
+              {currentTypeIsEmpty ? <NoItems additional onPress={this.handleAddPhoto} /> : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
@@ -307,7 +335,6 @@ class ItemForm extends PureComponent<Props, State> {
                   name="photo"
                   {...iconProps}
                   color={colors.black}
-                  onPress={() => alert('hi')}
                 />
                 <Text style={styles.previewInfoText}>
                   {currentTypeIsEmpty
@@ -320,7 +347,7 @@ class ItemForm extends PureComponent<Props, State> {
           <FlatList
             horizontal
             style={styles.photosOuter}
-            data={showPhotos ? photos : defects}
+            data={showPhotos ? photos.concat({base64: ''}) : defects.concat({ base64:'' })}
             showsHorizontalScrollIndicator={false}
             renderItem={this.renderPreviewPhotoBarItem}
             keyExtractor={(_, index) => index.toString()}
