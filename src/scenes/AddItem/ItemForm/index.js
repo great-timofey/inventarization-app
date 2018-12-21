@@ -23,14 +23,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
-import { isSmallDevice } from '~/global/utils';
-import InventoryIcon from '~/assets/InventoryIcon';
-import ScrollViewContainer from '~/components/ScrollViewContainer';
+import { isSmallDevice, isValid } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import InventoryIcon from '~/assets/InventoryIcon';
+import ScrollViewContainer from '~/components/ScrollViewContainer';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -42,8 +42,13 @@ const dateFields = [
 
 const modalFields = [
   constants.itemForm.location,
-  constants.itemForm.responsible,
   constants.itemForm.category,
+  constants.itemForm.responsible,
+];
+
+const nonMutableFields = [
+  constants.itemForm.qrcode,
+  constants.itemForm.company,
 ];
 
 const iconProps = {
@@ -64,9 +69,9 @@ const CustomCancelDateTimePickerButton = ({ onCancel }: { onCancel: Function }) 
 );
 
 const PreviewModeButton = ({
-  isActive,
   title,
   onPress,
+  isActive,
 }: {
   isActive: boolean,
   title: string,
@@ -127,16 +132,19 @@ class ItemForm extends PureComponent<Props, State> {
 
   state = {
     sections: [
-      { title: constants.headers.mainInfo, data: constants.itemFormFields.slice(0, 4), index: 0 },
-      { title: constants.headers.price, data: constants.itemFormFields.slice(4, 9), index: 1 },
-      { title: constants.headers.storage, data: constants.itemFormFields.slice(9), index: 2 },
+      { title: constants.headers.mainInfo, data: constants.itemFormFields.slice(0, 5), index: 0 },
+      { title: constants.headers.price, data: constants.itemFormFields.slice(5, 10), index: 1 },
+      { title: constants.headers.storage, data: constants.itemFormFields.slice(10), index: 2 },
     ],
+    name: '',
     photos: [],
     defects: [],
+    warnings: [],
     location: null,
     category: null,
     coordinates: '',
     showPhotos: true,
+    inventoryCode: '',
     responsible: null,
     purchaseDate: null,
     estimateDate: null,
@@ -192,12 +200,44 @@ class ItemForm extends PureComponent<Props, State> {
     }
   }
 
+  checkForErrors = () => {
+    const { warnings } = this.state;
+    if (warnings.length) return true;
+    return false;
+  };
+
+  checkValue = () => {
+    const { name, inventoryCode } = this.state;
+    const warnings = [];
+
+    if (!name.trim()) {
+      warnings.push('name');
+    }
+
+    if (!inventoryCode.trim()) {
+      warnings.push('inventoryCode');
+    }
+
+    /*
+
+    if (...somethingFromBackend) {
+      warnings.push('inventoryCode');
+    }
+
+    */
+
+    this.setState({ warnings });
+  };
+
   renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
+    const { warnings } = this.state;
     let callback;
     const isLocationField = description === constants.itemForm.location;
     const isCoordinatesField = description === constants.itemForm.coordinates;
+    const isDescriptionField = description === constants.itemForm.description;
     if (includes(description, modalFields)) callback = this.handleToggleModal;
     if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
+    if (includes(description, nonMutableFields)) callback = () => {};
 
     return (
       <Input
@@ -207,7 +247,10 @@ class ItemForm extends PureComponent<Props, State> {
         value={this.state[key]}
         containerCallback={callback}
         disabled={isCoordinatesField}
-        type={{ label: description }}
+        type={{ label: description, warning: constants.itemForm. }}
+        isMultiline={isDescriptionField}
+        isWarning={includes(key, warnings)}
+        maxLength={isDescriptionField ? 250 : 50}
         placeholder={isLocationField ? constants.placeHolders.place : null}
       />
     );
@@ -313,6 +356,7 @@ class ItemForm extends PureComponent<Props, State> {
     const {
       photos,
       defects,
+      warnings,
       sections,
       showPhotos,
       isModalOpened,
@@ -383,7 +427,11 @@ class ItemForm extends PureComponent<Props, State> {
           <View style={styles.formContainer}>
             <View style={styles.formName}>
               <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-              <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
+              <TextInput
+                style={styles.formNameInput}
+                isWarning={includes('name', warnings)}
+                placeholder={constants.hints.enterName}
+              />
             </View>
             <SectionList
               sections={sections}
@@ -392,7 +440,7 @@ class ItemForm extends PureComponent<Props, State> {
               renderSectionHeader={this.renderFormSectionHeader}
             />
           </View>
-          <TouchableOpacity style={styles.saveItem}>
+          <TouchableOpacity style={styles.saveItem} onPress={this.checkValue}>
             <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
           </TouchableOpacity>
           <DateTimePicker

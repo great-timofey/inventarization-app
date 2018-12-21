@@ -1,6 +1,7 @@
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
+  price: /^\d+(.|,){0,2}\d/,
   password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
@@ -159,6 +160,11 @@ const errors = {
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
   },
+  createItem: {
+    name: 'Нельзя сохранить без названия',
+    inventoryCodeEmpty: 'Введите инвентарный номер',
+    inventoryCodeAlreadyInUse: 'Данный инвентарный номер уже существует',
+  },
 };
 
 const headers = {
@@ -193,7 +199,9 @@ const hints = {
 };
 
 const itemForm = {
+  name: 'Название',
   manufacturer: 'Производитель',
+  inventoryCode: 'Инвентарный номер',
   model: 'Модeль',
   description: 'Описание',
   qrcode: 'QR-код',
@@ -210,10 +218,30 @@ const itemForm = {
   category: 'Категория',
 };
 
-const itemFormFields = Object.keys(itemForm).map(objKey => ({
-  key: objKey,
-  description: itemForm[objKey],
-}));
+// const itemFormFields = Object.keys(itemForm).map(objKey => ({
+//   key: objKey,
+//   description: itemForm[objKey],
+// }));
+
+const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
+  const result = {
+    key: objKey,
+    description: itemForm[objKey],
+  };
+
+  if (objKey === 'inventoryCode') {
+    result.warnings = {
+      empty: errors.createItem.inventoryCodeEmpty,
+      inUse: errors.createItem.inventoryCodeAlreadyInUse,
+    };
+  }
+
+  if (objKey === 'name') {
+    result.warning = errors.createItem.name;
+  }
+
+  acc.push(result);
+}, []);
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
