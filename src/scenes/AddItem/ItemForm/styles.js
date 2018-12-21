@@ -178,15 +178,60 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
-  dateTimePickerCancelText: {
-    color: colors.white,
-    fontSize: normalize(18),
-    fontFamily: fonts.proDisplay.light,
-  },
   dateTimePickerConfirmText: {
     color: colors.black,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.bold,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    borderRadius: 7,
+    height: normalize(315),
+    marginBottom: normalize(15),
+    backgroundColor: colors.white,
+  },
+  modalCancel: {
+    alignItems: 'center',
+    height: normalize(54),
+    justifyContent: 'center',
+    borderRadius: normalize(7),
+    backgroundColor: colors.cancel,
+  },
+  modalCancelText: {
+    color: colors.white,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.regular,
+  },
+  modalItem: {
+    paddingLeft: 20,
+    height: normalize(54),
+    justifyContent: 'center',
+  },
+  modalItemText: {
+    color: colors.black,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.light,
+  },
+  modalSeparator: {
+    height: 1,
+    backgroundColor: colors.gray,
+  },
+  customCancelDateTimePickerButton: {
+    height: normalize(58),
+    justifyContent: 'center',
+    borderRadius: normalize(7),
+    backgroundColor: colors.cancel,
+  },
+  customCancelDateTimePickerText: {
+    padding: 10,
+    textAlign: 'center',
+    color: colors.white,
+    fontSize: normalize(18),
+    backgroundColor: 'transparent',
+    fontFamily: fonts.proDisplay.light,
   },
   hide: {
     display: 'none',
