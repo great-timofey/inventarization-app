@@ -4,21 +4,18 @@ import React, { PureComponent, Fragment } from 'react';
 import {
   Text,
   View,
-  Alert,
   Image,
   FlatList,
   StatusBar,
   TextInput,
-  ScrollView,
   SectionList,
   SafeAreaView,
-  ImageBackground,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 
 import { isEmpty, and, includes } from 'ramda';
 import dayjs from 'dayjs';
+import Modal from 'react-native-modal';
 import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -30,17 +27,21 @@ import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
-import globalStyles from '~/global/styles';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State, PhotosProps } from './types';
+import type { Props, State } from './types';
 import styles from './styles';
 
-const customFields = [
+const dateFields = [
   constants.itemForm.purchaseDate,
   constants.itemForm.estimateDate,
   constants.itemForm.warrantyPeriod,
+];
+
+const modalFields = [
+  constants.itemForm.location,
+  constants.itemForm.responsible,
+  constants.itemForm.category,
 ];
 
 const iconProps = {
@@ -50,14 +51,31 @@ const iconProps = {
   backgroundColor: colors.transparent,
 };
 
-const PreviewModeButton = ({ isActive, title, onPress } : 
-  { isActive: boolean, title: string, onPress: Function }) => (
-    <TouchableOpacity
-      style={isActive ? styles.previewModeButtonActive : styles.previewModeButton}
-      onPress={onPress}
-    >
-      <Text style={isActive ? styles.previewModeTextActive : styles.previewModeText}>{title}</Text>
-    </TouchableOpacity>
+const CustomCancelDateTimePickerButton = ({ onCancel }: { onCancel: Function }) => (
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.customCancelDateTimePickerButton}
+    onPress={onCancel}
+  >
+    <Text style={styles.customCancelDateTimePickerText}>{constants.buttonTitles.cancel}</Text>
+  </TouchableOpacity>
+);
+
+const PreviewModeButton = ({
+  isActive,
+  title,
+  onPress,
+}: {
+  isActive: boolean,
+  title: string,
+  onPress: Function,
+}) => (
+  <TouchableOpacity
+    style={isActive ? styles.previewModeButtonActive : styles.previewModeButton}
+    onPress={onPress}
+  >
+    <Text style={isActive ? styles.previewModeTextActive : styles.previewModeText}>{title}</Text>
+  </TouchableOpacity>
 );
 
 const HeaderTrashButton = ({ onPress }: { onPress: Function }) => (
@@ -77,7 +95,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const NoItems = ({ additional } : { additional? : boolean }) => (
+const NoItems = ({ additional }: { additional?: boolean }) => (
   <Fragment>
     {additional ? (
       <IonIcon.Button
@@ -89,9 +107,10 @@ const NoItems = ({ additional } : { additional? : boolean }) => (
       />
     ) : (
       <Image source={assets.noPhoto} style={styles.noPhoto} />
-    )
-   }
-    <Text style={styles.previewText}>{additional ? constants.hints.addPhoto : constants.hints.noPhotos}</Text>
+    )}
+    <Text style={styles.previewText}>
+      {additional ? constants.hints.addPhoto : constants.hints.noPhotos}
+    </Text>
   </Fragment>
 );
 
@@ -112,10 +131,15 @@ class ItemForm extends PureComponent<Props, State> {
     ],
     photos: [],
     defects: [],
+    location: null,
+    category: null,
+    coordinates: '',
     showPhotos: true,
+    responsible: null,
     purchaseDate: null,
     estimateDate: null,
     warrantyPeriod: null,
+    isModalOpened: false,
     activePreviewIndex: 0,
     currentlyEditableDate: null,
     isDateTimePickerOpened: false,
@@ -130,30 +154,32 @@ class ItemForm extends PureComponent<Props, State> {
     });
     const photos = navigation.getParam('photos', []);
     const defects = navigation.getParam('defectPhotos', []);
-    this.setState({ photos, defects });
+    const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
+    const coordinates = `${firstPhotoForCoords.location.lat}, ${firstPhotoForCoords.location.lon}`;
+    this.setState({ photos, defects, coordinates });
   }
 
   componentWillUnmount() {
     this.navListener.remove();
   }
 
-  renderFormField = ({ item: { key, description } } : { key: string, description: string }) => {
-    let isCustomField = false;
-    const customProps = {};
-
-    if (includes(description, customFields)) {
-      isCustomField = true;
-      customProps.value = this.state[key];
-    }
+  renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
+    let callback;
+    const isLocationField = description === constants.itemForm.location;
+    const isCoordinatesField = description === constants.itemForm.coordinates;
+    if (includes(description, modalFields)) callback = this.handleToggleModal;
+    if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
 
     return (
       <Input
         isWhite
         customKey={key}
-        {...customProps}
         blurOnSubmit={false}
+        value={this.state[key]}
+        containerCallback={callback}
+        disabled={isCoordinatesField}
         type={{ label: description }}
-        containerCallback={isCustomField ? this.handleToggleDateTimePicker : null}
+        placeholder={isLocationField ? constants.placeHolders.place : null}
       />
     );
   };
@@ -169,21 +195,20 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
-  handleToggleDateTimePicker = (key: string) => this.setState(
-    ({ isDateTimePickerOpened }) => ({
-      isDateTimePickerOpened: !isDateTimePickerOpened,
-      currentlyEditableDate: key,
-    }),
-  );
+  handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
+    isDateTimePickerOpened: !isDateTimePickerOpened,
+    currentlyEditableDate: key,
+  }));
 
-  handleChooseDate = (date: Date) => this.setState(
-    ({ currentlyEditableDate }) => ({
-      currentlyEditableDate: null,
-      isDateTimePickerOpened: false,
-      [currentlyEditableDate]:
-        `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(new Date(date)).format(constants.formats.newItemDates)}`,
-    }),
-  );
+  handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
+
+  handleChooseDate = (date: Date) => this.setState(({ currentlyEditableDate }) => ({
+    currentlyEditableDate: null,
+    isDateTimePickerOpened: false,
+    [currentlyEditableDate]: `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(
+      new Date(date),
+    ).format(constants.formats.newItemDates)}`,
+  }));
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
@@ -191,16 +216,28 @@ class ItemForm extends PureComponent<Props, State> {
 
   showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
 
+  renderModalItem = ({ item }) => (
+    <TouchableOpacity style={styles.modalItem}>
+      <Text style={styles.modalItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  renderModalSeparator = () => <View style={styles.modalSeparator} />;
+
   render() {
-    const { showPhotos, sections, photos, defects, isDateTimePickerOpened, activePreviewIndex } = this.state;
+    const {
+      photos,
+      defects,
+      sections,
+      showPhotos,
+      isModalOpened,
+      activePreviewIndex,
+      isDateTimePickerOpened,
+    } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollViewContainer
-          bottomOffset={0}
-          extraHeight={215}
-          style={styles.container}
-        >
+        <ScrollViewContainer bottomOffset={0} extraHeight={215} style={styles.container}>
           <View style={styles.preview}>
             <View style={styles.previewModeButtons}>
               <PreviewModeButton
@@ -216,7 +253,9 @@ class ItemForm extends PureComponent<Props, State> {
             </View>
             <Fragment>
               {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
-              {currentTypeIsEmpty ? <NoItems additional /> : (
+              {currentTypeIsEmpty ? (
+                <NoItems additional />
+              ) : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
@@ -255,19 +294,40 @@ class ItemForm extends PureComponent<Props, State> {
               renderSectionHeader={this.renderFormSectionHeader}
             />
           </View>
+          <TouchableOpacity style={styles.saveItem}>
+            <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+          </TouchableOpacity>
           <DateTimePicker
             onConfirm={this.handleChooseDate}
             isVisible={isDateTimePickerOpened}
             titleIOS={constants.headers.pickDate}
             onCancel={this.handleToggleDateTimePicker}
-            cancelTextIOS={constants.buttonTitles.cancel}
-            cancelTextStyle={styles.dateTimePickerCancelText}
             confirmTextIOS={constants.buttonTitles.ready}
             confirmTextStyle={styles.dateTimePickerConfirmText}
+            customCancelButtonIOS={
+              <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
+            }
           />
-          <TouchableOpacity style={styles.saveItem}>
-            <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-          </TouchableOpacity>
+          <Modal
+            isVisible={isModalOpened}
+            style={styles.modalOverlay}
+            onBackButtonPress={this.handleToggleModal}
+          >
+            <View style={styles.modalContainer}>
+              <FlatList
+                data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+                renderItem={this.renderModalItem}
+                ItemSeparatorComponent={this.renderModalSeparator}
+              />
+            </View>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.modalCancel}
+              onPress={this.handleToggleModal}
+            >
+              <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
+            </TouchableOpacity>
+          </Modal>
         </ScrollViewContainer>
       </SafeAreaView>
     );

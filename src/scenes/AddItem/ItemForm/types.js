@@ -27,6 +27,7 @@ export type State = {
   showPhotos: boolean,
   photos: Array<Photo>,
   defects: Array<Photo>,
+  isModalOpened: boolean,
   sections: Array<Section>,
   activePreviewIndex: number,
   isDatepickerOpened: boolean,
