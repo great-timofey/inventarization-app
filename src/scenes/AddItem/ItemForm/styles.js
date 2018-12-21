@@ -41,6 +41,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     justifyContent: 'center',
+    marginBottom: normalize(10),
     backgroundColor: colors.buttonChooseLogo,
   },
   previewModeButtons: {
@@ -100,6 +101,40 @@ export default StyleSheet.create({
     fontSize: normalize(14),
     fontFamily: fonts.proDisplay.regular,
   },
+  previewPhotoBar: {
+    overflow: 'visible',
+    height: normalize(90),
+    marginBottom: normalize(10),
+    backgroundColor: colors.white,
+  },
+  photosOuter: {
+    overflow: 'visible',
+  },
+  photosInner: {
+    alignItems: 'center',
+  },
+  removePhotoIcon: {
+    zIndex: 1,
+    top: normalize(-3),
+    right: normalize(-3),
+    position: 'absolute',
+    width: normalize(26),
+    height: normalize(26),
+  },
+  smallerIcon: {
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+  },
+  photoContainer: {
+    width: normalize(76),
+    height: normalize(76),
+    marginLeft: normalize(10),
+  },
+  photoImage: {
+    borderRadius: 15,
+    position: 'relative',
+    width: normalize(76),
+    height: normalize(76),
+  },
   photo: {
     width: deviceWidth,
     height: deviceWidth,
@@ -108,7 +143,6 @@ export default StyleSheet.create({
     flex: 1,
   },
   formName: {
-    paddingTop: normalize(20),
     paddingHorizontal: normalize(20),
   },
   formNameHint: {
@@ -153,5 +187,8 @@ export default StyleSheet.create({
     color: colors.black,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.bold,
+  },
+  hide: {
+    display: 'none',
   },
 });

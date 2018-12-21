@@ -9,16 +9,14 @@ import {
   FlatList,
   StatusBar,
   TextInput,
-  ScrollView,
   SectionList,
   SafeAreaView,
-  ImageBackground,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, and, includes } from 'ramda';
+import { isEmpty, and, includes, assoc, remove } from 'ramda';
 import dayjs from 'dayjs';
+import RNFS from 'react-native-fs';
 import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -30,7 +28,6 @@ import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
-import globalStyles from '~/global/styles';
 import constants from '~/global/constants';
 import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -169,6 +166,37 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
+  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (
+    <View style={styles.photoContainer}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+        onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+      >
+        <Image source={assets.deletePhoto} />
+      </TouchableOpacity>
+      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+    </View>
+  );
+
+  handleRemovePreviewPhotoBarItem = async (index: number) => {
+    const { navigation } = this.props;
+    const { showPhotos } = this.state;
+    const currentlyActive = showPhotos ? 'photos' : 'defects';
+    const { uri } = this.state[currentlyActive][index];
+
+    try {
+      RNFS.unlink(uri);
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+
+    this.setState(
+      state => assoc(currentlyActive, remove(index, 1, state[currentlyActive]), state),
+      () => navigation.setParams({ [currentlyActive]: this.state[currentlyActive] }),
+    );
+  };
+
   handleToggleDateTimePicker = (key: string) => this.setState(
     ({ isDateTimePickerOpened }) => ({
       isDateTimePickerOpened: !isDateTimePickerOpened,
@@ -195,7 +223,7 @@ class ItemForm extends PureComponent<Props, State> {
     const { showPhotos, sections, photos, defects, isDateTimePickerOpened, activePreviewIndex } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
         <ScrollViewContainer
           bottomOffset={0}
           extraHeight={215}
@@ -215,7 +243,6 @@ class ItemForm extends PureComponent<Props, State> {
               />
             </View>
             <Fragment>
-              {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
               {currentTypeIsEmpty ? <NoItems additional /> : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
@@ -243,6 +270,15 @@ class ItemForm extends PureComponent<Props, State> {
               </View>
             </Fragment>
           </View>
+          <FlatList
+            horizontal
+            style={styles.photosOuter}
+            data={showPhotos ? photos : defects}
+            showsHorizontalScrollIndicator={false}
+            renderItem={this.renderPreviewPhotoBarItem}
+            keyExtractor={(_, index) => index.toString()}
+            contentContainerStyle={[styles.photosInner, styles.previewPhotoBar, isEmpty(showPhotos ? photos : defects) && styles.hide]}
+          />
           <View style={styles.formContainer}>
             <View style={styles.formName}>
               <Text style={styles.formNameHint}>{constants.hints.name}</Text>
