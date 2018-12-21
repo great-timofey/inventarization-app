@@ -147,6 +147,7 @@ class ItemForm extends PureComponent<Props, State> {
     isDateTimePickerOpened: false,
   };
 
+  swiper: any;
   navListener: any;
 
   componentDidMount() {
@@ -154,6 +155,7 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
+    // this.swiper.scrollBy(0);
     const photos = navigation.getParam('photos', []);
     const defects = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
@@ -167,11 +169,14 @@ class ItemForm extends PureComponent<Props, State> {
 
   componentDidUpdate(prevProps) {
     const { navigation } = this.props;
+    const { activePreviewIndex, showPhotos, photos, defects } = this.state;
     if (prevProps.navigation.state.params.additionalPhotos !== navigation.state.params.additionalPhotos) {
-      this.setState(({ photos }) => ({ photos: photos.concat(navigation.state.params.additionalPhotos) }));
+      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
+      this.setState(({ photos }) => ({ photos: photos.concat(navigation.state.params.additionalPhotos), activePreviewIndex: 0 }));
     }
     if (prevProps.navigation.state.params.additionalDefects !== navigation.state.params.additionalDefects) {
-      this.setState(({ defects }) => ({ defects: defects.concat(navigation.state.params.additionalDefects) }));
+      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
+      this.setState(({ defects }) => ({ defects: defects.concat(navigation.state.params.additionalDefects), activePreviewIndex: 0 }));
     }
   }
 
@@ -226,7 +231,9 @@ class ItemForm extends PureComponent<Props, State> {
         >
           <Image source={assets.deletePhoto} />
         </TouchableOpacity>
-        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+        <TouchableOpacity style={styles.photoImageContainer} onPress={() => this.handleSetIndexPreview(index)}>
+          <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+        </TouchableOpacity>
       </View>
     )
   );
@@ -274,6 +281,12 @@ class ItemForm extends PureComponent<Props, State> {
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
+  handleSetIndexPreview = (newIndex: number) => {
+    const { activePreviewIndex } = this.state;
+    this.handleSwipePreview(newIndex);
+    this.swiper.scrollBy(newIndex - activePreviewIndex, false);
+  }
+
   showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
 
   showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
@@ -319,10 +332,18 @@ class ItemForm extends PureComponent<Props, State> {
             </View>
             <Fragment>
               {currentTypeIsEmpty ? <NoItems additional onPress={this.handleAddPhoto} /> : (
-                <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
+                <Swiper
+                  ref={ref => {
+                    this.swiper = ref;
+                  }}
+                  loop={false}
+                  showsPagination={false}
+                  index={activePreviewIndex}
+                  onIndexChanged={this.handleSwipePreview}
+                >
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
-                      key={photo.uri}
+                      key={photo.base64}
                       style={styles.photo}
                       source={{ uri: (showPhotos ? photos : defects)[index].uri }}
                     />

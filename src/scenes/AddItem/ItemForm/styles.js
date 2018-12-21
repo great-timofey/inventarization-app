@@ -138,9 +138,14 @@ export default StyleSheet.create({
     height: normalize(76),
     marginLeft: normalize(10),
   },
-  photoImage: {
+  photoImageContainer: {
     borderRadius: 15,
+    overflow: 'hidden',
     position: 'relative',
+    width: normalize(76),
+    height: normalize(76),
+  },
+  photoImage: {
     width: normalize(76),
     height: normalize(76),
   },
