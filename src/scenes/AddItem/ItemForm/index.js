@@ -13,8 +13,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { isEmpty, and, includes } from 'ramda';
+import { isEmpty, and, includes, assoc, remove } from 'ramda';
 import dayjs from 'dayjs';
+import RNFS from 'react-native-fs';
 import Modal from 'react-native-modal';
 import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -22,6 +23,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
+import { isSmallDevice } from '~/global/utils';
 import InventoryIcon from '~/assets/InventoryIcon';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
@@ -29,7 +31,7 @@ import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State } from './types';
+import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
 const dateFields = [
@@ -95,7 +97,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const NoItems = ({ additional }: { additional?: boolean }) => (
+const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Function }) => (
   <Fragment>
     {additional ? (
       <IonIcon.Button
@@ -103,7 +105,7 @@ const NoItems = ({ additional }: { additional?: boolean }) => (
         {...iconProps}
         name="ios-add-circle"
         color={colors.border}
-        onPress={() => alert('hi')}
+        onPress={onPress}
       />
     ) : (
       <Image source={assets.noPhoto} style={styles.noPhoto} />
@@ -145,6 +147,7 @@ class ItemForm extends PureComponent<Props, State> {
     isDateTimePickerOpened: false,
   };
 
+  swiper: any;
   navListener: any;
 
   componentDidMount() {
@@ -152,6 +155,7 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
+    // this.swiper.scrollBy(0);
     const photos = navigation.getParam('photos', []);
     const defects = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
@@ -161,6 +165,31 @@ class ItemForm extends PureComponent<Props, State> {
 
   componentWillUnmount() {
     this.navListener.remove();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { navigation } = this.props;
+    // const { activePreviewIndex, showPhotos, photos, defects } = this.state;
+    if (
+      prevProps.navigation.state.params.additionalPhotos
+      !== navigation.state.params.additionalPhotos
+    ) {
+      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
+      this.setState(({ photos }) => ({
+        photos: photos.concat(navigation.state.params.additionalPhotos),
+        activePreviewIndex: 0,
+      }));
+    }
+    if (
+      prevProps.navigation.state.params.additionalDefects
+      !== navigation.state.params.additionalDefects
+    ) {
+      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
+      this.setState(({ defects }) => ({
+        defects: defects.concat(navigation.state.params.additionalDefects),
+        activePreviewIndex: 0,
+      }));
+    }
   }
 
   renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
@@ -195,6 +224,55 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
+  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (base64 === '' ? (
+    <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+      <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
+    </TouchableOpacity>
+  ) : (
+    <View style={styles.photoContainer}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+        onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+      >
+        <Image source={assets.deletePhoto} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.photoImageContainer}
+        onPress={() => this.handleSetIndexPreview(index)}
+      >
+        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+      </TouchableOpacity>
+    </View>
+  ));
+
+  handleAddPhoto = () => {
+    const { navigation } = this.props;
+    const { showPhotos } = this.state;
+    navigation.push(
+      showPhotos ? SCENE_NAMES.AddItemPhotosSceneName : SCENE_NAMES.AddItemDefectsSceneName,
+      { from: SCENE_NAMES.AddItemPhotosSceneName },
+    );
+  };
+
+  handleRemovePreviewPhotoBarItem = async (index: number) => {
+    const { navigation } = this.props;
+    const { showPhotos } = this.state;
+    const currentlyActive = showPhotos ? 'photos' : 'defects';
+    const { uri } = this.state[currentlyActive][index];
+
+    try {
+      RNFS.unlink(uri);
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+
+    this.setState(
+      state => assoc(currentlyActive, remove(index, 1, state[currentlyActive]), state),
+      () => navigation.setParams({ [currentlyActive]: this.state[currentlyActive] }),
+    );
+  };
+
   handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
     isDateTimePickerOpened: !isDateTimePickerOpened,
     currentlyEditableDate: key,
@@ -210,7 +288,14 @@ class ItemForm extends PureComponent<Props, State> {
     ).format(constants.formats.newItemDates)}`,
   }));
 
+  //  FIXME: handle set index doesnt work properly
+
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
+
+  handleSetIndexPreview = (newIndex: number) => {
+    this.handleSwipePreview(newIndex);
+    this.swiper.scrollBy(newIndex - this.state.activePreviewIndex, false);
+  };
 
   showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
 
@@ -236,7 +321,7 @@ class ItemForm extends PureComponent<Props, State> {
     } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
         <ScrollViewContainer bottomOffset={0} extraHeight={215} style={styles.container}>
           <View style={styles.preview}>
             <View style={styles.previewModeButtons}>
@@ -252,14 +337,20 @@ class ItemForm extends PureComponent<Props, State> {
               />
             </View>
             <Fragment>
-              {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
               {currentTypeIsEmpty ? (
-                <NoItems additional />
+                <NoItems additional onPress={this.handleAddPhoto} />
               ) : (
-                <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
+                <Swiper
+                  ref={(ref) => {
+                    this.swiper = ref;
+                  }}
+                  loop={false}
+                  showsPagination={false}
+                  onIndexChanged={this.handleSwipePreview}
+                >
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
-                      key={photo.uri}
+                      key={photo.base64}
                       style={styles.photo}
                       source={{ uri: (showPhotos ? photos : defects)[index].uri }}
                     />
@@ -267,13 +358,7 @@ class ItemForm extends PureComponent<Props, State> {
                 </Swiper>
               )}
               <View style={styles.previewInfo}>
-                <InventoryIcon
-                  size={16}
-                  name="photo"
-                  {...iconProps}
-                  color={colors.black}
-                  onPress={() => alert('hi')}
-                />
+                <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
                 <Text style={styles.previewInfoText}>
                   {currentTypeIsEmpty
                     ? '0/0'
@@ -282,6 +367,19 @@ class ItemForm extends PureComponent<Props, State> {
               </View>
             </Fragment>
           </View>
+          <FlatList
+            horizontal
+            style={styles.photosOuter}
+            data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
+            showsHorizontalScrollIndicator={false}
+            renderItem={this.renderPreviewPhotoBarItem}
+            keyExtractor={(_, index) => index.toString()}
+            contentContainerStyle={[
+              styles.photosInner,
+              styles.previewPhotoBar,
+              isEmpty(showPhotos ? photos : defects) && styles.hide,
+            ]}
+          />
           <View style={styles.formContainer}>
             <View style={styles.formName}>
               <Text style={styles.formNameHint}>{constants.hints.name}</Text>

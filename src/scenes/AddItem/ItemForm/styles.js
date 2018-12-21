@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
-import { normalize } from '~/global/utils';
+import { normalize, isSmallDevice } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
@@ -41,6 +41,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     justifyContent: 'center',
+    marginBottom: normalize(10),
     backgroundColor: colors.buttonChooseLogo,
   },
   previewModeButtons: {
@@ -100,6 +101,54 @@ export default StyleSheet.create({
     fontSize: normalize(14),
     fontFamily: fonts.proDisplay.regular,
   },
+  previewPhotoBar: {
+    overflow: 'visible',
+    height: normalize(90),
+    marginBottom: normalize(10),
+    backgroundColor: colors.white,
+  },
+  photosOuter: {
+    overflow: 'visible',
+  },
+  photosInner: {
+    alignItems: 'center',
+  },
+  addPhotoBarButton: {
+    borderRadius: 15,
+    alignItems: 'center',
+    width: normalize(76),
+    height: normalize(76),
+    justifyContent: 'center',
+    marginLeft: normalize(10),
+    backgroundColor: colors.buttonChooseLogo,
+  },
+  removePhotoIcon: {
+    zIndex: 1,
+    top: normalize(-3),
+    right: normalize(-3),
+    position: 'absolute',
+    width: normalize(26),
+    height: normalize(26),
+  },
+  smallerIcon: {
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+  },
+  photoContainer: {
+    width: normalize(76),
+    height: normalize(76),
+    marginLeft: normalize(10),
+  },
+  photoImageContainer: {
+    borderRadius: 15,
+    overflow: 'hidden',
+    position: 'relative',
+    width: normalize(76),
+    height: normalize(76),
+  },
+  photoImage: {
+    width: normalize(76),
+    height: normalize(76),
+  },
   photo: {
     width: deviceWidth,
     height: deviceWidth,
@@ -108,7 +157,6 @@ export default StyleSheet.create({
     flex: 1,
   },
   formName: {
-    paddingTop: normalize(20),
     paddingHorizontal: normalize(20),
   },
   formNameHint: {
@@ -186,9 +234,9 @@ export default StyleSheet.create({
     backgroundColor: colors.gray,
   },
   customCancelDateTimePickerButton: {
-    height: normalize(58),
+    height: isSmallDevice ? normalize(68) : normalize(58),
     justifyContent: 'center',
-    borderRadius: normalize(7),
+    borderRadius: isSmallDevice ? normalize(10) : normalize(7),
     backgroundColor: colors.cancel,
   },
   customCancelDateTimePickerText: {
@@ -198,5 +246,8 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     backgroundColor: 'transparent',
     fontFamily: fonts.proDisplay.light,
+  },
+  hide: {
+    display: 'none',
   },
 });

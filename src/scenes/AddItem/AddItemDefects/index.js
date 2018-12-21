@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   FlatList,
+  StatusBar,
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
@@ -25,9 +26,9 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
-const necessaryPermissions = ['location', 'camera']
+const necessaryPermissions = ['location', 'camera'];
 
-const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
+const HeaderFinishButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Text style={styles.skipButtonText}>{constants.buttonTitles.ready}</Text>
   </TouchableOpacity>
@@ -43,16 +44,26 @@ class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
+    const from = navigation.state && navigation.state.params && navigation.state.params.from;
+    const photosToPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos };
     return {
       headerStyle: styles.header,
       title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
+      headerLeft: (
+        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
+      ),
       headerRight: (
-        <HeaderSkipButton onPress={() => 
-          photos.length + defectPhotos.length
-          ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, { photos, defectPhotos }) 
-          : Alert.alert('Требуется фото предмета или его дефектов для продолежния')} 
+        <HeaderFinishButton
+          onPress={() => {
+            if (from) {
+              navigation.navigate(SCENE_NAMES.ItemFormSceneName, photosToPass);
+            } else {
+              photos.length + defectPhotos.length
+                ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass)
+                : Alert.alert('Требуется фото предмета или его дефектов для продолежния');
+            }
+          }}
         />
       ),
     };
@@ -67,8 +78,13 @@ class AddItemDefects extends PureComponent<Props, State> {
     flashMode: RNCamera.Constants.FlashMode.off,
   };
 
+  navListener: any;
+
   componentDidMount() {
     const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({ defectPhotos: [] });
   }
@@ -127,8 +143,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       const takenPhoto = { base64, uri, location };
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state), 
-        () => navigation.setParams({ defectPhotos: this.state.photos })
+        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
@@ -150,8 +166,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     }
 
     this.setState(
-      state => assoc('photos', remove(index, 1, state.photos), state), 
-      () => navigation.setParams({ defectPhotos: this.state.photos })
+      state => assoc('photos', remove(index, 1, state.photos), state),
+      () => navigation.setParams({ defectPhotos: this.state.photos }),
     );
   };
 

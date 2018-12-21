@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   FlatList,
+  StatusBar,
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
@@ -41,15 +42,23 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
+    const from = navigation.state && navigation.state.params && navigation.state.params.from;
     const photos = navigation.state && navigation.state.params && navigation.state.params.photos;
+    const photosToPass = from ? { additionalPhotos: photos } : { photos };
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
+      headerLeft: (
+        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
+      ),
       headerRight: (
         <HeaderSkipButton
-          onPress={() => navigation.navigate(SCENE_NAMES.AddItemDefectsSceneName, { photos })}
+          onPress={() => navigation.navigate(
+            from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
+            photosToPass,
+          )
+          }
         />
       ),
     };
@@ -64,8 +73,13 @@ class AddItemPhotos extends PureComponent<Props, State> {
     flashMode: RNCamera.Constants.FlashMode.off,
   };
 
+  navListener: any;
+
   componentDidMount() {
     const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({ photos: [] });
   }
