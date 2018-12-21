@@ -17,7 +17,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, and, includes, head } from 'ramda';
+import { isEmpty, and, includes } from 'ramda';
 import dayjs from 'dayjs';
 import Modal from 'react-native-modal';
 import Swiper from 'react-native-swiper';
@@ -94,8 +94,6 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 const NoItems = ({ additional }: { additional?: boolean }) => (
   <Fragment>
     {additional ? (
-      <Image source={assets.noPhoto} style={{ width: 100, height: 93 }} />
-    ) : (
       <IonIcon.Button
         size={64}
         {...iconProps}
@@ -103,10 +101,11 @@ const NoItems = ({ additional }: { additional?: boolean }) => (
         color={colors.border}
         onPress={() => alert('hi')}
       />
-    )}
-    <Text style={styles.previewText}>
-      {additional ? constants.hints.noPhotos : constants.hints.addPhoto}
-    </Text>
+    ) : (
+      <Image source={assets.noPhoto} style={styles.noPhoto} />
+    )
+   }
+    <Text style={styles.previewText}>{additional ? constants.hints.addPhoto : constants.hints.noPhotos}</Text>
   </Fragment>
 );
 
@@ -249,9 +248,7 @@ class ItemForm extends PureComponent<Props, State> {
             </View>
             <Fragment>
               {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
-              {currentTypeIsEmpty ? (
-                <NoItems />
-              ) : (
+              {currentTypeIsEmpty ? <NoItems additional /> : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image

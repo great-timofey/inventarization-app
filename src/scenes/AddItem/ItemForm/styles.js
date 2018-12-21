@@ -30,6 +30,11 @@ export default StyleSheet.create({
   container: {
     flex: 1,
   },
+  noPhoto: {
+    width: 100,
+    height: 93,
+    marginBottom: 10,
+  },
   preview: {
     width: deviceWidth,
     height: deviceWidth,
