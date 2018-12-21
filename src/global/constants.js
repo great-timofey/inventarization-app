@@ -17,8 +17,9 @@ const uploadCreateCompanyImages = {
 };
 
 const placeHolders = {
-  mobileNumber: '+7 (___) ___-__-__',
+  place: 'Место не указано',
   inputHeader: 'Введите название',
+  mobileNumber: '+7 (___) ___-__-__',
 };
 
 const inputTypes = {
@@ -209,13 +210,14 @@ const itemForm = {
   category: 'Категория',
 };
 
-const itemFormFields = Object.keys(itemForm).map(
-  objKey => ({ key: objKey, description: itemForm[objKey] }),
-);
+const itemFormFields = Object.keys(itemForm).map(objKey => ({
+  key: objKey,
+  description: itemForm[objKey],
+}));
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
-}
+};
 
 const category = [
   'Новое',
