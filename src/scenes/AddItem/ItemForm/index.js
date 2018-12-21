@@ -279,12 +279,13 @@ class ItemForm extends PureComponent<Props, State> {
     ).format(constants.formats.newItemDates)}`,
   }));
 
+  //  FIXME: handle set index doesnt work properly
+
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
   handleSetIndexPreview = (newIndex: number) => {
-    const { activePreviewIndex } = this.state;
     this.handleSwipePreview(newIndex);
-    this.swiper.scrollBy(newIndex - activePreviewIndex, false);
+    this.swiper.scrollBy(newIndex - this.state.activePreviewIndex, false);
   }
 
   showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
@@ -338,7 +339,6 @@ class ItemForm extends PureComponent<Props, State> {
                   }}
                   loop={false}
                   showsPagination={false}
-                  index={activePreviewIndex}
                   onIndexChanged={this.handleSwipePreview}
                 >
                   {(showPhotos ? photos : defects).map((photo, index) => (
