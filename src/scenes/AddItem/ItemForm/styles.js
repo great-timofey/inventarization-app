@@ -190,7 +190,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: normalize(7),
     backgroundColor: colors.cancel,
-    marginBottom: isIphoneX ? 20 : 0,
   },
   customCancelDateTimePickerText: {
     padding: 10,
