@@ -4,17 +4,13 @@ import React, { PureComponent, Fragment } from 'react';
 import {
   Text,
   View,
-  Alert,
   Image,
   FlatList,
   StatusBar,
   TextInput,
-  ScrollView,
   SectionList,
   SafeAreaView,
-  ImageBackground,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 
 import { isEmpty, and, includes } from 'ramda';
@@ -31,11 +27,9 @@ import ScrollViewContainer from '~/components/ScrollViewContainer';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
-import globalStyles from '~/global/styles';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State, PhotosProps } from './types';
+import type { Props, State } from './types';
 import styles from './styles';
 
 const dateFields = [
@@ -56,6 +50,16 @@ const iconProps = {
   underlayColor: colors.transparent,
   backgroundColor: colors.transparent,
 };
+
+const CustomCancelDateTimePickerButton = ({ onCancel }: { onCancel: Function }) => (
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.customCancelDateTimePickerButton}
+    onPress={onCancel}
+  >
+    <Text style={styles.customCancelDateTimePickerText}>{constants.buttonTitles.cancel}</Text>
+  </TouchableOpacity>
+);
 
 const PreviewModeButton = ({
   isActive,
@@ -103,9 +107,10 @@ const NoItems = ({ additional }: { additional?: boolean }) => (
       />
     ) : (
       <Image source={assets.noPhoto} style={styles.noPhoto} />
-    )
-   }
-    <Text style={styles.previewText}>{additional ? constants.hints.addPhoto : constants.hints.noPhotos}</Text>
+    )}
+    <Text style={styles.previewText}>
+      {additional ? constants.hints.addPhoto : constants.hints.noPhotos}
+    </Text>
   </Fragment>
 );
 
@@ -248,7 +253,9 @@ class ItemForm extends PureComponent<Props, State> {
             </View>
             <Fragment>
               {and(isEmpty(photos), isEmpty(defects)) && <NoItems additional />}
-              {currentTypeIsEmpty ? <NoItems additional /> : (
+              {currentTypeIsEmpty ? (
+                <NoItems additional />
+              ) : (
                 <Swiper showsPagination={false} onIndexChanged={this.handleSwipePreview}>
                   {(showPhotos ? photos : defects).map((photo, index) => (
                     <Image
@@ -295,15 +302,15 @@ class ItemForm extends PureComponent<Props, State> {
             isVisible={isDateTimePickerOpened}
             titleIOS={constants.headers.pickDate}
             onCancel={this.handleToggleDateTimePicker}
-            cancelTextIOS={constants.buttonTitles.cancel}
-            cancelTextStyle={styles.dateTimePickerCancelText}
             confirmTextIOS={constants.buttonTitles.ready}
             confirmTextStyle={styles.dateTimePickerConfirmText}
+            customCancelButtonIOS={
+              <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
+            }
           />
           <Modal
             isVisible={isModalOpened}
             style={styles.modalOverlay}
-            onBackdropPress={this.handleToggleModal}
             onBackButtonPress={this.handleToggleModal}
           >
             <View style={styles.modalContainer}>
@@ -313,7 +320,11 @@ class ItemForm extends PureComponent<Props, State> {
                 ItemSeparatorComponent={this.renderModalSeparator}
               />
             </View>
-            <TouchableOpacity style={styles.modalCancel} onPress={this.handleToggleModal}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.modalCancel}
+              onPress={this.handleToggleModal}
+            >
               <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
             </TouchableOpacity>
           </Modal>

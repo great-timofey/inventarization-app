@@ -144,11 +144,6 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
-  dateTimePickerCancelText: {
-    color: colors.white,
-    fontSize: normalize(18),
-    fontFamily: fonts.proDisplay.light,
-  },
   dateTimePickerConfirmText: {
     color: colors.black,
     fontSize: normalize(18),
@@ -189,5 +184,20 @@ export default StyleSheet.create({
   modalSeparator: {
     height: 1,
     backgroundColor: colors.gray,
+  },
+  customCancelDateTimePickerButton: {
+    height: normalize(58),
+    justifyContent: 'center',
+    borderRadius: normalize(7),
+    backgroundColor: colors.cancel,
+    marginBottom: isIphoneX ? 20 : 0,
+  },
+  customCancelDateTimePickerText: {
+    padding: 10,
+    textAlign: 'center',
+    color: colors.white,
+    fontSize: normalize(18),
+    backgroundColor: 'transparent',
+    fontFamily: fonts.proDisplay.light,
   },
 });
