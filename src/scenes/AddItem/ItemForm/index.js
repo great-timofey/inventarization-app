@@ -5,15 +5,18 @@ import {
   Text,
   View,
   Image,
+  Alert,
   FlatList,
   StatusBar,
   TextInput,
+  ScrollView,
   SectionList,
   SafeAreaView,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, and, includes, assoc, remove } from 'ramda';
+import { isEmpty, includes, assoc, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import Modal from 'react-native-modal';
@@ -23,6 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
+import { isIphoneX } from '~/global/device';
 import { isSmallDevice, isValid } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -30,7 +34,6 @@ import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
-import ScrollViewContainer from '~/components/ScrollViewContainer';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -46,10 +49,7 @@ const modalFields = [
   constants.itemForm.responsible,
 ];
 
-const nonMutableFields = [
-  constants.itemForm.qrcode,
-  constants.itemForm.company,
-];
+const nonMutableFields = [constants.itemForm.qrcode, constants.itemForm.company];
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -73,8 +73,8 @@ const PreviewModeButton = ({
   onPress,
   isActive,
 }: {
-  isActive: boolean,
   title: string,
+  isActive: boolean,
   onPress: Function,
 }) => (
   <TouchableOpacity
@@ -184,8 +184,8 @@ class ItemForm extends PureComponent<Props, State> {
     ) {
       // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ photos }) => ({
-        photos: photos.concat(navigation.state.params.additionalPhotos),
         activePreviewIndex: 0,
+        photos: photos.concat(navigation.state.params.additionalPhotos),
       }));
     }
     if (
@@ -194,8 +194,8 @@ class ItemForm extends PureComponent<Props, State> {
     ) {
       // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ defects }) => ({
-        defects: defects.concat(navigation.state.params.additionalDefects),
         activePreviewIndex: 0,
+        defects: defects.concat(navigation.state.params.additionalDefects),
       }));
     }
   }
@@ -247,10 +247,10 @@ class ItemForm extends PureComponent<Props, State> {
         value={this.state[key]}
         containerCallback={callback}
         disabled={isCoordinatesField}
-        type={{ label: description, warning: constants.itemForm. }}
         isMultiline={isDescriptionField}
         isWarning={includes(key, warnings)}
         maxLength={isDescriptionField ? 250 : 50}
+        type={{ label: description, warning: constants.itemForm.warning }}
         placeholder={isLocationField ? constants.placeHolders.place : null}
       />
     );
@@ -366,115 +366,123 @@ class ItemForm extends PureComponent<Props, State> {
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollViewContainer bottomOffset={0} extraHeight={215} style={styles.container}>
-          <View style={styles.preview}>
-            <View style={styles.previewModeButtons}>
-              <PreviewModeButton
-                isActive={showPhotos}
-                onPress={this.showPhotos}
-                title={constants.buttonTitles.photos}
-              />
-              <PreviewModeButton
-                isActive={!showPhotos}
-                onPress={this.showDefects}
-                title={constants.buttonTitles.defects}
-              />
-            </View>
-            <Fragment>
-              {currentTypeIsEmpty ? (
-                <NoItems additional onPress={this.handleAddPhoto} />
-              ) : (
-                <Swiper
-                  ref={(ref) => {
-                    this.swiper = ref;
-                  }}
-                  loop={false}
-                  showsPagination={false}
-                  onIndexChanged={this.handleSwipePreview}
-                >
-                  {(showPhotos ? photos : defects).map((photo, index) => (
-                    <Image
-                      key={photo.base64}
-                      style={styles.photo}
-                      source={{ uri: (showPhotos ? photos : defects)[index].uri }}
-                    />
-                  ))}
-                </Swiper>
-              )}
-              <View style={styles.previewInfo}>
-                <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
-                <Text style={styles.previewInfoText}>
-                  {currentTypeIsEmpty
-                    ? '0/0'
-                    : `${activePreviewIndex + 1} / ${showPhotos ? photos.length : defects.length}`}
-                </Text>
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={styles.container}
+          keyboardVerticalOffset={isIphoneX ? 85 : 60}
+        >
+          <ScrollView>
+            <View style={styles.preview}>
+              <View style={styles.previewModeButtons}>
+                <PreviewModeButton
+                  isActive={showPhotos}
+                  onPress={this.showPhotos}
+                  title={constants.buttonTitles.photos}
+                />
+                <PreviewModeButton
+                  isActive={!showPhotos}
+                  onPress={this.showDefects}
+                  title={constants.buttonTitles.defects}
+                />
               </View>
-            </Fragment>
-          </View>
-          <FlatList
-            horizontal
-            style={styles.photosOuter}
-            data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
-            showsHorizontalScrollIndicator={false}
-            renderItem={this.renderPreviewPhotoBarItem}
-            keyExtractor={(_, index) => index.toString()}
-            contentContainerStyle={[
-              styles.photosInner,
-              styles.previewPhotoBar,
-              isEmpty(showPhotos ? photos : defects) && styles.hide,
-            ]}
-          />
-          <View style={styles.formContainer}>
-            <View style={styles.formName}>
-              <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-              <TextInput
-                style={styles.formNameInput}
-                isWarning={includes('name', warnings)}
-                placeholder={constants.hints.enterName}
-              />
+              <Fragment>
+                {currentTypeIsEmpty ? (
+                  <NoItems additional onPress={this.handleAddPhoto} />
+                ) : (
+                  <Swiper
+                    ref={(ref) => {
+                      this.swiper = ref;
+                    }}
+                    loop={false}
+                    showsPagination={false}
+                    onIndexChanged={this.handleSwipePreview}
+                  >
+                    {(showPhotos ? photos : defects).map((photo, index) => (
+                      <Image
+                        key={photo.base64}
+                        style={styles.photo}
+                        source={{ uri: (showPhotos ? photos : defects)[index].uri }}
+                      />
+                    ))}
+                  </Swiper>
+                )}
+                <View style={styles.previewInfo}>
+                  <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
+                  <Text style={styles.previewInfoText}>
+                    {currentTypeIsEmpty
+                      ? '0/0'
+                      : `${activePreviewIndex + 1} / ${
+                        showPhotos ? photos.length : defects.length
+                      }`}
+                  </Text>
+                </View>
+              </Fragment>
             </View>
-            <SectionList
-              sections={sections}
-              renderItem={this.renderFormField}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={this.renderFormSectionHeader}
+            <FlatList
+              horizontal
+              style={styles.photosOuter}
+              showsHorizontalScrollIndicator={false}
+              renderItem={this.renderPreviewPhotoBarItem}
+              keyExtractor={(_, index) => index.toString()}
+              contentContainerStyle={[
+                styles.photosInner,
+                styles.previewPhotoBar,
+                isEmpty(showPhotos ? photos : defects) && styles.hide,
+              ]}
+              data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
             />
-          </View>
-          <TouchableOpacity style={styles.saveItem} onPress={this.checkValue}>
-            <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-          </TouchableOpacity>
-          <DateTimePicker
-            onConfirm={this.handleChooseDate}
-            isVisible={isDateTimePickerOpened}
-            titleIOS={constants.headers.pickDate}
-            onCancel={this.handleToggleDateTimePicker}
-            confirmTextIOS={constants.buttonTitles.ready}
-            confirmTextStyle={styles.dateTimePickerConfirmText}
-            customCancelButtonIOS={
-              <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
-            }
-          />
-          <Modal
-            isVisible={isModalOpened}
-            style={styles.modalOverlay}
-            onBackButtonPress={this.handleToggleModal}
-          >
-            <View style={styles.modalContainer}>
-              <FlatList
-                data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
-                renderItem={this.renderModalItem}
-                ItemSeparatorComponent={this.renderModalSeparator}
+            <View style={styles.formContainer}>
+              <View style={styles.formName}>
+                <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                <TextInput
+                  style={styles.formNameInput}
+                  isWarning={includes('name', warnings)}
+                  placeholder={constants.hints.enterName}
+                />
+              </View>
+              <SectionList
+                sections={sections}
+                renderItem={this.renderFormField}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={this.renderFormSectionHeader}
               />
             </View>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.modalCancel}
-              onPress={this.handleToggleModal}
-            >
-              <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
+            <TouchableOpacity style={styles.saveItem} onPress={this.checkValue}>
+              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
             </TouchableOpacity>
-          </Modal>
-        </ScrollViewContainer>
+            <DateTimePicker
+              onConfirm={this.handleChooseDate}
+              isVisible={isDateTimePickerOpened}
+              titleIOS={constants.headers.pickDate}
+              onCancel={this.handleToggleDateTimePicker}
+              confirmTextIOS={constants.buttonTitles.ready}
+              confirmTextStyle={styles.dateTimePickerConfirmText}
+              customCancelButtonIOS={
+                <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
+              }
+            />
+            <Modal
+              isVisible={isModalOpened}
+              style={styles.modalOverlay}
+              onBackButtonPress={this.handleToggleModal}
+            >
+              <View style={styles.modalContainer}>
+                <FlatList
+                  data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+                  renderItem={this.renderModalItem}
+                  ItemSeparatorComponent={this.renderModalSeparator}
+                />
+              </View>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.modalCancel}
+                onPress={this.handleToggleModal}
+              >
+                <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
+              </TouchableOpacity>
+            </Modal>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

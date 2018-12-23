@@ -218,11 +218,6 @@ const itemForm = {
   category: 'Категория',
 };
 
-// const itemFormFields = Object.keys(itemForm).map(objKey => ({
-//   key: objKey,
-//   description: itemForm[objKey],
-// }));
-
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result = {
     key: objKey,
@@ -241,6 +236,7 @@ const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   }
 
   acc.push(result);
+  return acc;
 }, []);
 
 const formats = {
