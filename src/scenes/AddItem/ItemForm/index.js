@@ -16,11 +16,10 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, includes, assoc, remove } from 'ramda';
+import { compose, pipe, isEmpty, includes, assoc, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import Modal from 'react-native-modal';
-import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -28,6 +27,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import { isIphoneX } from '~/global/device';
 import { isSmallDevice, isValid } from '~/global/utils';
+import Carousel from '~/components/Carousel';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -163,7 +163,6 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
-    // this.swiper.scrollBy(0);
     const photos = navigation.getParam('photos', []);
     const defects = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
@@ -177,12 +176,10 @@ class ItemForm extends PureComponent<Props, State> {
 
   componentDidUpdate(prevProps) {
     const { navigation } = this.props;
-    // const { activePreviewIndex, showPhotos, photos, defects } = this.state;
     if (
       prevProps.navigation.state.params.additionalPhotos
       !== navigation.state.params.additionalPhotos
     ) {
-      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ photos }) => ({
         activePreviewIndex: 0,
         photos: photos.concat(navigation.state.params.additionalPhotos),
@@ -192,7 +189,6 @@ class ItemForm extends PureComponent<Props, State> {
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
-      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ defects }) => ({
         activePreviewIndex: 0,
         defects: defects.concat(navigation.state.params.additionalDefects),
@@ -267,7 +263,7 @@ class ItemForm extends PureComponent<Props, State> {
     </LinearGradient>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (base64 === '' ? (
+  renderPreviewPhotoBarItem = ({ item: { base64, uri }, index }: PhotosProps) => (base64 === '' ? (
     <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
       <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
     </TouchableOpacity>
@@ -284,7 +280,8 @@ class ItemForm extends PureComponent<Props, State> {
         style={styles.photoImageContainer}
         onPress={() => this.handleSetIndexPreview(index)}
       >
-        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+        {/* <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} /> */}
+        <Image style={styles.photoImage} source={{ uri }} />
       </TouchableOpacity>
     </View>
   ));
@@ -298,11 +295,13 @@ class ItemForm extends PureComponent<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (index: number) => {
+  //  FIXME: after removing swipe and index display are broken
+
+  handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
     const { navigation } = this.props;
-    const { showPhotos } = this.state;
+    const { showPhotos, activePreviewIndex } = this.state;
     const currentlyActive = showPhotos ? 'photos' : 'defects';
-    const { uri } = this.state[currentlyActive][index];
+    const { uri } = this.state[currentlyActive][removedIndex];
 
     try {
       RNFS.unlink(uri);
@@ -310,10 +309,11 @@ class ItemForm extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(
-      state => assoc(currentlyActive, remove(index, 1, state[currentlyActive]), state),
-      () => navigation.setParams({ [currentlyActive]: this.state[currentlyActive] }),
-    );
+    this.setState(state => ({
+      [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
+      activePreviewIndex:
+        (removedIndex <= activePreviewIndex && removedIndex > 0) ? state.activePreviewIndex - 1 : state.activePreviewIndex,
+    }));
   };
 
   handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
@@ -336,8 +336,11 @@ class ItemForm extends PureComponent<Props, State> {
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
   handleSetIndexPreview = (newIndex: number) => {
-    this.handleSwipePreview(newIndex);
-    this.swiper.scrollBy(newIndex - this.state.activePreviewIndex, false);
+    const { activePreviewIndex } = this.state;
+    console.log('new ', newIndex);
+    console.log('old ', activePreviewIndex);
+    // this.handleSwipePreview(newIndex);
+    // this.swiper.scrollBy(newIndex - activePreviewIndex, false);
   };
 
   showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
@@ -389,22 +392,18 @@ class ItemForm extends PureComponent<Props, State> {
                 {currentTypeIsEmpty ? (
                   <NoItems additional onPress={this.handleAddPhoto} />
                 ) : (
-                  <Swiper
-                    ref={(ref) => {
+                  <Carousel
+                    innerRef={(ref) => {
                       this.swiper = ref;
                     }}
-                    loop={false}
-                    showsPagination={false}
+                    key={(showPhotos ? photos : defects).length}
+                    index={activePreviewIndex}
+                    data={showPhotos ? photos : defects}
                     onIndexChanged={this.handleSwipePreview}
-                  >
-                    {(showPhotos ? photos : defects).map((photo, index) => (
-                      <Image
-                        key={photo.base64}
-                        style={styles.photo}
-                        source={{ uri: (showPhotos ? photos : defects)[index].uri }}
-                      />
-                    ))}
-                  </Swiper>
+                    // onMomentumScrollEnd={(_, state) => {
+                    // this.handleSwipePreview(state.index);
+                    // }}
+                  />
                 )}
                 <View style={styles.previewInfo}>
                   <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
