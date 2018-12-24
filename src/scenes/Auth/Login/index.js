@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 
-import R from 'ramda';
+import { includes, assoc } from 'ramda';
 import { compose, graphql } from 'react-apollo';
 import {
   Alert,
@@ -123,16 +123,12 @@ class Login extends PureComponent<Props, State> {
     Keyboard.dismiss();
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
-    this.setState(state => R.assoc('isRegForm', !state.isRegForm, initialState));
+    this.setState(state => assoc('isRegForm', !state.isRegForm, initialState));
   };
 
-  checkForErrors = () => {
-    const { warnings } = this.state;
-    if (warnings.length) return true;
-    return false;
-  };
+  checkForErrors = () => !!this.state.warnings.length;
 
-  checkValue = () => {
+  checkFields = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
     const warnings = [];
     if (isRegForm && !name.trim()) {
@@ -171,11 +167,11 @@ class Login extends PureComponent<Props, State> {
 
     /**
      * 'Promise.resolve' and 'await' below used because of async setState
-     * in this.checkValue and this.checkForErrors
+     * in this.checkFields and this.checkForErrors
      */
 
     const isFormInvalid = await Promise.resolve()
-      .then(_ => this.checkValue())
+      .then(_ => this.checkFields())
       .then(_ => this.checkForErrors());
 
     if (!isFormInvalid) {
@@ -269,7 +265,7 @@ class Login extends PureComponent<Props, State> {
                 }}
                 blurOnSubmit={false}
                 type={constants.inputTypes.name}
-                isWarning={warnings.includes('name')}
+                isWarning={includes('name', warnings)}
                 onSubmitEditing={() => this.focusField(this.emailRef)}
                 onChangeText={text => this.onChangeField('name', text)}
               />
@@ -282,7 +278,7 @@ class Login extends PureComponent<Props, State> {
               blurOnSubmit={false}
               keyboardType="email-address"
               type={constants.inputTypes.email}
-              isWarning={warnings.includes('email')}
+              isWarning={includes('email', warnings)}
               onChangeText={text => this.onChangeField('email', text)}
               onSubmitEditing={() => this.focusField(this.passwordRef)}
             />
@@ -296,7 +292,7 @@ class Login extends PureComponent<Props, State> {
               onSubmitForm={this.onSubmitForm}
               type={constants.inputTypes.password}
               keyboardType="numbers-and-punctuation"
-              isWarning={warnings.includes('password')}
+              isWarning={includes('password', warnings)}
               returnKeyType={!isRegForm ? 'go' : undefined}
               onSubmitEditing={() => this.focusField(this.mobileRef)}
               onChangeText={text => this.onChangeField('password', text)}
@@ -312,9 +308,9 @@ class Login extends PureComponent<Props, State> {
                 onSubmitForm={this.onSubmitForm}
                 mask={constants.masks.mobileNumber}
                 keyboardType="numbers-and-punctuation"
-                isWarning={warnings.includes('mobile')}
+                isWarning={includes('mobile', warnings)}
                 type={constants.inputTypes.mobileNumber}
-                placeholder={constants.placeHolders.mobileNumber}
+                placeholder={constants.placeholders.mobileNumber}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
             )}

@@ -1,12 +1,18 @@
+// @flow
+
+import { pick, slice, keys } from 'ramda';
+
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
+  price: /^\d+(.|,){0,2}\d/,
   password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
 };
 
 const masks = {
+  price: '\u20BD [9999999990].[99]',
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
@@ -16,10 +22,21 @@ const uploadCreateCompanyImages = {
   quality: 0.5,
 };
 
-const placeHolders = {
+const placeholders = {
+  manufacturer: 'Введите название',
+  model: 'Введите название',
+  description: 'Введите текст',
   place: 'Место не указано',
   inputHeader: 'Введите название',
+  inventoryCode: 'Введите код',
+  qrcode: 'Введите код',
+  estimateDate: 'Не оценивалось',
+  purchaseDate: 'Выберите дату покупки',
+  warrantyPeriod: 'Выберите дату окончания',
+  category: 'Без категории',
   mobileNumber: '+7 (___) ___-__-__',
+  purchasePrice: '\u20BD 0',
+  marketPrice: '\u20BD 0',
 };
 
 const inputTypes = {
@@ -131,7 +148,7 @@ const modalQuestion = {
 const forgotPassText = {
   headerTitle: 'Восстановление \n пароля',
   enterEmail: 'Введите e-mail',
-  placeHolder: 'Ваш номер телефона',
+  placeholder: 'Ваш номер телефона',
   sendMail:
     'На ваш е-mail было отправлено письмо с ссылкой на восстановление. Проверьте свой почтовый ящик.',
 };
@@ -159,6 +176,11 @@ const errors = {
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
   },
+  createItem: {
+    name: 'Нельзя сохранить без названия',
+    inventoryCodeEmpty: 'Введите инвентарный номер',
+    inventoryCodeAlreadyInUse: 'Данный инвентарный номер уже существует',
+  },
 };
 
 const headers = {
@@ -168,9 +190,9 @@ const headers = {
   itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
   pickDate: 'Выберите дату',
-  price: 'Покупка и стоимость',
   mainInfo: 'Основная информация',
   addingItem: 'Добавление предмета',
+  priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   createNewCompany: 'Создание новой \n организации',
 };
@@ -192,28 +214,88 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
 
+/** Form stuff */
+
 const itemForm = {
   manufacturer: 'Производитель',
   model: 'Модeль',
   description: 'Описание',
   qrcode: 'QR-код',
+  inventoryCode: 'Инвентарный номер',
   purchaseDate: 'Дата покупки',
   purchasePrice: 'Цена покупки',
   marketPrice: 'Рыночная цена',
   estimateDate: 'Дата оценки',
   warrantyPeriod: 'Гарантийный срок',
   company: 'Организация',
-  location: 'Место',
+  place: 'Место',
   coordinates: 'Координаты',
   responsible: 'Ответственный',
   onBalance: 'На балансе',
   category: 'Категория',
+  name: 'Название',
 };
 
-const itemFormFields = Object.keys(itemForm).map(objKey => ({
-  key: objKey,
-  description: itemForm[objKey],
-}));
+const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
+  const result = {
+    key: objKey,
+    description: itemForm[objKey],
+    placeholder: placeholders[objKey],
+  };
+
+  if (objKey === 'inventoryCode') {
+    result.warnings = {
+      empty: errors.createItem.inventoryCodeEmpty,
+      inUse: errors.createItem.inventoryCodeAlreadyInUse,
+    };
+  }
+
+  if (objKey === 'name') {
+    result.warning = errors.createItem.name;
+  }
+
+  acc[objKey] = result;
+  return acc;
+}, {});
+
+const itemFormSections = [
+  {
+    index: 0,
+    title: headers.mainInfo,
+    data: Object.values(pick(slice(0, 5, keys(itemFormFields)), itemFormFields)),
+  },
+  {
+    index: 1,
+    title: headers.priceAndValue,
+    data: Object.values(pick(slice(5, 10, keys(itemFormFields)), itemFormFields)),
+  },
+  {
+    index: 2,
+    title: headers.storage,
+    data: Object.values(pick(slice(10, -1, keys(itemFormFields)), itemFormFields)),
+  },
+];
+
+const fieldTypes = {
+  dateFields: [
+    itemForm.purchaseDate,
+    itemForm.estimateDate,
+    itemForm.warrantyPeriod,
+  ],
+  modalFields: [
+    itemForm.place,
+    itemForm.category,
+    itemForm.responsible,
+  ],
+  nonEditableFields: [
+    itemForm.qrcode,
+    itemForm.company,
+  ],
+  currencyFields: [
+    itemForm.marketPrice,
+    itemForm.purchasePrice,
+  ],
+};
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
@@ -306,11 +388,13 @@ export default {
   itemForm,
   category,
   inputTypes,
+  fieldTypes,
   buttonTitles,
-  placeHolders,
+  placeholders,
   modalQuestion,
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  itemFormSections,
   uploadCreateCompanyImages,
 };

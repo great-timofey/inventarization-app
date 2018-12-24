@@ -56,8 +56,22 @@ export default StyleSheet.create({
     color: colors.black,
   },
   overflowView: {
-    width: deviceWidth,
+    width: '100%',
     height: normalize(54),
     marginBottom: normalize(10),
+  },
+  multilineInput: {
+    paddingTop: normalize(18),
+    paddingBottom: normalize(10),
+  },
+  multilineContainer: {
+    height: 'auto',
+    minHeight: normalize(54),
+  },
+  itemFormErrorContainer: {
+    backgroundColor: colors.itemFormErrorContainer,
+  },
+  inputErrorText: {
+    color: colors.red,
   },
 });

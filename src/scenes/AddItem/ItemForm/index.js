@@ -5,46 +5,37 @@ import {
   Text,
   View,
   Image,
+  Alert,
   FlatList,
   StatusBar,
   TextInput,
+  ScrollView,
   SectionList,
   SafeAreaView,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 
-import { isEmpty, and, includes, assoc, remove } from 'ramda';
+import { keys, isEmpty, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
-import Modal from 'react-native-modal';
-import Swiper from 'react-native-swiper';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import DateTimePicker from 'react-native-modal-datetime-picker';
 
+import { isIphoneX } from '~/global/device';
 import { isSmallDevice } from '~/global/utils';
-import InventoryIcon from '~/assets/InventoryIcon';
-import ScrollViewContainer from '~/components/ScrollViewContainer';
+import Carousel from '~/components/Carousel';
+import ChooseModal from '~/components/ChooseModal';
+import DateTimePicker from '~/components/DateTimePicker';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State, PhotosProps } from './types';
+import InventoryIcon from '~/assets/InventoryIcon';
+import type { Props, State, PhotosProps, PreviewProps } from './types';
 import styles from './styles';
-
-const dateFields = [
-  constants.itemForm.purchaseDate,
-  constants.itemForm.estimateDate,
-  constants.itemForm.warrantyPeriod,
-];
-
-const modalFields = [
-  constants.itemForm.location,
-  constants.itemForm.responsible,
-  constants.itemForm.category,
-];
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -53,23 +44,13 @@ const iconProps = {
   backgroundColor: colors.transparent,
 };
 
-const CustomCancelDateTimePickerButton = ({ onCancel }: { onCancel: Function }) => (
-  <TouchableOpacity
-    activeOpacity={1}
-    style={styles.customCancelDateTimePickerButton}
-    onPress={onCancel}
-  >
-    <Text style={styles.customCancelDateTimePickerText}>{constants.buttonTitles.cancel}</Text>
-  </TouchableOpacity>
-);
-
 const PreviewModeButton = ({
-  isActive,
   title,
   onPress,
+  isActive,
 }: {
-  isActive: boolean,
   title: string,
+  isActive: boolean,
   onPress: Function,
 }) => (
   <TouchableOpacity
@@ -126,18 +107,18 @@ class ItemForm extends PureComponent<Props, State> {
   });
 
   state = {
-    sections: [
-      { title: constants.headers.mainInfo, data: constants.itemFormFields.slice(0, 4), index: 0 },
-      { title: constants.headers.price, data: constants.itemFormFields.slice(4, 9), index: 1 },
-      { title: constants.headers.storage, data: constants.itemFormFields.slice(9), index: 2 },
-    ],
+    name: '',
     photos: [],
     defects: [],
+    warnings: {},
     location: null,
     category: null,
     coordinates: '',
     showPhotos: true,
+    inventoryCode: '',
     responsible: null,
+    marketPrice: '',
+    purchasePrice: '',
     purchaseDate: null,
     estimateDate: null,
     warrantyPeriod: null,
@@ -145,9 +126,10 @@ class ItemForm extends PureComponent<Props, State> {
     activePreviewIndex: 0,
     currentlyEditableDate: null,
     isDateTimePickerOpened: false,
+    sections: constants.itemFormSections,
   };
 
-  swiper: any;
+  carousel: any;
   navListener: any;
 
   componentDidMount() {
@@ -155,7 +137,6 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
-    // this.swiper.scrollBy(0);
     const photos = navigation.getParam('photos', []);
     const defects = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
@@ -167,64 +148,125 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener.remove();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const { navigation } = this.props;
-    // const { activePreviewIndex, showPhotos, photos, defects } = this.state;
     if (
       prevProps.navigation.state.params.additionalPhotos
       !== navigation.state.params.additionalPhotos
     ) {
-      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ photos }) => ({
-        photos: photos.concat(navigation.state.params.additionalPhotos),
         activePreviewIndex: 0,
+        photos: photos.concat(navigation.state.params.additionalPhotos),
       }));
     }
     if (
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
-      // this.swiper.scrollBy((showPhotos ? photos : defects).length - activePreviewIndex, 0);
       this.setState(({ defects }) => ({
-        defects: defects.concat(navigation.state.params.additionalDefects),
         activePreviewIndex: 0,
+        defects: defects.concat(navigation.state.params.additionalDefects),
       }));
     }
   }
 
-  renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
+  checkFields = () => {
+    const { name, inventoryCode } = this.state;
+    const warnings = {};
+
+    if (!name.trim()) {
+      warnings.name = 1;
+    }
+
+    if (!inventoryCode.trim()) {
+      warnings.inventoryCode = 'empty';
+    }
+
+    /*
+
+    if (...somethingFromBackend) {
+      warnings.push(['inventoryCode', 'inventoryCodeAlreadyInUse']);
+    }
+
+    */
+
+    this.setState({ warnings });
+  };
+
+  checkForErrors = () => !!keys(this.state.warnings).length;
+
+  handleSubmitForm = async () => {
+    /**
+     * 'Promise.resolve' and 'await' below used because of async setState
+     * in this.checkFields and this.checkForErrors
+     */
+
+    const isFormInvalid = await Promise.resolve()
+      .then(_ => this.checkFields())
+      .then(_ => this.checkForErrors());
+
+    if (!isFormInvalid) console.log(this.state);
+    else console.log('FORM IS INVALID');
+  };
+
+  renderFormField = ({
+    item: { key, description, placeholder, ...rest },
+  }: PreviewProps) => {
+    const { warnings: stateWarnings } = this.state;
     let callback;
-    const isLocationField = description === constants.itemForm.location;
+    let itemMask;
+    let itemWarning;
     const isCoordinatesField = description === constants.itemForm.coordinates;
-    if (includes(description, modalFields)) callback = this.handleToggleModal;
-    if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
+    const isDescriptionField = description === constants.itemForm.description;
+    if (includes(description, constants.fieldTypes.modalFields)) callback = this.handleToggleModal;
+    if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
+    if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
+    if (includes(description, constants.fieldTypes.currencyFields)) {
+      itemMask = constants.masks.price;
+    }
+    if (description === constants.itemForm.inventoryCode) {
+      const { warnings } = rest;
+      itemWarning = warnings[stateWarnings[key]];
+    }
+    if (key === constants.itemForm.name) {
+      const { warning } = rest;
+      itemWarning = warning;
+    }
 
     return (
       <Input
         isWhite
         customKey={key}
+        mask={itemMask}
         blurOnSubmit={false}
         value={this.state[key]}
+        placeholder={placeholder}
         containerCallback={callback}
         disabled={isCoordinatesField}
-        type={{ label: description }}
-        placeholder={isLocationField ? constants.placeHolders.place : null}
+        isMultiline={isDescriptionField}
+        maxLength={isDescriptionField ? 250 : 50}
+        showWarningInTitle={key === 'inventoryCode'}
+        isWarning={includes(key, keys(stateWarnings))}
+        type={{ label: description, warning: itemWarning }}
+        onChangeText={text => this.handleChangeField(key, text)}
       />
     );
   };
 
-  renderFormSectionHeader = ({ section: { title, index } }: { title: string, index: number }) => (
-    <LinearGradient
-      start={index === 0 ? { x: 1, y: 0 } : null}
-      end={index === 0 ? { x: 0, y: 0 } : null}
-      style={styles.formSectionHeader}
-      colors={colors.itemFormHeaders[index]}
-    >
-      <Text style={styles.formSectionHeaderText}>{title}</Text>
-    </LinearGradient>
+  renderFormSectionHeader = ({ section: { title, index } }: Section) => (
+    <View style={styles.formSectionHeaderOverflow}>
+      <LinearGradient
+        start={index === 0 ? { x: 1, y: 0 } : null}
+        end={index === 0 ? { x: 0, y: 0 } : null}
+        style={styles.formSectionHeader}
+        colors={colors.itemFormHeaders[index]}
+      >
+        <Text style={styles.formSectionHeaderText}>{title}</Text>
+      </LinearGradient>
+    </View>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { base64 }, index }: PhotosProps) => (base64 === '' ? (
+  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => (!uri ? (
     <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
       <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
     </TouchableOpacity>
@@ -241,7 +283,7 @@ class ItemForm extends PureComponent<Props, State> {
         style={styles.photoImageContainer}
         onPress={() => this.handleSetIndexPreview(index)}
       >
-        <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+        <Image style={styles.photoImage} source={{ uri }} />
       </TouchableOpacity>
     </View>
   ));
@@ -255,11 +297,10 @@ class ItemForm extends PureComponent<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (index: number) => {
-    const { navigation } = this.props;
-    const { showPhotos } = this.state;
+  handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
+    const { showPhotos, activePreviewIndex } = this.state;
     const currentlyActive = showPhotos ? 'photos' : 'defects';
-    const { uri } = this.state[currentlyActive][index];
+    const { uri } = this.state[currentlyActive][removedIndex];
 
     try {
       RNFS.unlink(uri);
@@ -267,10 +308,13 @@ class ItemForm extends PureComponent<Props, State> {
       Alert.alert(error.message);
     }
 
-    this.setState(
-      state => assoc(currentlyActive, remove(index, 1, state[currentlyActive]), state),
-      () => navigation.setParams({ [currentlyActive]: this.state[currentlyActive] }),
-    );
+    this.setState(state => ({
+      [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
+      activePreviewIndex:
+        removedIndex <= activePreviewIndex && activePreviewIndex > 0
+          ? state.activePreviewIndex - 1
+          : state.activePreviewIndex,
+    }));
   };
 
   handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
@@ -281,38 +325,46 @@ class ItemForm extends PureComponent<Props, State> {
   handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
 
   handleChooseDate = (date: Date) => this.setState(({ currentlyEditableDate }) => ({
-    currentlyEditableDate: null,
     isDateTimePickerOpened: false,
     [currentlyEditableDate]: `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(
       new Date(date),
     ).format(constants.formats.newItemDates)}`,
+    currentlyEditableDate: null,
   }));
-
-  //  FIXME: handle set index doesnt work properly
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
   handleSetIndexPreview = (newIndex: number) => {
-    this.handleSwipePreview(newIndex);
-    this.swiper.scrollBy(newIndex - this.state.activePreviewIndex, false);
+    const { activePreviewIndex } = this.state;
+    this.carousel.scrollBy(newIndex - activePreviewIndex, false);
   };
 
-  showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
+  handleChangeField = (field: string, value: string) => {
+    this.setState({
+      [field]: value,
+    });
+  };
 
-  showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
+  showPhotos = () => {
+    this.setState({ showPhotos: true, activePreviewIndex: 0 });
+    if (this.carousel) {
+      this.carousel.scrollBy(0, false);
+    }
+  };
 
-  renderModalItem = ({ item }) => (
-    <TouchableOpacity style={styles.modalItem}>
-      <Text style={styles.modalItemText}>{item}</Text>
-    </TouchableOpacity>
-  );
-
-  renderModalSeparator = () => <View style={styles.modalSeparator} />;
+  showDefects = () => {
+    this.setState({ showPhotos: false, activePreviewIndex: 0 });
+    if (this.carousel) {
+      this.carousel.scrollBy(0, false);
+    }
+  };
 
   render() {
     const {
+      name,
       photos,
       defects,
+      warnings,
       sections,
       showPhotos,
       isModalOpened,
@@ -322,111 +374,108 @@ class ItemForm extends PureComponent<Props, State> {
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollViewContainer bottomOffset={0} extraHeight={215} style={styles.container}>
-          <View style={styles.preview}>
-            <View style={styles.previewModeButtons}>
-              <PreviewModeButton
-                isActive={showPhotos}
-                onPress={this.showPhotos}
-                title={constants.buttonTitles.photos}
-              />
-              <PreviewModeButton
-                isActive={!showPhotos}
-                onPress={this.showDefects}
-                title={constants.buttonTitles.defects}
-              />
-            </View>
-            <Fragment>
-              {currentTypeIsEmpty ? (
-                <NoItems additional onPress={this.handleAddPhoto} />
-              ) : (
-                <Swiper
-                  ref={(ref) => {
-                    this.swiper = ref;
-                  }}
-                  loop={false}
-                  showsPagination={false}
-                  onIndexChanged={this.handleSwipePreview}
-                >
-                  {(showPhotos ? photos : defects).map((photo, index) => (
-                    <Image
-                      key={photo.base64}
-                      style={styles.photo}
-                      source={{ uri: (showPhotos ? photos : defects)[index].uri }}
-                    />
-                  ))}
-                </Swiper>
-              )}
-              <View style={styles.previewInfo}>
-                <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
-                <Text style={styles.previewInfoText}>
-                  {currentTypeIsEmpty
-                    ? '0/0'
-                    : `${activePreviewIndex + 1} / ${showPhotos ? photos.length : defects.length}`}
-                </Text>
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={styles.container}
+          keyboardVerticalOffset={isIphoneX ? 85 : 60}
+        >
+          <ScrollView>
+            <View style={styles.preview}>
+              <View style={styles.previewModeButtons}>
+                <PreviewModeButton
+                  isActive={showPhotos}
+                  onPress={this.showPhotos}
+                  title={constants.buttonTitles.photos}
+                />
+                <PreviewModeButton
+                  isActive={!showPhotos}
+                  onPress={this.showDefects}
+                  title={constants.buttonTitles.defects}
+                />
               </View>
-            </Fragment>
-          </View>
-          <FlatList
-            horizontal
-            style={styles.photosOuter}
-            data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
-            showsHorizontalScrollIndicator={false}
-            renderItem={this.renderPreviewPhotoBarItem}
-            keyExtractor={(_, index) => index.toString()}
-            contentContainerStyle={[
-              styles.photosInner,
-              styles.previewPhotoBar,
-              isEmpty(showPhotos ? photos : defects) && styles.hide,
-            ]}
-          />
-          <View style={styles.formContainer}>
-            <View style={styles.formName}>
-              <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-              <TextInput placeholder={constants.hints.enterName} style={styles.formNameInput} />
+              <Fragment>
+                {currentTypeIsEmpty ? (
+                  <NoItems additional onPress={this.handleAddPhoto} />
+                ) : (
+                  <Carousel
+                    innerRef={(ref) => {
+                      this.carousel = ref;
+                    }}
+                    index={activePreviewIndex}
+                    data={showPhotos ? photos : defects}
+                    onIndexChanged={this.handleSwipePreview}
+                    //  use custom key for correct rerendering of carousel component
+                    key={(showPhotos ? photos : defects).length + (showPhotos ? 'p' : 'd')}
+                  />
+                )}
+                <View style={styles.previewInfo}>
+                  <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
+                  <Text style={styles.previewInfoText}>
+                    {currentTypeIsEmpty
+                      ? '0/0'
+                      : `${activePreviewIndex + 1} / ${
+                        showPhotos ? photos.length : defects.length
+                      }`}
+                  </Text>
+                </View>
+              </Fragment>
             </View>
-            <SectionList
-              sections={sections}
-              renderItem={this.renderFormField}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={this.renderFormSectionHeader}
+            <FlatList
+              horizontal
+              style={styles.photosOuter}
+              showsHorizontalScrollIndicator={false}
+              renderItem={this.renderPreviewPhotoBarItem}
+              keyExtractor={(_, index) => index.toString()}
+              contentContainerStyle={[
+                styles.photosInner,
+                styles.previewPhotoBar,
+                isEmpty(showPhotos ? photos : defects) && styles.hide,
+              ]}
+              data={showPhotos ? photos.concat({ uri: '' }) : defects.concat({ uri: '' })}
             />
-          </View>
-          <TouchableOpacity style={styles.saveItem}>
-            <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-          </TouchableOpacity>
-          <DateTimePicker
-            onConfirm={this.handleChooseDate}
-            isVisible={isDateTimePickerOpened}
-            titleIOS={constants.headers.pickDate}
-            onCancel={this.handleToggleDateTimePicker}
-            confirmTextIOS={constants.buttonTitles.ready}
-            confirmTextStyle={styles.dateTimePickerConfirmText}
-            customCancelButtonIOS={
-              <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
-            }
-          />
-          <Modal
-            isVisible={isModalOpened}
-            style={styles.modalOverlay}
-            onBackButtonPress={this.handleToggleModal}
-          >
-            <View style={styles.modalContainer}>
-              <FlatList
-                data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
-                renderItem={this.renderModalItem}
-                ItemSeparatorComponent={this.renderModalSeparator}
+            <View style={styles.formContainer}>
+              <View style={styles.formName}>
+                <View style={styles.formNameTitleContainer}>
+                  <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                  <Text
+                    style={[
+                      styles.formNameError,
+                      includes('name', keys(warnings)) && styles.show,
+                    ]}
+                  >
+                    {constants.errors.createItem.name}
+                  </Text>
+                </View>
+                <TextInput
+                  value={name}
+                  style={styles.formNameInput}
+                  placeholder={constants.hints.enterName}
+                  onChangeText={text => this.handleChangeField('name', text)}
+                />
+              </View>
+              <SectionList
+                sections={sections}
+                renderItem={this.renderFormField}
+                keyExtractor={(item, index) => item + index}
+                renderSectionHeader={this.renderFormSectionHeader}
+                contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.modalCancel}
-              onPress={this.handleToggleModal}
-            >
-              <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
+            <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
+              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
             </TouchableOpacity>
-          </Modal>
-        </ScrollViewContainer>
+            <DateTimePicker
+              onConfirm={this.handleChooseDate}
+              isVisible={isDateTimePickerOpened}
+              onCancel={this.handleToggleDateTimePicker}
+            />
+            <ChooseModal
+              isVisible={isModalOpened}
+              onCancel={this.handleToggleModal}
+              data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+            />
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

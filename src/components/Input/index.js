@@ -45,10 +45,12 @@ class Input extends Component<Props> {
       children,
       isWarning,
       customKey,
+      isMultiline,
       onSubmitForm,
       returnKeyType,
       onSubmitEditing,
       containerCallback,
+      showWarningInTitle,
       ...textInputProps
     } = this.props;
 
@@ -57,35 +59,44 @@ class Input extends Component<Props> {
 
     return (
       <Wrapper
-        onPress={containerCallback ? () => containerCallback(customKey) : null}
+        activeOpacity={1}
         style={containerCallback ? styles.overflowView : null}
+        onPress={containerCallback ? () => containerCallback(customKey) : null}
       >
         <View
           pointerEvents={containerCallback ? 'none' : null}
           style={[
             styles.container,
-            isWhite && styles.whiteContainer,
             children && styles.withButton,
+            isWhite && styles.whiteContainer,
             isWarning && styles.invalidContainer,
+            isMultiline && styles.multilineContainer,
+            showWarningInTitle && isWarning && styles.itemFormErrorContainer,
           ]}
         >
-          <Text style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}>
-            {type.label}
+          <Text style={[
+            styles.inputTitleText,
+            isWhite && styles.inputTitleTextWhite,
+            showWarningInTitle && isWarning && styles.inputErrorText,
+          ]}
+          >
+            {showWarningInTitle && isWarning ? type.warning : type.label}
           </Text>
           <CustomTextInput
             {...textInputProps}
             mask={mask}
-            ref={fieldRef}
             value={value}
+            ref={fieldRef}
             textContentType="none"
+            multiline={isMultiline}
             returnKeyType={returnKeyType}
-            style={[styles.input, isWhite && styles.inputWhite]}
-            placeholderTextColor={isWhite ? colors.text.placeholderWhite : colors.text.placeholder}
             onSubmitEditing={returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing}
+            placeholderTextColor={isWhite ? colors.text.placeholderWhite : colors.text.placeholder}
+            style={[styles.input, isWhite && styles.inputWhite, isMultiline && styles.multilineInput]}
           />
           {children}
         </View>
-        <Warning isVisible={isWarning || false} title={type.warning} />
+        {!showWarningInTitle && <Warning isVisible={isWarning} title={type.warning} />}
       </Wrapper>
     );
   }
