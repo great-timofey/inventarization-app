@@ -12,6 +12,7 @@ const regExp = {
 };
 
 const masks = {
+  price: '\u20BD [9999999990].[99]',
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
@@ -34,6 +35,8 @@ const placeholders = {
   warrantyPeriod: 'Выберите дату окончания',
   category: 'Без категории',
   mobileNumber: '+7 (___) ___-__-__',
+  purchasePrice: '\u20BD 0',
+  marketPrice: '\u20BD 0',
 };
 
 const inputTypes = {
@@ -215,8 +218,8 @@ const itemForm = {
   manufacturer: 'Производитель',
   model: 'Модeль',
   description: 'Описание',
-  inventoryCode: 'Инвентарный номер',
   qrcode: 'QR-код',
+  inventoryCode: 'Инвентарный номер',
   purchaseDate: 'Дата покупки',
   purchasePrice: 'Цена покупки',
   marketPrice: 'Рыночная цена',

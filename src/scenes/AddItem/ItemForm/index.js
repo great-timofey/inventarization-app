@@ -51,6 +51,8 @@ const modalFields = [
 
 const nonMutableFields = [constants.itemForm.qrcode, constants.itemForm.company];
 
+const currencyFields = [constants.itemForm.purchasePrice, constants.itemForm.marketPrice];
+
 const iconProps = {
   activeOpacity: 0.5,
   iconStyle: { marginRight: 0 },
@@ -134,15 +136,15 @@ class ItemForm extends PureComponent<Props, State> {
     name: '',
     photos: [],
     defects: [],
-    warnings: [],
+    warnings: {},
     location: null,
     category: null,
     coordinates: '',
     showPhotos: true,
     inventoryCode: '',
     responsible: null,
-    marketPrice: '0',
-    purchasePrice: '0',
+    marketPrice: '',
+    purchasePrice: '',
     purchaseDate: null,
     estimateDate: null,
     warrantyPeriod: null,
@@ -194,22 +196,16 @@ class ItemForm extends PureComponent<Props, State> {
     }
   }
 
-  checkForErrors = () => {
-    const { warnings } = this.state;
-    if (warnings.length) return true;
-    return false;
-  };
-
-  checkValue = () => {
+  checkFields = () => {
     const { name, inventoryCode } = this.state;
     const warnings = {};
 
     if (!name.trim()) {
-      warnings['name'] = 1;
+      warnings.name = 1;
     }
 
     if (!inventoryCode.trim()) {
-      warnings['inventoryCode'] = 'empty';
+      warnings.inventoryCode = 'empty';
     }
 
     /*
@@ -223,9 +219,26 @@ class ItemForm extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
+  checkForErrors = () => !!keys(this.state.warnings).length;
+
+  handleSubmitForm = async () => {
+    /**
+     * 'Promise.resolve' and 'await' below used because of async setState
+     * in this.checkFields and this.checkForErrors
+     */
+
+    const isFormInvalid = await Promise.resolve()
+      .then(_ => this.checkFields())
+      .then(_ => this.checkForErrors());
+
+    if (!isFormInvalid) console.log(this.state)
+    else console.log('FORM IS INVALID');
+  }
+
   renderFormField = ({ item: { key, description, placeholder, ...rest }}: { label: string, description: string, placeholder: string }) => {
     const { warnings: stateWarnings } = this.state;
     let callback;
+    let itemMask;
     let itemWarning;
     // const isLocationField = description === constants.itemForm.location;
     const isCoordinatesField = description === constants.itemForm.coordinates;
@@ -233,6 +246,9 @@ class ItemForm extends PureComponent<Props, State> {
     if (includes(description, modalFields)) callback = this.handleToggleModal;
     if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
     if (includes(description, nonMutableFields)) callback = () => {};
+    if (includes(description, currencyFields)) {
+      itemMask = constants.masks.price;
+    }
     if (description === constants.itemForm.inventoryCode) {
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
@@ -246,6 +262,7 @@ class ItemForm extends PureComponent<Props, State> {
       <Input
         isWhite
         customKey={key}
+        mask={itemMask}
         blurOnSubmit={false}
         value={this.state[key]}
         placeholder={placeholder}
@@ -256,6 +273,7 @@ class ItemForm extends PureComponent<Props, State> {
         showWarningInTitle={key === 'inventoryCode'}
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
+        onChangeText={text => this.handleChangeField(key, text)}
       />
     );
   };
@@ -273,7 +291,7 @@ class ItemForm extends PureComponent<Props, State> {
     </View>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { base64, uri }, index }: PhotosProps) => (base64 === '' ? (
+  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => (!uri ? (
     <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
       <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
     </TouchableOpacity>
@@ -344,12 +362,18 @@ class ItemForm extends PureComponent<Props, State> {
     this.carousel.scrollBy(newIndex - activePreviewIndex, false);
   };
 
-  showPhotos = () => {
-    this.setState({ showPhotos: true, activePreviewIndex: 0 });
-    if (this.carousel) {
-      this.carousel.scrollBy(0, false);
-    }
-  }
+ handleChangeField = (field: string, value: string) => {
+   this.setState({
+     [field]: value,
+   });
+ };
+
+ showPhotos = () => {
+   this.setState({ showPhotos: true, activePreviewIndex: 0 });
+   if (this.carousel) {
+     this.carousel.scrollBy(0, false);
+   }
+ }
 
   showDefects = () => {
     this.setState({ showPhotos: false, activePreviewIndex: 0 });
@@ -368,6 +392,7 @@ class ItemForm extends PureComponent<Props, State> {
 
   render() {
     const {
+      name,
       photos,
       defects,
       warnings,
@@ -410,7 +435,7 @@ class ItemForm extends PureComponent<Props, State> {
                     index={activePreviewIndex}
                     data={showPhotos ? photos : defects}
                     onIndexChanged={this.handleSwipePreview}
-                    //  use custom key for correct rerendering of carousel componen
+                    //  use custom key for correct rerendering of carousel component
                     key={(showPhotos ? photos : defects).length + (showPhotos ? 'p' : 'd')}
                   />
                 )}
@@ -441,11 +466,17 @@ class ItemForm extends PureComponent<Props, State> {
             />
             <View style={styles.formContainer}>
               <View style={styles.formName}>
-                <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                <View style={styles.formNameTitleContainer}>
+                  <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                  <Text style={[styles.formNameError, includes('name', keys(warnings)) && {display: 'flex'}]}>
+                    {constants.errors.createItem.name}
+                    </Text>
+                </View>
                 <TextInput
+                  value={name}
                   style={styles.formNameInput}
-                  isWarning={includes('name', warnings)}
                   placeholder={constants.hints.enterName}
+                  onChangeText={text => this.handleChangeField('name', text)}
                 />
               </View>
               <SectionList
@@ -456,7 +487,7 @@ class ItemForm extends PureComponent<Props, State> {
                 contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
-            <TouchableOpacity style={styles.saveItem} onPress={this.checkValue}>
+            <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
               <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
             </TouchableOpacity>
             <DateTimePicker

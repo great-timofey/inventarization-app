@@ -168,6 +168,16 @@ export default StyleSheet.create({
     marginBottom: normalize(5),
     fontFamily: fonts.proDisplay.bold,
   },
+  formNameError: {
+    display: 'none',
+    color: colors.red,
+    fontSize: normalize(13),
+    fontFamily: fonts.proDisplay.light,
+  },
+  formNameTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   formSectionHeaderOverflow: {
     marginHorizontal: normalize(-20),
   },

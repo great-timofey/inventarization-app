@@ -126,13 +126,9 @@ class Login extends PureComponent<Props, State> {
     this.setState(state => assoc('isRegForm', !state.isRegForm, initialState));
   };
 
-  checkForErrors = () => {
-    const { warnings } = this.state;
-    if (warnings.length) return true;
-    return false;
-  };
+  checkForErrors = () => !!this.state.warnings.length;
 
-  checkValue = () => {
+  checkFields = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
     const warnings = [];
     if (isRegForm && !name.trim()) {
@@ -171,11 +167,11 @@ class Login extends PureComponent<Props, State> {
 
     /**
      * 'Promise.resolve' and 'await' below used because of async setState
-     * in this.checkValue and this.checkForErrors
+     * in this.checkFields and this.checkForErrors
      */
 
     const isFormInvalid = await Promise.resolve()
-      .then(_ => this.checkValue())
+      .then(_ => this.checkFields())
       .then(_ => this.checkForErrors());
 
     if (!isFormInvalid) {
