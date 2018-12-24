@@ -23,7 +23,6 @@ class AppNavigator extends Component<Props> {
   }
 
   render() {
-    // const isAuthed = false;
     const {
       data: { isAuthed },
     } = this.props;

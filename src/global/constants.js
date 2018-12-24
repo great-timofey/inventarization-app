@@ -214,6 +214,8 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
 };
 
+/** Form stuff */
+
 const itemForm = {
   manufacturer: 'Производитель',
   model: 'Модeль',
@@ -273,6 +275,27 @@ const itemFormSections = [
     data: Object.values(pick(slice(10, -1, keys(itemFormFields)), itemFormFields)),
   },
 ];
+
+const fieldTypes = {
+  dateFields: [
+    itemForm.purchaseDate,
+    itemForm.estimateDate,
+    itemForm.warrantyPeriod,
+  ],
+  modalFields: [
+    itemForm.place,
+    itemForm.category,
+    itemForm.responsible,
+  ],
+  nonEditableFields: [
+    itemForm.qrcode,
+    itemForm.company,
+  ],
+  currencyFields: [
+    itemForm.marketPrice,
+    itemForm.purchasePrice,
+  ],
+};
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
@@ -365,6 +388,7 @@ export default {
   itemForm,
   category,
   inputTypes,
+  fieldTypes,
   buttonTitles,
   placeholders,
   modalQuestion,

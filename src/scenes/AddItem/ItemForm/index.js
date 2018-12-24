@@ -16,42 +16,26 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { keys, isEmpty, includes, assoc, remove } from 'ramda';
+import { keys, isEmpty, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
-import Modal from 'react-native-modal';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import { isIphoneX } from '~/global/device';
-import { isSmallDevice, isValid } from '~/global/utils';
+import { isSmallDevice } from '~/global/utils';
 import Carousel from '~/components/Carousel';
+import ChooseModal from '~/components/ChooseModal';
+import DateTimePicker from '~/components/DateTimePicker';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
-import type { Props, State, PhotosProps } from './types';
+import type { Props, State, PhotosProps, PreviewProps } from './types';
 import styles from './styles';
-
-const dateFields = [
-  constants.itemForm.purchaseDate,
-  constants.itemForm.estimateDate,
-  constants.itemForm.warrantyPeriod,
-];
-
-const modalFields = [
-  constants.itemForm.location,
-  constants.itemForm.category,
-  constants.itemForm.responsible,
-];
-
-const nonMutableFields = [constants.itemForm.qrcode, constants.itemForm.company];
-
-const currencyFields = [constants.itemForm.purchasePrice, constants.itemForm.marketPrice];
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -59,16 +43,6 @@ const iconProps = {
   underlayColor: colors.transparent,
   backgroundColor: colors.transparent,
 };
-
-const CustomCancelDateTimePickerButton = ({ onCancel }: { onCancel: Function }) => (
-  <TouchableOpacity
-    activeOpacity={1}
-    style={styles.customCancelDateTimePickerButton}
-    onPress={onCancel}
-  >
-    <Text style={styles.customCancelDateTimePickerText}>{constants.buttonTitles.cancel}</Text>
-  </TouchableOpacity>
-);
 
 const PreviewModeButton = ({
   title,
@@ -174,7 +148,7 @@ class ItemForm extends PureComponent<Props, State> {
     this.navListener.remove();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const { navigation } = this.props;
     if (
       prevProps.navigation.state.params.additionalPhotos
@@ -231,22 +205,23 @@ class ItemForm extends PureComponent<Props, State> {
       .then(_ => this.checkFields())
       .then(_ => this.checkForErrors());
 
-    if (!isFormInvalid) console.log(this.state)
+    if (!isFormInvalid) console.log(this.state);
     else console.log('FORM IS INVALID');
-  }
+  };
 
-  renderFormField = ({ item: { key, description, placeholder, ...rest }}: { label: string, description: string, placeholder: string }) => {
+  renderFormField = ({
+    item: { key, description, placeholder, ...rest },
+  }: PreviewProps) => {
     const { warnings: stateWarnings } = this.state;
     let callback;
     let itemMask;
     let itemWarning;
-    // const isLocationField = description === constants.itemForm.location;
     const isCoordinatesField = description === constants.itemForm.coordinates;
     const isDescriptionField = description === constants.itemForm.description;
-    if (includes(description, modalFields)) callback = this.handleToggleModal;
-    if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
-    if (includes(description, nonMutableFields)) callback = () => {};
-    if (includes(description, currencyFields)) {
+    if (includes(description, constants.fieldTypes.modalFields)) callback = this.handleToggleModal;
+    if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
+    if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
+    if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
     if (description === constants.itemForm.inventoryCode) {
@@ -278,7 +253,7 @@ class ItemForm extends PureComponent<Props, State> {
     );
   };
 
-  renderFormSectionHeader = ({ section: { title, index } }: { title: string, index: number }) => (
+  renderFormSectionHeader = ({ section: { title, index } }: Section) => (
     <View style={styles.formSectionHeaderOverflow}>
       <LinearGradient
         start={index === 0 ? { x: 1, y: 0 } : null}
@@ -336,7 +311,9 @@ class ItemForm extends PureComponent<Props, State> {
     this.setState(state => ({
       [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
       activePreviewIndex:
-        (removedIndex <= activePreviewIndex && activePreviewIndex > 0) ? state.activePreviewIndex - 1 : state.activePreviewIndex,
+        removedIndex <= activePreviewIndex && activePreviewIndex > 0
+          ? state.activePreviewIndex - 1
+          : state.activePreviewIndex,
     }));
   };
 
@@ -348,11 +325,11 @@ class ItemForm extends PureComponent<Props, State> {
   handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
 
   handleChooseDate = (date: Date) => this.setState(({ currentlyEditableDate }) => ({
-    currentlyEditableDate: null,
     isDateTimePickerOpened: false,
     [currentlyEditableDate]: `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(
       new Date(date),
     ).format(constants.formats.newItemDates)}`,
+    currentlyEditableDate: null,
   }));
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
@@ -362,33 +339,25 @@ class ItemForm extends PureComponent<Props, State> {
     this.carousel.scrollBy(newIndex - activePreviewIndex, false);
   };
 
- handleChangeField = (field: string, value: string) => {
-   this.setState({
-     [field]: value,
-   });
- };
+  handleChangeField = (field: string, value: string) => {
+    this.setState({
+      [field]: value,
+    });
+  };
 
- showPhotos = () => {
-   this.setState({ showPhotos: true, activePreviewIndex: 0 });
-   if (this.carousel) {
-     this.carousel.scrollBy(0, false);
-   }
- }
+  showPhotos = () => {
+    this.setState({ showPhotos: true, activePreviewIndex: 0 });
+    if (this.carousel) {
+      this.carousel.scrollBy(0, false);
+    }
+  };
 
   showDefects = () => {
     this.setState({ showPhotos: false, activePreviewIndex: 0 });
     if (this.carousel) {
       this.carousel.scrollBy(0, false);
     }
-  }
-
-  renderModalItem = ({ item }) => (
-    <TouchableOpacity style={styles.modalItem}>
-      <Text style={styles.modalItemText}>{item}</Text>
-    </TouchableOpacity>
-  );
-
-  renderModalSeparator = () => <View style={styles.modalSeparator} />;
+  };
 
   render() {
     const {
@@ -462,15 +431,20 @@ class ItemForm extends PureComponent<Props, State> {
                 styles.previewPhotoBar,
                 isEmpty(showPhotos ? photos : defects) && styles.hide,
               ]}
-              data={showPhotos ? photos.concat({ base64: '' }) : defects.concat({ base64: '' })}
+              data={showPhotos ? photos.concat({ uri: '' }) : defects.concat({ uri: '' })}
             />
             <View style={styles.formContainer}>
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-                  <Text style={[styles.formNameError, includes('name', keys(warnings)) && {display: 'flex'}]}>
+                  <Text
+                    style={[
+                      styles.formNameError,
+                      includes('name', keys(warnings)) && { display: 'flex' },
+                    ]}
+                  >
                     {constants.errors.createItem.name}
-                    </Text>
+                  </Text>
                 </View>
                 <TextInput
                   value={name}
@@ -493,34 +467,13 @@ class ItemForm extends PureComponent<Props, State> {
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
-              titleIOS={constants.headers.pickDate}
               onCancel={this.handleToggleDateTimePicker}
-              confirmTextIOS={constants.buttonTitles.ready}
-              confirmTextStyle={styles.dateTimePickerConfirmText}
-              customCancelButtonIOS={
-                <CustomCancelDateTimePickerButton onCancel={this.handleToggleDateTimePicker} />
-              }
             />
-            <Modal
+            <ChooseModal
               isVisible={isModalOpened}
-              style={styles.modalOverlay}
-              onBackButtonPress={this.handleToggleModal}
-            >
-              <View style={styles.modalContainer}>
-                <FlatList
-                  data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
-                  renderItem={this.renderModalItem}
-                  ItemSeparatorComponent={this.renderModalSeparator}
-                />
-              </View>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={styles.modalCancel}
-                onPress={this.handleToggleModal}
-              >
-                <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
-              </TouchableOpacity>
-            </Modal>
+              onCancel={this.handleToggleModal}
+              data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+            />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
