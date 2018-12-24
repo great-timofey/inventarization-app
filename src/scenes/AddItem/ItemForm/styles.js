@@ -211,4 +211,7 @@ export default StyleSheet.create({
   hide: {
     display: 'none',
   },
+  show: {
+    display: 'flex',
+  },
 });

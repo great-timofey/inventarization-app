@@ -440,7 +440,7 @@ class ItemForm extends PureComponent<Props, State> {
                   <Text
                     style={[
                       styles.formNameError,
-                      includes('name', keys(warnings)) && { display: 'flex' },
+                      includes('name', keys(warnings)) && styles.show,
                     ]}
                   >
                     {constants.errors.createItem.name}
