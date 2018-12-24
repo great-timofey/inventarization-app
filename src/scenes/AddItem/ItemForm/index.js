@@ -155,7 +155,7 @@ class ItemForm extends PureComponent<Props, State> {
     isDateTimePickerOpened: false,
   };
 
-  swiper: any;
+  carousel: any;
   navListener: any;
 
   componentDidMount() {
@@ -280,7 +280,6 @@ class ItemForm extends PureComponent<Props, State> {
         style={styles.photoImageContainer}
         onPress={() => this.handleSetIndexPreview(index)}
       >
-        {/* <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} /> */}
         <Image style={styles.photoImage} source={{ uri }} />
       </TouchableOpacity>
     </View>
@@ -295,10 +294,7 @@ class ItemForm extends PureComponent<Props, State> {
     );
   };
 
-  //  FIXME: after removing swipe and index display are broken
-
   handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
-    const { navigation } = this.props;
     const { showPhotos, activePreviewIndex } = this.state;
     const currentlyActive = showPhotos ? 'photos' : 'defects';
     const { uri } = this.state[currentlyActive][removedIndex];
@@ -312,7 +308,7 @@ class ItemForm extends PureComponent<Props, State> {
     this.setState(state => ({
       [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
       activePreviewIndex:
-        (removedIndex <= activePreviewIndex && removedIndex > 0) ? state.activePreviewIndex - 1 : state.activePreviewIndex,
+        (removedIndex <= activePreviewIndex && activePreviewIndex > 0) ? state.activePreviewIndex - 1 : state.activePreviewIndex,
     }));
   };
 
@@ -331,21 +327,26 @@ class ItemForm extends PureComponent<Props, State> {
     ).format(constants.formats.newItemDates)}`,
   }));
 
-  //  FIXME: handle set index doesnt work properly
-
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
 
   handleSetIndexPreview = (newIndex: number) => {
     const { activePreviewIndex } = this.state;
-    console.log('new ', newIndex);
-    console.log('old ', activePreviewIndex);
-    // this.handleSwipePreview(newIndex);
-    // this.swiper.scrollBy(newIndex - activePreviewIndex, false);
+    this.carousel.scrollBy(newIndex - activePreviewIndex, false);
   };
 
-  showPhotos = () => this.setState({ showPhotos: true, activePreviewIndex: 0 });
+  showPhotos = () => {
+    this.setState({ showPhotos: true, activePreviewIndex: 0 });
+    if (this.carousel) {
+      this.carousel.scrollBy(0, false);
+    }
+  }
 
-  showDefects = () => this.setState({ showPhotos: false, activePreviewIndex: 0 });
+  showDefects = () => {
+    this.setState({ showPhotos: false, activePreviewIndex: 0 });
+    if (this.carousel) {
+      this.carousel.scrollBy(0, false);
+    }
+  }
 
   renderModalItem = ({ item }) => (
     <TouchableOpacity style={styles.modalItem}>
@@ -394,15 +395,13 @@ class ItemForm extends PureComponent<Props, State> {
                 ) : (
                   <Carousel
                     innerRef={(ref) => {
-                      this.swiper = ref;
+                      this.carousel = ref;
                     }}
-                    key={(showPhotos ? photos : defects).length}
                     index={activePreviewIndex}
                     data={showPhotos ? photos : defects}
                     onIndexChanged={this.handleSwipePreview}
-                    // onMomentumScrollEnd={(_, state) => {
-                    // this.handleSwipePreview(state.index);
-                    // }}
+                    //  use custom key for correct rerendering of carousel component
+                    key={(showPhotos ? photos : defects).length + (showPhotos ? 'p' : 'd')}
                   />
                 )}
                 <View style={styles.previewInfo}>
