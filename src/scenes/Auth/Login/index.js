@@ -314,7 +314,7 @@ class Login extends PureComponent<Props, State> {
                 keyboardType="numbers-and-punctuation"
                 isWarning={includes('mobile', warnings)}
                 type={constants.inputTypes.mobileNumber}
-                placeholder={constants.placeHolders.mobileNumber}
+                placeholder={constants.placeholders.mobileNumber}
                 onChangeText={text => this.onChangeField('mobile', text)}
               />
             )}

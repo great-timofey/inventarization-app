@@ -168,6 +168,9 @@ export default StyleSheet.create({
     marginBottom: normalize(5),
     fontFamily: fonts.proDisplay.bold,
   },
+  formSectionHeaderOverflow: {
+    marginHorizontal: normalize(-20),
+  },
   formSectionHeader: {
     width: '100%',
     height: normalize(28),
@@ -179,6 +182,9 @@ export default StyleSheet.create({
     color: colors.white,
     fontSize: normalize(13),
     fontFamily: fonts.proDisplay.regular,
+  },
+  formSectionListContainer: {
+    paddingHorizontal: normalize(20),
   },
   saveItem: {
     width: deviceWidth,

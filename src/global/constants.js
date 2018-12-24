@@ -1,3 +1,7 @@
+// @flow
+
+import { pick, slice, keys } from 'ramda';
+
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
@@ -17,9 +21,18 @@ const uploadCreateCompanyImages = {
   quality: 0.5,
 };
 
-const placeHolders = {
+const placeholders = {
+  manufacturer: 'Введите название',
+  model: 'Введите название',
+  description: 'Введите текст',
   place: 'Место не указано',
   inputHeader: 'Введите название',
+  inventoryCode: 'Введите код',
+  qrcode: 'Введите код',
+  estimateDate: 'Не оценивалось',
+  purchaseDate: 'Выберите дату покупки',
+  warrantyPeriod: 'Выберите дату окончания',
+  category: 'Без категории',
   mobileNumber: '+7 (___) ___-__-__',
 };
 
@@ -132,7 +145,7 @@ const modalQuestion = {
 const forgotPassText = {
   headerTitle: 'Восстановление \n пароля',
   enterEmail: 'Введите e-mail',
-  placeHolder: 'Ваш номер телефона',
+  placeholder: 'Ваш номер телефона',
   sendMail:
     'На ваш е-mail было отправлено письмо с ссылкой на восстановление. Проверьте свой почтовый ящик.',
 };
@@ -174,9 +187,9 @@ const headers = {
   itemReady: 'Добавлено!',
   newItem: 'Новый предмет',
   pickDate: 'Выберите дату',
-  price: 'Покупка и стоимость',
   mainInfo: 'Основная информация',
   addingItem: 'Добавление предмета',
+  priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   createNewCompany: 'Создание новой \n организации',
 };
@@ -199,11 +212,10 @@ const hints = {
 };
 
 const itemForm = {
-  name: 'Название',
   manufacturer: 'Производитель',
-  inventoryCode: 'Инвентарный номер',
   model: 'Модeль',
   description: 'Описание',
+  inventoryCode: 'Инвентарный номер',
   qrcode: 'QR-код',
   purchaseDate: 'Дата покупки',
   purchasePrice: 'Цена покупки',
@@ -211,17 +223,19 @@ const itemForm = {
   estimateDate: 'Дата оценки',
   warrantyPeriod: 'Гарантийный срок',
   company: 'Организация',
-  location: 'Место',
+  place: 'Место',
   coordinates: 'Координаты',
   responsible: 'Ответственный',
   onBalance: 'На балансе',
   category: 'Категория',
+  name: 'Название',
 };
 
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result = {
     key: objKey,
     description: itemForm[objKey],
+    placeholder: placeholders[objKey],
   };
 
   if (objKey === 'inventoryCode') {
@@ -235,9 +249,27 @@ const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
     result.warning = errors.createItem.name;
   }
 
-  acc.push(result);
+  acc[objKey] = result;
   return acc;
-}, []);
+}, {});
+
+const itemFormSections = [
+  {
+    index: 0,
+    title: headers.mainInfo,
+    data: Object.values(pick(slice(0, 5, keys(itemFormFields)), itemFormFields)),
+  },
+  {
+    index: 1,
+    title: headers.priceAndValue,
+    data: Object.values(pick(slice(5, 10, keys(itemFormFields)), itemFormFields)),
+  },
+  {
+    index: 2,
+    title: headers.storage,
+    data: Object.values(pick(slice(10, -1, keys(itemFormFields)), itemFormFields)),
+  },
+];
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
@@ -331,10 +363,11 @@ export default {
   category,
   inputTypes,
   buttonTitles,
-  placeHolders,
+  placeholders,
   modalQuestion,
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  itemFormSections,
   uploadCreateCompanyImages,
 };

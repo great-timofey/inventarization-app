@@ -21,7 +21,7 @@ const SearchHeader = ({ toggleSearch, onChangeSearchField, searchValue }: Props)
       onSubmitEditing={toggleSearch}
       style={styles.searchInput}
       placeholderTextColor={colors.placeholder}
-      placeholder={constants.placeHolders.inputHeader}
+      placeholder={constants.placeholders.inputHeader}
       onChangeText={text => onChangeSearchField(text)}
     />
     <IconButton

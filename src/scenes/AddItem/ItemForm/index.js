@@ -16,7 +16,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { compose, pipe, isEmpty, includes, assoc, remove } from 'ramda';
+import { keys, isEmpty, includes, assoc, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import Modal from 'react-native-modal';
@@ -131,11 +131,6 @@ class ItemForm extends PureComponent<Props, State> {
   });
 
   state = {
-    sections: [
-      { title: constants.headers.mainInfo, data: constants.itemFormFields.slice(0, 5), index: 0 },
-      { title: constants.headers.price, data: constants.itemFormFields.slice(5, 10), index: 1 },
-      { title: constants.headers.storage, data: constants.itemFormFields.slice(10), index: 2 },
-    ],
     name: '',
     photos: [],
     defects: [],
@@ -146,6 +141,8 @@ class ItemForm extends PureComponent<Props, State> {
     showPhotos: true,
     inventoryCode: '',
     responsible: null,
+    marketPrice: '0',
+    purchasePrice: '0',
     purchaseDate: null,
     estimateDate: null,
     warrantyPeriod: null,
@@ -153,6 +150,7 @@ class ItemForm extends PureComponent<Props, State> {
     activePreviewIndex: 0,
     currentlyEditableDate: null,
     isDateTimePickerOpened: false,
+    sections: constants.itemFormSections,
   };
 
   carousel: any;
@@ -204,20 +202,20 @@ class ItemForm extends PureComponent<Props, State> {
 
   checkValue = () => {
     const { name, inventoryCode } = this.state;
-    const warnings = [];
+    const warnings = {};
 
     if (!name.trim()) {
-      warnings.push('name');
+      warnings['name'] = 1;
     }
 
     if (!inventoryCode.trim()) {
-      warnings.push('inventoryCode');
+      warnings['inventoryCode'] = 'empty';
     }
 
     /*
 
     if (...somethingFromBackend) {
-      warnings.push('inventoryCode');
+      warnings.push(['inventoryCode', 'inventoryCodeAlreadyInUse']);
     }
 
     */
@@ -225,15 +223,24 @@ class ItemForm extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
-  renderFormField = ({ item: { key, description } }: { key: string, description: string }) => {
-    const { warnings } = this.state;
+  renderFormField = ({ item: { key, description, placeholder, ...rest }}: { label: string, description: string, placeholder: string }) => {
+    const { warnings: stateWarnings } = this.state;
     let callback;
-    const isLocationField = description === constants.itemForm.location;
+    let itemWarning;
+    // const isLocationField = description === constants.itemForm.location;
     const isCoordinatesField = description === constants.itemForm.coordinates;
     const isDescriptionField = description === constants.itemForm.description;
     if (includes(description, modalFields)) callback = this.handleToggleModal;
     if (includes(description, dateFields)) callback = this.handleToggleDateTimePicker;
     if (includes(description, nonMutableFields)) callback = () => {};
+    if (description === constants.itemForm.inventoryCode) {
+      const { warnings } = rest;
+      itemWarning = warnings[stateWarnings[key]];
+    }
+    if (key === constants.itemForm.name) {
+      const { warning } = rest;
+      itemWarning = warning;
+    }
 
     return (
       <Input
@@ -241,26 +248,29 @@ class ItemForm extends PureComponent<Props, State> {
         customKey={key}
         blurOnSubmit={false}
         value={this.state[key]}
+        placeholder={placeholder}
         containerCallback={callback}
         disabled={isCoordinatesField}
         isMultiline={isDescriptionField}
-        isWarning={includes(key, warnings)}
         maxLength={isDescriptionField ? 250 : 50}
-        type={{ label: description, warning: constants.itemForm.warning }}
-        placeholder={isLocationField ? constants.placeHolders.place : null}
+        showWarningInTitle={key === 'inventoryCode'}
+        isWarning={includes(key, keys(stateWarnings))}
+        type={{ label: description, warning: itemWarning }}
       />
     );
   };
 
   renderFormSectionHeader = ({ section: { title, index } }: { title: string, index: number }) => (
-    <LinearGradient
-      start={index === 0 ? { x: 1, y: 0 } : null}
-      end={index === 0 ? { x: 0, y: 0 } : null}
-      style={styles.formSectionHeader}
-      colors={colors.itemFormHeaders[index]}
-    >
-      <Text style={styles.formSectionHeaderText}>{title}</Text>
-    </LinearGradient>
+    <View style={styles.formSectionHeaderOverflow}>
+      <LinearGradient
+        start={index === 0 ? { x: 1, y: 0 } : null}
+        end={index === 0 ? { x: 0, y: 0 } : null}
+        style={styles.formSectionHeader}
+        colors={colors.itemFormHeaders[index]}
+      >
+        <Text style={styles.formSectionHeaderText}>{title}</Text>
+      </LinearGradient>
+    </View>
   );
 
   renderPreviewPhotoBarItem = ({ item: { base64, uri }, index }: PhotosProps) => (base64 === '' ? (
@@ -400,7 +410,7 @@ class ItemForm extends PureComponent<Props, State> {
                     index={activePreviewIndex}
                     data={showPhotos ? photos : defects}
                     onIndexChanged={this.handleSwipePreview}
-                    //  use custom key for correct rerendering of carousel component
+                    //  use custom key for correct rerendering of carousel componen
                     key={(showPhotos ? photos : defects).length + (showPhotos ? 'p' : 'd')}
                   />
                 )}
@@ -443,6 +453,7 @@ class ItemForm extends PureComponent<Props, State> {
                 renderItem={this.renderFormField}
                 keyExtractor={(item, index) => item + index}
                 renderSectionHeader={this.renderFormSectionHeader}
+                contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
             <TouchableOpacity style={styles.saveItem} onPress={this.checkValue}>

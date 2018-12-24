@@ -71,10 +71,16 @@ class Input extends Component<Props> {
             isWhite && styles.whiteContainer,
             isWarning && styles.invalidContainer,
             isMultiline && styles.multilineContainer,
+            showWarningInTitle && isWarning && styles.itemFormErrorContainer,
           ]}
         >
-          <Text style={[styles.inputTitleText, isWhite && styles.inputTitleTextWhite]}>
-            {showWarningInTitle && isWarning ? <Warning isVisible={isWarning || false} title={type.warning} /> : type.label}
+          <Text style={[
+            styles.inputTitleText,
+            isWhite && styles.inputTitleTextWhite,
+            showWarningInTitle && isWarning && styles.inputErrorText,
+          ]}
+          >
+            {showWarningInTitle && isWarning ? type.warning : type.label}
           </Text>
           <CustomTextInput
             {...textInputProps}
@@ -90,7 +96,7 @@ class Input extends Component<Props> {
           />
           {children}
         </View>
-        {!showWarningInTitle && <Warning isVisible={isWarning || false} title={type.warning} />}
+        {!showWarningInTitle && <Warning isVisible={isWarning} title={type.warning} />}
       </Wrapper>
     );
   }
