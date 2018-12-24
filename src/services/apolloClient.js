@@ -62,7 +62,7 @@ async function getClient() {
     cache,
     link: ApolloLink.from([stateLink, authLink.concat(httpLink)]),
   });
-
+  client.onResetStore(stateLink.writeDefaults);
   return client;
 }
 

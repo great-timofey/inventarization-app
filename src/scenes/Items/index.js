@@ -9,10 +9,10 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
 import { Query, graphql } from 'react-apollo';
-
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from '~/components/Item';
@@ -25,7 +25,6 @@ import MainHeader from '~/scenes/Items/MainHeader';
 import InventoryIcon from '~/assets/InventoryIcon';
 import QuestionModal from '~/components/QuestionModal';
 import SearchHeader from '~/scenes/Items/SearchHeader';
-import gql from 'graphql-tag';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
@@ -232,80 +231,99 @@ class ItemsScene extends PureComponent<Props, State> {
       isSortModalVisible,
       isDeleteModalVisible,
     } = this.state;
-    const { navigation } = this.props;
-    const isEmptyList = true;
-    const sortData = isSortByName
-      ? constants.data.assets.sort((a, b) => {
-        if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
-        if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
-        return 0;
-      })
-      : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
-    const currentUser = constants.users.admin;
+    const {
+      navigation,
+      currentUserId,
+      currentUserRole,
+      currentCompanyId,
+    } = this.props;
+    const isEmptyList = !true;
 
     return (
       <Fragment>
-        { isEmptyList ? (
-          <View>
-            <Text style={styles.header}>{constants.headers.items}</Text>
-            <Image
-              source={assets.noItemsYet}
-              style={styles.image}
+        <ScrollView
+          scrollEventThrottle={16}
+          onScroll={this.handleScroll}
+        >
+          <Text style={styles.header}>{constants.headers.items}</Text>
+          <CategoryList>
+            <FlatList
+              horizontal
+              data={constants.category}
+              renderItem={this.renderTab}
+              keyExtractor={this.keyExtractor}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalFlatList}
             />
-            <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
-            <Button
-              isGreen
-              customStyle={styles.button}
-              title={constants.buttonTitles.addItem}
-              onPress={currentUser !== constants.users.observer
-                ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
-                : () => {}}
-            />
-          </View>
-        ) : (
-          <ScrollView
-            scrollEventThrottle={16}
-            onScroll={this.handleScroll}
+          </CategoryList>
+          <Query
+            fetchPolicy="cache-and-network"
+            query={QUERIES.GET_CURRENT_COMPANY_ASSETS}
+            variables={{ companyId: currentCompanyId }}
           >
-            <Text style={styles.header}>{constants.headers.items}</Text>
-            <CategoryList>
-              <FlatList
-                horizontal
-                data={constants.category}
-                renderItem={this.renderTab}
-                keyExtractor={this.keyExtractor}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalFlatList}
-              />
-            </CategoryList>
-            {isListViewStyle ? (
-              <SwipebleListItem
-                data={sortData}
-                currentUser={currentUser}
-                selectItem={this.selectItem}
-                toggleDelModal={this.toggleDelModalVisible}
-                extraData={{ currentSelectItem, isSortByName }}
-              />
-            ) : (
-              <FlatList
-                data={sortData}
-                numColumns={2}
-                renderItem={({ item }) => (
-                  <Item
-                    item={item}
-                    currentUser={currentUser}
-                    selectItem={this.selectItem}
-                    currentSelectItem={currentSelectItem}
-                    toggleDelModal={this.toggleDelModalVisible}
+            {({ loading, error, data }) => {
+              console.log(loading, error, data);
+
+              if (loading) {
+                return <ActivityIndicator />;
+              }
+              if (data.assets.length !== 0) {
+                const sortData = isSortByName
+                  ? data.assets.sort((a, b) => {
+                    if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
+                    if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
+                    return 0;
+                  })
+                  : data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
+                return (isListViewStyle
+                  ? (
+                    <SwipebleListItem
+                      data={sortData}
+                      selectItem={this.selectItem}
+                      currentUser={currentUserRole}
+                      toggleDelModal={this.toggleDelModalVisible}
+                      extraData={{ currentSelectItem, isSortByName }}
+                    />
+                  ) : (
+                    <FlatList
+                      data={sortData}
+                      numColumns={2}
+                      renderItem={({ item }) => (
+                        <Item
+                          item={item}
+                          currentUser={currentUserRole}
+                          selectItem={this.selectItem}
+                          currentSelectItem={currentSelectItem}
+                          toggleDelModal={this.toggleDelModalVisible}
+                        />
+                      )}
+                      keyExtractor={this.keyExtractor}
+                      extraData={{ currentSelectItem, isSortByName }}
+                      contentContainerStyle={styles.grid}
+                    />
+                  ));
+              }
+              return (
+                <View>
+                  <Text style={styles.header}>{constants.headers.items}</Text>
+                  <Image
+                    style={styles.image}
+                    source={assets.noItemsYet}
                   />
-                )}
-                keyExtractor={this.keyExtractor}
-                extraData={{ currentSelectItem, isSortByName }}
-                contentContainerStyle={styles.grid}
-              />
-            )}
-          </ScrollView>
-        )}
+                  <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+                  <Button
+                    isGreen
+                    customStyle={styles.button}
+                    title={constants.buttonTitles.addItem}
+                    onPress={currentUserRole !== constants.users.observer
+                      ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+                      : () => {}}
+                  />
+                </View>
+              );
+            }}
+          </Query>
+        </ScrollView>
         {isSearchActive
         && (
         <Search
@@ -315,14 +333,14 @@ class ItemsScene extends PureComponent<Props, State> {
         />
         )}
         {!isSortModalVisible && !isSearchActive && !isEmptyList && (
-          <IconButton
-            isCustomIcon
-            size={isSortByName ? 50 : 70}
-            onPress={this.toggleSortModalVisible}
-            customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
-            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
-            customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
-          />
+        <IconButton
+          isCustomIcon
+          size={isSortByName ? 50 : 70}
+          onPress={this.toggleSortModalVisible}
+          customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
+          iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+          customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
+        />
         )}
         <SortModal
           isSortByName={isSortByName}
@@ -341,4 +359,11 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 }
 
-export default ItemsScene;
+
+export default graphql(QUERIES.GET_CURRENT_USER_ROLE, {
+  props: ({ data: { current: { id, userCompanies } } }) => ({
+    currentUserId: id,
+    currentCompanyId: userCompanies[0].id,
+    currentUserRole: userCompanies[0].role,
+  }),
+})(ItemsScene);

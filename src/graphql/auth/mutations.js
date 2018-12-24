@@ -64,7 +64,16 @@ export const SET_AUTH_MUTATION_CLIENT = gql`
   }
 `;
 
+export const LOG_OUT = gql`
+  mutation logOutUser {
+    logOutUser{
+      message
+    } 
+  }
+`;
+
 export default {
+  LOG_OUT,
   SIGN_IN_MUTATION,
   SIGN_UP_MUTATION,
   RESET_PASSWORD_MUTATION,
