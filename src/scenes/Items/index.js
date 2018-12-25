@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { Query, graphql } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Item from '~/components/Item';
@@ -233,8 +232,6 @@ class ItemsScene extends PureComponent<Props, State> {
       data,
       navigation,
     } = this.props;
-    const isEmptyList = !true;
-    console.log(data)
 
     return (
       <Fragment>
@@ -262,7 +259,7 @@ class ItemsScene extends PureComponent<Props, State> {
           toggleSearch={this.toggleSearch}
         />
         )}
-        {!isSortModalVisible && !isSearchActive && !isEmptyList && (
+        {!isSortModalVisible && !isSearchActive &&  (
         <IconButton
           isCustomIcon
           size={isSortByName ? 50 : 70}
@@ -290,4 +287,4 @@ class ItemsScene extends PureComponent<Props, State> {
 }
 
 
-export default graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT)(ItemsScene);
+export default ItemsScene;

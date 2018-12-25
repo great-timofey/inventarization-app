@@ -18,7 +18,9 @@
 
 ; Ignore metro
 .*/node_modules/metro/.*
+
 .*/node_modules/react-native-permissions/.*
+.*/node_modules/react-native-swiper/.*
 
 [include]
 

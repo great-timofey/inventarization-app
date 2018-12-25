@@ -2,7 +2,6 @@
 
 type Photo = {
   uri: string,
-  base64: string,
 };
 
 export type PhotosProps = {
@@ -11,5 +10,6 @@ export type PhotosProps = {
 };
 
 export type Props = {
-  data: Array<Photo>
+  data: Array<Photo>,
+  innerRef: any,
 };

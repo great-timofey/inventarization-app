@@ -277,24 +277,10 @@ const itemFormSections = [
 ];
 
 const fieldTypes = {
-  dateFields: [
-    itemForm.purchaseDate,
-    itemForm.estimateDate,
-    itemForm.warrantyPeriod,
-  ],
-  modalFields: [
-    itemForm.place,
-    itemForm.category,
-    itemForm.responsible,
-  ],
-  nonEditableFields: [
-    itemForm.qrcode,
-    itemForm.company,
-  ],
-  currencyFields: [
-    itemForm.marketPrice,
-    itemForm.purchasePrice,
-  ],
+  dateFields: [itemForm.purchaseDate, itemForm.estimateDate, itemForm.warrantyPeriod],
+  modalFields: [itemForm.place, itemForm.category, itemForm.responsible],
+  nonEditableFields: [itemForm.qrcode, itemForm.company],
+  currencyFields: [itemForm.marketPrice, itemForm.purchasePrice],
 };
 
 const formats = {
