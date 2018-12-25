@@ -3,7 +3,7 @@ import type { Item } from '~/global/types';
 
 export type Props = {
   data: Array<Item>,
-  currentUser: string,
+  currentUserRole: string,
   toggleDelModal?: () => void,
   selectItem: (x: number | string) => void,
   extraData: {

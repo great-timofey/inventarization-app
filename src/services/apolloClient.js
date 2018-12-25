@@ -54,6 +54,7 @@ const stateLink = withClientState({
       userCompany: {
         id: ID
         role: Role
+        company: Company
         __typename: UserCompany 
       }
     }

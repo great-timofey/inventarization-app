@@ -17,8 +17,8 @@ import type { Props } from './types';
 
 class SwipebleListItem extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { toggleDelModal, selectItem, currentUser } = this.props;
-    const disableLeftSwipe = currentUser === constants.users.observer;
+    const { toggleDelModal, selectItem, currentUserRole } = this.props;
+    const disableLeftSwipe = currentUserRole === constants.roles.observer;
     const swipeoutBtns = [
       {
         component: (

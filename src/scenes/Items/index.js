@@ -14,6 +14,7 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 
+import { graphql } from 'react-apollo';
 import Item from '~/components/Item';
 import Button from '~/components/Button';
 import Search from '~/components/Search';
@@ -29,7 +30,7 @@ import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
-import * as QUERIES from '~/graphql/auth/queries';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 
 import styles from './styles';
@@ -225,49 +226,97 @@ class ItemsScene extends PureComponent<Props, State> {
       searchValue,
       isSortByName,
       isSearchActive,
+      isListViewStyle,
+      currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
     } = this.state;
     const {
-      data,
+      data: { role },
       navigation,
     } = this.props;
+    const isEmptyList = true;
 
     return (
       <Fragment>
-        <ScrollView
-          scrollEventThrottle={16}
-          onScroll={this.handleScroll}
-        >
-          <Text style={styles.header}>{constants.headers.items}</Text>
-          <CategoryList>
-            <FlatList
-              horizontal
-              data={constants.category}
-              renderItem={this.renderTab}
-              keyExtractor={this.keyExtractor}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalFlatList}
+        { isEmptyList ? (
+          <View>
+            <Text style={styles.header}>{constants.headers.items}</Text>
+            <Image
+              source={assets.noItemsYet}
+              style={styles.image}
             />
-          </CategoryList>
-        </ScrollView>
+            <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+            <Button
+              isGreen
+              customStyle={styles.button}
+              title={constants.buttonTitles.addItem}
+              onPress={role !== constants.roles.observer
+                ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+                : () => {}}
+            />
+          </View>
+        ) : (
+          <ScrollView
+            scrollEventThrottle={16}
+            onScroll={this.handleScroll}
+          >
+            <Text style={styles.header}>{constants.headers.items}</Text>
+            <CategoryList>
+              <FlatList
+                horizontal
+                data={constants.category}
+                renderItem={this.renderTab}
+                keyExtractor={this.keyExtractor}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalFlatList}
+              />
+            </CategoryList>
+            {isListViewStyle ? (
+              <SwipebleListItem
+                data={[]}
+                currentUserRole={role}
+                selectItem={this.selectItem}
+                toggleDelModal={this.toggleDelModalVisible}
+                extraData={{ currentSelectItem, isSortByName }}
+              />
+            ) : (
+              <FlatList
+                data={[]}
+                numColumns={2}
+                renderItem={({ item }) => (
+                  <Item
+                    item={item}
+                    currentUserRole={role}
+                    selectItem={this.selectItem}
+                    currentSelectItem={currentSelectItem}
+                    toggleDelModal={this.toggleDelModalVisible}
+                  />
+                )}
+                keyExtractor={this.keyExtractor}
+                extraData={{ currentSelectItem, isSortByName }}
+                contentContainerStyle={styles.grid}
+              />
+            )}
+          </ScrollView>
+        )}
         {isSearchActive
         && (
-        <Search
-          searchValue={searchValue}
-          items={constants.data.assets}
-          toggleSearch={this.toggleSearch}
-        />
+          <Search
+            searchValue={searchValue}
+            items={constants.data.assets}
+            toggleSearch={this.toggleSearch}
+          />
         )}
-        {!isSortModalVisible && !isSearchActive &&  (
-        <IconButton
-          isCustomIcon
-          size={isSortByName ? 50 : 70}
-          onPress={this.toggleSortModalVisible}
-          customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
-          iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
-          customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
-        />
+        {!isSortModalVisible && !isSearchActive && !isEmptyList && (
+          <IconButton
+            isCustomIcon
+            size={isSortByName ? 50 : 70}
+            onPress={this.toggleSortModalVisible}
+            customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
+            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+            customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
+          />
         )}
         <SortModal
           isSortByName={isSortByName}
@@ -287,4 +336,4 @@ class ItemsScene extends PureComponent<Props, State> {
 }
 
 
-export default ItemsScene;
+export default graphql(GET_CURRENT_USER_COMPANY_CLIENT)(ItemsScene);

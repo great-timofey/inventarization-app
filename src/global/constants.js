@@ -23,20 +23,24 @@ const uploadCreateCompanyImages = {
 };
 
 const placeholders = {
-  manufacturer: 'Введите название',
+  manufacture: 'Введите название',
   model: 'Введите название',
   description: 'Введите текст',
-  place: 'Место не указано',
+  location: 'Место не указано',
   inputHeader: 'Введите название',
   inventoryCode: 'Введите код',
-  qrcode: 'Введите код',
-  estimateDate: 'Не оценивалось',
-  purchaseDate: 'Выберите дату покупки',
-  warrantyPeriod: 'Выберите дату окончания',
+  codeData: 'Введите код',
+  assessedDate: 'Не оценивалось',
+  dateOfPurchase: 'Выберите дату покупки',
+  guaranteeExpires: 'Выберите дату окончания',
   category: 'Без категории',
   mobileNumber: '+7 (___) ___-__-__',
   purchasePrice: '\u20BD 0',
-  marketPrice: '\u20BD 0',
+  assessedValue: '\u20BD 0',
+  status: {
+    inventory: 'Учтено',
+    onProcessing: 'В обработке',
+  },
 };
 
 const inputTypes = {
@@ -217,24 +221,26 @@ const hints = {
 /** Form stuff */
 
 const itemForm = {
-  manufacturer: 'Производитель',
+  manufacture: 'Производитель',
   model: 'Модeль',
   description: 'Описание',
-  qrcode: 'QR-код',
+  codeData: 'QR-код',
   inventoryCode: 'Инвентарный номер',
-  purchaseDate: 'Дата покупки',
+  dateOfPurchase: 'Дата покупки',
   purchasePrice: 'Цена покупки',
-  marketPrice: 'Рыночная цена',
-  estimateDate: 'Дата оценки',
-  warrantyPeriod: 'Гарантийный срок',
+  assessedValue: 'Рыночная цена',
+  assessedDate: 'Дата оценки',
+  guaranteeExpires: 'Гарантийный срок',
   company: 'Организация',
-  place: 'Место',
-  coordinates: 'Координаты',
-  responsible: 'Ответственный',
-  onBalance: 'На балансе',
+  location: 'Место',
+  gps: 'Координаты',
+  responsibleId: 'Ответственный',
+  onBalance: 'На бухгалтерском балансе',
+  status: 'Статус',
   category: 'Категория',
   name: 'Название',
 };
+
 
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result = {
@@ -277,14 +283,24 @@ const itemFormSections = [
 ];
 
 const fieldTypes = {
-  dateFields: [itemForm.purchaseDate, itemForm.estimateDate, itemForm.warrantyPeriod],
-  modalFields: [itemForm.place, itemForm.category, itemForm.responsible],
-  nonEditableFields: [itemForm.qrcode, itemForm.company],
-  currencyFields: [itemForm.marketPrice, itemForm.purchasePrice],
+  dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
+  modalFields: [itemForm.location, itemForm.category, itemForm.responsibleId],
+  nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status],
+  currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
+};
+
+const createAssetNecessaryProperties = keys(itemForm);
+
+const roles = {
+  admin: 'admin',
+  manager: 'manager',
+  observer: 'observer',
+  employee: 'employee',
 };
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
+  createAssetDates: 'YYYY-MM-DD',
 };
 
 const category = [
@@ -358,14 +374,15 @@ export default {
   sort,
   text,
   masks,
+  roles,
   hints,
   errors,
   regExp,
   headers,
   formats,
   itemForm,
-  category,
   inputTypes,
+  category,
   fieldTypes,
   buttonTitles,
   placeholders,
@@ -375,4 +392,5 @@ export default {
   setNewPassword,
   itemFormSections,
   uploadCreateCompanyImages,
+  createAssetNecessaryProperties,
 };
