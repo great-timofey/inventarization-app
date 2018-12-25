@@ -5,10 +5,6 @@ import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
-  container: {
-    paddingHorizontal: normalize(30),
-    backgroundColor: colors.backGroundBlack,
-  },
   regForm: {
     marginBottom: normalize(96),
   },

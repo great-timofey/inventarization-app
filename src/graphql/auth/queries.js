@@ -1,12 +1,11 @@
 //  @flow
 import gql from 'graphql-tag';
 
-
-export const GET_CURRENT_USER_ROLE = gql`
-  query getCurrentUser {
-    current{
+export const GET_CURRENT_USER_COMPANIES = gql`
+  query GetCurrentUserCompanies {
+    current {
       id
-      userCompanies{
+      userCompanies {
         id
         role
         createdAt
@@ -15,38 +14,23 @@ export const GET_CURRENT_USER_ROLE = gql`
   }
 `;
 
-export const GET_CURRENT_USER_CREATED_ASSETS = gql`
-  query getCurrentUser {
-    current{
-      id
-      createdAssets{
-        id
-      }
-    }
+export const GET_USER_AUTH_CLIENT = gql`
+  query {
+    isAuthed @client
   }
 `;
 
-export const GET_CURRENT_COMPANY_ASSETS = gql`
-query getAssetsFilter(
-  $companyId: ID
-) {
-  assets(
-    companyId: $companyId
-  ) {
-    creator{
-        id
-      }
-      gps
+export const GET_CURRENT_USER_COMPANY_CLIENT = gql`
+  query {
+    userCompany @client {
       id
-      name
-      purchasePrice
+      role
     }
   }
 `;
-
 
 export default {
-  GET_CURRENT_USER_ROLE,
-  GET_CURRENT_COMPANY_ASSETS,
-  GET_CURRENT_USER_CREATED_ASSETS,
+  GET_USER_AUTH_CLIENT,
+  GET_CURRENT_USER_COMPANIES,
+  GET_CURRENT_USER_COMPANY_CLIENT,
 };

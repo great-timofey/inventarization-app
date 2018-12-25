@@ -226,18 +226,15 @@ class ItemsScene extends PureComponent<Props, State> {
       searchValue,
       isSortByName,
       isSearchActive,
-      isListViewStyle,
-      currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
     } = this.state;
     const {
+      data,
       navigation,
-      currentUserId,
-      currentUserRole,
-      currentCompanyId,
     } = this.props;
     const isEmptyList = !true;
+    console.log(data)
 
     return (
       <Fragment>
@@ -256,73 +253,6 @@ class ItemsScene extends PureComponent<Props, State> {
               contentContainerStyle={styles.horizontalFlatList}
             />
           </CategoryList>
-          <Query
-            fetchPolicy="cache-and-network"
-            query={QUERIES.GET_CURRENT_COMPANY_ASSETS}
-            variables={{ companyId: currentCompanyId }}
-          >
-            {({ loading, error, data }) => {
-              console.log(loading, error, data);
-
-              if (loading) {
-                return <ActivityIndicator />;
-              }
-              if (data.assets.length !== 0) {
-                const sortData = isSortByName
-                  ? data.assets.sort((a, b) => {
-                    if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
-                    if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
-                    return 0;
-                  })
-                  : data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
-                return (isListViewStyle
-                  ? (
-                    <SwipebleListItem
-                      data={sortData}
-                      selectItem={this.selectItem}
-                      currentUser={currentUserRole}
-                      toggleDelModal={this.toggleDelModalVisible}
-                      extraData={{ currentSelectItem, isSortByName }}
-                    />
-                  ) : (
-                    <FlatList
-                      data={sortData}
-                      numColumns={2}
-                      renderItem={({ item }) => (
-                        <Item
-                          item={item}
-                          currentUser={currentUserRole}
-                          selectItem={this.selectItem}
-                          currentSelectItem={currentSelectItem}
-                          toggleDelModal={this.toggleDelModalVisible}
-                        />
-                      )}
-                      keyExtractor={this.keyExtractor}
-                      extraData={{ currentSelectItem, isSortByName }}
-                      contentContainerStyle={styles.grid}
-                    />
-                  ));
-              }
-              return (
-                <View>
-                  <Text style={styles.header}>{constants.headers.items}</Text>
-                  <Image
-                    style={styles.image}
-                    source={assets.noItemsYet}
-                  />
-                  <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
-                  <Button
-                    isGreen
-                    customStyle={styles.button}
-                    title={constants.buttonTitles.addItem}
-                    onPress={currentUserRole !== constants.users.observer
-                      ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
-                      : () => {}}
-                  />
-                </View>
-              );
-            }}
-          </Query>
         </ScrollView>
         {isSearchActive
         && (
@@ -360,10 +290,4 @@ class ItemsScene extends PureComponent<Props, State> {
 }
 
 
-export default graphql(QUERIES.GET_CURRENT_USER_ROLE, {
-  props: ({ data: { current: { id, userCompanies } } }) => ({
-    currentUserId: id,
-    currentCompanyId: userCompanies[0].id,
-    currentUserRole: userCompanies[0].role,
-  }),
-})(ItemsScene);
+export default graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT)(ItemsScene);

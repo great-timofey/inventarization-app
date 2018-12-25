@@ -33,7 +33,8 @@ const authLink = setContext(async (_, { headers }) => {
 const stateLink = withClientState({
   cache,
   defaults: {
-    isAuthed: true,
+    isAuthed: false,
+    userCompany: null,
   },
   resolvers: {
     Mutation: {
@@ -41,11 +42,20 @@ const stateLink = withClientState({
         await innerCache.writeData({ data: { isAuthed } });
         return null;
       },
+      setUserCompany: async (_, { userCompany }, { cache: innerCache }) => {
+        await innerCache.writeData({ data: { userCompany } });
+        return null;
+      },
     },
   },
   typeDefs: `
     type Query {
       isAuthed: Boolean
+      userCompany: {
+        id: ID
+        role: Role
+        __typename: UserCompany 
+      }
     }
   `,
 });
@@ -62,7 +72,9 @@ async function getClient() {
     cache,
     link: ApolloLink.from([stateLink, authLink.concat(httpLink)]),
   });
+
   client.onResetStore(stateLink.writeDefaults);
+
   return client;
 }
 

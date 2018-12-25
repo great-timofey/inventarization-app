@@ -12,6 +12,7 @@ import {
   AuthNavigator,
   RootNavigator,
 } from '~/global/navigations';
+import { GET_USER_AUTH_CLIENT } from '~/graphql/auth/queries';
 
 const navRef = R.curry(setNavigatior)('HOME_NAVIGATOR');
 const authNavRef = R.curry(setNavigatior)('AUTH_NAVIGATOR');
@@ -38,10 +39,4 @@ class AppNavigator extends Component<Props> {
     );
   }
 }
-export default graphql(
-  gql`
-    {
-      isAuthed @client
-    }
-  `,
-)(AppNavigator);
+export default graphql(GET_USER_AUTH_CLIENT)(AppNavigator);

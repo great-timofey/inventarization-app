@@ -3,15 +3,8 @@
 import React, { PureComponent } from 'react';
 
 import { includes, assoc } from 'ramda';
-import { compose, graphql } from 'react-apollo';
-import {
-  Alert,
-  View,
-  Text,
-  Keyboard,
-  Animated,
-  AsyncStorage,
-} from 'react-native';
+import { compose, graphql, withApollo } from 'react-apollo';
+import { Alert, View, Text, Keyboard, Animated, AsyncStorage } from 'react-native';
 
 import Logo from '~/components/Logo';
 import Input from '~/components/Input';
@@ -19,11 +12,12 @@ import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
+import { isValid } from '~/global/utils';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
+import * as QUERIES from '~/graphql/auth/queries';
 import * as MUTATIONS from '~/graphql/auth/mutations';
-import { normalize, isSmallDevice, isValid } from '~/global/utils';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -36,17 +30,9 @@ const initialState = {
   password: '',
   isRegForm: false,
   isKeyboardActive: false,
-  keyboardPadding: new Animated.Value(0),
-  paddingContainer: new Animated.Value(normalize(30)),
 };
 
-const AdditionalButton = ({
-  title,
-  onPress,
-}: {
-  title: string,
-  onPress: Function,
-}) => (
+const AdditionalButton = ({ title, onPress }: { title: string, onPress: Function }) => (
   <Text onPress={onPress} style={styles.additionalButtonsText}>
     {title}
   </Text>
@@ -83,36 +69,6 @@ class Login extends PureComponent<Props, State> {
     this.state = { ...initialState };
   }
 
-  componentDidMount() {
-    const { keyboardPadding, paddingContainer } = this.state;
-    const listenerShow = 'keyboardWillShow';
-    const listenerHide = 'keyboardWillHide';
-    Keyboard.addListener(listenerShow, (event) => {
-      Animated.parallel([
-        Animated.timing(keyboardPadding, {
-          duration: 250,
-          toValue: -event.endCoordinates.height,
-        }),
-        Animated.timing(paddingContainer, {
-          duration: 250,
-          toValue: isSmallDevice ? normalize(57) : normalize(30),
-        }),
-      ]).start();
-    });
-    Keyboard.addListener(listenerHide, () => {
-      Animated.parallel([
-        Animated.timing(keyboardPadding, {
-          duration: 250,
-          toValue: 0,
-        }),
-        Animated.timing(paddingContainer, {
-          duration: 250,
-          toValue: normalize(30),
-        }),
-      ]).start();
-    });
-  }
-
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
@@ -140,30 +96,15 @@ class Login extends PureComponent<Props, State> {
     if (!isValid(password, constants.regExp.password)) {
       warnings.push('password');
     }
-    if (
-      isRegForm
-      && mobile
-      && !isValid(mobile, constants.regExp.mobileNumber)
-    ) {
+    if (isRegForm && mobile && !isValid(mobile, constants.regExp.mobileNumber)) {
       warnings.push('mobile');
     }
     this.setState({ warnings });
   };
 
   onSubmitForm = async () => {
-    const {
-      email,
-      password,
-      isRegForm,
-      name: fullName,
-      mobile: phoneNumber,
-    } = this.state;
-    const {
-      navigation,
-      signInMutation,
-      signUpMutation,
-      setAuthMutationClient,
-    } = this.props;
+    const { email, password, isRegForm, name: fullName, mobile: phoneNumber } = this.state;
+    const { client, signInMutation, signUpMutation } = this.props;
 
     /**
      * 'Promise.resolve' and 'await' below used because of async setState
@@ -199,11 +140,27 @@ class Login extends PureComponent<Props, State> {
           isRegForm ? data.signUpUser.token : data.signInUser.token,
         );
 
-        await setAuthMutationClient({ variables: { isAuthed: true } });
+        const { data: currentUserData } = await client.query({
+          query: QUERIES.GET_CURRENT_USER_COMPANIES,
+        });
+        this.setUserRole(currentUserData);
       } catch (error) {
         Alert.alert(error.message);
       }
     }
+  };
+
+  setUserRole = async (userData: Object) => {
+    const { setAuthMutationClient, setUserCompanyMutationClient } = this.props;
+
+    const {
+      current: {
+        userCompanies: [firstCompany],
+      },
+    } = userData;
+
+    await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
+    await setAuthMutationClient({ variables: { isAuthed: true } });
   };
 
   focusField = (ref: Object) => {
@@ -224,126 +181,95 @@ class Login extends PureComponent<Props, State> {
 
   render() {
     const { navigation } = this.props;
-    const {
-      name,
-      email,
-      mobile,
-      password,
-      warnings,
-      isRegForm,
-      keyboardPadding,
-      paddingContainer,
-    } = this.state;
+    const { name, email, mobile, password, warnings, isRegForm } = this.state;
 
     return (
       <ScrollViewContainer bgColor={colors.backGroundBlack}>
-        <Animated.View
-          style={[
-            styles.container,
-            {
-              transform: [
-                {
-                  translateY: keyboardPadding,
-                },
-              ],
-            },
-            { paddingVertical: paddingContainer },
-          ]}
-        >
-          <Animated.View
-            style={[
-              styles.regForm,
-              (isRegForm || warnings.length) && styles.form,
-            ]}
-          >
-            <Logo isSmall />
-            {isRegForm && (
-              <Input
-                value={name}
-                fieldRef={(ref) => {
-                  this.nameRef = ref;
-                }}
-                blurOnSubmit={false}
-                type={constants.inputTypes.name}
-                isWarning={includes('name', warnings)}
-                onSubmitEditing={() => this.focusField(this.emailRef)}
-                onChangeText={text => this.onChangeField('name', text)}
-              />
-            )}
+        <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
+          <Logo isSmall />
+          {isRegForm && (
             <Input
-              value={email}
+              value={name}
               fieldRef={(ref) => {
-                this.emailRef = ref;
+                this.nameRef = ref;
               }}
               blurOnSubmit={false}
-              keyboardType="email-address"
-              type={constants.inputTypes.email}
-              isWarning={includes('email', warnings)}
-              onChangeText={text => this.onChangeField('email', text)}
-              onSubmitEditing={() => this.focusField(this.passwordRef)}
+              type={constants.inputTypes.name}
+              isWarning={includes('name', warnings)}
+              onSubmitEditing={() => this.focusField(this.emailRef)}
+              onChangeText={text => this.onChangeField('name', text)}
             />
+          )}
+          <Input
+            value={email}
+            fieldRef={(ref) => {
+              this.emailRef = ref;
+            }}
+            blurOnSubmit={false}
+            keyboardType="email-address"
+            type={constants.inputTypes.email}
+            isWarning={includes('email', warnings)}
+            onChangeText={text => this.onChangeField('email', text)}
+            onSubmitEditing={() => this.focusField(this.passwordRef)}
+          />
+          <Input
+            secureTextEntry
+            value={password}
+            fieldRef={(ref) => {
+              this.passwordRef = ref;
+            }}
+            blurOnSubmit={false}
+            onSubmitForm={this.onSubmitForm}
+            type={constants.inputTypes.password}
+            keyboardType="numbers-and-punctuation"
+            isWarning={includes('password', warnings)}
+            returnKeyType={!isRegForm ? 'go' : undefined}
+            onSubmitEditing={() => this.focusField(this.mobileRef)}
+            onChangeText={text => this.onChangeField('password', text)}
+          />
+          {isRegForm && (
             <Input
-              secureTextEntry
-              value={password}
+              value={mobile}
+              returnKeyType="go"
               fieldRef={(ref) => {
-                this.passwordRef = ref;
+                this.mobileRef = ref;
               }}
               blurOnSubmit={false}
               onSubmitForm={this.onSubmitForm}
-              type={constants.inputTypes.password}
+              mask={constants.masks.mobileNumber}
               keyboardType="numbers-and-punctuation"
-              isWarning={includes('password', warnings)}
-              returnKeyType={!isRegForm ? 'go' : undefined}
-              onSubmitEditing={() => this.focusField(this.mobileRef)}
-              onChangeText={text => this.onChangeField('password', text)}
+              isWarning={includes('mobile', warnings)}
+              type={constants.inputTypes.mobileNumber}
+              placeholder={constants.placeholders.mobileNumber}
+              onChangeText={text => this.onChangeField('mobile', text)}
             />
-            {isRegForm && (
-              <Input
-                value={mobile}
-                returnKeyType="go"
-                fieldRef={(ref) => {
-                  this.mobileRef = ref;
-                }}
-                blurOnSubmit={false}
-                onSubmitForm={this.onSubmitForm}
-                mask={constants.masks.mobileNumber}
-                keyboardType="numbers-and-punctuation"
-                isWarning={includes('mobile', warnings)}
-                type={constants.inputTypes.mobileNumber}
-                placeholder={constants.placeholders.mobileNumber}
-                onChangeText={text => this.onChangeField('mobile', text)}
+          )}
+          {!isRegForm && (
+            <View style={styles.additionalButtons}>
+              <AdditionalButton title={constants.buttonTitles.forgotPassword} onPress={() => {}} />
+              <AdditionalButton
+                title={constants.buttonTitles.registration}
+                onPress={() => navigation.state.params.onToggleForm(isRegForm)}
               />
-            )}
-            {!isRegForm && (
-              <View style={styles.additionalButtons}>
-                <AdditionalButton
-                  title={constants.buttonTitles.forgotPassword}
-                  onPress={() => {}}
-                />
-                <AdditionalButton
-                  title={constants.buttonTitles.registration}
-                  onPress={() => navigation.state.params.onToggleForm(isRegForm)}
-                />
-              </View>
-            )}
-          </Animated.View>
-          <Button
-            title={
-              isRegForm
-                ? constants.buttonTitles.reg
-                : constants.buttonTitles.login
-            }
-            onPress={this.onSubmitForm}
-          />
+            </View>
+          )}
         </Animated.View>
+        <Button
+          title={isRegForm ? constants.buttonTitles.reg : constants.buttonTitles.login}
+          onPress={this.onSubmitForm}
+        />
       </ScrollViewContainer>
     );
   }
 }
 
 export default compose(
+  withApollo,
   graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
     name: 'setAuthMutationClient',
+  }),
+  graphql(MUTATIONS.SET_USER_COMPANY_MUTATION_CLIENT, {
+    name: 'setUserCompanyMutationClient',
   }),
   graphql(MUTATIONS.SIGN_IN_MUTATION, {
     name: 'signInMutation',

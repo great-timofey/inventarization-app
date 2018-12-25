@@ -59,14 +59,20 @@ export const CREATE_COMPANY_MUTATION = gql`
 `;
 
 export const SET_AUTH_MUTATION_CLIENT = gql`
-  mutation setAuth($isAuthed: Boolean!) {
+  mutation SetAuth($isAuthed: Boolean!) {
     setAuth(isAuthed: $isAuthed) @client
   }
 `;
 
+export const SET_USER_COMPANY_MUTATION_CLIENT = gql`
+  mutation SetUserCompany($userCompany: UserCompany!) {
+    setUserCompany(userCompany: $userCompany) @client 
+  }
+`;
+
 export const LOG_OUT = gql`
-  mutation logOutUser {
-    logOutUser{
+  mutation LogOutUser {
+    logOutUser {
       message
     } 
   }
@@ -78,4 +84,5 @@ export default {
   SIGN_UP_MUTATION,
   RESET_PASSWORD_MUTATION,
   SET_AUTH_MUTATION_CLIENT,
+  SET_USER_COMPANY_MUTATION_CLIENT,
 };
