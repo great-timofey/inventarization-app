@@ -1,6 +1,6 @@
 //  @flow
 
-import React, { PureComponent, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Text,
   View,
@@ -16,7 +16,8 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { keys, isEmpty, includes, remove } from 'ramda';
+import { compose, graphql } from 'react-apollo';
+import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -25,16 +26,19 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
 import { isSmallDevice } from '~/global/utils';
-import Carousel from '~/components/Carousel';
-import ChooseModal from '~/components/ChooseModal';
-import DateTimePicker from '~/components/DateTimePicker';
+import { CREATE_ASSET } from '~/graphql/assets/mutations';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
+import Carousel from '~/components/Carousel';
+import * as QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
-import type { Props, State, PhotosProps, PreviewProps } from './types';
+import DateTimePicker from '~/components/DateTimePicker';
+
+import type { Props, State, PhotosProps, PreviewProps, Section } from './types';
 import styles from './styles';
 
 const iconProps = {
@@ -97,7 +101,7 @@ const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Funct
   </Fragment>
 );
 
-class ItemForm extends PureComponent<Props, State> {
+class ItemForm extends Component<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: styles.header,
     title: constants.headers.addingItem,
@@ -108,25 +112,30 @@ class ItemForm extends PureComponent<Props, State> {
 
   state = {
     name: '',
+    gps: null,
     photos: [],
-    defects: [],
+    placeId: null,
+    codeData: null,
     warnings: {},
     location: null,
     category: null,
-    coordinates: '',
+    inventoryId: '',
     showPhotos: true,
-    inventoryCode: '',
-    responsible: null,
-    marketPrice: '',
-    purchasePrice: '',
-    purchaseDate: null,
-    estimateDate: null,
-    warrantyPeriod: null,
+    manufacture: null,
+    assessedDate: null,
+    assessedValue: null,
+    purchasePrice: null,
+    responsibleId: null,
+    photosOfDamages: [],
+    dateOfPurchase: null,
     isModalOpened: false,
     activePreviewIndex: 0,
-    currentlyEditableDate: null,
+    guaranteeExpires: null,
+    onTheBalanceSheet: 'Нет',
+    currentlyEditableField: null,
     isDateTimePickerOpened: false,
     sections: constants.itemFormSections,
+    status: constants.placeholders.status.onProcessing,
   };
 
   carousel: any;
@@ -138,10 +147,11 @@ class ItemForm extends PureComponent<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
     const photos = navigation.getParam('photos', []);
-    const defects = navigation.getParam('defectPhotos', []);
-    const firstPhotoForCoords = photos.length ? photos[0] : defects[0];
-    const coordinates = `${firstPhotoForCoords.location.lat}, ${firstPhotoForCoords.location.lon}`;
-    this.setState({ photos, defects, coordinates });
+    const codeData = navigation.getParam('codeData', '');
+    const photosOfDamages = navigation.getParam('defectPhotos', []);
+    const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
+    const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+    this.setState({ photos, photosOfDamages, gps });
   }
 
   componentWillUnmount() {
@@ -158,34 +168,33 @@ class ItemForm extends PureComponent<Props, State> {
         activePreviewIndex: 0,
         photos: photos.concat(navigation.state.params.additionalPhotos),
       }));
-    }
-    if (
+    } else if (
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
-      this.setState(({ defects }) => ({
+      this.setState(({ photosOfDamages }) => ({
         activePreviewIndex: 0,
-        defects: defects.concat(navigation.state.params.additionalDefects),
+        photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
       }));
     }
   }
 
   checkFields = () => {
-    const { name, inventoryCode } = this.state;
+    const { name, inventoryId } = this.state;
     const warnings = {};
 
     if (!name.trim()) {
       warnings.name = 1;
     }
 
-    if (!inventoryCode.trim()) {
-      warnings.inventoryCode = 'empty';
+    if (!inventoryId.trim()) {
+      warnings.inventoryId = 'empty';
     }
 
     /*
 
     if (...somethingFromBackend) {
-      warnings.push(['inventoryCode', 'inventoryCodeAlreadyInUse']);
+      warnings.push(['inventoryId', 'inventoryIdAlreadyInUse']);
     }
 
     */
@@ -201,36 +210,105 @@ class ItemForm extends PureComponent<Props, State> {
      * in this.checkFields and this.checkForErrors
      */
 
+    const { createAsset } = this.props;
+
     const isFormInvalid = await Promise.resolve()
       .then(_ => this.checkFields())
       .then(_ => this.checkForErrors());
 
-    if (!isFormInvalid) console.log(this.state);
-    else console.log('FORM IS INVALID');
+    if (!isFormInvalid) {
+      const {
+        userCompany: { id: companyId },
+      } = this.props;
+      const variables = pick(constants.createAssetNecessaryProperties, this.state);
+
+      variables.name = variables.name.trim();
+      variables.companyId = variables.companyId;
+      variables.description = variables.description.trim();
+      variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
+
+      if (variables.assessedValue) {
+        variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
+      }
+      if (variables.purchasePrice) {
+        variables.purchasePrice = Number.parseFloat(drop(2, variables.purchasePrice));
+      }
+      if (variables.responsibleId) {
+        variables.responsibleId = variables.responsibleId.id;
+      }
+      if (variables.placeId) {
+        variables.placeId = variables.placeId.id;
+      }
+      if (variables.dateOfPurchase) {
+        variables.dateOfPurchase = dayjs(variables.dateOfPurchase).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.guaranteeExpires) {
+        variables.guaranteeExpires = dayjs(variables.guaranteeExpires).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.assessedDate) {
+        variables.asessedDate = dayjs(variables.assessedDate).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.status) {
+        variables.status = variables.status === constants.placeholders.status.accepted ? 'accepted' : 'on_processing';
+      }
+
+      console.log(variables);
+      try {
+        const response = await createAsset({ variables });
+        console.log(response);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
   };
 
-  renderFormField = ({
-    item: { key, description, placeholder, ...rest },
-  }: PreviewProps) => {
+  renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const { warnings: stateWarnings } = this.state;
     let callback;
     let itemMask;
     let itemWarning;
-    const isCoordinatesField = description === constants.itemForm.coordinates;
+    let customValue;
+    const isStatusField = description === constants.itemForm.status;
+    const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
-    if (includes(description, constants.fieldTypes.modalFields)) callback = this.handleToggleModal;
-    if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
-    if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
-    if (includes(description, constants.fieldTypes.currencyFields)) {
+    if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
+    else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
+    else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
+    else if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
-    if (description === constants.itemForm.inventoryCode) {
+    if (description === constants.itemForm.inventoryId) {
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
-    }
-    if (key === constants.itemForm.name) {
+    } else if (description === constants.itemForm.name) {
       const { warning } = rest;
       itemWarning = warning;
+    } else if (description === constants.itemForm.gps) {
+      const { gps } = this.state;
+      customValue = `${gps.lat}, ${gps.lon}`;
+    } else if (description === constants.itemForm.guaranteeExpires) {
+      customValue = this.state[key]
+        ? `До ${dayjs(this.state[key]).format(constants.formats.newItemDates)}`
+        : null;
+    } else if (
+      description === constants.itemForm.dateOfPurchase
+      || description === constants.itemForm.assessedDate
+    ) {
+      customValue = this.state[key]
+        ? dayjs(this.state[key]).format(constants.formats.newItemDates)
+        : null;
+    } else if (description === constants.itemForm.company) {
+      customValue = this.props.userCompany.company.name;
+    } else if (description === constants.itemForm.responsibleId) {
+      customValue = this.state[key] ? this.state.responsibleId.fullName : null;
+    } else if (description === constants.itemForm.placeId) {
+      customValue = this.state[key] ? this.state.placeId.name : null;
     }
 
     return (
@@ -239,16 +317,16 @@ class ItemForm extends PureComponent<Props, State> {
         customKey={key}
         mask={itemMask}
         blurOnSubmit={false}
-        value={this.state[key]}
-        placeholder={placeholder}
+        disabled={isGpsField}
         containerCallback={callback}
-        disabled={isCoordinatesField}
         isMultiline={isDescriptionField}
+        value={customValue || this.state[key]}
         maxLength={isDescriptionField ? 250 : 50}
-        showWarningInTitle={key === 'inventoryCode'}
+        showWarningInTitle={key === 'inventoryId'}
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
         onChangeText={text => this.handleChangeField(key, text)}
+        placeholder={isStatusField ? placeholder.onProcessing : placeholder}
       />
     );
   };
@@ -299,7 +377,7 @@ class ItemForm extends PureComponent<Props, State> {
 
   handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
     const { showPhotos, activePreviewIndex } = this.state;
-    const currentlyActive = showPhotos ? 'photos' : 'defects';
+    const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
     const { uri } = this.state[currentlyActive][removedIndex];
 
     try {
@@ -319,17 +397,29 @@ class ItemForm extends PureComponent<Props, State> {
 
   handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
     isDateTimePickerOpened: !isDateTimePickerOpened,
-    currentlyEditableDate: key,
+    currentlyEditableField: key,
   }));
 
-  handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
+  handleOpenModal = (field: string) => this.setState(({ isModalOpened }) => ({
+    isModalOpened: !isModalOpened,
+    currentlyEditableField: field,
+  }));
 
-  handleChooseDate = (date: Date) => this.setState(({ currentlyEditableDate }) => ({
+  handleCloseModal = () => this.setState(({ isModalOpened }) => ({
+    isModalOpened: !isModalOpened,
+    currentlyEditableField: null,
+  }));
+
+  handleConfirmModal = (option: string) => this.setState(({ isModalOpened, currentlyEditableField }) => ({
+    isModalOpened: !isModalOpened,
+    [currentlyEditableField]: option,
+    currentlyEditableField: null,
+  }));
+
+  handleChooseDate = (date: Date) => this.setState(({ currentlyEditableField }) => ({
     isDateTimePickerOpened: false,
-    [currentlyEditableDate]: `${currentlyEditableDate === 'warrantyPeriod' ? 'До ' : ''}${dayjs(
-      new Date(date),
-    ).format(constants.formats.newItemDates)}`,
-    currentlyEditableDate: null,
+    [currentlyEditableField]: new Date(date),
+    currentlyEditableField: null,
   }));
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
@@ -361,17 +451,23 @@ class ItemForm extends PureComponent<Props, State> {
 
   render() {
     const {
+      userCompany: { id: companyId },
+    } = this.props;
+
+    const {
       name,
       photos,
-      defects,
       warnings,
       sections,
       showPhotos,
       isModalOpened,
+      photosOfDamages,
       activePreviewIndex,
+      currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
-    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(defects));
+    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
@@ -402,10 +498,10 @@ class ItemForm extends PureComponent<Props, State> {
                       this.carousel = ref;
                     }}
                     index={activePreviewIndex}
-                    data={showPhotos ? photos : defects}
+                    data={showPhotos ? photos : photosOfDamages}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
-                    key={(showPhotos ? photos : defects).length + (showPhotos ? 'p' : 'd')}
+                    key={(showPhotos ? photos : photosOfDamages).length + (showPhotos ? 'p' : 'd')}
                   />
                 )}
                 <View style={styles.previewInfo}>
@@ -414,7 +510,7 @@ class ItemForm extends PureComponent<Props, State> {
                     {currentTypeIsEmpty
                       ? '0/0'
                       : `${activePreviewIndex + 1} / ${
-                        showPhotos ? photos.length : defects.length
+                        showPhotos ? photos.length : photosOfDamages.length
                       }`}
                   </Text>
                 </View>
@@ -429,19 +525,16 @@ class ItemForm extends PureComponent<Props, State> {
               contentContainerStyle={[
                 styles.photosInner,
                 styles.previewPhotoBar,
-                isEmpty(showPhotos ? photos : defects) && styles.hide,
+                isEmpty(showPhotos ? photos : photosOfDamages) && styles.hide,
               ]}
-              data={showPhotos ? photos.concat({ uri: '' }) : defects.concat({ uri: '' })}
+              data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
             />
             <View style={styles.formContainer}>
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>
                   <Text
-                    style={[
-                      styles.formNameError,
-                      includes('name', keys(warnings)) && styles.show,
-                    ]}
+                    style={[styles.formNameError, includes('name', keys(warnings)) && styles.show]}
                   >
                     {constants.errors.createItem.name}
                   </Text>
@@ -455,8 +548,8 @@ class ItemForm extends PureComponent<Props, State> {
               </View>
               <SectionList
                 sections={sections}
+                keyExtractor={({ key }) => key}
                 renderItem={this.renderFormField}
-                keyExtractor={(item, index) => item + index}
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />
@@ -470,9 +563,11 @@ class ItemForm extends PureComponent<Props, State> {
               onCancel={this.handleToggleDateTimePicker}
             />
             <ChooseModal
+              companyId={companyId}
               isVisible={isModalOpened}
-              onCancel={this.handleToggleModal}
-              data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+              type={currentlyEditableField}
+              onCancel={this.handleCloseModal}
+              onConfirm={this.handleConfirmModal}
             />
           </ScrollView>
         </KeyboardAvoidingView>
@@ -481,4 +576,9 @@ class ItemForm extends PureComponent<Props, State> {
   }
 }
 
-export default ItemForm;
+export default compose(
+  graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+  graphql(CREATE_ASSET, { name: 'createAsset' }),
+)(ItemForm);

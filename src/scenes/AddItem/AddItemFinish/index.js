@@ -1,7 +1,15 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import { Text, CameraRoll, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  StatusBar,
+  CameraRoll,
+  SafeAreaView,
+  View,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 import { StackActions } from 'react-navigation';
@@ -40,6 +48,15 @@ class AddItemFinish extends PureComponent<Props, State> {
       />
     ),
   });
+
+  navListener: any;
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
+  }
 
   handleGoToItemForm = async () => {
     const { navigation } = this.props;

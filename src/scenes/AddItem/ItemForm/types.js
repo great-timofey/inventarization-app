@@ -2,6 +2,8 @@
 
 export type Props = {
   navigation: Object,
+  userCompany: Object,
+  createAsset: Function,
 };
 
 type Photo = {
@@ -26,24 +28,29 @@ export type Section = {
 };
 
 export type State = {
-  name: string,
-  location: ?string,
-  category: ?string,
+  gps: ?Object,
+  name: ?string,
+  status: string,
+  placeId: ?string,
   warnings: Object,
-  coordinates: string,
+  location: ?string,
+  codeData: ?string,
+  category: ?string,
+  assessedDate: ?Date,
   showPhotos: boolean,
-  responsible: ?string,
-  marketPrice: string,
-  purchaseDate: ?string,
-  estimateDate: ?string,
+  inventoryId: ?string,
+  manufacture: ?string,
   photos: Array<Photo>,
-  defects: Array<Photo>,
-  inventoryCode: string,
-  purchasePrice: string,
   isModalOpened: boolean,
-  warrantyPeriod: ?string,
+  assessedValue: ?string,
+  purchasePrice: ?string,
+  responsibleId: ?string,
+  dateOfPurchase: ?string,
   sections: Array<Section>,
+  guaranteeExpires: ?string,
+  onTheBalanceSheet: string,
   activePreviewIndex: number,
+  photosOfDamages: Array<Photo>,
+  currentlyEditableField: ?string,
   isDateTimePickerOpened: boolean,
-  currentlyEditableDate: ?string,
 };

@@ -1,6 +1,7 @@
 // @flow
 
-export type GradientButtonProps = {
-  title: string,
-  onPress?: () => void,
+export type Props = {
+  isVisible: boolean,
+  onConfirm: Function,
+  onCancel: Function,
 };

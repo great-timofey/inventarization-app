@@ -9,12 +9,12 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-
-import { Query, graphql } from 'react-apollo';
 
 import LinearGradient from 'react-native-linear-gradient';
 
+import { graphql } from 'react-apollo';
 import Item from '~/components/Item';
 import Button from '~/components/Button';
 import Search from '~/components/Search';
@@ -25,13 +25,12 @@ import MainHeader from '~/scenes/Items/MainHeader';
 import InventoryIcon from '~/assets/InventoryIcon';
 import QuestionModal from '~/components/QuestionModal';
 import SearchHeader from '~/scenes/Items/SearchHeader';
-import gql from 'graphql-tag';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
-import * as QUERIES from '~/graphql/auth/queries';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 
 import styles from './styles';
@@ -232,16 +231,11 @@ class ItemsScene extends PureComponent<Props, State> {
       isSortModalVisible,
       isDeleteModalVisible,
     } = this.state;
-    const { navigation } = this.props;
+    const {
+      data: { role },
+      navigation,
+    } = this.props;
     const isEmptyList = true;
-    const sortData = isSortByName
-      ? constants.data.assets.sort((a, b) => {
-        if (a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
-        if (a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
-        return 0;
-      })
-      : constants.data.assets.sort((a, b) => a.purchasePrice - b.purchasePrice);
-    const currentUser = constants.users.admin;
 
     return (
       <Fragment>
@@ -257,7 +251,7 @@ class ItemsScene extends PureComponent<Props, State> {
               isGreen
               customStyle={styles.button}
               title={constants.buttonTitles.addItem}
-              onPress={currentUser !== constants.users.observer
+              onPress={role !== constants.roles.observer
                 ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
                 : () => {}}
             />
@@ -280,20 +274,20 @@ class ItemsScene extends PureComponent<Props, State> {
             </CategoryList>
             {isListViewStyle ? (
               <SwipebleListItem
-                data={sortData}
-                currentUser={currentUser}
+                data={[]}
+                currentUserRole={role}
                 selectItem={this.selectItem}
                 toggleDelModal={this.toggleDelModalVisible}
                 extraData={{ currentSelectItem, isSortByName }}
               />
             ) : (
               <FlatList
-                data={sortData}
+                data={[]}
                 numColumns={2}
                 renderItem={({ item }) => (
                   <Item
                     item={item}
-                    currentUser={currentUser}
+                    currentUserRole={role}
                     selectItem={this.selectItem}
                     currentSelectItem={currentSelectItem}
                     toggleDelModal={this.toggleDelModalVisible}
@@ -308,11 +302,11 @@ class ItemsScene extends PureComponent<Props, State> {
         )}
         {isSearchActive
         && (
-        <Search
-          searchValue={searchValue}
-          items={constants.data.assets}
-          toggleSearch={this.toggleSearch}
-        />
+          <Search
+            searchValue={searchValue}
+            items={constants.data.assets}
+            toggleSearch={this.toggleSearch}
+          />
         )}
         {!isSortModalVisible && !isSearchActive && !isEmptyList && (
           <IconButton
@@ -341,4 +335,5 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 }
 
-export default ItemsScene;
+
+export default graphql(GET_CURRENT_USER_COMPANY_CLIENT)(ItemsScene);
