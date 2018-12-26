@@ -45,7 +45,7 @@ class ScrollViewContainer extends PureComponent<Props, State> {
 
   render() {
     const { children, bgColor, ...rest } = this.props;
-    const { keyboardPadding, paddingContainer } = this.state;
+    const { keyboardPadding, paddingContainer } = this;
 
     return (
       <KeyboardAwareScrollView
