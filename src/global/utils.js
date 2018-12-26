@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import ImageResizer from 'react-native-image-resizer';
 import { ReactNativeFile } from 'apollo-upload-client';
 
+import types from '~/global/types';
 import constants from '~/global/constants';
 import { deviceWidth, deviceHeight } from '~/global/device';
 
@@ -23,7 +24,7 @@ export const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-export const convertToApolloUpload = async (photos: Array<<string, string>>, typeSeparator: string) => {
+export const convertToApolloUpload = async (photos: types.Photo, typeSeparator: string) => {
   const photosPromises = photos.map(({ uri }) => {
     const type = uri.slice(uri.lastIndexOf(typeSeparator) + 1).toUpperCase();
     return ImageResizer.createResizedImage(
