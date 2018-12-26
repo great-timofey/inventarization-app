@@ -222,11 +222,13 @@ class ItemForm extends Component<Props, State> {
       } = this.props;
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
 
+      variables.companyId = companyId;
       variables.name = variables.name.trim();
-      variables.companyId = variables.companyId;
-      variables.description = variables.description.trim();
       variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
 
+      if (variables.description) {
+        variables.description = variables.description.trim();
+      }
       if (variables.assessedValue) {
         variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
@@ -258,10 +260,8 @@ class ItemForm extends Component<Props, State> {
         variables.status = variables.status === constants.placeholders.status.accepted ? 'accepted' : 'on_processing';
       }
 
-      console.log(variables);
       try {
-        const response = await createAsset({ variables });
-        console.log(response);
+        await createAsset({ variables });
       } catch (error) {
         console.log(error.message);
       }
