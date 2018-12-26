@@ -17,7 +17,6 @@ class ProfileScene extends PureComponent<Props> {
       client,
       // setAuthMutationClient
     } = this.props;
-    console.log();
 
     try {
       await logOut();
@@ -25,7 +24,7 @@ class ProfileScene extends PureComponent<Props> {
     } catch (error) {
       Alert.alert(error.message);
     }
-  }
+  };
 
   render() {
     return (
