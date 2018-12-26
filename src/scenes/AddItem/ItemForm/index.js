@@ -13,12 +13,11 @@ import {
   SectionList,
   SafeAreaView,
   TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
 
 import { compose, graphql } from 'react-apollo';
-import { keys, head, drop, isEmpty, pick, includes, remove } from 'ramda';
+import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -28,16 +27,17 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { isIphoneX } from '~/global/device';
 import { isSmallDevice } from '~/global/utils';
 import { CREATE_ASSET } from '~/graphql/assets/mutations';
-import * as QUERIES from '~/graphql/auth/queries';
-import Carousel from '~/components/Carousel';
-import ChooseModal from '~/components/ChooseModal';
-import DateTimePicker from '~/components/DateTimePicker';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
+import Carousel from '~/components/Carousel';
+import * as QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
+import DateTimePicker from '~/components/DateTimePicker';
+
 import type { Props, State, PhotosProps, PreviewProps, Section } from './types';
 import styles from './styles';
 
@@ -111,28 +111,31 @@ class ItemForm extends Component<Props, State> {
   });
 
   state = {
-    gps: '',
     name: '',
+    gps: null,
     photos: [],
-    codeData: '',
+    placeId: null,
+    codeData: null,
     warnings: {},
     location: null,
     category: null,
-    manufacture: '',
+    inventoryId: '',
     showPhotos: true,
-    inventoryCode: '',
-    assessedValue: '',
-    purchasePrice: '',
+    manufacture: null,
     assessedDate: null,
+    assessedValue: null,
+    purchasePrice: null,
     responsibleId: null,
     photosOfDamages: [],
     dateOfPurchase: null,
-    guaranteeExpires: null,
     isModalOpened: false,
     activePreviewIndex: 0,
-    currentlyEditableDate: null,
+    guaranteeExpires: null,
+    onTheBalanceSheet: 'Нет',
+    currentlyEditableField: null,
     isDateTimePickerOpened: false,
     sections: constants.itemFormSections,
+    status: constants.placeholders.status.onProcessing,
   };
 
   carousel: any;
@@ -147,7 +150,7 @@ class ItemForm extends Component<Props, State> {
     const codeData = navigation.getParam('codeData', '');
     const photosOfDamages = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
-    const gps = `${firstPhotoForCoords.location.lat}, ${firstPhotoForCoords.location.lon}`;
+    const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
     this.setState({ photos, photosOfDamages, gps });
   }
 
@@ -177,21 +180,21 @@ class ItemForm extends Component<Props, State> {
   }
 
   checkFields = () => {
-    const { name, inventoryCode } = this.state;
+    const { name, inventoryId } = this.state;
     const warnings = {};
 
     if (!name.trim()) {
       warnings.name = 1;
     }
 
-    if (!inventoryCode.trim()) {
-      warnings.inventoryCode = 'empty';
+    if (!inventoryId.trim()) {
+      warnings.inventoryId = 'empty';
     }
 
     /*
 
     if (...somethingFromBackend) {
-      warnings.push(['inventoryCode', 'inventoryCodeAlreadyInUse']);
+      warnings.push(['inventoryId', 'inventoryIdAlreadyInUse']);
     }
 
     */
@@ -207,7 +210,6 @@ class ItemForm extends Component<Props, State> {
      * in this.checkFields and this.checkForErrors
      */
 
-    // const { fields } = this.state;
     const { createAsset } = this.props;
 
     const isFormInvalid = await Promise.resolve()
@@ -215,35 +217,58 @@ class ItemForm extends Component<Props, State> {
       .then(_ => this.checkForErrors());
 
     if (!isFormInvalid) {
-      const { photos, photosOfDefects } = this.state;
+      const {
+        userCompany: { id: companyId },
+      } = this.props;
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
-      console.log('before ', variables);
-      variables['assessedValue'] = Number.parseFloat(drop(2, variables['assessedValue']));
-      variables['purchasePrice'] = Number.parseFloat(drop(2, variables['purchasePrice']));
-      variables['companyId'] = this.props.userCompany.id;
-      if (variables['dateOfPurchase']) {
-        variables['dateOfPurchase'] = dayjs(variables['dateOfPurchase']).format(constants.formats.createAssetDates);
+
+      variables.name = variables.name.trim();
+      variables.companyId = variables.companyId;
+      variables.description = variables.description.trim();
+      variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
+
+      if (variables.assessedValue) {
+        variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
-      if (variables['guaranteeExpires']) {
-        variables['guaranteeExpires'] = dayjs(variables['guaranteeExpires']).format(constants.formats.createAssetDates);
+      if (variables.purchasePrice) {
+        variables.purchasePrice = Number.parseFloat(drop(2, variables.purchasePrice));
       }
-      if (variables['assessedDate']) {
-        variables['assessedDate'] = dayjs(variables['assessedDate']).format(constants.formats.createAssetDates);
+      if (variables.responsibleId) {
+        variables.responsibleId = variables.responsibleId.id;
       }
-      const { location: { lat, lon } } = head(photos.length ? photos : photosOfDefects);
-      variables['gps'] =  { lat, lon };
-      console.log('after ', variables);
-      // try {
-      //   createAsset(variables);
-      // } catch (error) {
-      //   console.log(error.message);
-      // }
-    } else console.log('FORM IS INVALID');
+      if (variables.placeId) {
+        variables.placeId = variables.placeId.id;
+      }
+      if (variables.dateOfPurchase) {
+        variables.dateOfPurchase = dayjs(variables.dateOfPurchase).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.guaranteeExpires) {
+        variables.guaranteeExpires = dayjs(variables.guaranteeExpires).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.assessedDate) {
+        variables.asessedDate = dayjs(variables.assessedDate).format(
+          constants.formats.createAssetDates,
+        );
+      }
+      if (variables.status) {
+        variables.status = variables.status === constants.placeholders.status.accepted ? 'accepted' : 'on_processing';
+      }
+
+      console.log(variables);
+      try {
+        const response = await createAsset({ variables });
+        console.log(response);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
   };
 
-  renderFormField = ({
-    item: { key, description, placeholder, ...rest },
-  }: PreviewProps) => {
+  renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const { warnings: stateWarnings } = this.state;
     let callback;
     let itemMask;
@@ -252,27 +277,38 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
-    if (includes(description, constants.fieldTypes.modalFields)) callback = this.handleToggleModal;
+    if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
     else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
     else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
     else if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
-    if (description === constants.itemForm.inventoryCode) {
+    if (description === constants.itemForm.inventoryId) {
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
     } else if (description === constants.itemForm.name) {
       const { warning } = rest;
       itemWarning = warning;
+    } else if (description === constants.itemForm.gps) {
+      const { gps } = this.state;
+      customValue = `${gps.lat}, ${gps.lon}`;
     } else if (description === constants.itemForm.guaranteeExpires) {
-      customValue = this.state[key] ? `До ${dayjs(this.state[key]).format(constants.formats.newItemDates)}` : null;
+      customValue = this.state[key]
+        ? `До ${dayjs(this.state[key]).format(constants.formats.newItemDates)}`
+        : null;
     } else if (
       description === constants.itemForm.dateOfPurchase
       || description === constants.itemForm.assessedDate
     ) {
-      customValue = this.state[key] ? dayjs(this.state[key]).format(constants.formats.newItemDates) : null;
+      customValue = this.state[key]
+        ? dayjs(this.state[key]).format(constants.formats.newItemDates)
+        : null;
     } else if (description === constants.itemForm.company) {
       customValue = this.props.userCompany.company.name;
+    } else if (description === constants.itemForm.responsibleId) {
+      customValue = this.state[key] ? this.state.responsibleId.fullName : null;
+    } else if (description === constants.itemForm.placeId) {
+      customValue = this.state[key] ? this.state.placeId.name : null;
     }
 
     return (
@@ -286,7 +322,7 @@ class ItemForm extends Component<Props, State> {
         isMultiline={isDescriptionField}
         value={customValue || this.state[key]}
         maxLength={isDescriptionField ? 250 : 50}
-        showWarningInTitle={key === 'inventoryCode'}
+        showWarningInTitle={key === 'inventoryId'}
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
         onChangeText={text => this.handleChangeField(key, text)}
@@ -361,15 +397,29 @@ class ItemForm extends Component<Props, State> {
 
   handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
     isDateTimePickerOpened: !isDateTimePickerOpened,
-    currentlyEditableDate: key,
+    currentlyEditableField: key,
   }));
 
-  handleToggleModal = () => this.setState(({ isModalOpened }) => ({ isModalOpened: !isModalOpened }));
+  handleOpenModal = (field: string) => this.setState(({ isModalOpened }) => ({
+    isModalOpened: !isModalOpened,
+    currentlyEditableField: field,
+  }));
 
-  handleChooseDate = (date: Date) => this.setState(({ currentlyEditableDate }) => ({
+  handleCloseModal = () => this.setState(({ isModalOpened }) => ({
+    isModalOpened: !isModalOpened,
+    currentlyEditableField: null,
+  }));
+
+  handleConfirmModal = (option: string) => this.setState(({ isModalOpened, currentlyEditableField }) => ({
+    isModalOpened: !isModalOpened,
+    [currentlyEditableField]: option,
+    currentlyEditableField: null,
+  }));
+
+  handleChooseDate = (date: Date) => this.setState(({ currentlyEditableField }) => ({
     isDateTimePickerOpened: false,
-    [currentlyEditableDate]: new Date(date),
-    currentlyEditableDate: null,
+    [currentlyEditableField]: new Date(date),
+    currentlyEditableField: null,
   }));
 
   handleSwipePreview = (index: number) => this.setState({ activePreviewIndex: index });
@@ -381,7 +431,7 @@ class ItemForm extends Component<Props, State> {
 
   handleChangeField = (field: string, value: string) => {
     this.setState({
-      [field]: value
+      [field]: value,
     });
   };
 
@@ -401,6 +451,10 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
+      userCompany: { id: companyId },
+    } = this.props;
+
+    const {
       name,
       photos,
       warnings,
@@ -409,9 +463,11 @@ class ItemForm extends Component<Props, State> {
       isModalOpened,
       photosOfDamages,
       activePreviewIndex,
+      currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
@@ -478,10 +534,7 @@ class ItemForm extends Component<Props, State> {
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>
                   <Text
-                    style={[
-                      styles.formNameError,
-                      includes('name', keys(warnings)) && styles.show,
-                    ]}
+                    style={[styles.formNameError, includes('name', keys(warnings)) && styles.show]}
                   >
                     {constants.errors.createItem.name}
                   </Text>
@@ -510,9 +563,11 @@ class ItemForm extends Component<Props, State> {
               onCancel={this.handleToggleDateTimePicker}
             />
             <ChooseModal
+              companyId={companyId}
               isVisible={isModalOpened}
-              onCancel={this.handleToggleModal}
-              data={['adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf', 'adf']}
+              type={currentlyEditableField}
+              onCancel={this.handleCloseModal}
+              onConfirm={this.handleConfirmModal}
             />
           </ScrollView>
         </KeyboardAvoidingView>

@@ -1,7 +1,15 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import { Text, StatusBar, CameraRoll, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  StatusBar,
+  CameraRoll,
+  SafeAreaView,
+  View,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
 import { RNCamera } from 'react-native-camera';
 import { StackActions } from 'react-navigation';
@@ -54,7 +62,6 @@ class AddItemFinish extends PureComponent<Props, State> {
     const { navigation } = this.props;
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
-    console.log(photos, defectPhotos);
     navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos });
   };
 
