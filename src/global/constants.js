@@ -22,6 +22,12 @@ const uploadCreateCompanyImages = {
   quality: 0.5,
 };
 
+const uploadCreateAssetImages = {
+  width: 375,
+  height: 375,
+  quality: 0.5,
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   model: 'Введите название',
@@ -393,6 +399,7 @@ export default {
   forgotPassText,
   setNewPassword,
   itemFormSections,
+  uploadCreateAssetImages,
   uploadCreateCompanyImages,
   createAssetNecessaryProperties,
 };

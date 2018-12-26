@@ -25,8 +25,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { isSmallDevice } from '~/global/utils';
 import { CREATE_ASSET } from '~/graphql/assets/mutations';
+import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -211,6 +211,7 @@ class ItemForm extends Component<Props, State> {
      */
 
     const { createAsset } = this.props;
+    const { photos, photosOfDamages } = this.state;
 
     const isFormInvalid = await Promise.resolve()
       .then(_ => this.checkFields())
@@ -228,6 +229,9 @@ class ItemForm extends Component<Props, State> {
 
       if (variables.description) {
         variables.description = variables.description.trim();
+      }
+      if (variables.assessedValue) {
+        variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
       if (variables.assessedValue) {
         variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
@@ -257,7 +261,27 @@ class ItemForm extends Component<Props, State> {
         );
       }
       if (variables.status) {
-        variables.status = variables.status === constants.placeholders.status.accepted ? 'accepted' : 'on_processing';
+        variables.status = variables.status === constants.placeholders.status.accepted
+          ? 'accepted'
+          : 'on_processing';
+      }
+
+      if (photos.length) {
+        try {
+          const photosResult = await convertToApolloUpload(photos, '.');
+          variables.photos = photosResult;
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+
+      if (photosOfDamages.length) {
+        try {
+          const defectsResult = await convertToApolloUpload(photosOfDamages, '.');
+          variables.photosOfDamages = defectsResult;
+        } catch (error) {
+          console.log(error.message);
+        }
       }
 
       try {
