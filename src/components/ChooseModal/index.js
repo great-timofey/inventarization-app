@@ -86,7 +86,7 @@ class ChooseModal extends Component<Props, State> {
     const { isVisible, onConfirm, onCancel, type } = this.props;
     return (
       <Modal isVisible={isVisible} style={styles.modalOverlay} onModalShow={this.initFields}>
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
           {loading && <ActivityIndicator />}
           {data.length ? (
             <FlatList

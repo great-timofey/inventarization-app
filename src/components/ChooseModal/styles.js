@@ -13,11 +13,13 @@ export default StyleSheet.create({
   },
   modalContainer: {
     borderRadius: 7,
-    alignItems: 'center',
     height: normalize(315),
     justifyContent: 'center',
     marginBottom: normalize(15),
     backgroundColor: colors.white,
+  },
+  modalContainerWithoutData: {
+    alignItems: 'center',
   },
   modalCancel: {
     alignItems: 'center',
@@ -37,7 +39,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   modalItemText: {
-    textAlign: 'center',
     color: colors.black,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.light,
