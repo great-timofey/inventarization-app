@@ -18,10 +18,12 @@ const flashOff = require('~/assets/flash-off.png');
 const torchOff = require('~/assets/torch-off.png');
 const logologin = require('~/assets/logoLogin.png');
 const deleteIcon = require('~/assets/deleteIcon.png');
+const noPlaceId = require('~/assets/no-locations.png');
 const noItemsYet = require('~/assets/no-items-yet.png');
 const deletePhoto = require('~/assets/delete-photo.png');
 const flashCircled = require('~/assets/flash-circled.png');
 const checkCircled = require('~/assets/checked-circle.png');
+const noResponsibleId = require('~/assets/no-responsibles.png');
 const headerBackArrow = require('~/assets/headerBackArrow.png');
 
 export default {
@@ -44,8 +46,10 @@ export default {
   logologin,
   deleteIcon,
   noItemsYet,
+  noPlaceId,
   deletePhoto,
   flashCircled,
   checkCircled,
+  noResponsibleId,
   headerBackArrow,
 };

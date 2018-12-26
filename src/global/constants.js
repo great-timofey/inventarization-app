@@ -26,9 +26,9 @@ const placeholders = {
   manufacture: 'Введите название',
   model: 'Введите название',
   description: 'Введите текст',
-  location: 'Место не указано',
+  placeId: 'Место не указано',
   inputHeader: 'Введите название',
-  inventoryCode: 'Введите код',
+  inventoryId: 'Введите код',
   codeData: 'Введите код',
   assessedDate: 'Не оценивалось',
   dateOfPurchase: 'Выберите дату покупки',
@@ -38,7 +38,7 @@ const placeholders = {
   purchasePrice: '\u20BD 0',
   assessedValue: '\u20BD 0',
   status: {
-    inventory: 'Учтено',
+    accepted: 'Учтено',
     onProcessing: 'В обработке',
   },
 };
@@ -182,8 +182,8 @@ const errors = {
   },
   createItem: {
     name: 'Нельзя сохранить без названия',
-    inventoryCodeEmpty: 'Введите инвентарный номер',
-    inventoryCodeAlreadyInUse: 'Данный инвентарный номер уже существует',
+    inventoryIdEmpty: 'Введите инвентарный номер',
+    inventoryIdAlreadyInUse: 'Данный инвентарный номер уже существует',
   },
 };
 
@@ -215,7 +215,9 @@ const hints = {
   noPhotos: 'Нет фотографий',
   enterName: 'Введите название',
   makePhotos: 'Сделайте фотографии вашего предмета',
+  noPlaceId: 'Пока не существует \n ни одного места',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
+  noResponsibleId: 'Пока не существует \n ни одного ответственного',
 };
 
 /** Form stuff */
@@ -225,19 +227,19 @@ const itemForm = {
   model: 'Модeль',
   description: 'Описание',
   codeData: 'QR-код',
-  inventoryCode: 'Инвентарный номер',
+  inventoryId: 'Инвентарный номер',
   dateOfPurchase: 'Дата покупки',
   purchasePrice: 'Цена покупки',
   assessedValue: 'Рыночная цена',
   assessedDate: 'Дата оценки',
   guaranteeExpires: 'Гарантийный срок',
   company: 'Организация',
-  location: 'Место',
+  placeId: 'Место',
   gps: 'Координаты',
   responsibleId: 'Ответственный',
-  onBalance: 'На бухгалтерском балансе',
-  status: 'Статус',
+  onTheBalanceSheet: 'На бухгалтерском балансе',
   category: 'Категория',
+  status: 'Статус',
   name: 'Название',
 };
 
@@ -249,10 +251,10 @@ const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
     placeholder: placeholders[objKey],
   };
 
-  if (objKey === 'inventoryCode') {
+  if (objKey === 'inventoryId') {
     result.warnings = {
-      empty: errors.createItem.inventoryCodeEmpty,
-      inUse: errors.createItem.inventoryCodeAlreadyInUse,
+      empty: errors.createItem.inventoryIdEmpty,
+      inUse: errors.createItem.inventoryIdAlreadyInUse,
     };
   }
 
@@ -283,10 +285,10 @@ const itemFormSections = [
 ];
 
 const fieldTypes = {
-  dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
-  modalFields: [itemForm.location, itemForm.category, itemForm.responsibleId],
-  nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status],
   currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
+  nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status, itemForm.gps],
+  dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
+  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet, itemForm.status],
 };
 
 const createAssetNecessaryProperties = keys(itemForm);
