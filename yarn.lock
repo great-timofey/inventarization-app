@@ -4823,11 +4823,11 @@ react-native-blur@^3.2.2:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-camera@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.4.3.tgz#71359ae8efdf372fb1b8b5ec72ecae1c6708da4b"
+react-native-camera@1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.4.tgz#a7d0f3da8ff07be36c07e14dcae57d822a09013e"
+  integrity sha512-aS77+UVOKwxE+gTfpkPwIVoyFPD7uFuLV6qzV2M9kwK/KklR7wjd594xvatX40GHfLRFRpuUn5HiJU5WnOovbQ==
   dependencies:
-    lodash "^4.17.10"
     prop-types "^15.6.2"
 
 react-native-device-info@^0.24.3:
@@ -4841,9 +4841,10 @@ react-native-fs@2.12:
     base-64 "^0.1.0"
     utf8 "^2.1.1"
 
-react-native-gesture-handler@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.10.tgz#160e55e4886471931b7f7d52e22d94007540ab83"
+react-native-gesture-handler@1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.12.tgz#99a22f90212df299245357dbd3a9a01c788f310b"
+  integrity sha512-Qp5FjRmqUFeCevSu2IYQG1Xw+YXZ9YOzqze/ZxaIvWzYAoKsRchlgHhNoxvCqElp/befrnVFIjAEQyUxcmBKJw==
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -4869,9 +4870,10 @@ react-native-image-resizer@^1.0.0:
   version "0.4.1"
   resolved "git+https://github.com/AllmaxTeam/react-native-keyboard-aware-scroll-view.git#a7f2cb46743700744e83748a159b488a1ecebcaf"
 
-react-native-linear-gradient@^2.4.4:
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.4.tgz#64944a39290eefbede18dfd7e9551f1ef61e3de7"
+react-native-linear-gradient@2.5.3:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.3.tgz#d90cf19a13fcccfa8bb32025ac40a15ae1b49e99"
+  integrity sha512-XdusrOXXlkI+yQpUW7YLeiq9cZiBwkvQX4XEkHPVrJ9H47gsKmdgBwObkZBzBQUP0dKK/Sg6aVpETEis4w43bQ==
 
 react-native-modal-datetime-picker@^6.0.0:
   version "6.0.0"
