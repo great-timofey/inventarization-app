@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Keyboard, Animated } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -9,14 +9,12 @@ import { normalize, isSmallDevice } from '~/global/utils';
 import styles from './styles';
 import type { Props, State } from './types';
 
-class ScrollViewContainer extends Component<Props, State> {
-  state = {
-    keyboardPadding: new Animated.Value(0),
-    paddingContainer: new Animated.Value(normalize(30)),
-  };
+class ScrollViewContainer extends PureComponent<Props, State> {
+  keyboardPadding = new Animated.Value(0);
+  paddingContainer = new Animated.Value(normalize(30));
 
   componentDidMount() {
-    const { keyboardPadding, paddingContainer } = this.state;
+    const { keyboardPadding, paddingContainer } = this;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
     Keyboard.addListener(listenerShow, (event) => {
