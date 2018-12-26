@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 
 export const GET_COMPANY_ASSETS = gql`
   query GetCompanyAssets($companyId: ID!) {
-    assets(companyId: $companyId){
+    assets(companyId: $companyId) {
       id
       name
       model

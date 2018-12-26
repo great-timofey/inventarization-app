@@ -170,15 +170,17 @@ class ItemsScene extends PureComponent<Props, State> {
       data: {
         userCompany: { role: userRole, id: companyId },
       },
+      navigation,
     } = this.props;
     return (
       <Fragment>
         <ItemsList
-          swipeable={isListViewStyle}
           userRole={userRole}
           companyId={companyId}
-          currentSelectItem={currentSelectItem}
+          navigation={navigation}
+          swipeable={isListViewStyle}
           isSortByName={isSortByName}
+          currentSelectItem={currentSelectItem}
         />
         {isSearchActive && (
           <Search
