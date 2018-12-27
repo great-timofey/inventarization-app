@@ -33,6 +33,9 @@ export default StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerRightButtonsContainer: {
+    flexDirection: 'row',
+  },
   noPhoto: {
     width: 100,
     height: 93,

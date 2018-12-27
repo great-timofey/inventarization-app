@@ -118,10 +118,12 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.state.params && navigation.state.params.item;
     const userCanDelete = navigation.state.params && navigation.state.params.userCanDelete;
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
+    const headerText = navigation.state.params && navigation.state.params.headerText;
+    const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
 
     return {
       headerStyle: styles.header,
-      title: item ? item.name : constants.headers.addingItem,
+      title: headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: (
         <HeaderBackButton
@@ -137,8 +139,12 @@ class ItemForm extends Component<Props, State> {
         />
       ),
       headerRight: (
-        <View style={{ flexDirection: 'row' }}>
-          {userCanEdit && <HeaderPencilButton onPress={() => navigation.goBack()} />}
+        <View style={styles.headerRightButtonsContainer}>
+          {userCanEdit && <HeaderPencilButton onPress={() => {
+              navigation.setParams({ headerText: constants.headers.modifyingItem, userCanEdit: false })
+              toggleEditMode();
+            }}/>
+          }
           {userCanDelete && <HeaderTrashButton onPress={() => navigation.goBack()} />}
         </View>
       ),
@@ -156,7 +162,6 @@ class ItemForm extends Component<Props, State> {
     category: null,
     inventoryId: '',
     showPhotos: true,
-    isEditable: true,
     manufacture: null,
     assessedDate: null,
     assessedValue: null,
@@ -165,13 +170,15 @@ class ItemForm extends Component<Props, State> {
     photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
+    formIsEditable: true,
+    showSaveButton: false,
     activePreviewIndex: 0,
     guaranteeExpires: null,
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
     sections: constants.itemFormSections,
-    status: constants.placeholders.status.onProcessing,
+    status: constants.placeholders.status.inProcessing,
   };
 
   carousel: any;
@@ -187,34 +194,36 @@ class ItemForm extends Component<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
 
+    navigation.setParams({ toggleEditMode: this.toggleEditMode })
+
     const item = navigation.getParam('item', null);
 
     if (item) {
       console.log(item);
+      navigation.setParams({ headerText: item.name });
 
       if (role === constants.roles.observer) {
-        this.setState({ isEditable: false });
+        this.setState({ formIsEditable: false });
       } else {
-        navigation.setParams({ userCanDelete: true });
+        navigation.setParams({ userCanDelete: true, userCanEdit: true });
       }
 
       item.photos = item.photos || [];
       item.photosOfDamages = item.photosOfDamages || [];
       item.responsibleId = item.responsible;
       item.status = item.status === 'on_processing'
-        ? constants.placeholders.status.onProcessing
+        ? constants.placeholders.status.inProcessing
         : constants.placeholders.status.accepted;
       item.onTheBalanceSheet = item.onTheBalanceSheet ? 'Да' : 'Нет';
-      this.setState(state => ({ ...state, ...item }));
-      navigation.setParams({ userCanEdit: true });
+      this.setState(state => ({ ...state, ...item, isNewItem: false }));
     } else {
-      navigation.setParams({ userCanDelete: true });
+      navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
       const photos = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
-      this.setState({ photos, photosOfDamages, gps });
+      this.setState({ photos, photosOfDamages, gps, showSaveButton: true, isNewItem: true });
     }
   }
 
@@ -241,6 +250,10 @@ class ItemForm extends Component<Props, State> {
         photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
       }));
     }
+  }
+
+  toggleEditMode = () => {
+    this.setState({ showSaveButton: true, formIsEditable: true });
   }
 
   checkFields = () => {
@@ -356,7 +369,7 @@ class ItemForm extends Component<Props, State> {
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
-    const { warnings: stateWarnings, isEditable } = this.state;
+    const { warnings: stateWarnings, formIsEditable, showSaveButton } = this.state;
     let callback;
     let itemMask;
     let itemWarning;
@@ -364,7 +377,7 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isDescriptionField = description === constants.itemForm.description;
 
-    if (isEditable) {
+    if (formIsEditable && showSaveButton) {
       if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
       else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
       else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
@@ -409,13 +422,14 @@ class ItemForm extends Component<Props, State> {
         blurOnSubmit={false}
         containerCallback={callback}
         isMultiline={isDescriptionField}
+        isBackgroundTransparent={!formIsEditable}
         value={customValue || this.state[key]}
         maxLength={isDescriptionField ? 250 : 50}
         showWarningInTitle={key === 'inventoryId'}
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
         onChangeText={text => this.handleChangeField(key, text)}
-        placeholder={isStatusField ? placeholder.onProcessing : placeholder}
+        placeholder={isStatusField ? placeholder.inProcessing : placeholder}
       />
     );
   };
@@ -434,15 +448,15 @@ class ItemForm extends Component<Props, State> {
   );
 
   renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
-    const { isEditable } = this.state;
+    const { formIsEditable } = this.state;
 
-    return !uri && isEditable ? (
+    return !uri && formIsEditable ? (
       <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
         <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
       </TouchableOpacity>
     ) : (
       <View style={styles.photoContainer}>
-        {isEditable && (
+        {formIsEditable && (
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
@@ -530,6 +544,8 @@ class ItemForm extends Component<Props, State> {
     });
   };
 
+  keyExtractor = ({ uri }, index) => uri || index.toString();
+
   showPhotos = () => {
     this.setState({ showPhotos: true, activePreviewIndex: 0 });
     if (this.carousel) {
@@ -546,23 +562,30 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
-      userCompany: { id: companyId },
+      userId,
+      userCompany: { id: companyId, role },
     } = this.props;
 
     const {
       name,
       photos,
+      status,
       warnings,
       sections,
+      isNewItem,
       showPhotos,
-      isEditable,
       isModalOpened,
+      formIsEditable,
+      showSaveButton,
       photosOfDamages,
       activePreviewIndex,
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
     const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+    // console.log(item)
+    // console.log(alert(status))
+    const userRole = 'observer';
 
     return (
       <SafeAreaView style={styles.container}>
@@ -587,7 +610,11 @@ class ItemForm extends Component<Props, State> {
               </View>
               <Fragment>
                 {currentTypeIsEmpty ? (
-                  <NoItems additional={isEditable} onPress={this.handleAddPhoto} />
+                  <NoItems additional={
+                    isNewItem
+                    || userRole === constants.roles.admin
+                    || status === constants.placeholders.status.inProcessing
+                  } onPress={this.handleAddPhoto} />
                 ) : (
                   <Carousel
                     innerRef={(ref) => {
@@ -615,9 +642,9 @@ class ItemForm extends Component<Props, State> {
             <FlatList
               horizontal
               style={styles.photosOuter}
+              keyExtractor={this.keyExtractor}
               showsHorizontalScrollIndicator={false}
               renderItem={this.renderPreviewPhotoBarItem}
-              keyExtractor={(_, index) => index.toString()}
               contentContainerStyle={[
                 styles.photosInner,
                 styles.previewPhotoBar,
@@ -625,7 +652,7 @@ class ItemForm extends Component<Props, State> {
               ]}
               data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
             />
-            <View style={styles.formContainer} pointerEvents={!isEditable && 'none'}>
+            <View style={styles.formContainer} pointerEvents={!formIsEditable && 'none'}>
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>
@@ -650,9 +677,11 @@ class ItemForm extends Component<Props, State> {
                 contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
-            <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
-              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-            </TouchableOpacity>
+            {showSaveButton && (
+              <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
+                <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+              </TouchableOpacity>
+            )}
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
@@ -671,10 +700,12 @@ class ItemForm extends Component<Props, State> {
     );
   }
 }
-
 export default compose(
   graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+  graphql(QUERIES.GET_USER_ID_CLIENT, {
+    props: ({ data: { id } }) => ({ userId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
 )(ItemForm);

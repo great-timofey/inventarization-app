@@ -51,6 +51,7 @@ class Input extends Component<Props> {
       onSubmitEditing,
       containerCallback,
       showWarningInTitle,
+      isBackgroundTransparent,
       ...textInputProps
     } = this.props;
 
@@ -71,6 +72,7 @@ class Input extends Component<Props> {
             isWhite && styles.whiteContainer,
             isWarning && styles.invalidContainer,
             isMultiline && styles.multilineContainer,
+            isBackgroundTransparent && styles.transparentBackgroundContainer,
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
           ]}
         >

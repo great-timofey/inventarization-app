@@ -35,7 +35,7 @@ const valuesToDisplay = {
 
 const modalsWithoutApolloLogic = {
   onTheBalanceSheet: ['Да', 'Нет'],
-  status: [constants.placeholders.status.onProcessing, constants.placeholders.status.accepted],
+  status: [constants.placeholders.status.inProcessing, constants.placeholders.status.accepted],
 };
 
 class ChooseModal extends Component<Props, State> {

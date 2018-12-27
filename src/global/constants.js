@@ -45,7 +45,7 @@ const placeholders = {
   assessedValue: '\u20BD 0',
   status: {
     accepted: 'Учтено',
-    onProcessing: 'В обработке',
+    inProcessing: 'В обработке',
   },
 };
 
@@ -204,6 +204,7 @@ const headers = {
   addingItem: 'Добавление предмета',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
+  modifyingItem: 'Редактирование предмета',
   createNewCompany: 'Создание новой \n организации',
 };
 

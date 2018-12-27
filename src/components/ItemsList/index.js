@@ -129,7 +129,7 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          console.log(dataToRender);
+          // console.log(dataToRender);
 
           return R.isEmpty(dataToRender) ? (
             <View>

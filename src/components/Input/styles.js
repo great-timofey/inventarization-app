@@ -19,6 +19,10 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: normalize(20),
   },
+  transparentBackgroundContainer: {
+    borderWidth: 0,
+    backgroundColor: colors.transparent,
+  },
   whiteContainer: {
     borderColor: colors.input.whiteBG,
     backgroundColor: colors.input.whiteBG,
