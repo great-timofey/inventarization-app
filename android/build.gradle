@@ -7,6 +7,7 @@ buildscript {
         compileSdkVersion = 27
         targetSdkVersion = 27
         supportLibVersion = "27.1.1"
+        googlePlayServicesVersion  = "12.0.1"
     }
     repositories {
         google()
@@ -41,6 +42,14 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
     project.configurations.all {
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'com.android.support'
