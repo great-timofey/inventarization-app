@@ -27,7 +27,7 @@
     "react-native-blur": "^3.2.2",
     "react-native-camera": "1.6.4",
     "react-native-device-info": "0.24.3",
-    "react-native-fs": "2.12",
+    "react-native-fs": "2.13.3",
     "react-native-gesture-handler": "1.0.12",
     "react-native-image-picker": "0.27.2",
     "react-native-keyboard-aware-scroll-view": "git+https://github.com/AllmaxTeam/react-native-keyboard-aware-scroll-view.git#a7f2cb46743700744e83748a159b488a1ecebcaf",
