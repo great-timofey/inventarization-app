@@ -102,7 +102,6 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.regular,
   },
   previewPhotoBar: {
-    overflow: 'visible',
     height: normalize(90),
     marginBottom: normalize(10),
     backgroundColor: colors.white,
@@ -124,11 +123,11 @@ export default StyleSheet.create({
   },
   removePhotoIcon: {
     zIndex: 1,
-    top: normalize(-3),
-    right: normalize(-3),
+    top: normalize(-8),
+    right: normalize(-8),
     position: 'absolute',
-    width: normalize(26),
-    height: normalize(26),
+    width: normalize(28),
+    height: normalize(28),
   },
   smallerIcon: {
     transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
