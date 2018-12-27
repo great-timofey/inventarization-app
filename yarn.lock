@@ -4830,9 +4830,10 @@ react-native-camera@1.6.4:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-device-info@^0.24.3:
+react-native-device-info@0.24.3:
   version "0.24.3"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.24.3.tgz#f15eff8d09fe418eaf5e7c89ddaabbc5ed718fd7"
+  integrity sha512-usW00Wk6DoXH1eRSMt07j0uYvuka3SIEnJ9girlddAacyqwfa1QMVTN4eYmtaBzuMd/avhis8iHZQ3cLaR9CMA==
 
 react-native-fs@2.12:
   version "2.12.1"
@@ -4927,9 +4928,10 @@ react-native-safe-area-view@^0.11.0:
   version "1.0.0-alpha.16"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.16.tgz#e3651b7077ea8fa04e8dd3265ad9b87f1f77a758"
 
-react-native-splash-screen@^3.1.1:
+react-native-splash-screen@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
+  integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
 
 react-native-svg@^8.0.10:
   version "8.0.10"
@@ -4960,9 +4962,9 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
-"react-native-text-input-mask@github:allmaxgit/react-native-text-input-mask":
+"react-native-text-input-mask@git+https://github.com/allmaxgit/react-native-text-input-mask.git#1006ea0179d6a7af0b0d40781e355622700ce422":
   version "0.8.0"
-  resolved "https://codeload.github.com/allmaxgit/react-native-text-input-mask/tar.gz/1006ea0179d6a7af0b0d40781e355622700ce422"
+  resolved "git+https://github.com/allmaxgit/react-native-text-input-mask.git#1006ea0179d6a7af0b0d40781e355622700ce422"
 
 react-native-torch@^1.1.5:
   version "1.1.5"
