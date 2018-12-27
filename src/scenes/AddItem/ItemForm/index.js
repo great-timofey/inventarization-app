@@ -233,9 +233,6 @@ class ItemForm extends Component<Props, State> {
       if (variables.assessedValue) {
         variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
-      if (variables.assessedValue) {
-        variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
-      }
       if (variables.purchasePrice) {
         variables.purchasePrice = Number.parseFloat(drop(2, variables.purchasePrice));
       }

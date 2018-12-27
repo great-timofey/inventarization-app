@@ -1,6 +1,6 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, View, Alert } from 'react-native';
+import { Text, View, Alert, AsyncStorage } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
 import * as MUTATIONS from '~/graphql/auth/mutations';
@@ -15,11 +15,12 @@ class ProfileScene extends PureComponent<Props> {
     const {
       logOut,
       client,
-      // setAuthMutationClient
     } = this.props;
 
     try {
       await logOut();
+      await AsyncStorage.removeItem('token');
+      await client.clearStore();
       await client.resetStore();
     } catch (error) {
       Alert.alert(error.message);
