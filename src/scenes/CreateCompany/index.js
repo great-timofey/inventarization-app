@@ -14,9 +14,6 @@ import {
 } from 'react-native';
 
 import { graphql, compose } from 'react-apollo';
-//  $FlowFixMe
-import ImageResizer from 'react-native-image-resizer';
-import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
@@ -28,6 +25,7 @@ import PickPhotoModal from '~/components/PickPhotoModal';
 import HeaderBackbutton from '~/components/HeaderBackButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
+import { convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -157,22 +155,7 @@ class CreateCompany extends PureComponent<Props, State> {
     try {
       let file = '';
       if (chosenPhotoUri) {
-        const type = chosenPhotoUri
-          .slice(chosenPhotoUri.lastIndexOf('=') + 1)
-          .toUpperCase();
-        const response = await ImageResizer.createResizedImage(
-          chosenPhotoUri,
-          constants.uploadCreateCompanyImages.width,
-          constants.uploadCreateCompanyImages.height,
-          type === 'JPG' ? 'JPEG' : type,
-          constants.uploadCreateCompanyImages.quality,
-        );
-
-        file = new ReactNativeFile({
-          uri: response.uri.replace('file://', ''),
-          name: 'a.jpg',
-          type: type === 'JPG' ? 'image/jpeg' : 'image/png',
-        });
+        file = await convertToApolloUpload([chosenPhotoUri], '=');
       }
 
       await createCompany({

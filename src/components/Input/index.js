@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
 import TextInputMask from 'react-native-text-input-mask';
@@ -74,11 +74,12 @@ class Input extends Component<Props> {
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
           ]}
         >
-          <Text style={[
-            styles.inputTitleText,
-            isWhite && styles.inputTitleTextWhite,
-            showWarningInTitle && isWarning && styles.inputErrorText,
-          ]}
+          <Text
+            style={[
+              styles.inputTitleText,
+              isWhite && styles.inputTitleTextWhite,
+              showWarningInTitle && isWarning && styles.inputErrorText,
+            ]}
           >
             {showWarningInTitle && isWarning ? type.warning : type.label}
           </Text>
@@ -92,7 +93,11 @@ class Input extends Component<Props> {
             returnKeyType={returnKeyType}
             onSubmitEditing={returnKeyType === KEY_TYPES.GO ? onSubmitForm : onSubmitEditing}
             placeholderTextColor={isWhite ? colors.text.placeholderWhite : colors.text.placeholder}
-            style={[styles.input, isWhite && styles.inputWhite, isMultiline && styles.multilineInput]}
+            style={[
+              styles.input,
+              isWhite && styles.inputWhite,
+              isMultiline && styles.multilineInput,
+            ]}
           />
           {children}
         </View>

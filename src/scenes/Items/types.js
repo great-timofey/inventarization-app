@@ -12,4 +12,7 @@ export type State = {
 
 export type Props = {
   navigation: Object,
+  currentUserId: number,
+  currentUserRole: string,
+  currentCompanyId: number,
 };

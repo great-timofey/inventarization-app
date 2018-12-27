@@ -14,8 +14,12 @@ export default StyleSheet.create({
   modalContainer: {
     borderRadius: 7,
     height: normalize(315),
+    justifyContent: 'center',
     marginBottom: normalize(15),
     backgroundColor: colors.white,
+  },
+  modalContainerWithoutData: {
+    alignItems: 'center',
   },
   modalCancel: {
     alignItems: 'center',
@@ -42,5 +46,15 @@ export default StyleSheet.create({
   modalSeparator: {
     height: 1,
     backgroundColor: colors.gray,
+  },
+  noItemsImage: {
+    alignSelf: 'center',
+    marginBottom: normalize(15),
+  },
+  noItemsText: {
+    textAlign: 'center',
+    fontSize: normalize(18),
+    color: colors.modalHints,
+    fontFamily: fonts.proDisplay.light,
   },
 });

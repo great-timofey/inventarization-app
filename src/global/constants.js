@@ -22,21 +22,31 @@ const uploadCreateCompanyImages = {
   quality: 0.5,
 };
 
+const uploadCreateAssetImages = {
+  width: 375,
+  height: 375,
+  quality: 0.5,
+};
+
 const placeholders = {
-  manufacturer: 'Введите название',
+  manufacture: 'Введите название',
   model: 'Введите название',
   description: 'Введите текст',
-  place: 'Место не указано',
+  placeId: 'Место не указано',
   inputHeader: 'Введите название',
-  inventoryCode: 'Введите код',
-  qrcode: 'Введите код',
-  estimateDate: 'Не оценивалось',
-  purchaseDate: 'Выберите дату покупки',
-  warrantyPeriod: 'Выберите дату окончания',
+  inventoryId: 'Введите код',
+  codeData: 'Введите код',
+  assessedDate: 'Не оценивалось',
+  dateOfPurchase: 'Выберите дату покупки',
+  guaranteeExpires: 'Выберите дату окончания',
   category: 'Без категории',
   mobileNumber: '+7 (___) ___-__-__',
   purchasePrice: '\u20BD 0',
-  marketPrice: '\u20BD 0',
+  assessedValue: '\u20BD 0',
+  status: {
+    accepted: 'Учтено',
+    onProcessing: 'В обработке',
+  },
 };
 
 const inputTypes = {
@@ -178,8 +188,8 @@ const errors = {
   },
   createItem: {
     name: 'Нельзя сохранить без названия',
-    inventoryCodeEmpty: 'Введите инвентарный номер',
-    inventoryCodeAlreadyInUse: 'Данный инвентарный номер уже существует',
+    inventoryIdEmpty: 'Введите инвентарный номер',
+    inventoryIdAlreadyInUse: 'Данный инвентарный номер уже существует',
   },
 };
 
@@ -211,30 +221,34 @@ const hints = {
   noPhotos: 'Нет фотографий',
   enterName: 'Введите название',
   makePhotos: 'Сделайте фотографии вашего предмета',
+  noPlaceId: 'Пока не существует \n ни одного места',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
+  noResponsibleId: 'Пока не существует \n ни одного ответственного',
 };
 
 /** Form stuff */
 
 const itemForm = {
-  manufacturer: 'Производитель',
+  manufacture: 'Производитель',
   model: 'Модeль',
   description: 'Описание',
-  qrcode: 'QR-код',
-  inventoryCode: 'Инвентарный номер',
-  purchaseDate: 'Дата покупки',
+  codeData: 'QR-код',
+  inventoryId: 'Инвентарный номер',
+  dateOfPurchase: 'Дата покупки',
   purchasePrice: 'Цена покупки',
-  marketPrice: 'Рыночная цена',
-  estimateDate: 'Дата оценки',
-  warrantyPeriod: 'Гарантийный срок',
+  assessedValue: 'Рыночная цена',
+  assessedDate: 'Дата оценки',
+  guaranteeExpires: 'Гарантийный срок',
   company: 'Организация',
-  place: 'Место',
-  coordinates: 'Координаты',
-  responsible: 'Ответственный',
-  onBalance: 'На балансе',
+  placeId: 'Место',
+  gps: 'Координаты',
+  responsibleId: 'Ответственный',
+  onTheBalanceSheet: 'На бухгалтерском балансе',
   category: 'Категория',
+  status: 'Статус',
   name: 'Название',
 };
+
 
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result = {
@@ -243,10 +257,10 @@ const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
     placeholder: placeholders[objKey],
   };
 
-  if (objKey === 'inventoryCode') {
+  if (objKey === 'inventoryId') {
     result.warnings = {
-      empty: errors.createItem.inventoryCodeEmpty,
-      inUse: errors.createItem.inventoryCodeAlreadyInUse,
+      empty: errors.createItem.inventoryIdEmpty,
+      inUse: errors.createItem.inventoryIdAlreadyInUse,
     };
   }
 
@@ -277,28 +291,24 @@ const itemFormSections = [
 ];
 
 const fieldTypes = {
-  dateFields: [
-    itemForm.purchaseDate,
-    itemForm.estimateDate,
-    itemForm.warrantyPeriod,
-  ],
-  modalFields: [
-    itemForm.place,
-    itemForm.category,
-    itemForm.responsible,
-  ],
-  nonEditableFields: [
-    itemForm.qrcode,
-    itemForm.company,
-  ],
-  currencyFields: [
-    itemForm.marketPrice,
-    itemForm.purchasePrice,
-  ],
+  currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
+  nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status, itemForm.gps],
+  dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
+  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet, itemForm.status],
+};
+
+const createAssetNecessaryProperties = keys(itemForm);
+
+const roles = {
+  admin: 'admin',
+  manager: 'manager',
+  observer: 'observer',
+  employee: 'employee',
 };
 
 const formats = {
   newItemDates: 'DD.MM.YYYY',
+  createAssetDates: 'YYYY-MM-DD',
 };
 
 const category = [
@@ -367,27 +377,20 @@ const data = {
   ],
 };
 
-const users = {
-  admin: 'admin',
-  manager: 'manager',
-  observer: 'observer',
-  employee: 'employee',
-};
-
 export default {
   data,
   sort,
   text,
   masks,
-  users,
+  roles,
   hints,
   errors,
   regExp,
   headers,
   formats,
   itemForm,
-  category,
   inputTypes,
+  category,
   fieldTypes,
   buttonTitles,
   placeholders,
@@ -396,5 +399,7 @@ export default {
   forgotPassText,
   setNewPassword,
   itemFormSections,
+  uploadCreateAssetImages,
   uploadCreateCompanyImages,
+  createAssetNecessaryProperties,
 };

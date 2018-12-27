@@ -44,11 +44,11 @@ class Item extends PureComponent<Props, State> {
     const {
       item,
       selectItem,
-      currentUser,
+      currentUserRole,
       currentSelectItem,
     } = this.props;
     const isMenuOpen = currentSelectItem === item.id;
-    const showMenuButton = currentUser !== constants.users.observer;
+    const showMenuButton = currentUserRole !== constants.roles.observer;
 
     return (
       <View style={styles.container}>
