@@ -143,22 +143,24 @@ class Login extends PureComponent<Props, State> {
         const { data: currentUserData } = await client.query({
           query: QUERIES.GET_CURRENT_USER_COMPANIES,
         });
-        this.setUserRole(currentUserData);
+        this.setupUser(currentUserData);
       } catch (error) {
         Alert.alert(error.message);
       }
     }
   };
 
-  setUserRole = async (userData: Object) => {
-    const { setAuthMutationClient, setUserCompanyMutationClient } = this.props;
+  setupUser = async (userData: Object) => {
+    const { setAuthMutationClient, setUserIdMutationClient, setUserCompanyMutationClient } = this.props;
 
     const {
       current: {
+        id,
         userCompanies: [firstCompany],
       },
     } = userData;
 
+    await setUserIdMutationClient({ variables: { id } });
     await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
     await setAuthMutationClient({ variables: { isAuthed: true } });
   };
@@ -270,6 +272,9 @@ export default compose(
   }),
   graphql(MUTATIONS.SET_USER_COMPANY_MUTATION_CLIENT, {
     name: 'setUserCompanyMutationClient',
+  }),
+  graphql(MUTATIONS.SET_USER_ID_MUTATION_CLIENT, {
+    name: 'setUserIdMutationClient',
   }),
   graphql(MUTATIONS.SIGN_IN_MUTATION, {
     name: 'signInMutation',

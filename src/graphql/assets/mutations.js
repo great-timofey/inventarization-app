@@ -11,7 +11,7 @@ export const CREATE_ASSET = gql`
     $assessedDate: String
     $guaranteeExpires: String
     $gps: GpsAttr!
-    $inventoryId: String
+    $inventoryId: String!
     $codeData: String
     $manufacture: String
     $model: String

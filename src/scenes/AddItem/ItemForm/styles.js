@@ -22,6 +22,9 @@ export default StyleSheet.create({
   trashIcon: {
     marginRight: -10,
   },
+  pencilIcon: {
+    marginRight: -5,
+  },
   backButton: {
     width: 28,
     height: 20,

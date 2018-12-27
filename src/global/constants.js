@@ -1,6 +1,6 @@
 // @flow
 
-import { pick, slice, keys } from 'ramda';
+import { pick, slice, keys, values } from 'ramda';
 
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
@@ -249,7 +249,6 @@ const itemForm = {
   name: 'Название',
 };
 
-
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result = {
     key: objKey,
@@ -294,7 +293,13 @@ const fieldTypes = {
   currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
   nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status, itemForm.gps],
   dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
-  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet, itemForm.status],
+  modalFields: [
+    itemForm.placeId,
+    itemForm.category,
+    itemForm.responsibleId,
+    itemForm.onTheBalanceSheet,
+    itemForm.status,
+  ],
 };
 
 const createAssetNecessaryProperties = keys(itemForm);

@@ -60,7 +60,11 @@ class SwipeableList extends PureComponent<Props, {}> {
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>
-                <Text style={styles.botText}>{(item.photos && item.photos.length) || 0} Фото</Text>
+                <Text style={styles.botText}>
+                  {(item.photos && item.photos.length) || 0}
+                  {' '}
+Фото
+                </Text>
               </View>
               <View style={styles.count}>
                 <Text style={styles.countText}>{item.purchasePrice}</Text>

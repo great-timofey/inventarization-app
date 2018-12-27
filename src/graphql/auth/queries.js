@@ -42,6 +42,12 @@ export const GET_USER_AUTH_CLIENT = gql`
   }
 `;
 
+export const GET_USER_ID_CLIENT = gql`
+  query {
+    id @client
+  }
+`;
+
 export const GET_CURRENT_USER_COMPANY_CLIENT = gql`
   query {
     userCompany @client {
@@ -55,6 +61,7 @@ export const GET_CURRENT_USER_COMPANY_CLIENT = gql`
 `;
 
 export default {
+  GET_USER_ID_CLIENT,
   GET_COMPANY_PLACES,
   GET_USER_AUTH_CLIENT,
   GET_COMPANY_USERS_BY_ROLE,

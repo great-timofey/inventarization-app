@@ -11,12 +11,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { isEmpty } from 'ramda';
-import { Query } from 'react-apollo';
+import R from 'ramda';
+import { Query, graphql } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
+import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { GET_USER_ID_CLIENT } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import Item from '~/components/Item';
 import Button from '~/components/Button';
@@ -49,14 +51,16 @@ const CategoryList = ({ children }) => (
 
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }) => {
-    const { userRole, currentSelectItem } = this.props;
+    const { userRole, currentSelectItem, selectItem } = this.props;
     return (
       <Item
         item={item}
+        selectItem={selectItem}
         currentUserRole={userRole}
-        selectItem={this.selectItem}
+        openItem={this.handleOpenItem}
         currentSelectItem={currentSelectItem}
         toggleDelModal={this.toggleDelModalVisible}
+        showMenuButton={userRole !== constants.roles.observer}
       />
     );
   };
@@ -89,16 +93,22 @@ class ItemsList extends PureComponent<Props> {
     }
   };
 
+  handleOpenItem = (item: Object) => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item });
+  };
+
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const {
-      swipeable,
+      userId,
       userRole,
       companyId,
+      swipeable,
+      navigation,
       isSortByName,
       currentSelectItem,
-      navigation,
     } = this.props;
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
@@ -107,9 +117,21 @@ class ItemsList extends PureComponent<Props> {
 
           if (error) console.log(error);
 
-          const { assets } = data;
+          const { assets: innerAssets } = data;
+          let dataToRender = innerAssets;
 
-          return isEmpty(assets) ? (
+          if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
+            const resPath = R.lensPath(['responsible', 'id']);
+            dataToRender = R.filter(
+              asset => R.equals(R.view(resPath, asset), userId)
+                && R.equals('in_processing', R.prop('status', asset)),
+              innerAssets,
+            );
+          }
+
+          console.log(dataToRender);
+
+          return R.isEmpty(dataToRender) ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
               <Image source={assets.noItemsYet} style={styles.image} />
@@ -140,7 +162,7 @@ class ItemsList extends PureComponent<Props> {
               </CategoryList>
               {swipeable ? (
                 <SwipeableList
-                  data={assets}
+                  data={dataToRender}
                   currentUserRole={userRole}
                   selectItem={this.selectItem}
                   toggleDelModal={this.toggleDelModalVisible}
@@ -148,7 +170,7 @@ class ItemsList extends PureComponent<Props> {
                 />
               ) : (
                 <FlatList
-                  data={assets}
+                  data={dataToRender}
                   numColumns={2}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
@@ -164,4 +186,6 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-export default ItemsList;
+export default graphql(GET_USER_ID_CLIENT, {
+  props: ({ data: { id } }) => ({ userId: id }),
+})(ItemsList);

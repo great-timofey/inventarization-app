@@ -180,6 +180,7 @@ class ItemsScene extends PureComponent<Props, State> {
           navigation={navigation}
           swipeable={isListViewStyle}
           isSortByName={isSortByName}
+          selectItem={this.selectItem}
           currentSelectItem={currentSelectItem}
         />
         {isSearchActive && (
