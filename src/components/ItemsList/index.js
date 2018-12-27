@@ -108,7 +108,6 @@ class ItemsList extends PureComponent<Props> {
           if (error) console.log(error);
 
           const { assets } = data;
-          console.log(assets);
 
           return isEmpty(assets) ? (
             <View>
