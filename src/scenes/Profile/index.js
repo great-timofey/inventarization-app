@@ -15,7 +15,6 @@ class ProfileScene extends PureComponent<Props> {
     const {
       logOut,
       client,
-      setAuthMutationClient
     } = this.props;
 
     try {
@@ -23,7 +22,6 @@ class ProfileScene extends PureComponent<Props> {
       await AsyncStorage.removeItem('token');
       await client.clearStore();
       await client.resetStore();
-      // console.log(client)
     } catch (error) {
       Alert.alert(error.message);
     }
