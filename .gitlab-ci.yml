@@ -11,4 +11,4 @@ stages:
 eslint:
   stage: lint
   script:
-    - yarn eslint .
+    - yarn flow
