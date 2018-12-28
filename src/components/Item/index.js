@@ -6,7 +6,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
-import constants from '~/global/constants';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -19,7 +18,7 @@ class Item extends PureComponent<Props, State> {
         <IconButton
           size={30}
           iconName="ios-close"
-          onPress={() => selectItem(null)}
+          onPress={() => (selectItem ? selectItem(null) : undefined)}
           customContStyle={[styles.menu, { backgroundColor: colors.white }]}
         />
         <IconButton
@@ -40,22 +39,32 @@ class Item extends PureComponent<Props, State> {
   };
 
   render() {
-    const { item, openItem, selectItem, showMenuButton, currentSelectItem } = this.props;
+    const {
+      item,
+      openItem,
+      selectItem,
+      showMenuButton,
+      currentSelectItem,
+    } = this.props;
+    const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
 
     return (
       <TouchableOpacity style={styles.container} onPress={() => openItem(item)}>
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && (
-          <TouchableOpacity onPress={() => selectItem(item.id)} style={styles.menuButton}>
-            <View style={styles.menuButtonDot} />
-            <View style={styles.menuButtonDot} />
-            <View style={styles.menuButtonDot} />
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => (selectItem ? selectItem(item.id) : undefined)}
+          style={styles.menuButton}
+        >
+          <View style={styles.menuButtonDot} />
+          <View style={styles.menuButtonDot} />
+          <View style={styles.menuButtonDot} />
+        </TouchableOpacity>
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.price}>{`${item.purchasePrice} ₽`}</Text>
+        <Text style={styles.price}>{`${purchasePrice || 0} ₽`}</Text>
       </TouchableOpacity>
     );
   }

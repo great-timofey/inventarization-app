@@ -20,14 +20,16 @@ import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import { GET_USER_ID_CLIENT } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import Item from '~/components/Item';
+import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
 
+import type { Item } from '~/global/types';
 import type { Props } from './types';
+
 import styles from './styles';
 
 const CategoryList = ({ children }) => (
@@ -50,10 +52,11 @@ const CategoryList = ({ children }) => (
 );
 
 class ItemsList extends PureComponent<Props> {
-  renderItem = ({ item }) => {
+  renderItem = ({ item }: { item: Item }) => {
     const { userRole, currentSelectItem, selectItem } = this.props;
+
     return (
-      <Item
+      <ItemComponent
         item={item}
         selectItem={selectItem}
         currentUserRole={userRole}
@@ -117,6 +120,7 @@ class ItemsList extends PureComponent<Props> {
 
           if (error) console.log(error);
 
+          // $FlowFixMe
           const { assets: innerAssets } = data;
           let dataToRender = innerAssets;
 
@@ -130,7 +134,6 @@ class ItemsList extends PureComponent<Props> {
           }
 
           // console.log(dataToRender);
-
           return R.isEmpty(dataToRender) ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
@@ -164,14 +167,14 @@ class ItemsList extends PureComponent<Props> {
                 <SwipeableList
                   data={dataToRender}
                   currentUserRole={userRole}
-                  selectItem={this.selectItem}
-                  toggleDelModal={this.toggleDelModalVisible}
+                  selectItem={() => {}}
+                  // toggleDelModal={this.toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}
                 />
               ) : (
                 <FlatList
-                  data={dataToRender}
                   numColumns={2}
+                  data={dataToRender}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
                   contentContainerStyle={styles.grid}

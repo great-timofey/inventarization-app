@@ -4,6 +4,7 @@ import android.app.Application;
 
 import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
 import com.cmcewen.blurview.BlurViewPackage;
 import com.horcrux.svg.SvgPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
@@ -33,6 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+          new RNFSPackage(),
           new BlurViewPackage(),
           new SvgPackage(),
           new SplashScreenReactPackage(),

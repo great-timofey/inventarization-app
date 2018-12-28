@@ -2,6 +2,7 @@
 import React, { Fragment, Component } from 'react';
 import { Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 
+// $FlowFixMe
 import { keys, includes } from 'ramda';
 import { withApollo } from 'react-apollo';
 import Modal from 'react-native-modal';
@@ -83,7 +84,7 @@ class ChooseModal extends Component<Props, State> {
 
   render() {
     const { data, loading } = this.state;
-    const { isVisible, onConfirm, onCancel, type } = this.props;
+    const { isVisible, onCancel, type } = this.props;
     return (
       <Modal isVisible={isVisible} style={styles.modalOverlay} onModalShow={this.initFields}>
         <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
@@ -93,7 +94,6 @@ class ChooseModal extends Component<Props, State> {
               data={data}
               keyExtractor={this.keyExtractor}
               renderItem={this.renderModalItem}
-              ListEmptyComponent={this.renderEmptyList}
               ItemSeparatorComponent={this.renderModalSeparator}
             />
           ) : (

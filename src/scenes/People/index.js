@@ -6,6 +6,10 @@ import styles from './styles';
 
 type Props = {};
 export default class PeopleScene extends PureComponent<Props> {
+  componentDidMount() {
+
+  }
+
   render() {
     return (
       <View style={styles.container}>
