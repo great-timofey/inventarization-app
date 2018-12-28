@@ -44,7 +44,6 @@ const valuesToDisplay = {
 
 const modalsWithoutApolloLogic = {
   onTheBalanceSheet: ['Да', 'Нет'],
-  status: [constants.placeholders.status.onProcessing, constants.placeholders.status.accepted],
 };
 
 class ChooseModal extends Component<Props, State> {
@@ -97,7 +96,6 @@ class ChooseModal extends Component<Props, State> {
       <Modal isVisible={isVisible} style={styles.modalOverlay} onModalShow={this.initFields}>
         <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
           {loading && <ActivityIndicator />}
-          {loading && <ActivityIndicator />}
           {data.length ? (
             <FlatList
               data={data}
@@ -110,15 +108,16 @@ class ChooseModal extends Component<Props, State> {
             <Fragment>
               {type !== 'category' && (
                 <Image
-                  source={type && assets[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
                   style={styles.noItemsImage}
+                  source={type && assets[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
                 />
               )}
               <Text style={styles.noItemsText}>
-                {type !== 'category' ? constants.hints[`no${type[0].toUpperCase().concat(type.slice(1))}`] : constants.hints.noCategories}
+                {type && constants.hints[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
               </Text>
             </Fragment>
-          )}
+          )
+          }
         </View>
         <TouchableOpacity activeOpacity={1} onPress={onCancel} style={styles.modalCancel}>
           <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>
