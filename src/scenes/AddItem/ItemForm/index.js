@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import { compose, graphql } from 'react-apollo';
+// $FlowFixMe
 import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
@@ -113,6 +114,7 @@ class ItemForm extends Component<Props, State> {
   state = {
     name: '',
     gps: null,
+    // $FlowFixMe
     photos: [],
     placeId: null,
     codeData: null,
@@ -126,6 +128,7 @@ class ItemForm extends Component<Props, State> {
     assessedValue: null,
     purchasePrice: null,
     responsibleId: null,
+    // $FlowFixMe
     photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
@@ -232,25 +235,32 @@ class ItemForm extends Component<Props, State> {
       const {
         userCompany: { id: companyId },
       } = this.props;
+      // $FlowFixMe
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
 
       variables.companyId = companyId;
+      // $FlowFixMe
       variables.name = variables.name.trim();
       variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
 
       if (variables.description) {
+        // $FlowFixMe
         variables.description = variables.description.trim();
       }
       if (variables.assessedValue) {
+        // $FlowFixMe
         variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
       if (variables.purchasePrice) {
+        // $FlowFixMe
         variables.purchasePrice = Number.parseFloat(drop(2, variables.purchasePrice));
       }
       if (variables.responsibleId) {
+        // $FlowFixMe
         variables.responsibleId = variables.responsibleId.id;
       }
       if (variables.placeId) {
+        // $FlowFixMe
         variables.placeId = variables.placeId.id;
       }
       if (variables.dateOfPurchase) {
@@ -431,6 +441,7 @@ class ItemForm extends Component<Props, State> {
       state,
     } = this;
     const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
+    // $FlowFixMe
     const { uri } = state[currentlyActive][removedIndex];
 
     try {
@@ -557,6 +568,7 @@ class ItemForm extends Component<Props, State> {
                       this.carousel = ref;
                     }}
                     index={activePreviewIndex}
+                    // $FlowFixMe
                     data={showPhotos ? photos : photosOfDamages}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
@@ -579,6 +591,7 @@ class ItemForm extends Component<Props, State> {
               horizontal
               style={styles.photosOuter}
               showsHorizontalScrollIndicator={false}
+              // $FlowFixMe
               renderItem={this.renderPreviewPhotoBarItem}
               keyExtractor={(_, index) => index.toString()}
               contentContainerStyle={[
@@ -622,9 +635,11 @@ class ItemForm extends Component<Props, State> {
               isVisible={isDateTimePickerOpened}
               onCancel={this.handleToggleDateTimePicker}
             />
+            {/* $FlowFixMe */}
             <ChooseModal
               companyId={companyId}
               isVisible={isModalOpened}
+              // $FlowFixMe
               type={currentlyEditableField}
               onCancel={this.handleCloseModal}
               onConfirm={this.handleConfirmModal}
@@ -638,6 +653,7 @@ class ItemForm extends Component<Props, State> {
 
 export default compose(
   graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),

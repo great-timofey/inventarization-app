@@ -2,6 +2,7 @@
 
 import React, { PureComponent } from 'react';
 
+// $FlowFixMe
 import { includes, assoc } from 'ramda';
 import { compose, graphql, withApollo } from 'react-apollo';
 import { Alert, View, Text, Keyboard, Animated, AsyncStorage } from 'react-native';
@@ -82,7 +83,14 @@ class Login extends PureComponent<Props, State> {
     this.setState(state => assoc('isRegForm', !state.isRegForm, initialState));
   };
 
-  checkForErrors = () => !!this.state.warnings.length;
+  checkForErrors = () => {
+    const {
+      state: {
+        warnings,
+      },
+    } = this;
+    return !!warnings.length;
+  };
 
   checkFields = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
@@ -112,8 +120,8 @@ class Login extends PureComponent<Props, State> {
      */
 
     const isFormInvalid = await Promise.resolve()
-      .then(_ => this.checkFields())
-      .then(_ => this.checkForErrors());
+      .then(() => this.checkFields())
+      .then(() => this.checkForErrors());
 
     if (!isFormInvalid) {
       try {

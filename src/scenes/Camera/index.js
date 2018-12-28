@@ -1,7 +1,9 @@
 //  @flow
+
 import React, { Component } from 'react';
 import { StatusBar, Text, Image, View, TouchableOpacity } from 'react-native';
 
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 
 import icons from '~/global/assets';

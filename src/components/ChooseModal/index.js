@@ -2,6 +2,7 @@
 import React, { Fragment, Component } from 'react';
 import { Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 
+// $FlowFixMe
 import { keys, includes } from 'ramda';
 import { withApollo } from 'react-apollo';
 import Modal from 'react-native-modal';

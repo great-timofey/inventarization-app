@@ -8,6 +8,10 @@ import styles from './styles';
 type Props = {};
 
 class PlacesScene extends PureComponent<Props> {
+  componentDidMount() {
+
+  }
+
   render() {
     return (
       <View style={styles.container}>

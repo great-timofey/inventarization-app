@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import Modal from 'react-native-modal';
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 

@@ -44,7 +44,7 @@ export const convertToApolloUpload = async (photos: types.Photo, typeSeparator: 
   });
   const result = await Promise.all(photosPromises);
   return result;
-}
+};
 
 export const isValidPassword = (password: string, confirmPassword: string) => {
   const isPasswordValid = password && isValid(password, constants.regExp.password);

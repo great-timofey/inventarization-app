@@ -109,6 +109,7 @@ class ItemsList extends PureComponent<Props> {
 
           if (error) console.log(error);
 
+          // $FlowFixMe
           const { assets } = data;
 
           return isEmpty(assets) ? (
