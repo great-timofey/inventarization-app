@@ -8,7 +8,11 @@ import Modal from 'react-native-modal';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import * as QUERIES from '~/graphql/auth/queries';
+import {
+  GET_COMPANY_PLACES,
+  GET_COMPANY_USERS_BY_ROLE,
+} from '~/graphql/auth/queries';
+import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -21,16 +25,21 @@ const variables = {
   placeId: {
     companyId: '',
   },
+  category: {
+    companyId: '',
+  },
 };
 
 const queries = {
-  placeId: QUERIES.GET_COMPANY_PLACES,
-  responsibleId: QUERIES.GET_COMPANY_USERS_BY_ROLE,
+  placeId: GET_COMPANY_PLACES,
+  category: GET_COMPANY_CATEGORIES,
+  responsibleId: GET_COMPANY_USERS_BY_ROLE,
 };
 
 const valuesToDisplay = {
   responsibleId: 'fullName',
   placeId: 'name',
+  category: 'name',
 };
 
 const modalsWithoutApolloLogic = {
@@ -88,6 +97,7 @@ class ChooseModal extends Component<Props, State> {
       <Modal isVisible={isVisible} style={styles.modalOverlay} onModalShow={this.initFields}>
         <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
           {loading && <ActivityIndicator />}
+          {loading && <ActivityIndicator />}
           {data.length ? (
             <FlatList
               data={data}
@@ -98,12 +108,14 @@ class ChooseModal extends Component<Props, State> {
             />
           ) : (
             <Fragment>
-              <Image
-                source={type && assets[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
-                style={styles.noItemsImage}
-              />
+              {type !== 'category' && (
+                <Image
+                  source={type && assets[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
+                  style={styles.noItemsImage}
+                />
+              )}
               <Text style={styles.noItemsText}>
-                {type && constants.hints[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
+                {type !== 'category' ? constants.hints[`no${type[0].toUpperCase().concat(type.slice(1))}`] : constants.hints.noCategories}
               </Text>
             </Fragment>
           )}
