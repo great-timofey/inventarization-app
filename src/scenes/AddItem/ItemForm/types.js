@@ -32,8 +32,6 @@ export type Section = {
   item: any,
 };
 
-export type Section = SectionBase<string> & { title: string, index: number };
-
 export type State = {
   gps: ?Object,
   name: ?string,
