@@ -573,9 +573,11 @@ class ItemForm extends Component<Props, State> {
                 />
               </View>
               <SectionList
+                //  $FlowFixMe
                 sections={sections}
                 keyExtractor={({ key }) => key}
                 renderItem={this.renderFormField}
+                //  $FlowFixMe
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />

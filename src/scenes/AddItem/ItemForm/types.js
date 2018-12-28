@@ -16,15 +16,19 @@ export type PhotosProps = {
 };
 
 export type PreviewProps = {
-  key: string,
-  description: string,
-  placeholder: string,
+  item: {
+    key: string,
+    description: string,
+    placeholder: string,
+  },
 };
 
 export type Section = {
-  title: string,
-  index: number,
-  data: Array<string>,
+  section: {
+    title: string,
+    index: number,
+    data: Array<string>,
+  },
 };
 
 export type State = {

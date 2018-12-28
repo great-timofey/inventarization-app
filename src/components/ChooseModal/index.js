@@ -101,7 +101,6 @@ class ChooseModal extends PureComponent<Props, State> {
               data={data}
               keyExtractor={this.keyExtractor}
               renderItem={this.renderModalItem}
-              ListEmptyComponent={this.renderEmptyList}
               ItemSeparatorComponent={this.renderModalSeparator}
             />
           ) : (

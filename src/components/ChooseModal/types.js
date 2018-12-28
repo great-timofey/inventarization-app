@@ -1,7 +1,7 @@
 // @flow
 
 export type State = {
-  data: Array<string>,
+  data: Array<Object>,
   error: ?string,
   loading: boolean,
 };
@@ -13,5 +13,4 @@ export type Props = {
   isVisible: boolean,
   onCancel: Function,
   onConfirm: Function,
-  data: Array<string>,
 };
