@@ -53,16 +53,17 @@ const CategoryList = ({ children }) => (
 
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
-    const { userRole, currentSelectItem, selectItem } = this.props;
+    const { userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
+    const showRemoveButton = userRole !== constants.roles.manager;
 
     return (
       <ItemComponent
         item={item}
         selectItem={selectItem}
-        currentUserRole={userRole}
         openItem={this.handleOpenItem}
+        showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
-        toggleDelModal={this.toggleDelModalVisible}
+        toggleDelModal={toggleDelModalVisible}
         showMenuButton={userRole !== constants.roles.observer}
       />
     );
@@ -112,6 +113,7 @@ class ItemsList extends PureComponent<Props> {
       navigation,
       isSortByName,
       currentSelectItem,
+      toggleDelModalVisible,
     } = this.props;
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
@@ -128,7 +130,7 @@ class ItemsList extends PureComponent<Props> {
             const resPath = R.lensPath(['responsible', 'id']);
             dataToRender = R.filter(
               asset => R.equals(R.view(resPath, asset), userId)
-                && R.equals('in_processing', R.prop('status', asset)),
+                && R.equals('on_processing', R.prop('status', asset)),
               innerAssets,
             );
           }
@@ -166,9 +168,10 @@ class ItemsList extends PureComponent<Props> {
               {swipeable ? (
                 <SwipeableList
                   data={dataToRender}
-                  currentUserRole={userRole}
                   selectItem={() => {}}
-                  // toggleDelModal={this.toggleDelModalVisible}
+                  currentUserRole={userRole}
+                  openItem={this.handleOpenItem}
+                  toggleDelModal={toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}
                 />
               ) : (

@@ -86,6 +86,7 @@ class ItemsScene extends PureComponent<Props, State> {
     });
   };
 
+
   toggleViewStyle = () => {
     const { navigation } = this.props;
     const { isListViewStyle } = this.state;
@@ -125,6 +126,10 @@ class ItemsScene extends PureComponent<Props, State> {
       this.toggleSortModalVisible,
     );
   };
+
+  handleDeleteItem = (id) => {
+    console.log(id);
+  }
 
   selectItem = (id: number | string) => {
     this.setState({
@@ -182,6 +187,8 @@ class ItemsScene extends PureComponent<Props, State> {
           isSortByName={isSortByName}
           selectItem={this.selectItem}
           currentSelectItem={currentSelectItem}
+          isDeleteModalVisible={isDeleteModalVisible}
+          toggleDelModalVisible={this.toggleDelModalVisible}
         />
         {isSearchActive && (
           <Search
@@ -208,9 +215,9 @@ class ItemsScene extends PureComponent<Props, State> {
         />
         <QuestionModal
           leftAction={this.toggleDelModalVisible}
-          rightAction={() => {}}
           isModalVisible={isDeleteModalVisible}
           data={constants.modalQuestion.itemDel}
+          rightAction={() => this.handleDeleteItem(currentSelectItem)}
         />
       </Fragment>
     );

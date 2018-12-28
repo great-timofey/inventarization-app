@@ -6,13 +6,14 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
+import constants from '~/global/constants';
 
 import styles from './styles';
 import type { Props, State } from './types';
 
 class Item extends PureComponent<Props, State> {
   renderMenu = () => {
-    const { selectItem, toggleDelModal } = this.props;
+    const { selectItem, toggleDelModal, showRemoveButton, item, openItem } = this.props;
     return (
       <View style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
         <IconButton
@@ -21,17 +22,19 @@ class Item extends PureComponent<Props, State> {
           onPress={() => (selectItem ? selectItem(null) : undefined)}
           customContStyle={[styles.menu, { backgroundColor: colors.white }]}
         />
-        <IconButton
-          size={20}
-          iconColor={colors.white}
-          iconName="ios-trash"
-          onPress={toggleDelModal}
-          customContStyle={[styles.menu, { backgroundColor: colors.red }]}
-        />
+        {showRemoveButton && (
+          <IconButton
+            size={20}
+            iconColor={colors.white}
+            iconName="ios-trash"
+            onPress={toggleDelModal}
+            customContStyle={[styles.menu, { backgroundColor: colors.red }]}
+          />
+        )}
         <IconButton
           isCustomIcon
           iconName="pencil"
-          onPress={() => {}}
+          onPress={() => openItem(item)}
           customContStyle={[styles.menu, { backgroundColor: colors.blue }]}
         />
       </View>
@@ -39,12 +42,12 @@ class Item extends PureComponent<Props, State> {
   };
 
   render() {
-    const { item, openItem, selectItem, showMenuButton, currentSelectItem } = this.props;
+    const { item, selectItem, showMenuButton, currentSelectItem } = this.props;
     const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
 
     return (
-      <TouchableOpacity style={styles.container} onPress={() => openItem(item)}>
+      <View style={styles.container}>
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && (
           <TouchableOpacity
@@ -59,7 +62,7 @@ class Item extends PureComponent<Props, State> {
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>
         <Text style={styles.price}>{`${purchasePrice || 0} ₽`}</Text>
-      </TouchableOpacity>
+      </View>
     );
   }
 }

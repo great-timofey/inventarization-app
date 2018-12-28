@@ -230,8 +230,8 @@ class ItemForm extends Component<Props, State> {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
       }
 
-      console.log(photos)
-      console.log(photosOfDamages)
+      console.log(photos);
+      console.log(photosOfDamages);
       itemCopy.photos = photos.map(({ url }) => ({ uri: `https://api.staging.inventoryapp.info${url}` })) || [];
       itemCopy.photosOfDamages = photosOfDamages.map(({ url }) => ({
         uri: `https://api.staging.inventoryapp.info${url}`,
@@ -243,7 +243,7 @@ class ItemForm extends Component<Props, State> {
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
-      console.log(itemCopy)
+      console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
@@ -416,10 +416,10 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
+  renderFormField = ({ item: { key, description, placeholder, ...rest }, index }: PreviewProps) => {
     const {
       props: { userCompany, role: userRole, currentUserId },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status  },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status },
       state,
     } = this;
 
@@ -469,14 +469,14 @@ class ItemForm extends Component<Props, State> {
     ) {
       customValue = state[key] ? dayjs(state[key]).format(constants.formats.newItemDates) : null;
     } else if (description === constants.itemForm.company) {
-      customValue = userCompany.company.name;
+      customValue = userCompany.company.name || ' ';
     } else if (description === constants.itemForm.responsibleId) {
       // $FlowFixMe
       customValue = state[key] ? responsibleId.fullName : null;
     } else if (description === constants.itemForm.placeId) {
       // $FlowFixMe
       customValue = state[key] ? state.placeId.name : null;
-    } 
+    }
 
     return (
       <Input
@@ -494,7 +494,7 @@ class ItemForm extends Component<Props, State> {
         onChangeText={text => this.handleChangeField(key, text)}
         isBackgroundTransparent={
           userRole === constants.roles.observer
-          || ((responsibleId && responsibleId.id === currentUserId) && status === 'accepted')
+          || (responsibleId && responsibleId.id === currentUserId && status === 'accepted')
         }
         placeholder={isStatusField ? placeholder.inProcessing : placeholder}
       />
@@ -742,7 +742,7 @@ class ItemForm extends Component<Props, State> {
               ]}
               data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
             />
-            <View style={styles.formContainer} pointerEvents={!formIsEditable && 'none'}>
+            <View style={styles.formContainer} pointerEvents={formIsEditable === false ? 'none' : undefined}>
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>

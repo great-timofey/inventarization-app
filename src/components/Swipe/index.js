@@ -17,7 +17,7 @@ import type { Props } from './types';
 
 class SwipeableList extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { toggleDelModal, selectItem, currentUserRole } = this.props;
+    const { toggleDelModal, selectItem, currentUserRole, openItem } = this.props;
     const disableLeftSwipe = currentUserRole === constants.roles.observer;
     const swipeoutBtns = [
       {
@@ -26,7 +26,7 @@ class SwipeableList extends PureComponent<Props, {}> {
             size={25}
             isCustomIcon
             iconName="pencil"
-            onPress={() => {}}
+            onPress={() => openItem(item)}
             customContStyle={styles.leftSwipeButton}
           />
         ),
@@ -50,9 +50,8 @@ class SwipeableList extends PureComponent<Props, {}> {
         right={swipeoutBtns}
         disabled={disableLeftSwipe}
         close={item.id !== activeRowId}
-        onOpen={(sectionID, rowId, direction: string) => (
-          direction !== undefined ? selectItem(item.id) : null
-        )}
+        onOpen={(sectionID, rowId, direction: string) => (direction !== undefined ? selectItem(item.id) : null)
+        }
       >
         <View>
           <View style={styles.rowItem}>
