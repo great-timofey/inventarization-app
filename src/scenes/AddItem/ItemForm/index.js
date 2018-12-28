@@ -299,7 +299,7 @@ class ItemForm extends Component<Props, State> {
     const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
     if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
-    else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
+    else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
     else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
     else if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
@@ -416,20 +416,25 @@ class ItemForm extends Component<Props, State> {
     }));
   };
 
-  handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
-    isDateTimePickerOpened: !isDateTimePickerOpened,
+  handleOpenDateTimePicker = (key: string) => this.setState({
+    isDateTimePickerOpened: true,
     currentlyEditableField: key,
-  }));
+  });
 
-  handleOpenModal = (field: string) => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
-    currentlyEditableField: field,
-  }));
-
-  handleCloseModal = () => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
+  handleCloseDateTimePicker = () => this.setState({
+    isDateTimePickerOpened: false,
     currentlyEditableField: null,
-  }));
+  });
+
+  handleOpenModal = (field: string) => this.setState({
+    isModalOpened: true,
+    currentlyEditableField: field,
+  });
+
+  handleCloseModal = () => this.setState({
+    isModalOpened: false,
+    currentlyEditableField: null,
+  });
 
   handleConfirmModal = (option: string) => this.setState(({ isModalOpened, currentlyEditableField }) => ({
     isModalOpened: !isModalOpened,
@@ -581,7 +586,7 @@ class ItemForm extends Component<Props, State> {
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
-              onCancel={this.handleToggleDateTimePicker}
+              onCancel={this.handleCloseDateTimePicker}
             />
             <ChooseModal
               companyId={companyId}

@@ -1,5 +1,5 @@
 // @flow
-import React, { Fragment, Component } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { keys, includes } from 'ramda';
@@ -46,7 +46,7 @@ const modalsWithoutApolloLogic = {
   onTheBalanceSheet: ['Да', 'Нет'],
 };
 
-class ChooseModal extends Component<Props, State> {
+class ChooseModal extends PureComponent<Props, State> {
   state = {
     data: [],
     error: null,
