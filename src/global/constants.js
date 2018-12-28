@@ -295,7 +295,7 @@ const fieldTypes = {
   currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
   nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status, itemForm.gps],
   dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
-  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet, itemForm.status],
+  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet],
 };
 
 const createAssetNecessaryProperties = keys(itemForm);
