@@ -3,7 +3,6 @@ import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
 
 import R from 'ramda';
-import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -30,9 +29,9 @@ class AppNavigator extends Component<Props> {
     return (
       <Fragment>
         <StatusBar barStyle={isAuthed ? 'dark-content' : 'light-content'} />
-        {isAuthed ? (
+        {isAuthed ? (// $FlowFixMe
           <RootNavigator ref={navRef} />
-        ) : (
+        ) : (// $FlowFixMe
           <AuthNavigator ref={authNavRef} />
         )}
       </Fragment>

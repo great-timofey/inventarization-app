@@ -19,7 +19,7 @@ class Item extends PureComponent<Props, State> {
         <IconButton
           size={30}
           iconName="ios-close"
-          onPress={() => selectItem(null)}
+          onPress={() => (selectItem ? selectItem(null) : undefined)}
           customContStyle={[styles.menu, { backgroundColor: colors.white }]}
         />
         <IconButton
@@ -47,6 +47,7 @@ class Item extends PureComponent<Props, State> {
       currentUserRole,
       currentSelectItem,
     } = this.props;
+    const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
     const showMenuButton = currentUserRole !== constants.roles.observer;
 
@@ -54,7 +55,10 @@ class Item extends PureComponent<Props, State> {
       <View style={styles.container}>
         {isMenuOpen && this.menu()}
         {!isMenuOpen && showMenuButton && (
-        <TouchableOpacity onPress={() => selectItem(item.id)} style={styles.menuButton}>
+        <TouchableOpacity
+          onPress={() => (selectItem ? selectItem(item.id) : undefined)}
+          style={styles.menuButton}
+        >
           <View style={styles.menuButtonDot} />
           <View style={styles.menuButtonDot} />
           <View style={styles.menuButtonDot} />
@@ -62,7 +66,7 @@ class Item extends PureComponent<Props, State> {
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.price}>{`${item.purchasePrice} ₽`}</Text>
+        {purchasePrice && <Text style={styles.price}>{`${purchasePrice} ₽`}</Text>}
       </View>
     );
   }

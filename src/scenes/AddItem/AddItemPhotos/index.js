@@ -16,6 +16,7 @@ import {
 //  $FlowFixMe
 import Permissions from 'react-native-permissions';
 import RNFS from 'react-native-fs';
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
@@ -110,7 +111,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   takePicture = async () => {
     const { navigation } = this.props;
-    const { isHintOpened, needToAskPermissions } = this.state;
+    const { isHintOpened, needToAskPermissions, photos } = this.state;
     this.setState({ isLoading: true });
 
     if (needToAskPermissions) await this.askPermissions();
@@ -139,7 +140,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
-        () => navigation.setParams({ photos: this.state.photos }),
+        () => navigation.setParams({ photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
@@ -162,7 +163,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
-      () => navigation.setParams({ photos: this.state.photos }),
+      () => navigation.setParams({ photos }),
     );
   };
 

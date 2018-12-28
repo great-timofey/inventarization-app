@@ -1,5 +1,7 @@
 // @flow
 
+import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
+
 export type Props = {
   navigation: Object,
   userCompany: Object,
@@ -19,13 +21,10 @@ export type PreviewProps = {
   key: string,
   description: string,
   placeholder: string,
+  item: any,
 };
 
-export type Section = {
-  title: string,
-  index: number,
-  data: Array<string>,
-};
+export type Section = SectionBase<string> & { title: string, index: number };
 
 export type State = {
   gps: ?Object,

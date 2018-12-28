@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import { compose, graphql } from 'react-apollo';
+// $FlowFixMe
 import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
@@ -113,6 +114,7 @@ class ItemForm extends Component<Props, State> {
   state = {
     name: '',
     gps: null,
+    // $FlowFixMe
     photos: [],
     placeId: null,
     codeData: null,
@@ -126,6 +128,7 @@ class ItemForm extends Component<Props, State> {
     assessedValue: null,
     purchasePrice: null,
     responsibleId: null,
+    // $FlowFixMe
     photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
@@ -147,7 +150,7 @@ class ItemForm extends Component<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
     const photos = navigation.getParam('photos', []);
-    const codeData = navigation.getParam('codeData', '');
+    // const codeData = navigation.getParam('codeData', '');
     const photosOfDamages = navigation.getParam('defectPhotos', []);
     const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
     const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
@@ -164,6 +167,7 @@ class ItemForm extends Component<Props, State> {
       prevProps.navigation.state.params.additionalPhotos
       !== navigation.state.params.additionalPhotos
     ) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photos }) => ({
         activePreviewIndex: 0,
         photos: photos.concat(navigation.state.params.additionalPhotos),
@@ -172,6 +176,7 @@ class ItemForm extends Component<Props, State> {
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photosOfDamages }) => ({
         activePreviewIndex: 0,
         photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
@@ -183,10 +188,12 @@ class ItemForm extends Component<Props, State> {
     const { name, inventoryId } = this.state;
     const warnings = {};
 
+    // $FlowFixMe
     if (!name.trim()) {
       warnings.name = 1;
     }
 
+    // $FlowFixMe
     if (!inventoryId.trim()) {
       warnings.inventoryId = 'empty';
     }
@@ -202,7 +209,14 @@ class ItemForm extends Component<Props, State> {
     this.setState({ warnings });
   };
 
-  checkForErrors = () => !!keys(this.state.warnings).length;
+  checkForErrors = () => {
+    const {
+      state: {
+        warnings,
+      },
+    } = this;
+    return !!keys(warnings).length;
+  };
 
   handleSubmitForm = async () => {
     /**
@@ -214,32 +228,39 @@ class ItemForm extends Component<Props, State> {
     const { photos, photosOfDamages } = this.state;
 
     const isFormInvalid = await Promise.resolve()
-      .then(_ => this.checkFields())
-      .then(_ => this.checkForErrors());
+      .then(() => this.checkFields())
+      .then(() => this.checkForErrors());
 
     if (!isFormInvalid) {
       const {
         userCompany: { id: companyId },
       } = this.props;
+      // $FlowFixMe
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
 
       variables.companyId = companyId;
+      // $FlowFixMe
       variables.name = variables.name.trim();
       variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
 
       if (variables.description) {
+        // $FlowFixMe
         variables.description = variables.description.trim();
       }
       if (variables.assessedValue) {
+        // $FlowFixMe
         variables.assessedValue = Number.parseFloat(drop(2, variables.assessedValue));
       }
       if (variables.purchasePrice) {
+        // $FlowFixMe
         variables.purchasePrice = Number.parseFloat(drop(2, variables.purchasePrice));
       }
       if (variables.responsibleId) {
+        // $FlowFixMe
         variables.responsibleId = variables.responsibleId.id;
       }
       if (variables.placeId) {
+        // $FlowFixMe
         variables.placeId = variables.placeId.id;
       }
       if (variables.dateOfPurchase) {
@@ -290,7 +311,16 @@ class ItemForm extends Component<Props, State> {
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
-    const { warnings: stateWarnings } = this.state;
+    const {
+      props: {
+        userCompany,
+      },
+      state: {
+        warnings: stateWarnings,
+        responsibleId,
+      },
+      state,
+    } = this;
     let callback;
     let itemMask;
     let itemWarning;
@@ -298,10 +328,13 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
-    if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
-    else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
-    else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
-    else if (includes(description, constants.fieldTypes.currencyFields)) {
+    if (includes(description, constants.fieldTypes.modalFields)) {
+      callback = key => this.handleOpenModal(key);
+    } else if (includes(description, constants.fieldTypes.dateFields)) {
+      callback = this.handleToggleDateTimePicker;
+    } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
+      callback = () => {};
+    } else if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
     if (description === constants.itemForm.inventoryId) {
@@ -312,24 +345,27 @@ class ItemForm extends Component<Props, State> {
       itemWarning = warning;
     } else if (description === constants.itemForm.gps) {
       const { gps } = this.state;
+      // $FlowFixMe
       customValue = `${gps.lat}, ${gps.lon}`;
     } else if (description === constants.itemForm.guaranteeExpires) {
-      customValue = this.state[key]
-        ? `До ${dayjs(this.state[key]).format(constants.formats.newItemDates)}`
+      customValue = state[key]
+        ? `До ${dayjs(state[key]).format(constants.formats.newItemDates)}`
         : null;
     } else if (
       description === constants.itemForm.dateOfPurchase
       || description === constants.itemForm.assessedDate
     ) {
-      customValue = this.state[key]
-        ? dayjs(this.state[key]).format(constants.formats.newItemDates)
+      customValue = state[key]
+        ? dayjs(state[key]).format(constants.formats.newItemDates)
         : null;
     } else if (description === constants.itemForm.company) {
-      customValue = this.props.userCompany.company.name;
+      customValue = userCompany.company.name;
     } else if (description === constants.itemForm.responsibleId) {
-      customValue = this.state[key] ? this.state.responsibleId.fullName : null;
+      // $FlowFixMe
+      customValue = state[key] ? responsibleId.fullName : null;
     } else if (description === constants.itemForm.placeId) {
-      customValue = this.state[key] ? this.state.placeId.name : null;
+      // $FlowFixMe
+      customValue = state[key] ? state.placeId.name : null;
     }
 
     return (
@@ -341,7 +377,7 @@ class ItemForm extends Component<Props, State> {
         disabled={isGpsField}
         containerCallback={callback}
         isMultiline={isDescriptionField}
-        value={customValue || this.state[key]}
+        value={customValue || state[key]}
         maxLength={isDescriptionField ? 250 : 50}
         showWarningInTitle={key === 'inventoryId'}
         isWarning={includes(key, keys(stateWarnings))}
@@ -352,7 +388,7 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
-  renderFormSectionHeader = ({ section: { title, index } }: Section) => (
+  renderFormSectionHeader = ({ section: { title, index } }: { section: Section }) => (
     <View style={styles.formSectionHeaderOverflow}>
       <LinearGradient
         start={index === 0 ? { x: 1, y: 0 } : null}
@@ -397,9 +433,16 @@ class ItemForm extends Component<Props, State> {
   };
 
   handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
-    const { showPhotos, activePreviewIndex } = this.state;
+    const {
+      state: {
+        showPhotos,
+        activePreviewIndex,
+      },
+      state,
+    } = this;
     const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
-    const { uri } = this.state[currentlyActive][removedIndex];
+    // $FlowFixMe
+    const { uri } = state[currentlyActive][removedIndex];
 
     try {
       RNFS.unlink(uri);
@@ -431,14 +474,18 @@ class ItemForm extends Component<Props, State> {
     currentlyEditableField: null,
   }));
 
-  handleConfirmModal = (option: string) => this.setState(({ isModalOpened, currentlyEditableField }) => ({
-    isModalOpened: !isModalOpened,
-    [currentlyEditableField]: option,
-    currentlyEditableField: null,
-  }));
+  handleConfirmModal = (option: string) => {
+    this.setState(({ isModalOpened, currentlyEditableField }) => ({
+      isModalOpened: !isModalOpened,
+      // $FlowFixMe
+      [currentlyEditableField]: option,
+      currentlyEditableField: null,
+    }));
+  };
 
   handleChooseDate = (date: Date) => this.setState(({ currentlyEditableField }) => ({
     isDateTimePickerOpened: false,
+    // $FlowFixMe
     [currentlyEditableField]: new Date(date),
     currentlyEditableField: null,
   }));
@@ -487,7 +534,9 @@ class ItemForm extends Component<Props, State> {
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
-    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+    const currentTypeIsEmpty = (
+      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages))
+    );
 
     return (
       <SafeAreaView style={styles.container}>
@@ -519,6 +568,7 @@ class ItemForm extends Component<Props, State> {
                       this.carousel = ref;
                     }}
                     index={activePreviewIndex}
+                    // $FlowFixMe
                     data={showPhotos ? photos : photosOfDamages}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
@@ -541,6 +591,7 @@ class ItemForm extends Component<Props, State> {
               horizontal
               style={styles.photosOuter}
               showsHorizontalScrollIndicator={false}
+              // $FlowFixMe
               renderItem={this.renderPreviewPhotoBarItem}
               keyExtractor={(_, index) => index.toString()}
               contentContainerStyle={[
@@ -570,6 +621,7 @@ class ItemForm extends Component<Props, State> {
               <SectionList
                 sections={sections}
                 keyExtractor={({ key }) => key}
+                // $FlowFixMe
                 renderItem={this.renderFormField}
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
@@ -583,9 +635,11 @@ class ItemForm extends Component<Props, State> {
               isVisible={isDateTimePickerOpened}
               onCancel={this.handleToggleDateTimePicker}
             />
+            {/* $FlowFixMe */}
             <ChooseModal
               companyId={companyId}
               isVisible={isModalOpened}
+              // $FlowFixMe
               type={currentlyEditableField}
               onCancel={this.handleCloseModal}
               onConfirm={this.handleConfirmModal}
@@ -599,6 +653,7 @@ class ItemForm extends Component<Props, State> {
 
 export default compose(
   graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),

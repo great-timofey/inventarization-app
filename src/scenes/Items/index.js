@@ -16,7 +16,6 @@ import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 
-import styles from './styles';
 import type { Props, State } from './types';
 
 class ItemsScene extends PureComponent<Props, State> {
@@ -167,6 +166,7 @@ class ItemsScene extends PureComponent<Props, State> {
       isDeleteModalVisible,
     } = this.state;
     const {
+      // $FlowFixMe
       data: {
         userCompany: { role: userRole, id: companyId },
       },
