@@ -131,7 +131,7 @@ class ItemForm extends Component<Props, State> {
           onPress={
             item
               ? () => {
-                const resetAction = StackActions.popToTop();
+                const resetAction = StackActions.popToTop({});
                 navigation.dispatch(resetAction);
                 navigation.navigate(SCENE_NAMES.ItemsSceneName);
               }
@@ -141,11 +141,17 @@ class ItemForm extends Component<Props, State> {
       ),
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
-          {userCanEdit && <HeaderPencilButton onPress={() => {
-              navigation.setParams({ headerText: constants.headers.modifyingItem, userCanEdit: false })
-              toggleEditMode();
-            }}/>
-          }
+          {userCanEdit && (
+            <HeaderPencilButton
+              onPress={() => {
+                navigation.setParams({
+                  headerText: constants.headers.modifyingItem,
+                  userCanEdit: false,
+                });
+                toggleEditMode();
+              }}
+            />
+          )}
           {userCanDelete && <HeaderTrashButton onPress={() => navigation.goBack()} />}
         </View>
       ),
@@ -157,12 +163,14 @@ class ItemForm extends Component<Props, State> {
     gps: null,
     // $FlowFixMe
     photos: [],
+    creator: null,
     placeId: null,
     codeData: null,
     warnings: {},
     location: null,
     category: null,
     inventoryId: '',
+    isNewItem: true,
     showPhotos: true,
     manufacture: null,
     assessedDate: null,
@@ -173,7 +181,7 @@ class ItemForm extends Component<Props, State> {
     photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
-    formIsEditable: true,
+    formIsEditable: false,
     showSaveButton: false,
     activePreviewIndex: 0,
     guaranteeExpires: null,
@@ -198,23 +206,36 @@ class ItemForm extends Component<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
 
-    navigation.setParams({ toggleEditMode: this.toggleEditMode })
+    navigation.setParams({ toggleEditMode: this.toggleEditMode });
 
     const item = navigation.getParam('item', null);
 
     if (item) {
       const itemCopy = { ...item };
-      const { creator: { id: creatorId }, name, status, photos, photosOfDamages, responsible, onTheBalanceSheet } = item;
+      const {
+        creator: { id: creatorId },
+        name,
+        status,
+        photos,
+        photosOfDamages,
+        responsible,
+        onTheBalanceSheet,
+      } = item;
       navigation.setParams({ headerText: name });
 
-      if ((creatorId === currentUserId && status === 'in_processing') || role === constants.roles.admin) {
+      if (
+        (creatorId === currentUserId && status === 'in_processing')
+        || role === constants.roles.admin
+      ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
-      } else {
-        this.setState({ formIsEditable: false });
       }
 
-      itemCopy.photos = photos || [];
-      itemCopy.photosOfDamages = photosOfDamages || [];
+      console.log(photos)
+      console.log(photosOfDamages)
+      itemCopy.photos = photos.map(({ url }) => ({ uri: `https://api.staging.inventoryapp.info${url}` })) || [];
+      itemCopy.photosOfDamages = photosOfDamages.map(({ url }) => ({
+        uri: `https://api.staging.inventoryapp.info${url}`,
+      })) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.status = status === 'on_processing'
         ? constants.placeholders.status.inProcessing
@@ -222,17 +243,17 @@ class ItemForm extends Component<Props, State> {
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
-
+      console.log(itemCopy)
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
       const photos = navigation.getParam('photos', []);
-      const codeData = navigation.getParam('codeData', '');
+      // const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
 
-      this.setState({ photos, photosOfDamages, gps, showSaveButton: true, isNewItem: true });
+      this.setState({ photos, photosOfDamages, gps, showSaveButton: true, formIsEditable: true });
     }
   }
 
@@ -248,6 +269,7 @@ class ItemForm extends Component<Props, State> {
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photos }) => ({
+        showSaveButton: true,
         activePreviewIndex: 0,
         photos: photos.concat(navigation.state.params.additionalPhotos),
       }));
@@ -257,6 +279,7 @@ class ItemForm extends Component<Props, State> {
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photosOfDamages }) => ({
+        showSaveButton: true,
         activePreviewIndex: 0,
         photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
       }));
@@ -265,7 +288,7 @@ class ItemForm extends Component<Props, State> {
 
   toggleEditMode = () => {
     this.setState({ showSaveButton: true, formIsEditable: true });
-  }
+  };
 
   checkFields = () => {
     const { name, inventoryId } = this.state;
@@ -294,9 +317,7 @@ class ItemForm extends Component<Props, State> {
 
   checkForErrors = () => {
     const {
-      state: {
-        warnings,
-      },
+      state: { warnings },
     } = this;
     return !!keys(warnings).length;
   };
@@ -397,16 +418,8 @@ class ItemForm extends Component<Props, State> {
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
-      props: {
-        userCompany,
-      },
-      state: {
-        warnings: stateWarnings,
-        responsibleId,
-        formIsEditable,
-        showSaveButton,
-        isNewItem
-      },
+      props: { userCompany, role: userRole, currentUserId },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status  },
       state,
     } = this;
 
@@ -417,9 +430,9 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isDescriptionField = description === constants.itemForm.description;
 
-    if ((formIsEditable && showSaveButton) || isNewItem) {
+    if (formIsEditable || isNewItem) {
       if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
-      else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
+      else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
       else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
     }
 
@@ -429,14 +442,17 @@ class ItemForm extends Component<Props, State> {
     if (includes(description, constants.fieldTypes.modalFields)) {
       callback = key => this.handleOpenModal(key);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
-      callback = this.handleToggleDateTimePicker;
+      callback = this.handleOpenDateTimePicker;
     } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
       callback = () => {};
     }
+
     if (description === constants.itemForm.inventoryId) {
+      // $FlowFixMe
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
     } else if (description === constants.itemForm.name) {
+      // $FlowFixMe
       const { warning } = rest;
       itemWarning = warning;
     } else if (description === constants.itemForm.gps) {
@@ -451,9 +467,7 @@ class ItemForm extends Component<Props, State> {
       description === constants.itemForm.dateOfPurchase
       || description === constants.itemForm.assessedDate
     ) {
-      customValue = state[key]
-        ? dayjs(state[key]).format(constants.formats.newItemDates)
-        : null;
+      customValue = state[key] ? dayjs(state[key]).format(constants.formats.newItemDates) : null;
     } else if (description === constants.itemForm.company) {
       customValue = userCompany.company.name;
     } else if (description === constants.itemForm.responsibleId) {
@@ -462,7 +476,7 @@ class ItemForm extends Component<Props, State> {
     } else if (description === constants.itemForm.placeId) {
       // $FlowFixMe
       customValue = state[key] ? state.placeId.name : null;
-    }
+    } 
 
     return (
       <Input
@@ -472,13 +486,16 @@ class ItemForm extends Component<Props, State> {
         blurOnSubmit={false}
         containerCallback={callback}
         isMultiline={isDescriptionField}
-        isBackgroundTransparent={!formIsEditable}
         value={customValue || state[key]}
         maxLength={isDescriptionField ? 250 : 50}
         showWarningInTitle={key === 'inventoryId'}
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
         onChangeText={text => this.handleChangeField(key, text)}
+        isBackgroundTransparent={
+          userRole === constants.roles.observer
+          || ((responsibleId && responsibleId.id === currentUserId) && status === 'accepted')
+        }
         placeholder={isStatusField ? placeholder.inProcessing : placeholder}
       />
     );
@@ -498,15 +515,20 @@ class ItemForm extends Component<Props, State> {
   );
 
   renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
-    const { formIsEditable } = this.state;
+    const {
+      state: { formIsEditable, isNewItem },
+      props: {
+        userCompany: { id: companyId, role: userRole },
+      },
+    } = this;
 
-    return !uri && formIsEditable ? (
+    return (!uri && isNewItem) || (!uri && userRole === constants.roles.admin) ? (
       <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
         <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
       </TouchableOpacity>
     ) : (
       <View style={styles.photoContainer}>
-        {formIsEditable && (
+        {(isNewItem || userRole === constants.roles.admin) && (
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
@@ -536,10 +558,7 @@ class ItemForm extends Component<Props, State> {
 
   handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
     const {
-      state: {
-        showPhotos,
-        activePreviewIndex,
-      },
+      state: { showPhotos, activePreviewIndex },
       state,
     } = this;
     const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
@@ -553,6 +572,7 @@ class ItemForm extends Component<Props, State> {
     }
 
     this.setState(state => ({
+      showSaveButton: true,
       [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
       activePreviewIndex:
         removedIndex <= activePreviewIndex && activePreviewIndex > 0
@@ -561,20 +581,25 @@ class ItemForm extends Component<Props, State> {
     }));
   };
 
-  handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
-    isDateTimePickerOpened: !isDateTimePickerOpened,
+  handleOpenDateTimePicker = (key: string) => this.setState({
+    isDateTimePickerOpened: true,
     currentlyEditableField: key,
-  }));
+  });
 
-  handleOpenModal = (field: string) => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
-    currentlyEditableField: field,
-  }));
-
-  handleCloseModal = () => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
+  handleCloseDateTimePicker = () => this.setState({
+    isDateTimePickerOpened: false,
     currentlyEditableField: null,
-  }));
+  });
+
+  handleOpenModal = (field: string) => this.setState({
+    isModalOpened: true,
+    currentlyEditableField: field,
+  });
+
+  handleCloseModal = () => this.setState({
+    isModalOpened: false,
+    currentlyEditableField: null,
+  });
 
   handleConfirmModal = (option: string) => {
     this.setState(({ isModalOpened, currentlyEditableField }) => ({
@@ -624,7 +649,7 @@ class ItemForm extends Component<Props, State> {
   render() {
     const {
       userId: currentUserId,
-      userCompany: { id: companyId, role },
+      userCompany: { id: companyId, role: userRole },
     } = this.props;
 
     const {
@@ -644,12 +669,8 @@ class ItemForm extends Component<Props, State> {
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
-    // console.log(item)
-    // console.log(alert(status))
-    const userRole = 'observer';
-    const currentTypeIsEmpty = (
-      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages))
-    );
+
+    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
 
     return (
       <SafeAreaView style={styles.container}>
@@ -677,7 +698,7 @@ class ItemForm extends Component<Props, State> {
                   <NoItems
                     additional={
                       isNewItem
-                      || (userRole === constants.roles.admin)
+                      || userRole === constants.roles.admin
                       || (creator && creator.id === currentUserId)
                     }
                     onPress={this.handleAddPhoto}
@@ -739,10 +760,12 @@ class ItemForm extends Component<Props, State> {
                 />
               </View>
               <SectionList
+                //  $FlowFixMe
                 sections={sections}
                 keyExtractor={({ key }) => key}
                 // $FlowFixMe
                 renderItem={this.renderFormField}
+                //  $FlowFixMe
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />
@@ -755,7 +778,7 @@ class ItemForm extends Component<Props, State> {
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
-              onCancel={this.handleToggleDateTimePicker}
+              onCancel={this.handleCloseDateTimePicker}
             />
             {/* $FlowFixMe */}
             <ChooseModal
@@ -777,7 +800,12 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
+  // graphql(QUERIES.GET_CURRENT_USER_COMPANIES, {
+  //   // $FlowFixMe
+  //   props: ({ data: { current } }) => ({ currentUser: current }),
+  // }),
   graphql(QUERIES.GET_USER_ID_CLIENT, {
+    // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),

@@ -39,13 +39,7 @@ class Item extends PureComponent<Props, State> {
   };
 
   render() {
-    const {
-      item,
-      openItem,
-      selectItem,
-      showMenuButton,
-      currentSelectItem,
-    } = this.props;
+    const { item, openItem, selectItem, showMenuButton, currentSelectItem } = this.props;
     const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
 
@@ -53,14 +47,14 @@ class Item extends PureComponent<Props, State> {
       <TouchableOpacity style={styles.container} onPress={() => openItem(item)}>
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && (
-        <TouchableOpacity
-          onPress={() => (selectItem ? selectItem(item.id) : undefined)}
-          style={styles.menuButton}
-        >
-          <View style={styles.menuButtonDot} />
-          <View style={styles.menuButtonDot} />
-          <View style={styles.menuButtonDot} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => (selectItem ? selectItem(item.id) : undefined)}
+            style={styles.menuButton}
+          >
+            <View style={styles.menuButtonDot} />
+            <View style={styles.menuButtonDot} />
+            <View style={styles.menuButtonDot} />
+          </TouchableOpacity>
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>

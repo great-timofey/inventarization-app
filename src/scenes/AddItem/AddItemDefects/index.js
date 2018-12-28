@@ -119,9 +119,6 @@ class AddItemDefects extends PureComponent<Props, State> {
       props: {
         navigation,
       },
-      state: {
-        photos,
-      },
     } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
@@ -152,7 +149,8 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
-        () => navigation.setParams({ defectPhotos: photos }),
+        // eslint-disable-next-line react/destructuring-assignment
+        () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');

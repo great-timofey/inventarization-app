@@ -4,12 +4,14 @@ import type { Item } from '~/global/types';
 
 export type Props = {
   item: Item,
+  openItem: Function,
+  showMenuButton: boolean,
   currentUserRole: string,
   toggleDelModal?: () => void,
   currentSelectItem: number | string | null,
   selectItem?: (x: number | null | string) => void,
-}
+};
 
-export type State ={
+export type State = {
   isMenuOpen: boolean,
-}
+};
