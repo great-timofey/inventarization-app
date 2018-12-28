@@ -21,7 +21,7 @@ export type PreviewProps = {
   item: {
     key: string,
     description: string,
-    placeholder: string,
+    placeholder: any,
   },
 };
 

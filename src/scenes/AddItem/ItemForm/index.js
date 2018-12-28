@@ -332,7 +332,7 @@ class ItemForm extends Component<Props, State> {
     if (includes(description, constants.fieldTypes.modalFields)) {
       callback = key => this.handleOpenModal(key);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
-      callback = this.handleToggleDateTimePicker;
+      callback = this.handleOpenDateTimePicker;
     } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
       callback = () => {};
     } else if (includes(description, constants.fieldTypes.currencyFields)) {
@@ -340,9 +340,11 @@ class ItemForm extends Component<Props, State> {
     }
 
     if (description === constants.itemForm.inventoryId) {
+      // $FlowFixMe
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
     } else if (description === constants.itemForm.name) {
+      // $FlowFixMe
       const { warning } = rest;
       itemWarning = warning;
     } else if (description === constants.itemForm.gps) {
