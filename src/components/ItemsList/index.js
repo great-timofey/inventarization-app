@@ -120,7 +120,8 @@ class ItemsList extends PureComponent<Props> {
         {({ data, loading, error }) => {
           if (loading) return <ActivityIndicator />;
 
-          if (error) console.log(error);
+          if (error) return <Text>{error.message}</Text>;
+
 
           // $FlowFixMe
           const { assets: innerAssets } = data;
