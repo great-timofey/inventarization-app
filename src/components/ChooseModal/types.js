@@ -13,5 +13,4 @@ export type Props = {
   isVisible: boolean,
   onCancel: Function,
   onConfirm: Function,
-  data: Array<string>,
 };

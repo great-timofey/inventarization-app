@@ -229,6 +229,7 @@ const hints = {
   makePhotos: 'Сделайте фотографии вашего предмета',
   noPlaceId: 'Пока не существует \n ни одного места',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
+  noCategory: 'Пока не существует \n ни одной категории',
   noResponsibleId: 'Пока не существует \n ни одного ответственного',
 };
 
@@ -305,7 +306,6 @@ const fieldTypes = {
     itemForm.category,
     itemForm.responsibleId,
     itemForm.onTheBalanceSheet,
-    itemForm.status,
   ],
 };
 

@@ -18,10 +18,11 @@ export type PhotosProps = {
 };
 
 export type PreviewProps = {
-  key: string,
-  description: string,
-  placeholder: string,
-  item: any,
+  item: {
+    key: string,
+    description: string,
+    placeholder: any,
+  },
 };
 
 export type Section = SectionBase<string> & { title: string, index: number };

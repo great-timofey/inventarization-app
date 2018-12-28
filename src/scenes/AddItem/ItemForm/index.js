@@ -328,19 +328,23 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
+
     if (includes(description, constants.fieldTypes.modalFields)) {
       callback = key => this.handleOpenModal(key);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
-      callback = this.handleToggleDateTimePicker;
+      callback = this.handleOpenDateTimePicker;
     } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
       callback = () => {};
     } else if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
+
     if (description === constants.itemForm.inventoryId) {
+      // $FlowFixMe
       const { warnings } = rest;
       itemWarning = warnings[stateWarnings[key]];
     } else if (description === constants.itemForm.name) {
+      // $FlowFixMe
       const { warning } = rest;
       itemWarning = warning;
     } else if (description === constants.itemForm.gps) {
@@ -459,20 +463,25 @@ class ItemForm extends Component<Props, State> {
     }));
   };
 
-  handleToggleDateTimePicker = (key: string) => this.setState(({ isDateTimePickerOpened }) => ({
-    isDateTimePickerOpened: !isDateTimePickerOpened,
+  handleOpenDateTimePicker = (key: string) => this.setState({
+    isDateTimePickerOpened: true,
     currentlyEditableField: key,
-  }));
+  });
 
-  handleOpenModal = (field: string) => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
-    currentlyEditableField: field,
-  }));
-
-  handleCloseModal = () => this.setState(({ isModalOpened }) => ({
-    isModalOpened: !isModalOpened,
+  handleCloseDateTimePicker = () => this.setState({
+    isDateTimePickerOpened: false,
     currentlyEditableField: null,
-  }));
+  });
+
+  handleOpenModal = (field: string) => this.setState({
+    isModalOpened: true,
+    currentlyEditableField: field,
+  });
+
+  handleCloseModal = () => this.setState({
+    isModalOpened: false,
+    currentlyEditableField: null,
+  });
 
   handleConfirmModal = (option: string) => {
     this.setState(({ isModalOpened, currentlyEditableField }) => ({
@@ -619,10 +628,12 @@ class ItemForm extends Component<Props, State> {
                 />
               </View>
               <SectionList
+                //  $FlowFixMe
                 sections={sections}
                 keyExtractor={({ key }) => key}
                 // $FlowFixMe
                 renderItem={this.renderFormField}
+                //  $FlowFixMe
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />
@@ -633,7 +644,7 @@ class ItemForm extends Component<Props, State> {
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
-              onCancel={this.handleToggleDateTimePicker}
+              onCancel={this.handleCloseDateTimePicker}
             />
             {/* $FlowFixMe */}
             <ChooseModal
