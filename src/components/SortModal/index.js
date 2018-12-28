@@ -24,7 +24,7 @@ class SortModal extends PureComponent<Props, {}> {
             isCustomIcon
             isDisabled={isSortByName}
             iconName="button-sort-name"
-            onPress={() => toggleSortMethod()}
+            onPress={toggleSortMethod}
             iconColor={isSortByName ? colors.white : colors.whiteOpacity}
           />
         </View>
@@ -35,7 +35,7 @@ class SortModal extends PureComponent<Props, {}> {
             isCustomIcon
             isDisabled={!isSortByName}
             iconName="button-sort-price"
-            onPress={() => toggleSortMethod()}
+            onPress={toggleSortMethod}
             customIconStyle={{ top: normalize(-4), left: normalize(-6) }}
             iconColor={!isSortByName ? colors.white : colors.whiteOpacity}
           />

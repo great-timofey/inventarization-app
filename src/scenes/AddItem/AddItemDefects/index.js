@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
@@ -58,10 +59,10 @@ class AddItemDefects extends PureComponent<Props, State> {
           onPress={() => {
             if (from) {
               navigation.navigate(SCENE_NAMES.ItemFormSceneName, photosToPass);
+            } else if (photos.length + defectPhotos.length) {
+              navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass);
             } else {
-              photos.length + defectPhotos.length
-                ? navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass)
-                : Alert.alert('Требуется фото предмета или его дефектов для продолежния');
+              Alert.alert('Требуется фото предмета или его дефектов для продолежния');
             }
           }}
         />
@@ -114,7 +115,14 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   takePicture = async () => {
-    const { navigation } = this.props;
+    const {
+      props: {
+        navigation,
+      },
+      state: {
+        photos,
+      },
+    } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
@@ -144,7 +152,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
-        () => navigation.setParams({ defectPhotos: this.state.photos }),
+        () => navigation.setParams({ defectPhotos: photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
@@ -154,8 +162,14 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   removePicture = async (index: number) => {
-    const { photos } = this.state;
-    const { navigation } = this.props;
+    const {
+      props: {
+        navigation,
+      },
+      state: {
+        photos,
+      },
+    } = this;
 
     const { uri } = photos[index];
 
@@ -167,7 +181,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
-      () => navigation.setParams({ defectPhotos: this.state.photos }),
+      () => navigation.setParams({ defectPhotos: photos }),
     );
   };
 

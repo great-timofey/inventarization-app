@@ -15,6 +15,7 @@ import {
 
 import { graphql, compose } from 'react-apollo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+// $FlowFixMe
 import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
 import Input from '~/components/Input';
@@ -25,13 +26,12 @@ import PickPhotoModal from '~/components/PickPhotoModal';
 import HeaderBackbutton from '~/components/HeaderBackButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
-import { convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
-import { normalize, isValid } from '~/global/utils';
 import type { Props, State, InviteeProps } from './types';
 import styles from './styles';
 
@@ -133,6 +133,7 @@ class CreateCompany extends PureComponent<Props, State> {
         invitees: concat(invitees, [currentInvitee]),
       });
     } else {
+      // $FlowFixMe
       this.setState(state => assoc(['warnings'], concat(state.warnings, ['email']), state));
     }
   };

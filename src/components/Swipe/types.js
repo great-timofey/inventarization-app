@@ -1,4 +1,5 @@
 // @flow
+
 import type { Item } from '~/global/types';
 
 export type Props = {

@@ -35,6 +35,7 @@ type iconType = {
 
 const generateStack = (RouteConfigs, StackNavigatorConfig) => createStackNavigator(
   RouteConfigs,
+  // $FlowFixMe
   StackNavigatorConfig,
 );
 

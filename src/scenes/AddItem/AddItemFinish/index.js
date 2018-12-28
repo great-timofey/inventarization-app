@@ -4,13 +4,13 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   StatusBar,
-  CameraRoll,
   SafeAreaView,
   View,
   Image,
   TouchableOpacity,
 } from 'react-native';
 
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import { StackActions } from 'react-navigation';
 
@@ -41,7 +41,7 @@ class AddItemFinish extends PureComponent<Props, State> {
     headerRight: (
       <HeaderExitButton
         onPress={() => {
-          const resetAction = StackActions.popToTop();
+          const resetAction = StackActions.popToTop({});
           navigation.dispatch(resetAction);
           navigation.navigate(SCENE_NAMES.ItemsSceneName);
         }}
@@ -67,7 +67,7 @@ class AddItemFinish extends PureComponent<Props, State> {
 
   handleAddMoreItems = () => {
     const { navigation } = this.props;
-    navigation.dispatch(StackActions.popToTop());
+    navigation.dispatch(StackActions.popToTop({}));
   };
 
   camera: ?RNCamera;

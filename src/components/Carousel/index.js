@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react';
 import { Image } from 'react-native';
 
+// $FlowFixMe
 import Swiper from 'react-native-swiper';
 
 import type { Props } from './types';
