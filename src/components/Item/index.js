@@ -66,7 +66,7 @@ class Item extends PureComponent<Props, State> {
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>
-        {purchasePrice && <Text style={styles.price}>{`${purchasePrice} ₽`}</Text>}
+        <Text style={styles.price}>{`${purchasePrice || 0} ₽`}</Text>
       </View>
     );
   }

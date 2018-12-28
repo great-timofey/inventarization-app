@@ -111,7 +111,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
   takePicture = async () => {
     const { navigation } = this.props;
-    const { isHintOpened, needToAskPermissions, photos } = this.state;
+    const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
     if (needToAskPermissions) await this.askPermissions();
@@ -140,7 +140,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
-        () => navigation.setParams({ photos }),
+        // eslint-disable-next-line react/destructuring-assignment
+        () => navigation.setParams({ photos: this.state.photos }),
       );
     } else {
       Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
