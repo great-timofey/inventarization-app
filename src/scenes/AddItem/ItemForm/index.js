@@ -187,6 +187,7 @@ class ItemForm extends Component<Props, State> {
   componentDidMount() {
     const {
       navigation,
+      currentUserId,
       userCompany: { role },
     } = this.props;
 
@@ -199,30 +200,35 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      console.log(item);
-      navigation.setParams({ headerText: item.name });
+      const itemCopy = { ...item };
+      const { creator: { id: creatorId }, name, status, photos, photosOfDamages, responsible, onTheBalanceSheet } = item;
+      navigation.setParams({ headerText: name });
 
-      if (role === constants.roles.observer) {
-        this.setState({ formIsEditable: false });
-      } else {
+      if ((creatorId === currentUserId && status === 'in_processing') || role === constants.roles.admin) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
+      } else {
+        this.setState({ formIsEditable: false });
       }
 
-      item.photos = item.photos || [];
-      item.photosOfDamages = item.photosOfDamages || [];
-      item.responsibleId = item.responsible;
-      item.status = item.status === 'on_processing'
+      itemCopy.photos = photos || [];
+      itemCopy.photosOfDamages = photosOfDamages || [];
+      itemCopy.responsibleId = responsible;
+      itemCopy.status = status === 'on_processing'
         ? constants.placeholders.status.inProcessing
         : constants.placeholders.status.accepted;
-      item.onTheBalanceSheet = item.onTheBalanceSheet ? 'Да' : 'Нет';
-      this.setState(state => ({ ...state, ...item, isNewItem: false }));
+      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
+
+      this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
+
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
+
       const photos = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+
       this.setState({ photos, photosOfDamages, gps, showSaveButton: true, isNewItem: true });
     }
   }
@@ -369,7 +375,7 @@ class ItemForm extends Component<Props, State> {
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
-    const { warnings: stateWarnings, formIsEditable, showSaveButton } = this.state;
+    const { warnings: stateWarnings, formIsEditable, showSaveButton, isNewItem } = this.state;
     let callback;
     let itemMask;
     let itemWarning;
@@ -377,7 +383,7 @@ class ItemForm extends Component<Props, State> {
     const isStatusField = description === constants.itemForm.status;
     const isDescriptionField = description === constants.itemForm.description;
 
-    if (formIsEditable && showSaveButton) {
+    if ((formIsEditable && showSaveButton) || isNewItem) {
       if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
       else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleToggleDateTimePicker;
       else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
@@ -562,7 +568,7 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
-      userId,
+      userId: currentUserId,
       userCompany: { id: companyId, role },
     } = this.props;
 
@@ -571,6 +577,7 @@ class ItemForm extends Component<Props, State> {
       photos,
       status,
       warnings,
+      creator,
       sections,
       isNewItem,
       showPhotos,
@@ -610,11 +617,14 @@ class ItemForm extends Component<Props, State> {
               </View>
               <Fragment>
                 {currentTypeIsEmpty ? (
-                  <NoItems additional={
-                    isNewItem
-                    || userRole === constants.roles.admin
-                    || status === constants.placeholders.status.inProcessing
-                  } onPress={this.handleAddPhoto} />
+                  <NoItems
+                    additional={
+                      isNewItem
+                      || (userRole === constants.roles.admin)
+                      || (creator && creator.id === currentUserId)
+                    }
+                    onPress={this.handleAddPhoto}
+                  />
                 ) : (
                   <Carousel
                     innerRef={(ref) => {
@@ -677,7 +687,7 @@ class ItemForm extends Component<Props, State> {
                 contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
-            {showSaveButton && (
+            {(showSaveButton || isNewItem) && (
               <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
                 <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
               </TouchableOpacity>
@@ -705,7 +715,7 @@ export default compose(
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
   graphql(QUERIES.GET_USER_ID_CLIENT, {
-    props: ({ data: { id } }) => ({ userId: id }),
+    props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
 )(ItemForm);
