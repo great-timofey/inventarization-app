@@ -12,5 +12,6 @@ eslint:
   stage: lint
   script:
     - yarn eslint .
+    - yarn flow
   only:
     - merge_requests

@@ -18,7 +18,8 @@
     "react/sort-comp": "off",
     "react/no-array-index-key": "off",
     "react/require-default-props": "off",
-    "react/no-unused-state": "off"
+    "react/no-unused-state": "off",
+    "react/prop-types": "off"
   },
   "parser": "babel-eslint",
   "plugins": [
@@ -32,6 +33,7 @@
     "TimeoutID": true,
     "$Shape": true,
     "$ReadOnly": true,
+    "$ReadOnlyArray": true,
     "$Keys": true,
     "Reactotron": true
   }

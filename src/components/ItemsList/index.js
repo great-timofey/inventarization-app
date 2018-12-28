@@ -18,14 +18,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import Item from '~/components/Item';
+import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
 
+import type { Item } from '~/global/types';
 import type { Props } from './types';
+
 import styles from './styles';
 
 const CategoryList = ({ children }) => (
@@ -48,15 +50,15 @@ const CategoryList = ({ children }) => (
 );
 
 class ItemsList extends PureComponent<Props> {
-  renderItem = ({ item }) => {
+  renderItem = ({ item }: { item: Item }) => {
     const { userRole, currentSelectItem } = this.props;
     return (
-      <Item
+      <ItemComponent
         item={item}
         currentUserRole={userRole}
-        selectItem={this.selectItem}
+        // selectItem={this.selectItem}
         currentSelectItem={currentSelectItem}
-        toggleDelModal={this.toggleDelModalVisible}
+        // toggleDelModal={this.toggleDelModalVisible}
       />
     );
   };
@@ -142,8 +144,8 @@ class ItemsList extends PureComponent<Props> {
                 <SwipeableList
                   data={assets}
                   currentUserRole={userRole}
-                  selectItem={this.selectItem}
-                  toggleDelModal={this.toggleDelModalVisible}
+                  selectItem={() => {}}
+                  // toggleDelModal={this.toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}
                 />
               ) : (

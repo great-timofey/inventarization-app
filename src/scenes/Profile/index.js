@@ -9,7 +9,10 @@ import Button from '~/components/Button';
 
 import styles from './styles';
 
-type Props = {};
+type Props = {
+  logOut: Function,
+  client: Object,
+};
 class ProfileScene extends PureComponent<Props> {
   onLogOut = async () => {
     const {

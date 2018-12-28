@@ -8,6 +8,7 @@ const regExp = {
   price: /^\d+(.|,){0,2}\d/,
   password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
+  // eslint-disable-next-line no-useless-escape
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
 };
 
@@ -47,6 +48,11 @@ const placeholders = {
     accepted: 'Учтено',
     onProcessing: 'В обработке',
   },
+  company: undefined,
+  gps: undefined,
+  name: undefined,
+  onTheBalanceSheet: undefined,
+  responsibleId: undefined,
 };
 
 const inputTypes = {
@@ -251,7 +257,7 @@ const itemForm = {
 
 
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
-  const result = {
+  const result: Object = {
     key: objKey,
     description: itemForm[objKey],
     placeholder: placeholders[objKey],
@@ -294,7 +300,13 @@ const fieldTypes = {
   currencyFields: [itemForm.assessedValue, itemForm.purchasePrice],
   nonEditableFields: [itemForm.codeData, itemForm.company, itemForm.status, itemForm.gps],
   dateFields: [itemForm.dateOfPurchase, itemForm.assessedDate, itemForm.guaranteeExpires],
-  modalFields: [itemForm.placeId, itemForm.category, itemForm.responsibleId, itemForm.onTheBalanceSheet, itemForm.status],
+  modalFields: [
+    itemForm.placeId,
+    itemForm.category,
+    itemForm.responsibleId,
+    itemForm.onTheBalanceSheet,
+    itemForm.status,
+  ],
 };
 
 const createAssetNecessaryProperties = keys(itemForm);
