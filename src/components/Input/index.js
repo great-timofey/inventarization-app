@@ -24,11 +24,12 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { returnKeyType, value, isWarning } = this.props;
+    const { returnKeyType, value, isWarning, containerCallback } = this.props;
     if (
       nextProps.value !== value
       || nextProps.returnKeyType !== returnKeyType
       || nextProps.isWarning !== isWarning
+      || nextProps.containerCallback !== containerCallback
     ) {
       return true;
     }
@@ -65,7 +66,7 @@ class Input extends Component<Props> {
         onPress={containerCallback ? () => containerCallback(customKey) : null}
       >
         <View
-          pointerEvents={containerCallback ? 'none' : null}
+          pointerEvents={containerCallback ? 'none' : undefined}
           style={[
             styles.container,
             children && styles.withButton,

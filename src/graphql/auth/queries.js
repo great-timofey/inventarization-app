@@ -10,6 +10,7 @@ export const GET_CURRENT_USER_COMPANIES = gql`
         role
         createdAt
         company {
+          id
           name
         }
       }
@@ -54,6 +55,7 @@ export const GET_CURRENT_USER_COMPANY_CLIENT = gql`
       id
       role
       company {
+        id
         name
       }
     }

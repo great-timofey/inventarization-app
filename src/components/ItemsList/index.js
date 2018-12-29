@@ -97,9 +97,9 @@ class ItemsList extends PureComponent<Props> {
     }
   };
 
-  handleOpenItem = (item: Object) => {
+  handleOpenItem = (item: Object, inEditMode: boolean) => {
     const { navigation } = this.props;
-    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item });
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item, inEditMode });
   };
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
@@ -111,8 +111,10 @@ class ItemsList extends PureComponent<Props> {
       companyId,
       swipeable,
       navigation,
+      selectItem,
       isSortByName,
       currentSelectItem,
+      handleShowSortButton,
       toggleDelModalVisible,
     } = this.props;
     return (
@@ -141,8 +143,15 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
+          const dataToRenderIsEmpty = R.isEmpty(dataToRender);
+          if (dataToRenderIsEmpty) {
+            handleShowSortButton(false);
+          } else {
+            handleShowSortButton(true);
+          }
+
           // console.log(dataToRender);
-          return R.isEmpty(dataToRender) ? (
+          return dataToRenderIsEmpty ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
               <Image source={assets.noItemsYet} style={styles.image} />
@@ -174,7 +183,7 @@ class ItemsList extends PureComponent<Props> {
               {swipeable ? (
                 <SwipeableList
                   data={dataToRender}
-                  selectItem={() => {}}
+                  selectItem={selectItem}
                   currentUserRole={userRole}
                   openItem={this.handleOpenItem}
                   toggleDelModal={toggleDelModalVisible}
@@ -198,6 +207,4 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-export default graphql(GET_USER_ID_CLIENT, {
-  props: ({ data: { id } }) => ({ userId: id }),
-})(ItemsList);
+export default graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id })})(ItemsList);

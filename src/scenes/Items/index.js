@@ -54,6 +54,7 @@ class ItemsScene extends PureComponent<Props, State> {
     this.state = {
       searchValue: '',
       isSortByName: true,
+      showSortButton: false,
       isSearchActive: false,
       isListViewStyle: false,
       currentSelectItem: null,
@@ -127,8 +128,13 @@ class ItemsScene extends PureComponent<Props, State> {
     );
   };
 
-  handleDeleteItem = (id) => {
-    console.log(id);
+  handleShowSortButton = (value: boolean) => this.setState({
+    showSortButton: value,
+  });
+
+  handleDeleteItem = (id: number | string) => {
+    console.log('removing item ', id);
+    this.toggleDelModalVisible();
   }
 
   selectItem = (id: number | string) => {
@@ -165,6 +171,7 @@ class ItemsScene extends PureComponent<Props, State> {
       searchValue,
       isSortByName,
       isSearchActive,
+      showSortButton,
       isListViewStyle,
       currentSelectItem,
       isSortModalVisible,
@@ -173,7 +180,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const {
       // $FlowFixMe
       data: {
-        userCompany: { role: userRole, id: companyId },
+        userCompany: { role: userRole, company: { id: companyId } },
       },
       navigation,
     } = this.props;
@@ -188,6 +195,7 @@ class ItemsScene extends PureComponent<Props, State> {
           selectItem={this.selectItem}
           currentSelectItem={currentSelectItem}
           isDeleteModalVisible={isDeleteModalVisible}
+          handleShowSortButton={this.handleShowSortButton}
           toggleDelModalVisible={this.toggleDelModalVisible}
         />
         {isSearchActive && (
@@ -197,7 +205,7 @@ class ItemsScene extends PureComponent<Props, State> {
             toggleSearch={this.toggleSearch}
           />
         )}
-        {!isSortModalVisible && !isSearchActive && (
+        {!isSortModalVisible && !isSearchActive && showSortButton && (
           <IconButton
             isCustomIcon
             size={isSortByName ? 50 : 70}

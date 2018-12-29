@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
 
 import Swipeout from 'react-native-swipeout';
 
@@ -26,7 +26,7 @@ class SwipeableList extends PureComponent<Props, {}> {
             size={25}
             isCustomIcon
             iconName="pencil"
-            onPress={() => openItem(item)}
+            onPress={() => openItem(item, true)}
             customContStyle={styles.leftSwipeButton}
           />
         ),
@@ -55,7 +55,9 @@ class SwipeableList extends PureComponent<Props, {}> {
       >
         <View>
           <View style={styles.rowItem}>
-            <Image style={styles.image} />
+            <TouchableOpacity onPress={() => openItem(item)}>
+              <Image style={styles.image} />
+            </TouchableOpacity>
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>

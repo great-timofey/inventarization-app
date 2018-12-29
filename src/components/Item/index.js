@@ -15,7 +15,7 @@ class Item extends PureComponent<Props, State> {
   renderMenu = () => {
     const { selectItem, toggleDelModal, showRemoveButton, item, openItem } = this.props;
     return (
-      <View style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
+      <View style={styles.menuContainer}>
         <IconButton
           size={30}
           iconName="ios-close"
@@ -34,7 +34,7 @@ class Item extends PureComponent<Props, State> {
         <IconButton
           isCustomIcon
           iconName="pencil"
-          onPress={() => openItem(item)}
+          onPress={() => openItem(item, true)}
           customContStyle={[styles.menu, { backgroundColor: colors.blue }]}
         />
       </View>
@@ -42,12 +42,12 @@ class Item extends PureComponent<Props, State> {
   };
 
   render() {
-    const { item, selectItem, showMenuButton, currentSelectItem } = this.props;
+    const { item, selectItem, showMenuButton, currentSelectItem, openItem } = this.props;
     const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
 
     return (
-      <View style={styles.container}>
+      <TouchableOpacity style={styles.container} onPress={() => openItem(item)}>
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && (
           <TouchableOpacity
@@ -62,7 +62,7 @@ class Item extends PureComponent<Props, State> {
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title}>{item.name}</Text>
         <Text style={styles.price}>{`${purchasePrice || 0} ₽`}</Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 }

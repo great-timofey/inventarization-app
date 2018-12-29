@@ -121,10 +121,11 @@ class ItemForm extends Component<Props, State> {
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
+    const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
 
     return {
       headerStyle: styles.header,
-      title: headerText || constants.headers.addingItem,
+      title: inEditMode ? constants.headers.modifyingItem : (headerText || constants.headers.addingItem),
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: (
         <HeaderBackButton
@@ -141,7 +142,7 @@ class ItemForm extends Component<Props, State> {
       ),
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
-          {userCanEdit && (
+          {userCanEdit && !inEditMode && (
             <HeaderPencilButton
               onPress={() => {
                 navigation.setParams({
@@ -213,25 +214,30 @@ class ItemForm extends Component<Props, State> {
     if (item) {
       const itemCopy = { ...item };
       const {
-        creator: { id: creatorId },
         name,
         status,
         photos,
+        creator,
         photosOfDamages,
         responsible,
         onTheBalanceSheet,
       } = item;
       navigation.setParams({ headerText: name });
+      const inEditMode = navigation.getParam('inEditMode', false);
+
+      if (inEditMode) {
+        this.toggleEditMode();
+      }
 
       if (
-        (creatorId === currentUserId && status === 'in_processing')
+        ((creator && creator.id === currentUserId) && status === constants.placeholders.status.inProcessing)
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
       }
 
-      console.log(photos);
-      console.log(photosOfDamages);
+      // console.log(photos);
+      // console.log(photosOfDamages);
       itemCopy.photos = photos.map(({ url }) => ({ uri: `https://api.staging.inventoryapp.info${url}` })) || [];
       itemCopy.photosOfDamages = photosOfDamages.map(({ url }) => ({
         uri: `https://api.staging.inventoryapp.info${url}`,
@@ -243,7 +249,7 @@ class ItemForm extends Component<Props, State> {
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
-      console.log(itemCopy);
+      // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
@@ -337,7 +343,7 @@ class ItemForm extends Component<Props, State> {
 
     if (!isFormInvalid) {
       const {
-        userCompany: { id: companyId },
+        userCompany: { company: { id: companyId } },
       } = this.props;
       // $FlowFixMe
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
@@ -378,7 +384,7 @@ class ItemForm extends Component<Props, State> {
         );
       }
       if (variables.assessedDate) {
-        variables.asessedDate = dayjs(variables.assessedDate).format(
+        variables.assessedDate = dayjs(variables.assessedDate).format(
           constants.formats.createAssetDates,
         );
       }
@@ -406,7 +412,7 @@ class ItemForm extends Component<Props, State> {
         }
       }
 
-      console.log(variables);
+      // console.log(variables);
       try {
         await createAsset({ variables });
       } catch (error) {
@@ -416,7 +422,7 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  renderFormField = ({ item: { key, description, placeholder, ...rest }, index }: PreviewProps) => {
+  renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
       props: { userCompany, role: userRole, currentUserId },
       state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status },
@@ -433,8 +439,12 @@ class ItemForm extends Component<Props, State> {
     if (formIsEditable || isNewItem) {
       if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
       else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
-      else if (includes(description, constants.fieldTypes.nonEditableFields)) callback = () => {};
+      else if (includes(description, constants.fieldTypes.nonEditableFields) || (description === constants.itemFormFields.onTheBalanceSheet && userRole !== constants.roles.admin)) callback = () => {};
     }
+
+    // if (isStatusField) {
+    //   callback = () => {};
+    // }
 
     if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
@@ -443,8 +453,6 @@ class ItemForm extends Component<Props, State> {
       callback = key => this.handleOpenModal(key);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
       callback = this.handleOpenDateTimePicker;
-    } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
-      callback = () => {};
     }
 
     if (description === constants.itemForm.inventoryId) {
@@ -516,9 +524,9 @@ class ItemForm extends Component<Props, State> {
 
   renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
     const {
-      state: { formIsEditable, isNewItem },
+      state: { isNewItem },
       props: {
-        userCompany: { id: companyId, role: userRole },
+        userCompany: { role: userRole },
       },
     } = this;
 
@@ -649,15 +657,14 @@ class ItemForm extends Component<Props, State> {
   render() {
     const {
       userId: currentUserId,
-      userCompany: { id: companyId, role: userRole },
+      userCompany: { company: { id: companyId }, role: userRole },
     } = this.props;
 
     const {
       name,
       photos,
-      status,
-      warnings,
       creator,
+      warnings,
       sections,
       isNewItem,
       showPhotos,

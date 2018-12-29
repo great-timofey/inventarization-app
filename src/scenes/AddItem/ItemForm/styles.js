@@ -16,7 +16,7 @@ export default StyleSheet.create({
     marginHorizontal: 0,
     color: colors.black,
     fontWeight: 'normal',
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: fonts.proDisplay.medium,
   },
   trashIcon: {
