@@ -119,7 +119,7 @@ class QRCode extends PureComponent<Props, State> {
           reactivate
           showMarker
           reactivateTimeout={1000}
-          onRead={() => this.handleScan}
+          onRead={this.handleScan}
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
