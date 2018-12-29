@@ -69,26 +69,41 @@ class QRCode extends PureComponent<Props, State> {
   handleScan = async (event) => {
     try {
       const { data: currentCodeData } = event;
-      const { client, data: {
-        userCompany: {
-          company: {
-            id: companyId,
+      const {
+        client,
+        data: {
+          //  $FlowFixMe
+          userCompany: {
+            company: { id: companyId },
           },
-        }, navigation,
-      } } = this.props;
+        },
+        navigation,
+      } = this.props;
 
-      const { data: { assets } } = await client.query({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS_DATA_CODES, variables: { companyId }});
+      const {
+        data: { assets },
+      } = await client.query({
+        query: ASSETS_QUERIES.GET_COMPANY_ASSETS_DATA_CODES,
+        variables: { companyId },
+      });
       const match = assets.find(({ codeData }) => codeData === currentCodeData);
       if (match) {
-        const { data: { assets: [item] } } = await client.query({ query: ASSETS_QUERIES.GET_COMPANY_ASSET_BY_ID, variables: { companyId, assetId: match.id }});
+        const {
+          data: {
+            assets: [item],
+          },
+        } = await client.query({
+          query: ASSETS_QUERIES.GET_COMPANY_ASSET_BY_ID,
+          variables: { companyId, assetId: match.id },
+        });
         navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item });
       } else {
-        navigation.setParams({ codeData: currentCodeData });
+        navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName, { codeData: currentCodeData });
       }
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   toggleTorch = () => {
     const { isTorchOn } = this.state;
@@ -123,5 +138,6 @@ class QRCode extends PureComponent<Props, State> {
 }
 
 export default compose(
-  graphql(GET_CURRENT_USER_COMPANY_CLIENT,),
-  withApollo,)(QRCode);
+  graphql(GET_CURRENT_USER_COMPANY_CLIENT),
+  withApollo,
+)(QRCode);

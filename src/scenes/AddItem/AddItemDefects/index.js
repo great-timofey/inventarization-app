@@ -43,10 +43,10 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photos = navigation.getParam('photos', []);
-    const defectPhotos = navigation.getParam('defectPhotos', []);
-    const from = navigation.state && navigation.state.params && navigation.state.params.from;
-    const codeData = navigation.state && navigation.state.params && navigation.state.params.codeData;
+    const photos = navigation.state.params && navigation.state.params.photos;
+    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
+    const codeData = navigation.state.params && navigation.state.params.codeData;
+    const from = navigation.state.params && navigation.state.params.from;
     const toPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos, codeData };
     return {
       headerStyle: styles.header,
@@ -117,9 +117,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
   takePicture = async () => {
     const {
-      props: {
-        navigation,
-      },
+      props: { navigation },
     } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
@@ -162,12 +160,8 @@ class AddItemDefects extends PureComponent<Props, State> {
 
   removePicture = async (index: number) => {
     const {
-      props: {
-        navigation,
-      },
-      state: {
-        photos,
-      },
+      props: { navigation },
+      state: { photos },
     } = this;
 
     const { uri } = photos[index];
