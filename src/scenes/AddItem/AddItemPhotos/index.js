@@ -45,7 +45,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const from = navigation.state && navigation.state.params && navigation.state.params.from;
     const photos = navigation.state && navigation.state.params && navigation.state.params.photos;
-    const photosToPass = from ? { additionalPhotos: photos } : { photos };
+    const codeData = navigation.state && navigation.state.params && navigation.state.params.codeData;
+    const toPass = from ? { additionalPhotos: photos } : { photos, codeData };
     return {
       headerStyle: styles.header,
       title: constants.headers.newItem,
@@ -57,7 +58,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
         <HeaderSkipButton
           onPress={() => navigation.navigate(
             from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
-            photosToPass,
+            toPass,
           )
           }
         />
