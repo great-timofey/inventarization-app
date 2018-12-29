@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
 
 import Swipeout from 'react-native-swipeout';
 
@@ -17,7 +17,7 @@ import type { Props } from './types';
 
 class SwipeableList extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { toggleDelModal, selectItem, currentUserRole } = this.props;
+    const { toggleDelModal, selectItem, currentUserRole, openItem } = this.props;
     const disableLeftSwipe = currentUserRole === constants.roles.observer;
     const swipeoutBtns = [
       {
@@ -26,7 +26,7 @@ class SwipeableList extends PureComponent<Props, {}> {
             size={25}
             isCustomIcon
             iconName="pencil"
-            onPress={() => {}}
+            onPress={() => openItem(item, true)}
             customContStyle={styles.leftSwipeButton}
           />
         ),
@@ -50,13 +50,15 @@ class SwipeableList extends PureComponent<Props, {}> {
         right={swipeoutBtns}
         disabled={disableLeftSwipe}
         close={item.id !== activeRowId}
-        onOpen={(sectionID, rowId, direction: string) => (
-          direction !== undefined ? selectItem(item.id) : null
-        )}
+        //  eslint-disable-next-line
+        onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
+        }
       >
         <View>
           <View style={styles.rowItem}>
-            <Image style={styles.image} />
+            <TouchableOpacity onPress={() => openItem(item)}>
+              <Image style={styles.image} />
+            </TouchableOpacity>
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>

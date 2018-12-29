@@ -9,10 +9,7 @@ import Modal from 'react-native-modal';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import {
-  GET_COMPANY_PLACES,
-  GET_COMPANY_USERS_BY_ROLE,
-} from '~/graphql/auth/queries';
+import { GET_COMPANY_PLACES, GET_COMPANY_USERS_BY_ROLE } from '~/graphql/auth/queries';
 import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 
 import styles from './styles';
@@ -116,8 +113,7 @@ class ChooseModal extends PureComponent<Props, State> {
                 {type && constants.hints[`no${type[0].toUpperCase().concat(type.slice(1))}`]}
               </Text>
             </Fragment>
-          )
-          }
+          )}
         </View>
         <TouchableOpacity activeOpacity={1} onPress={onCancel} style={styles.modalCancel}>
           <Text style={styles.modalCancelText}>{constants.buttonTitles.cancel}</Text>

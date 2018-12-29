@@ -4,6 +4,7 @@ export type State = {
   searchValue: string,
   isSortByName: boolean,
   isSearchActive: boolean,
+  showSortButton: boolean,
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
   isDeleteModalVisible: boolean,

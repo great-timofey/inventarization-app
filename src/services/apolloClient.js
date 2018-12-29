@@ -33,8 +33,9 @@ const authLink = setContext(async (_, { headers }) => {
 const stateLink = withClientState({
   cache,
   defaults: {
+    id: '',
+    userCompany: '',
     isAuthed: false,
-    userCompany: null,
   },
   resolvers: {
     Mutation: {
@@ -46,10 +47,15 @@ const stateLink = withClientState({
         await innerCache.writeData({ data: { userCompany } });
         return null;
       },
+      setUserId: async (_, { id }, { cache: innerCache }) => {
+        await innerCache.writeData({ data: { id } });
+        return null;
+      },
     },
   },
   typeDefs: `
     type Query {
+      id: ID
       isAuthed: Boolean
       userCompany: {
         id: ID

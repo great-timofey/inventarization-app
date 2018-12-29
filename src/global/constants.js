@@ -46,7 +46,7 @@ const placeholders = {
   assessedValue: '\u20BD 0',
   status: {
     accepted: 'Учтено',
-    onProcessing: 'В обработке',
+    inProcessing: 'В обработке',
   },
   company: undefined,
   gps: undefined,
@@ -210,6 +210,7 @@ const headers = {
   addingItem: 'Добавление предмета',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
+  modifyingItem: 'Редактирование предмета',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -255,7 +256,6 @@ const itemForm = {
   status: 'Статус',
   name: 'Название',
 };
-
 
 const itemFormFields = Object.keys(itemForm).reduce((acc, objKey) => {
   const result: Object = {

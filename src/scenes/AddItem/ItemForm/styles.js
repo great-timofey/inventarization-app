@@ -16,11 +16,14 @@ export default StyleSheet.create({
     marginHorizontal: 0,
     color: colors.black,
     fontWeight: 'normal',
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: fonts.proDisplay.medium,
   },
   trashIcon: {
     marginRight: -10,
+  },
+  pencilIcon: {
+    marginRight: -5,
   },
   backButton: {
     width: 28,
@@ -29,6 +32,9 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  headerRightButtonsContainer: {
+    flexDirection: 'row',
   },
   noPhoto: {
     width: 100,

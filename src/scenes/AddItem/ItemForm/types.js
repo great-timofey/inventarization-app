@@ -3,8 +3,11 @@
 import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
 
 export type Props = {
+  role: string,
+  userId: string,
   navigation: Object,
   userCompany: Object,
+  currentUserId: string,
   createAsset: Function,
 };
 
@@ -31,11 +34,13 @@ export type State = {
   gps: ?Object,
   name: ?string,
   status: string,
+  creator: ?Object,
   placeId: ?string,
   warnings: Object,
   location: ?string,
   codeData: ?string,
   category: ?string,
+  isNewItem: boolean,
   assessedDate: ?Date,
   showPhotos: boolean,
   inventoryId: ?string,
@@ -44,8 +49,10 @@ export type State = {
   isModalOpened: boolean,
   assessedValue: ?string,
   purchasePrice: ?string,
-  responsibleId: ?string,
+  responsibleId: ?Object,
   dateOfPurchase: ?string,
+  formIsEditable: boolean,
+  showSaveButton: boolean,
   sections: Array<Section>,
   guaranteeExpires: ?string,
   onTheBalanceSheet: string,

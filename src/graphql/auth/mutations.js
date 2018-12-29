@@ -64,6 +64,12 @@ export const SET_AUTH_MUTATION_CLIENT = gql`
   }
 `;
 
+export const SET_USER_ID_MUTATION_CLIENT = gql`
+  mutation SetUserId($id: ID!) {
+    setUserId(id: $id) @client 
+  }
+`;
+
 export const SET_USER_COMPANY_MUTATION_CLIENT = gql`
   mutation SetUserCompany($userCompany: UserCompany!) {
     setUserCompany(userCompany: $userCompany) @client 
