@@ -138,7 +138,7 @@ class ItemsList extends PureComponent<Props> {
             const resPath = R.lensPath(['responsible', 'id']);
             dataToRender = R.filter(
               asset => R.equals(R.view(resPath, asset), userId)
-                && R.equals('on_processing', R.prop('status', asset)),
+                && R.equals(constants.placeholders.status.onProcessing, R.prop('status', asset)),
               innerAssets,
             );
           }

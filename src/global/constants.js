@@ -46,7 +46,7 @@ const placeholders = {
   assessedValue: '\u20BD 0',
   status: {
     accepted: 'Учтено',
-    inProcessing: 'В обработке',
+    onProcessing: 'В обработке',
   },
   company: undefined,
   gps: undefined,
