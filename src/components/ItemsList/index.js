@@ -11,12 +11,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { isEmpty } from 'ramda';
-import { Query } from 'react-apollo';
+import R from 'ramda';
+import { Query, graphql } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
+import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { GET_USER_ID_CLIENT } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
@@ -51,14 +53,18 @@ const CategoryList = ({ children }) => (
 
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
-    const { userRole, currentSelectItem } = this.props;
+    const { userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
+    const showRemoveButton = userRole !== constants.roles.manager;
+
     return (
       <ItemComponent
         item={item}
-        currentUserRole={userRole}
-        // selectItem={this.selectItem}
+        selectItem={selectItem}
+        openItem={this.handleOpenItem}
+        showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
-        // toggleDelModal={this.toggleDelModalVisible}
+        toggleDelModal={toggleDelModalVisible}
+        showMenuButton={userRole !== constants.roles.observer}
       />
     );
   };
@@ -91,16 +97,25 @@ class ItemsList extends PureComponent<Props> {
     }
   };
 
+  handleOpenItem = (item: Object, inEditMode: boolean) => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item, inEditMode });
+  };
+
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const {
-      swipeable,
+      userId,
       userRole,
       companyId,
+      swipeable,
+      navigation,
+      selectItem,
       isSortByName,
       currentSelectItem,
-      navigation,
+      handleShowSortButton,
+      toggleDelModalVisible,
     } = this.props;
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
@@ -116,9 +131,27 @@ class ItemsList extends PureComponent<Props> {
           }
 
           // $FlowFixMe
-          const { assets } = data;
+          const { assets: innerAssets } = data;
+          let dataToRender = innerAssets;
 
-          return isEmpty(assets) ? (
+          if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
+            const resPath = R.lensPath(['responsible', 'id']);
+            dataToRender = R.filter(
+              asset => R.equals(R.view(resPath, asset), userId)
+                && R.equals('on_processing', R.prop('status', asset)),
+              innerAssets,
+            );
+          }
+
+          const dataToRenderIsEmpty = R.isEmpty(dataToRender);
+          if (dataToRenderIsEmpty) {
+            handleShowSortButton(false);
+          } else {
+            handleShowSortButton(true);
+          }
+
+          // console.log(dataToRender);
+          return dataToRenderIsEmpty ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
               <Image source={assets.noItemsYet} style={styles.image} />
@@ -149,16 +182,17 @@ class ItemsList extends PureComponent<Props> {
               </CategoryList>
               {swipeable ? (
                 <SwipeableList
-                  data={assets}
+                  data={dataToRender}
+                  selectItem={selectItem}
                   currentUserRole={userRole}
-                  selectItem={() => {}}
-                  // toggleDelModal={this.toggleDelModalVisible}
+                  openItem={this.handleOpenItem}
+                  toggleDelModal={toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}
                 />
               ) : (
                 <FlatList
-                  data={assets}
                   numColumns={2}
+                  data={dataToRender}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
                   contentContainerStyle={styles.grid}
@@ -173,4 +207,7 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-export default ItemsList;
+//  $FlowFixMe
+export default graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) })(
+  ItemsList,
+);

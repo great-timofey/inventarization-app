@@ -16,6 +16,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
+import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
 import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
@@ -77,6 +78,17 @@ const HeaderTrashButton = ({ onPress }: { onPress: Function }) => (
   />
 );
 
+const HeaderPencilButton = ({ onPress }: { onPress: Function }) => (
+  <InventoryIcon.Button
+    size={25}
+    name="pencil"
+    {...iconProps}
+    onPress={onPress}
+    color={colors.accent}
+    style={styles.pencilIcon}
+  />
+);
+
 const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
@@ -103,25 +115,65 @@ const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Funct
 );
 
 class ItemForm extends Component<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: styles.header,
-    title: constants.headers.addingItem,
-    headerTitleStyle: styles.headerTitleStyle,
-    headerLeft: <HeaderBackButton onPress={() => navigation.goBack()} />,
-    headerRight: <HeaderTrashButton onPress={() => navigation.goBack()} />,
-  });
+  static navigationOptions = ({ navigation }: Props) => {
+    const item = navigation.state.params && navigation.state.params.item;
+    const userCanDelete = navigation.state.params && navigation.state.params.userCanDelete;
+    const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
+    const headerText = navigation.state.params && navigation.state.params.headerText;
+    const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
+    const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
+
+    return {
+      headerStyle: styles.header,
+      title: inEditMode
+        ? constants.headers.modifyingItem
+        : headerText || constants.headers.addingItem,
+      headerTitleStyle: styles.headerTitleStyle,
+      headerLeft: (
+        <HeaderBackButton
+          onPress={
+            item
+              ? () => {
+                const resetAction = StackActions.popToTop({});
+                navigation.dispatch(resetAction);
+                navigation.navigate(SCENE_NAMES.ItemsSceneName);
+              }
+              : () => navigation.goBack()
+          }
+        />
+      ),
+      headerRight: (
+        <View style={styles.headerRightButtonsContainer}>
+          {userCanEdit && !inEditMode && (
+            <HeaderPencilButton
+              onPress={() => {
+                navigation.setParams({
+                  headerText: constants.headers.modifyingItem,
+                  userCanEdit: false,
+                });
+                toggleEditMode();
+              }}
+            />
+          )}
+          {userCanDelete && <HeaderTrashButton onPress={() => navigation.goBack()} />}
+        </View>
+      ),
+    };
+  };
 
   state = {
     name: '',
     gps: null,
     // $FlowFixMe
     photos: [],
+    creator: null,
     placeId: null,
     codeData: null,
     warnings: {},
     location: null,
     category: null,
     inventoryId: '',
+    isNewItem: true,
     showPhotos: true,
     manufacture: null,
     assessedDate: null,
@@ -132,29 +184,87 @@ class ItemForm extends Component<Props, State> {
     photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
+    formIsEditable: false,
+    showSaveButton: false,
     activePreviewIndex: 0,
     guaranteeExpires: null,
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
     sections: constants.itemFormSections,
-    status: constants.placeholders.status.onProcessing,
+    status: constants.placeholders.status.inProcessing,
   };
 
   carousel: any;
   navListener: any;
 
   componentDidMount() {
-    const { navigation } = this.props;
+    const {
+      navigation,
+      currentUserId,
+      userCompany: { role },
+    } = this.props;
+
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
-    const photos = navigation.getParam('photos', []);
-    // const codeData = navigation.getParam('codeData', '');
-    const photosOfDamages = navigation.getParam('defectPhotos', []);
-    const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
-    const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
-    this.setState({ photos, photosOfDamages, gps });
+
+    navigation.setParams({ toggleEditMode: this.toggleEditMode });
+
+    const item = navigation.getParam('item', null);
+
+    if (item) {
+      const itemCopy = { ...item };
+      const {
+        name,
+        status,
+        photos,
+        creator,
+        photosOfDamages,
+        responsible,
+        onTheBalanceSheet,
+      } = item;
+      navigation.setParams({ headerText: name });
+      const inEditMode = navigation.getParam('inEditMode', false);
+
+      if (inEditMode) {
+        this.toggleEditMode();
+      }
+
+      if (
+        (creator
+          && creator.id === currentUserId
+          && status === constants.placeholders.status.inProcessing)
+        || role === constants.roles.admin
+      ) {
+        navigation.setParams({ userCanDelete: true, userCanEdit: true });
+      }
+
+      // console.log(photos);
+      // console.log(photosOfDamages);
+      itemCopy.photos = photos.map(({ url }) => ({ uri: `https://api.staging.inventoryapp.info${url}` })) || [];
+      itemCopy.photosOfDamages = photosOfDamages.map(({ url }) => ({
+        uri: `https://api.staging.inventoryapp.info${url}`,
+      })) || [];
+      itemCopy.responsibleId = responsible;
+      itemCopy.status = status === 'on_processing'
+        ? constants.placeholders.status.inProcessing
+        : constants.placeholders.status.accepted;
+      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
+
+      this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
+      // console.log(itemCopy);
+    } else {
+      navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
+
+      const photos = navigation.getParam('photos', []);
+      // const codeData = navigation.getParam('codeData', '');
+      const photosOfDamages = navigation.getParam('defectPhotos', []);
+      const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
+      const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+
+      this.setState({ photos, photosOfDamages, gps, showSaveButton: true, formIsEditable: true });
+    }
   }
 
   componentWillUnmount() {
@@ -169,6 +279,7 @@ class ItemForm extends Component<Props, State> {
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photos }) => ({
+        showSaveButton: true,
         activePreviewIndex: 0,
         photos: photos.concat(navigation.state.params.additionalPhotos),
       }));
@@ -178,11 +289,16 @@ class ItemForm extends Component<Props, State> {
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState(({ photosOfDamages }) => ({
+        showSaveButton: true,
         activePreviewIndex: 0,
         photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
       }));
     }
   }
+
+  toggleEditMode = () => {
+    this.setState({ showSaveButton: true, formIsEditable: true });
+  };
 
   checkFields = () => {
     const { name, inventoryId } = this.state;
@@ -211,9 +327,7 @@ class ItemForm extends Component<Props, State> {
 
   checkForErrors = () => {
     const {
-      state: {
-        warnings,
-      },
+      state: { warnings },
     } = this;
     return !!keys(warnings).length;
   };
@@ -233,7 +347,9 @@ class ItemForm extends Component<Props, State> {
 
     if (!isFormInvalid) {
       const {
-        userCompany: { id: companyId },
+        userCompany: {
+          company: { id: companyId },
+        },
       } = this.props;
       // $FlowFixMe
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
@@ -274,7 +390,7 @@ class ItemForm extends Component<Props, State> {
         );
       }
       if (variables.assessedDate) {
-        variables.asessedDate = dayjs(variables.assessedDate).format(
+        variables.assessedDate = dayjs(variables.assessedDate).format(
           constants.formats.createAssetDates,
         );
       }
@@ -302,41 +418,53 @@ class ItemForm extends Component<Props, State> {
         }
       }
 
+      // console.log(variables);
       try {
         await createAsset({ variables });
       } catch (error) {
-        console.log(error.message);
+        Alert.alert(error.message);
+        console.dir(error);
       }
     }
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
-      props: {
-        userCompany,
-      },
-      state: {
-        warnings: stateWarnings,
-        responsibleId,
-      },
+      props: { userCompany, role: userRole, currentUserId },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status },
       state,
     } = this;
+
     let callback;
     let itemMask;
     let itemWarning;
     let customValue;
     const isStatusField = description === constants.itemForm.status;
-    const isGpsField = description === constants.itemForm.gps;
     const isDescriptionField = description === constants.itemForm.description;
 
+    if (formIsEditable || isNewItem) {
+      //  eslint-disable-next-line
+      if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
+      //  eslint-disable-next-line
+      else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
+      else if (
+        includes(description, constants.fieldTypes.nonEditableFields)
+        || (description === constants.itemFormFields.onTheBalanceSheet
+          && userRole !== constants.roles.admin)
+      ) callback = () => {};
+    }
+
+    // if (isStatusField) {
+    //   callback = () => {};
+    // }
+
+    if (includes(description, constants.fieldTypes.currencyFields)) {
+      itemMask = constants.masks.price;
+    }
     if (includes(description, constants.fieldTypes.modalFields)) {
       callback = key => this.handleOpenModal(key);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
       callback = this.handleOpenDateTimePicker;
-    } else if (includes(description, constants.fieldTypes.nonEditableFields)) {
-      callback = () => {};
-    } else if (includes(description, constants.fieldTypes.currencyFields)) {
-      itemMask = constants.masks.price;
     }
 
     if (description === constants.itemForm.inventoryId) {
@@ -359,11 +487,9 @@ class ItemForm extends Component<Props, State> {
       description === constants.itemForm.dateOfPurchase
       || description === constants.itemForm.assessedDate
     ) {
-      customValue = state[key]
-        ? dayjs(state[key]).format(constants.formats.newItemDates)
-        : null;
+      customValue = state[key] ? dayjs(state[key]).format(constants.formats.newItemDates) : null;
     } else if (description === constants.itemForm.company) {
-      customValue = userCompany.company.name;
+      customValue = userCompany.company.name || ' ';
     } else if (description === constants.itemForm.responsibleId) {
       // $FlowFixMe
       customValue = state[key] ? responsibleId.fullName : null;
@@ -378,7 +504,6 @@ class ItemForm extends Component<Props, State> {
         customKey={key}
         mask={itemMask}
         blurOnSubmit={false}
-        disabled={isGpsField}
         containerCallback={callback}
         isMultiline={isDescriptionField}
         value={customValue || state[key]}
@@ -387,7 +512,11 @@ class ItemForm extends Component<Props, State> {
         isWarning={includes(key, keys(stateWarnings))}
         type={{ label: description, warning: itemWarning }}
         onChangeText={text => this.handleChangeField(key, text)}
-        placeholder={isStatusField ? placeholder.onProcessing : placeholder}
+        isBackgroundTransparent={
+          userRole === constants.roles.observer
+          || (responsibleId && responsibleId.id === currentUserId && status === 'accepted')
+        }
+        placeholder={isStatusField ? placeholder.inProcessing : placeholder}
       />
     );
   };
@@ -405,27 +534,38 @@ class ItemForm extends Component<Props, State> {
     </View>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => (!uri ? (
-    <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
-      <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
-    </TouchableOpacity>
-  ) : (
-    <View style={styles.photoContainer}>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-        onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
-      >
-        <Image source={assets.deletePhoto} />
+  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
+    const {
+      state: { isNewItem },
+      props: {
+        userCompany: { role: userRole },
+      },
+    } = this;
+
+    return (!uri && isNewItem) || (!uri && userRole === constants.roles.admin) ? (
+      <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+        <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.photoImageContainer}
-        onPress={() => this.handleSetIndexPreview(index)}
-      >
-        <Image style={styles.photoImage} source={{ uri }} />
-      </TouchableOpacity>
-    </View>
-  ));
+    ) : (
+      <View style={styles.photoContainer}>
+        {(isNewItem || userRole === constants.roles.admin) && (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+            onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+          >
+            <Image source={assets.deletePhoto} />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={styles.photoImageContainer}
+          onPress={() => this.handleSetIndexPreview(index)}
+        >
+          <Image style={styles.photoImage} source={{ uri }} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   handleAddPhoto = () => {
     const { navigation } = this.props;
@@ -438,10 +578,7 @@ class ItemForm extends Component<Props, State> {
 
   handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
     const {
-      state: {
-        showPhotos,
-        activePreviewIndex,
-      },
+      state: { showPhotos, activePreviewIndex },
       state,
     } = this;
     const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
@@ -455,6 +592,7 @@ class ItemForm extends Component<Props, State> {
     }
 
     this.setState(state => ({
+      showSaveButton: true,
       [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
       activePreviewIndex:
         removedIndex <= activePreviewIndex && activePreviewIndex > 0
@@ -512,6 +650,8 @@ class ItemForm extends Component<Props, State> {
     });
   };
 
+  keyExtractor = ({ uri }, index) => uri || index.toString();
+
   showPhotos = () => {
     this.setState({ showPhotos: true, activePreviewIndex: 0 });
     if (this.carousel) {
@@ -528,24 +668,33 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
-      userCompany: { id: companyId },
+      userId: currentUserId,
+      userCompany: {
+        company: { id: companyId },
+        role: userRole,
+      },
     } = this.props;
 
     const {
       name,
       photos,
+      creator,
       warnings,
       sections,
+      isNewItem,
       showPhotos,
       isModalOpened,
+      formIsEditable,
+      showSaveButton,
       photosOfDamages,
       activePreviewIndex,
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
-    const currentTypeIsEmpty = (
-      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages))
-    );
+
+    // eslint-disable-next-line
+    const currentTypeIsEmpty =
+      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
 
     return (
       <SafeAreaView style={styles.container}>
@@ -570,7 +719,15 @@ class ItemForm extends Component<Props, State> {
               </View>
               <Fragment>
                 {currentTypeIsEmpty ? (
-                  <NoItems additional onPress={this.handleAddPhoto} />
+                  <NoItems
+                    additional={
+                      isNewItem
+                      || userRole === constants.roles.admin
+                      //  $FlowFixMe
+                      || (creator && creator.id === currentUserId)
+                    }
+                    onPress={this.handleAddPhoto}
+                  />
                 ) : (
                   <Carousel
                     innerRef={(ref) => {
@@ -599,10 +756,10 @@ class ItemForm extends Component<Props, State> {
             <FlatList
               horizontal
               style={styles.photosOuter}
+              keyExtractor={this.keyExtractor}
               showsHorizontalScrollIndicator={false}
               // $FlowFixMe
               renderItem={this.renderPreviewPhotoBarItem}
-              keyExtractor={(_, index) => index.toString()}
               contentContainerStyle={[
                 styles.photosInner,
                 styles.previewPhotoBar,
@@ -610,7 +767,10 @@ class ItemForm extends Component<Props, State> {
               ]}
               data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
             />
-            <View style={styles.formContainer}>
+            <View
+              style={styles.formContainer}
+              pointerEvents={formIsEditable === false ? 'none' : undefined}
+            >
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>
@@ -638,9 +798,11 @@ class ItemForm extends Component<Props, State> {
                 contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
-            <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
-              <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
-            </TouchableOpacity>
+            {(showSaveButton || isNewItem) && (
+              <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
+                <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+              </TouchableOpacity>
+            )}
             <DateTimePicker
               onConfirm={this.handleChooseDate}
               isVisible={isDateTimePickerOpened}
@@ -661,11 +823,18 @@ class ItemForm extends Component<Props, State> {
     );
   }
 }
-
 export default compose(
   graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+  // graphql(QUERIES.GET_CURRENT_USER_COMPANIES, {
+  //   // $FlowFixMe
+  //   props: ({ data: { current } }) => ({ currentUser: current }),
+  // }),
+  graphql(QUERIES.GET_USER_ID_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
 )(ItemForm);

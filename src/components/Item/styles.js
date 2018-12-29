@@ -57,4 +57,10 @@ export default StyleSheet.create({
     height: normalize(30),
     marginBottom: normalize(8),
   },
+  menuContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
+  },
 });

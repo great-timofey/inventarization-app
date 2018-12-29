@@ -16,5 +16,6 @@ export type Props = {
   signInMutation: Function,
   signUpMutation: Function,
   setAuthMutationClient: Function,
+  setUserIdMutationClient: Function,
   setUserCompanyMutationClient: Function,
 };

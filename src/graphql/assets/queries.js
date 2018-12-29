@@ -11,7 +11,6 @@ export const GET_COMPANY_ASSETS = gql`
       photos
       assessedValue
       purchasePrice
-      purchasePrice
       photosOfDamages
       codeData
       company {
@@ -51,7 +50,6 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       photos
       assessedValue
       purchasePrice
-      purchasePrice
       photosOfDamages
       codeData
       company {
@@ -90,8 +88,24 @@ export const GET_COMPANY_ASSETS_DATA_CODES = gql`
   }
 `;
 
+export const GET_COMPANY_ASSETS_RESPONSIBLES = gql`
+  query GetCompanyAssets($companyId: ID!) {
+    assets(companyId: $companyId) {
+      id
+      responsible {
+        id
+      }
+      creator {
+        id
+      }
+      status
+    }
+  }
+`;
+
 export default {
   GET_COMPANY_ASSETS,
   GET_COMPANY_ASSET_BY_ID,
   GET_COMPANY_ASSETS_DATA_CODES,
+  GET_COMPANY_ASSETS_RESPONSIBLES,
 };
