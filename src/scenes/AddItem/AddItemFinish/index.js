@@ -1,14 +1,7 @@
 //  @flow
 
 import React, { PureComponent } from 'react';
-import {
-  Text,
-  StatusBar,
-  SafeAreaView,
-  View,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { Text, StatusBar, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
@@ -61,8 +54,9 @@ class AddItemFinish extends PureComponent<Props, State> {
   handleGoToItemForm = async () => {
     const { navigation } = this.props;
     const photos = navigation.getParam('photos', []);
+    const codeData = navigation.getParam('codeData', null);
     const defectPhotos = navigation.getParam('defectPhotos', []);
-    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos });
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos, codeData });
   };
 
   handleAddMoreItems = () => {

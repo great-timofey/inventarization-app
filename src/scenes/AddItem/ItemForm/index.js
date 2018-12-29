@@ -214,6 +214,7 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
+      // console.log(item)
       const itemCopy = { ...item };
       const {
         name,
@@ -258,12 +259,18 @@ class ItemForm extends Component<Props, State> {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
       const photos = navigation.getParam('photos', []);
-      // const codeData = navigation.getParam('codeData', '');
+      const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
-
-      this.setState({ photos, photosOfDamages, gps, showSaveButton: true, formIsEditable: true });
+      this.setState({
+        photos,
+        photosOfDamages,
+        gps,
+        showSaveButton: true,
+        formIsEditable: true,
+        codeData,
+      });
     }
   }
 

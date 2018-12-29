@@ -5,5 +5,7 @@ export type State = {
 };
 
 export type Props = {
+  data?: Object,
+  client: Object,
   navigation: Object,
 };
