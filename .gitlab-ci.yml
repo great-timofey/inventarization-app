@@ -6,12 +6,18 @@ before_script:
   - yarn
 
 stages:
-  - lint
+  - code_style
 
 eslint:
-  stage: lint
+  stage: code_style
   script:
     - yarn eslint .
+  only:
+    - merge_requests
+
+flow:
+  stage: code_style
+  script:
     - yarn flow
   only:
     - merge_requests
