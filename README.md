@@ -28,5 +28,3 @@ or
 ## Info.plist
 
 Добавил описания некоторых ключей, которые требовал iTunesConnect для нормальной работы в 2019 году, но мы их не используем: **NSCalendarsUsageDescription**, **NSBluetoothPeripheralUsageDescription**, **NSAppleMusicUsageDescription**, **NSMotionUsageDescription**, **NSSpeechRecognitionUsageDescription**
-
-test
