@@ -21,12 +21,10 @@ class ProfileScene extends PureComponent<Props> {
     } = this.props;
 
     try {
-      await logOut();
-      await AsyncStorage.removeItem('token');
-      await client.clearStore();
-      await client.resetStore();
+      //  temporary workaround, warnings still aren't fixed
+      client.resetStore().then(() => logOut()).then(() => AsyncStorage.removeItem('token'));
     } catch (error) {
-      Alert.alert(error.message);
+      console.log(error.message);
     }
   };
 
