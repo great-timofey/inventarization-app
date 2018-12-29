@@ -43,10 +43,11 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const photos = navigation.getParam('photos', []);
-    const defectPhotos = navigation.getParam('defectPhotos', []);
-    const from = navigation.state && navigation.state.params && navigation.state.params.from;
-    const photosToPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos };
+    const photos = navigation.state.params && navigation.state.params.photos;
+    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
+    const codeData = navigation.state.params && navigation.state.params.codeData;
+    const from = navigation.state.params && navigation.state.params.from;
+    const toPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos, codeData };
     return {
       headerStyle: styles.header,
       title: constants.headers.defects,
@@ -58,9 +59,9 @@ class AddItemDefects extends PureComponent<Props, State> {
         <HeaderFinishButton
           onPress={() => {
             if (from) {
-              navigation.navigate(SCENE_NAMES.ItemFormSceneName, photosToPass);
+              navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
             } else if (photos.length + defectPhotos.length) {
-              navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, photosToPass);
+              navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
               Alert.alert('Требуется фото предмета или его дефектов для продолежния');
             }
@@ -116,9 +117,7 @@ class AddItemDefects extends PureComponent<Props, State> {
 
   takePicture = async () => {
     const {
-      props: {
-        navigation,
-      },
+      props: { navigation },
     } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
@@ -161,12 +160,8 @@ class AddItemDefects extends PureComponent<Props, State> {
 
   removePicture = async (index: number) => {
     const {
-      props: {
-        navigation,
-      },
-      state: {
-        photos,
-      },
+      props: { navigation },
+      state: { photos },
     } = this;
 
     const { uri } = photos[index];
