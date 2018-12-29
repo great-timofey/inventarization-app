@@ -1,6 +1,6 @@
 // @flow
 
-import { pick, slice, keys, values } from 'ramda';
+import { pick, slice, keys } from 'ramda';
 
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 

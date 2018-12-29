@@ -62,5 +62,5 @@ export default StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 2,
-  }
+  },
 });
