@@ -1695,7 +1695,6 @@ data-urls@^1.0.0:
 dayjs@^1.7.8:
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.7.8.tgz#05d288f8d4b2140110cc1519cfe317d6f1f11a3c"
-  integrity sha512-Gp4Y5KWeSri0QOWGzHQz7VrKDkfEpS92dCLK7P8hYowRFbaym1vj3d6CoHio3apSS4KSi/qb5Edemv26IN5Hfg==
 
 debug@2.6.9, debug@^2.1.2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -4820,26 +4819,22 @@ react-native-barcode-builder@^1.0.5:
 react-native-blur@3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-native-blur/-/react-native-blur-3.2.2.tgz#5bfb50638d148982c9560436554ed01d77d6d07d"
-  integrity sha512-r7zNQISL7kQX5ocQEet5QVOBzoXP+Nr3dO7Wql+fV6rebx/8I7eAUHnfITDx12WoOmRpiJjbt/4xF5gTEll6Uw==
   dependencies:
     prop-types "^15.5.10"
 
 react-native-camera@1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.4.tgz#a7d0f3da8ff07be36c07e14dcae57d822a09013e"
-  integrity sha512-aS77+UVOKwxE+gTfpkPwIVoyFPD7uFuLV6qzV2M9kwK/KklR7wjd594xvatX40GHfLRFRpuUn5HiJU5WnOovbQ==
   dependencies:
     prop-types "^15.6.2"
 
 react-native-device-info@0.24.3:
   version "0.24.3"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.24.3.tgz#f15eff8d09fe418eaf5e7c89ddaabbc5ed718fd7"
-  integrity sha512-usW00Wk6DoXH1eRSMt07j0uYvuka3SIEnJ9girlddAacyqwfa1QMVTN4eYmtaBzuMd/avhis8iHZQ3cLaR9CMA==
 
 react-native-fs@2.13.3:
   version "2.13.3"
   resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.13.3.tgz#a422f0ecd8a093a7e99d8d51ff51440e090a18a8"
-  integrity sha512-B62LSSAEYQGItg7KVTzTVVCxezOYFBYp4DMVFbdoZUd1mZVFdqR2sy1HY1mye1VI/Lf3IbxSyZEQ0GmrrdwLjg==
   dependencies:
     base-64 "^0.1.0"
     utf8 "^2.1.1"
@@ -4847,7 +4842,6 @@ react-native-fs@2.13.3:
 react-native-gesture-handler@1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.12.tgz#99a22f90212df299245357dbd3a9a01c788f310b"
-  integrity sha512-Qp5FjRmqUFeCevSu2IYQG1Xw+YXZ9YOzqze/ZxaIvWzYAoKsRchlgHhNoxvCqElp/befrnVFIjAEQyUxcmBKJw==
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -4864,7 +4858,6 @@ react-native-gesture-handler@^1.0.0:
 react-native-image-picker@0.27.2:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-0.27.2.tgz#c44195feb1a4855eead36fadacc8b82828329b2a"
-  integrity sha512-1GuPIuQHjnLxmzUkmOHbI6cllETVRhJyrf8UoJXotD38+eX4JdcUSHGqV48XPc3e1u7b4HU7drFgyJcKFfQKRA==
 
 react-native-image-resizer@^1.0.0:
   version "1.0.0"
@@ -4877,12 +4870,10 @@ react-native-image-resizer@^1.0.0:
 react-native-linear-gradient@2.5.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.3.tgz#d90cf19a13fcccfa8bb32025ac40a15ae1b49e99"
-  integrity sha512-XdusrOXXlkI+yQpUW7YLeiq9cZiBwkvQX4XEkHPVrJ9H47gsKmdgBwObkZBzBQUP0dKK/Sg6aVpETEis4w43bQ==
 
 react-native-modal-datetime-picker@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/react-native-modal-datetime-picker/-/react-native-modal-datetime-picker-6.0.0.tgz#8018994524122ad48fd6bc66f26f623c75a49fb3"
-  integrity sha512-O8brvSXgvRtfHzAyCNSrPcylE05cyK30D8/7rM0kjXLnlDcoiXtEl62qDQw8wnJOAL6kQFGn/iQ8H4mGXptiHw==
   dependencies:
     prop-types "^15.6.1"
     react-native-modal "^6.2.0"
@@ -4890,7 +4881,6 @@ react-native-modal-datetime-picker@^6.0.0:
 react-native-modal@^6.2.0:
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-6.5.0.tgz#46220b2289a41597d344c1db17454611b426a758"
-  integrity sha512-ewchdETAGd32xLGLK93NETEGkRcePtN7ZwjmLSQnNW1Zd0SRUYE8NqftjamPyfKvK0i2DZjX4YAghGZTqaRUbA==
   dependencies:
     prop-types "^15.6.1"
     react-native-animatable "^1.2.4"
@@ -4905,7 +4895,6 @@ react-native-modal@^7.0.1:
 react-native-permissions@1.1.1, react-native-permissions@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
-  integrity sha512-t0Ujm177bagjUOSzhpmkSz+LqFW04HnY9TeZFavDCmV521fQvFz82aD+POXqWsAdsJVOK3umJYBNNqCjC3g0hQ==
 
 react-native-qrcode-scanner@^1.1.0:
   version "1.1.0"
@@ -4931,10 +4920,21 @@ react-native-safe-area-view@^0.11.0:
   version "1.0.0-alpha.16"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.16.tgz#e3651b7077ea8fa04e8dd3265ad9b87f1f77a758"
 
+react-native-side-menu@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-side-menu/-/react-native-side-menu-1.1.3.tgz#6ef5d2232ecf718312df6cedef019148bac3073a"
+  dependencies:
+    prop-types "^15.5.10"
+
+react-native-sortable-list@^0.0.22:
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/react-native-sortable-list/-/react-native-sortable-list-0.0.22.tgz#f23d2626ef0e625836205d46e48b97eb04169ec0"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-splash-screen@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
-  integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
 
 react-native-svg@^8.0.10:
   version "8.0.10"
@@ -4955,7 +4955,6 @@ react-native-swipeout@^2.3.6:
 react-native-swiper@^1.5.14:
   version "1.5.14"
   resolved "https://registry.yarnpkg.com/react-native-swiper/-/react-native-swiper-1.5.14.tgz#1c6f949ca377186300f972bb0f30d24062c899aa"
-  integrity sha512-Kn0fxKooN7Shwu1qJYHB+Y8ssXXnvrIwReHXU5jCdyYNfz2QbBv0Cv3sa2Mqzr+XgzORCFFIokc8uCCUITDrVA==
   dependencies:
     prop-types "^15.5.10"
 
@@ -5043,6 +5042,10 @@ react-navigation-drawer@1.0.4:
   resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-1.0.4.tgz#41fbf71db108b3183e0c0351bf19ffee0aea10e7"
   dependencies:
     react-native-tab-view "^1.2.0"
+
+react-navigation-extension@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-navigation-extension/-/react-navigation-extension-2.0.1.tgz#1589054d139895af0d5a5f9b32d134b2bbb08bfd"
 
 react-navigation-stack@1.0.4:
   version "1.0.4"

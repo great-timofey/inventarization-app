@@ -24,20 +24,22 @@ import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { setIsSideMenuOpen } from '~/global';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
+
 
 import type { Item } from '~/global/types';
 import type { Props } from './types';
 
 import styles from './styles';
 
-const CategoryList = ({ children }) => (
+const CategoryList = ({ children, openSideMenu }) => (
   <View style={styles.categoryListContainer}>
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
         name="menu"
-        onPress={() => {}}
+        onPress={openSideMenu}
         style={styles.icon}
         activeOpacity={0.5}
         size={normalize(30)}
@@ -83,6 +85,11 @@ class ItemsList extends PureComponent<Props> {
       </LinearGradient>
     </TouchableOpacity>
   );
+
+  openSideMenu = () => {
+    setIsSideMenuOpen(true);
+  };
+
 
   handleScroll = (event: Object) => {
     const { navigation } = this.props;
@@ -169,7 +176,7 @@ class ItemsList extends PureComponent<Props> {
           ) : (
             <ScrollView scrollEventThrottle={16} onScroll={this.handleScroll}>
               <Text style={styles.header}>{constants.headers.items}</Text>
-              <CategoryList>
+              <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal
                   data={constants.category}
