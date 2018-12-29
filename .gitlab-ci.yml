@@ -5,18 +5,13 @@ before_script:
   - export PATH="$HOME/.yarn/bin:$PATH"
   - yarn
 
-stages:
-  - code_style
-
 eslint:
-  stage: code_style
   script:
     - yarn eslint .
   only:
     - merge_requests
 
 flow:
-  stage: code_style
   script:
     - yarn flow
   only:
