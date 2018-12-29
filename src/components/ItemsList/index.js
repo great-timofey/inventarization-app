@@ -107,7 +107,13 @@ class ItemsList extends PureComponent<Props> {
         {({ data, loading, error }) => {
           if (loading) return <ActivityIndicator />;
 
-          if (error) console.log(error);
+          if (error) {
+            return (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorMessage}>{error.message}</Text>
+              </View>
+            );
+          }
 
           // $FlowFixMe
           const { assets } = data;

@@ -1,6 +1,6 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, View, Alert, AsyncStorage } from 'react-native';
+import { Text, View, AsyncStorage } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
 import * as MUTATIONS from '~/graphql/auth/mutations';
@@ -15,18 +15,16 @@ type Props = {
 };
 class ProfileScene extends PureComponent<Props> {
   onLogOut = async () => {
-    const {
-      logOut,
-      client,
-    } = this.props;
+    const { logOut, client } = this.props;
 
     try {
-      await logOut();
-      await AsyncStorage.removeItem('token');
-      await client.clearStore();
-      await client.resetStore();
+      //  temporary workaround, errors still aren't fixed
+      client
+        .resetStore()
+        .then(() => logOut())
+        .then(() => AsyncStorage.removeItem('token'));
     } catch (error) {
-      Alert.alert(error.message);
+      console.log(error.message);
     }
   };
 
