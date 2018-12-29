@@ -90,4 +90,14 @@ export default StyleSheet.create({
     right: normalize(30),
     bottom: normalize(40),
   },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorMessage: {
+    fontSize: 20,
+    color: colors.red,
+    fontFamily: fonts.proDisplay.bold,
+  },
 });
