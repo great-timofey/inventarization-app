@@ -125,7 +125,9 @@ class ItemForm extends Component<Props, State> {
 
     return {
       headerStyle: styles.header,
-      title: inEditMode ? constants.headers.modifyingItem : (headerText || constants.headers.addingItem),
+      title: inEditMode
+        ? constants.headers.modifyingItem
+        : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: (
         <HeaderBackButton
@@ -230,7 +232,9 @@ class ItemForm extends Component<Props, State> {
       }
 
       if (
-        ((creator && creator.id === currentUserId) && status === constants.placeholders.status.inProcessing)
+        (creator
+          && creator.id === currentUserId
+          && status === constants.placeholders.status.inProcessing)
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -343,7 +347,9 @@ class ItemForm extends Component<Props, State> {
 
     if (!isFormInvalid) {
       const {
-        userCompany: { company: { id: companyId } },
+        userCompany: {
+          company: { id: companyId },
+        },
       } = this.props;
       // $FlowFixMe
       const variables = pick(constants.createAssetNecessaryProperties, this.state);
@@ -437,9 +443,15 @@ class ItemForm extends Component<Props, State> {
     const isDescriptionField = description === constants.itemForm.description;
 
     if (formIsEditable || isNewItem) {
+      //  eslint-disable-next-line
       if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
+      //  eslint-disable-next-line
       else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
-      else if (includes(description, constants.fieldTypes.nonEditableFields) || (description === constants.itemFormFields.onTheBalanceSheet && userRole !== constants.roles.admin)) callback = () => {};
+      else if (
+        includes(description, constants.fieldTypes.nonEditableFields)
+        || (description === constants.itemFormFields.onTheBalanceSheet
+          && userRole !== constants.roles.admin)
+      ) callback = () => {};
     }
 
     // if (isStatusField) {
@@ -657,7 +669,10 @@ class ItemForm extends Component<Props, State> {
   render() {
     const {
       userId: currentUserId,
-      userCompany: { company: { id: companyId }, role: userRole },
+      userCompany: {
+        company: { id: companyId },
+        role: userRole,
+      },
     } = this.props;
 
     const {
@@ -677,7 +692,9 @@ class ItemForm extends Component<Props, State> {
       isDateTimePickerOpened,
     } = this.state;
 
-    const currentTypeIsEmpty = (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+    // eslint-disable-next-line
+    const currentTypeIsEmpty =
+      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
 
     return (
       <SafeAreaView style={styles.container}>
@@ -706,6 +723,7 @@ class ItemForm extends Component<Props, State> {
                     additional={
                       isNewItem
                       || userRole === constants.roles.admin
+                      //  $FlowFixMe
                       || (creator && creator.id === currentUserId)
                     }
                     onPress={this.handleAddPhoto}
@@ -749,7 +767,10 @@ class ItemForm extends Component<Props, State> {
               ]}
               data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
             />
-            <View style={styles.formContainer} pointerEvents={formIsEditable === false ? 'none' : undefined}>
+            <View
+              style={styles.formContainer}
+              pointerEvents={formIsEditable === false ? 'none' : undefined}
+            >
               <View style={styles.formName}>
                 <View style={styles.formNameTitleContainer}>
                   <Text style={styles.formNameHint}>{constants.hints.name}</Text>

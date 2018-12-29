@@ -50,7 +50,8 @@ class SwipeableList extends PureComponent<Props, {}> {
         right={swipeoutBtns}
         disabled={disableLeftSwipe}
         close={item.id !== activeRowId}
-        onOpen={(sectionID, rowId, direction: string) => (direction !== undefined ? selectItem(item.id) : null)
+        //  eslint-disable-next-line
+        onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
         }
       >
         <View>

@@ -85,9 +85,7 @@ class Login extends PureComponent<Props, State> {
 
   checkForErrors = () => {
     const {
-      state: {
-        warnings,
-      },
+      state: { warnings },
     } = this;
     return !!warnings.length;
   };
@@ -159,7 +157,11 @@ class Login extends PureComponent<Props, State> {
   };
 
   setupUser = async (userData: Object) => {
-    const { setAuthMutationClient, setUserIdMutationClient, setUserCompanyMutationClient } = this.props;
+    const {
+      setAuthMutationClient,
+      setUserIdMutationClient,
+      setUserCompanyMutationClient,
+    } = this.props;
 
     const {
       current: {

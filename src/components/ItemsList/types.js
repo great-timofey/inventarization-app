@@ -14,8 +14,12 @@ export type Props = {
   data?: Array<Photo>,
   innerRef?: any,
   userRole: string,
+  selectItem: Function,
   currentSelectItem: number | string | null,
   companyId: null | string | number,
   isSortByName: boolean,
   swipeable: ?boolean,
+  toggleDelModalVisible: Function,
+  userId: string,
+  handleShowSortButton: Function,
 };

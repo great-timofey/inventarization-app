@@ -6,7 +6,7 @@ export type Props = {
   item: Item,
   openItem: Function,
   showMenuButton: boolean,
-  currentUserRole: string,
+  showRemoveButton: boolean,
   toggleDelModal?: () => void,
   currentSelectItem: number | string | null,
   selectItem?: (x: number | null | string) => void,

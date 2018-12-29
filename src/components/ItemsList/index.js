@@ -207,4 +207,7 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-export default graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id })})(ItemsList);
+//  $FlowFixMe
+export default graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) })(
+  ItemsList,
+);

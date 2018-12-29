@@ -3,6 +3,7 @@
 import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
 
 export type Props = {
+  role: string,
   userId: string,
   navigation: Object,
   userCompany: Object,

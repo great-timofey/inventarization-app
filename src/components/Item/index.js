@@ -6,7 +6,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
-import constants from '~/global/constants';
 
 import styles from './styles';
 import type { Props, State } from './types';

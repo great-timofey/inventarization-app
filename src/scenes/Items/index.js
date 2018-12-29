@@ -87,7 +87,6 @@ class ItemsScene extends PureComponent<Props, State> {
     });
   };
 
-
   toggleViewStyle = () => {
     const { navigation } = this.props;
     const { isListViewStyle } = this.state;
@@ -135,7 +134,7 @@ class ItemsScene extends PureComponent<Props, State> {
   handleDeleteItem = (id: number | string) => {
     console.log('removing item ', id);
     this.toggleDelModalVisible();
-  }
+  };
 
   selectItem = (id: number | string) => {
     this.setState({
@@ -180,7 +179,10 @@ class ItemsScene extends PureComponent<Props, State> {
     const {
       // $FlowFixMe
       data: {
-        userCompany: { role: userRole, company: { id: companyId } },
+        userCompany: {
+          role: userRole,
+          company: { id: companyId },
+        },
       },
       navigation,
     } = this.props;
@@ -223,8 +225,10 @@ class ItemsScene extends PureComponent<Props, State> {
         />
         <QuestionModal
           leftAction={this.toggleDelModalVisible}
+          //  $FlowFixMe
           isModalVisible={isDeleteModalVisible}
           data={constants.modalQuestion.itemDel}
+          //  $FlowFixMe
           rightAction={() => this.handleDeleteItem(currentSelectItem)}
         />
       </Fragment>
