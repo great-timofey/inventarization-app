@@ -135,11 +135,10 @@ class ItemsList extends PureComponent<Props> {
           let dataToRender = innerAssets;
 
           if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
-            const resPath = R.lensPath(['responsible', 'id']);
-            dataToRender = R.filter(
-              asset => R.equals(R.view(resPath, asset), userId)
-                && R.equals('on_processing', R.prop('status', asset)),
-              innerAssets,
+            dataToRender = innerAssets.filter(
+              asset => (asset.creator.id === userId
+                  && asset.status === constants.placeholders.status.onProcessing)
+                || asset.responsible.id === userId,
             );
           }
 

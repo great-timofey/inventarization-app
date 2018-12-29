@@ -192,7 +192,7 @@ class ItemForm extends Component<Props, State> {
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
     sections: constants.itemFormSections,
-    status: constants.placeholders.status.inProcessing,
+    status: constants.placeholders.status.onProcessing,
   };
 
   carousel: any;
@@ -235,7 +235,7 @@ class ItemForm extends Component<Props, State> {
       if (
         (creator
           && creator.id === currentUserId
-          && status === constants.placeholders.status.inProcessing)
+          && status === constants.placeholders.status.onProcessing)
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -249,7 +249,7 @@ class ItemForm extends Component<Props, State> {
       })) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.status = status === 'on_processing'
-        ? constants.placeholders.status.inProcessing
+        ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
 
@@ -523,7 +523,7 @@ class ItemForm extends Component<Props, State> {
           userRole === constants.roles.observer
           || (responsibleId && responsibleId.id === currentUserId && status === 'accepted')
         }
-        placeholder={isStatusField ? placeholder.inProcessing : placeholder}
+        placeholder={isStatusField ? placeholder.onProcessing : placeholder}
       />
     );
   };
