@@ -127,8 +127,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     const { ableToTakePicture } = this.state;
 
     if (this.camera && ableToTakePicture) {
-      const options = { quality: 0.5, base64: true };
-      const { base64, uri } = await this.camera.takePictureAsync(options);
+      const options = { quality: 0.5 };
+      const { uri } = await this.camera.takePictureAsync(options);
 
       if (isHintOpened) this.setState({ isHintOpened: false });
 

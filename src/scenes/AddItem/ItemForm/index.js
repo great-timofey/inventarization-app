@@ -163,6 +163,7 @@ class ItemForm extends Component<Props, State> {
   };
 
   state = {
+    id: null,
     name: '',
     gps: null,
     // $FlowFixMe
