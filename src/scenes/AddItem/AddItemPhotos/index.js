@@ -137,7 +137,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       });
 
       await location;
-      const takenPhoto = { base64, uri, location };
+      const takenPhoto = { uri, location };
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
@@ -169,7 +169,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     );
   };
 
-  renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
+  renderPhoto = ({ item: { uri }, index }: PhotosProps) => (
     <View style={styles.photoContainer}>
       <TouchableOpacity
         activeOpacity={0.5}
@@ -178,7 +178,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       >
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+      <Image style={styles.photoImage} source={{ uri }} />
     </View>
   );
 

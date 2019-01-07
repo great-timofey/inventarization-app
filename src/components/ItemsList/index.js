@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import R from 'ramda';
 import { Query, graphql } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -142,7 +141,7 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          const dataToRenderIsEmpty = R.isEmpty(dataToRender);
+          const dataToRenderIsEmpty = dataToRender.length === 0;
           if (dataToRenderIsEmpty) {
             handleShowSortButton(false);
           } else {
