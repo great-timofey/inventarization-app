@@ -141,6 +141,12 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
+          if (userRole === constants.roles.manager) {
+            dataToRender = dataToRender.filter(
+              asset => asset.place.manager.id === userId,
+            );
+          }
+
           const dataToRenderIsEmpty = dataToRender.length === 0;
           if (dataToRenderIsEmpty) {
             handleShowSortButton(false);
