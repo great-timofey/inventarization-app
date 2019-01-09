@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+//  $FlowFixMe
 import { pluck, filter, includes } from 'ramda';
 import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
@@ -57,12 +58,12 @@ class ItemsList extends PureComponent<Props> {
     let showRemoveButton;
 
     if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if (item.creator.id === userId && item.status === 'on_processing') {
+      if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
         showRemoveButton = true;
       } else {
         showRemoveButton = false;
       }
-    };
+    }
 
     return (
       <ItemComponent
@@ -146,20 +147,21 @@ class ItemsList extends PureComponent<Props> {
 
           if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
             dataToRender = innerAssets.filter(
-              asset => (asset.creator && asset.creator.id === userId
+              asset => (asset.creator
+                  && asset.creator.id === userId
                   && asset.status === 'on_processing')
                 || (asset.responsible && asset.responsible.id === userId),
             );
           }
 
           if (userRole === constants.roles.manager) {
-            const places = currentUser && currentUser.places;
-            if (places) {
+            if (currentUser && currentUser.places) {
               const { places } = currentUser;
               const userPlaces = filter(place => place.company.id === companyId, places);
               const userCreatedPlacesIds = pluck('id', userPlaces);
               dataToRender = dataToRender.filter(
-                asset => (asset.place.manager.id === userId) || (includes(asset.place.id, userCreatedPlacesIds)),
+                asset => asset.place.manager.id === userId
+                  || includes(asset.place.id, userCreatedPlacesIds),
               );
             }
           }
@@ -229,8 +231,11 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-//  $FlowFixMe
 export default compose(
+  //  $FlowFixMe
   graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
-  graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) }),
+  /*  eslint-disable */
+  //  $FlowFixMe
+  graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })
+  /*  eslint-disable */
 )(ItemsList);

@@ -3,9 +3,11 @@
 import type { Item } from '~/global/types';
 
 export type Props = {
-  openItem: Function,
+  userId: string,
+  userRole: string,
   data: Array<Item>,
-  currentUserRole: string,
+  openItem: Function,
+  userRole: string,
   toggleDelModal?: () => void,
   selectItem: (x: number | string) => void,
   extraData: {
