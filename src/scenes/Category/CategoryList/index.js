@@ -9,35 +9,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { range } from 'ramda';
 import { Query } from 'react-apollo';
 import SortableList from 'react-native-sortable-list';
 
-import Icon from 'react-native-vector-icons/Ionicons';
 import HeaderBackButton from '~/components/HeaderBackButton';
+import SortableCategory from '~/components/SortableCategory';
 
-import colors from '~/global/colors';
-import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
-import CustomIcon from '~/assets/InventoryIcon';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 
 import styles from './styles';
-
-const DrugButtons = () => {
-  const x = range(1, 7);
-  return (
-    <View style={styles.drugButtons}>
-      {x.map(xIndex => (
-        <View
-          key={xIndex}
-          style={styles.dots}
-        />
-      ))}
-    </View>
-  );
-};
 
 class CategoryList extends PureComponent {
   static navigationOptions = ({ navigation }) => ({
@@ -49,49 +31,48 @@ class CategoryList extends PureComponent {
     }),
   })
 
-  categoryItem = ({ data }) => {
+  state = {
+    isScrollEnable: true,
+  }
+
+  disableScroll = () => {
+    this.setState({
+      isScrollEnable: false,
+    });
+  }
+
+  enableScroll = () => {
+    this.setState({
+      isScrollEnable: true,
+    });
+  }
+
+  categoryItem = ({ data, active }) => (
+    <SortableCategory
+      data={data}
+      active={active}
+      navigateToEdit={this.navigateToEdit}
+    />) ;
+
+  navigateToEdit = (id, icon, title, subCategories) => {
     const { navigation } = this.props;
 
-    return (
-      <TouchableOpacity
-        style={styles.menuContainer}
-        onPress={() => navigation.navigate(
-          SCENE_NAMES.CategoryEdit,
-          {
-            id: data.id,
-            icon: data.icon,
-            title: data.name,
-            subCategories: data.chields,
-          },
-        )}
-      >
-        <DrugButtons />
-        <CustomIcon
-          name={data.icon}
-          size={normalize(25)}
-          color={colors.black}
-          backgroundColor={colors.transparent}
-        />
-        <View style={styles.wrapper}>
-          <Text style={styles.text}>
-            {data.name}
-          </Text>
-          <Icon
-            style={styles.arrow}
-            color={colors.black}
-            size={normalize(20)}
-            name="ios-arrow-forward"
-            backgroundColor={colors.transparent}
-          />
-        </View>
-      </TouchableOpacity>
+    navigation.navigate(
+      SCENE_NAMES.CategoryEdit,
+      {
+        id,
+        icon,
+        title,
+        subCategories,
+      },
     );
-  };
+  }
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const { navigation } = this.props;
+    const { isScrollEnable } = this.state;
 
     return (
       <Query query={GET_COMPANY_CATEGORIES}>
@@ -106,17 +87,21 @@ class CategoryList extends PureComponent {
           }
           const { categories } = data.current.companies['0'];
           let categoryList = null;
+
           if (data) {
-            categoryList = categories.filter(i => i.parent === null);
+            categoryList = { ...categories.filter(i => i.parent === null) };
           }
-          const categoryListTest = { ...categoryList };
 
           return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} scrollEnabled={isScrollEnable}>
               <StatusBar barStyle="dark-content" />
               <SortableList
-                data={categoryListTest}
+                data={categoryList}
+                scrollEnabled={false}
+                rowActivationTime={500}
                 renderRow={this.categoryItem}
+                onReleaseRow={this.enableScroll}
+                onActivateRow={this.disableScroll}
               />
               <TouchableOpacity
                 style={styles.addButtonContainer}

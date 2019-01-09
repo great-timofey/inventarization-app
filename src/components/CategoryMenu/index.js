@@ -39,7 +39,9 @@ export class CategoryMenu extends PureComponent<Props, State> {
     });
   }
 
-  renderItem = (item: Object, isSubCategoryView: boolean) => {
+  renderItem = (item: Object) => {
+    const { selectedCategory } = this.state;
+    const isSubCategoryView = selectedCategory !== '';
     if (isSubCategoryView) {
       return <SubCategory item={item} selectCategory={this.selectCategory} />;
     }
@@ -111,10 +113,10 @@ export class CategoryMenu extends PureComponent<Props, State> {
             }
               <FlatList
                 scrollEnabled={false}
+                renderItem={this.renderItem}
                 extraData={selectedCategory}
                 keyExtractor={this.keyExtractor}
                 data={isSubCategoryView ? subCategoryList : categoryList}
-                renderItem={({ item }) => this.renderItem(item, isSubCategoryView)}
               />
               { !isSubCategoryView && (
               <TouchableOpacity
