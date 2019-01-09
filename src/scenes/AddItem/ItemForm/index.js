@@ -27,7 +27,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { CREATE_ASSET } from '~/graphql/assets/mutations';
+import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
+import { CREATE_ASSET, UPDATE_ASSET } from '~/graphql/assets/mutations';
 import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -157,6 +158,7 @@ class ItemForm extends Component<Props, State> {
   };
 
   state = {
+    id: null,
     name: '',
     gps: null,
     // $FlowFixMe
@@ -209,7 +211,7 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      // console.log(item)
+      // console.log(item);
       const itemCopy = { ...item };
       const {
         name,
@@ -228,20 +230,16 @@ class ItemForm extends Component<Props, State> {
       }
 
       if (
-        (creator
-          && creator.id === currentUserId
-          && status === constants.placeholders.status.onProcessing)
+        (creator && creator.id === currentUserId && status === 'on_processing')
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
       }
 
-      // console.log(photos);
+      // console.log(1, photos);
       // console.log(photosOfDamages);
-      itemCopy.photos = photos.map(({ url }) => ({ uri: `https://api.staging.inventoryapp.info${url}` })) || [];
-      itemCopy.photosOfDamages = photosOfDamages.map(({ url }) => ({
-        uri: `https://api.staging.inventoryapp.info${url}`,
-      })) || [];
+      itemCopy.photos = photos.map(url => ({ uri: url }));
+      itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
       itemCopy.status = status === 'on_processing'
         ? constants.placeholders.status.onProcessing
@@ -340,8 +338,8 @@ class ItemForm extends Component<Props, State> {
      * in this.checkFields and this.checkForErrors
      */
 
-    const { createAsset } = this.props;
-    const { photos, photosOfDamages } = this.state;
+    const { createAsset, updateAsset } = this.props;
+    const { photos, photosOfDamages, id: assetId } = this.state;
 
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
@@ -353,8 +351,16 @@ class ItemForm extends Component<Props, State> {
           company: { id: companyId },
         },
       } = this.props;
-      // $FlowFixMe
-      const variables = pick(constants.createAssetNecessaryProperties, this.state);
+
+      let variables;
+
+      if (assetId) {
+        // $FlowFixMe
+        variables = pick(constants.createAssetNecessaryProperties.concat('id'), this.state);
+      } else {
+        // $FlowFixMe
+        variables = pick(constants.createAssetNecessaryProperties, this.state);
+      }
 
       variables.companyId = companyId;
       // $FlowFixMe
@@ -402,27 +408,31 @@ class ItemForm extends Component<Props, State> {
           : 'on_processing';
       }
 
-      if (photos.length) {
-        try {
-          const photosResult = await convertToApolloUpload(photos, '.');
-          variables.photos = photosResult;
-        } catch (error) {
-          console.log(error.message);
-        }
+      try {
+        const photosResult = await convertToApolloUpload(photos, '.');
+        variables.photos = photosResult;
+      } catch (error) {
+        console.log(error.message);
       }
 
-      if (photosOfDamages.length) {
-        try {
-          const defectsResult = await convertToApolloUpload(photosOfDamages, '.');
-          variables.photosOfDamages = defectsResult;
-        } catch (error) {
-          console.log(error.message);
-        }
+      try {
+        const defectsResult = await convertToApolloUpload(photosOfDamages, '.');
+        variables.photosOfDamages = defectsResult;
+      } catch (error) {
+        console.log(error.message);
       }
 
       // console.log(variables);
       try {
-        await createAsset({ variables });
+        // let response;
+        if (assetId) {
+          // response = await updateAsset({ variables });
+          await updateAsset({ variables });
+        } else {
+          // response = await createAsset({ variables });
+          await createAsset({ variables });
+        }
+        // console.log(response);
       } catch (error) {
         Alert.alert(error.message);
         console.dir(error);
@@ -445,26 +455,24 @@ class ItemForm extends Component<Props, State> {
     const isDescriptionField = description === constants.itemForm.description;
 
     if (formIsEditable || isNewItem) {
-      //  eslint-disable-next-line
-      if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
-      //  eslint-disable-next-line
-      else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
-      else if (
+      if (includes(description, constants.fieldTypes.modalFields)) {
+        callback = fieldKey => this.handleOpenModal(fieldKey);
+      } else if (includes(description, constants.fieldTypes.dateFields)) {
+        callback = this.handleOpenDateTimePicker;
+      } else if (
         includes(description, constants.fieldTypes.nonEditableFields)
         || (description === constants.itemFormFields.onTheBalanceSheet
           && userRole !== constants.roles.admin)
-      ) callback = () => {};
+      ) {
+        callback = () => {};
+      }
     }
-
-    // if (isStatusField) {
-    //   callback = () => {};
-    // }
 
     if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
     if (includes(description, constants.fieldTypes.modalFields)) {
-      callback = key => this.handleOpenModal(key);
+      callback = fieldKey => this.handleOpenModal(fieldKey);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
       callback = this.handleOpenDateTimePicker;
     }
@@ -538,23 +546,45 @@ class ItemForm extends Component<Props, State> {
 
   renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
     const {
-      state: { isNewItem },
+      state: { isNewItem, creator, status },
       props: {
+        currentUserId,
         userCompany: { role: userRole },
       },
     } = this;
 
-    return (!uri && isNewItem) || (!uri && userRole === constants.roles.admin) ? (
+    const isLocalFile = uri.startsWith('file');
+
+    const isUserCreator = creator
+      && creator.id === currentUserId
+      && status === constants.placeholders.status.onProcessing;
+    const showRemoveButton = isNewItem || userRole === constants.roles.admin || isUserCreator;
+
+    let showAddPhotoButton = false;
+    if (!uri && isNewItem) {
+      showAddPhotoButton = true;
+    } else if (!uri && userRole === constants.roles.admin) {
+      showAddPhotoButton = true;
+    } else if (
+      !uri
+      && (userRole === constants.roles.manager || userRole === constants.roles.employee)
+    ) {
+      if (isUserCreator) {
+        showAddPhotoButton = true;
+      }
+    }
+
+    return showAddPhotoButton ? (
       <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
         <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
       </TouchableOpacity>
     ) : (
       <View style={styles.photoContainer}>
-        {(isNewItem || userRole === constants.roles.admin) && (
+        {showRemoveButton && (
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-            onPress={() => this.handleRemovePreviewPhotoBarItem(index)}
+            onPress={() => this.handleRemovePreviewPhotoBarItem(index, isLocalFile)}
           >
             <Image source={assets.deletePhoto} />
           </TouchableOpacity>
@@ -563,7 +593,7 @@ class ItemForm extends Component<Props, State> {
           style={styles.photoImageContainer}
           onPress={() => this.handleSetIndexPreview(index)}
         >
-          <Image style={styles.photoImage} source={{ uri }} />
+          {uri !== '' && <Image style={styles.photoImage} source={{ uri }} />}
         </TouchableOpacity>
       </View>
     );
@@ -578,28 +608,30 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (removedIndex: number) => {
+  handleRemovePreviewPhotoBarItem = async (removedIndex: number, isLocalFile: boolean) => {
     const {
-      state: { showPhotos, activePreviewIndex },
       state,
+      state: { showPhotos, activePreviewIndex },
     } = this;
     const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
     // $FlowFixMe
     const { uri } = state[currentlyActive][removedIndex];
 
-    try {
-      RNFS.unlink(uri);
-    } catch (error) {
-      Alert.alert(error.message);
+    if (isLocalFile) {
+      try {
+        RNFS.unlink(uri);
+      } catch (error) {
+        Alert.alert(error.message);
+      }
     }
 
-    this.setState(state => ({
+    this.setState(currentState => ({
       showSaveButton: true,
-      [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
+      [currentlyActive]: remove(removedIndex, 1, currentState[currentlyActive]),
       activePreviewIndex:
         removedIndex <= activePreviewIndex && activePreviewIndex > 0
-          ? state.activePreviewIndex - 1
-          : state.activePreviewIndex,
+          ? currentState.activePreviewIndex - 1
+          : currentState.activePreviewIndex,
     }));
   };
 
@@ -670,11 +702,11 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
-      userId: currentUserId,
       userCompany: {
         company: { id: companyId },
         role: userRole,
       },
+      userId: currentUserId,
     } = this.props;
 
     const {
@@ -790,19 +822,18 @@ class ItemForm extends Component<Props, State> {
                 />
               </View>
               <SectionList
-                //  $FlowFixMe
                 sections={sections}
                 keyExtractor={({ key }) => key}
-                // $FlowFixMe
                 renderItem={this.renderFormField}
-                //  $FlowFixMe
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />
             </View>
             {(showSaveButton || isNewItem) && (
               <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
-                <Text style={styles.saveItemText}>{constants.buttonTitles.saveItem}</Text>
+                <Text style={styles.saveItemText}>
+                  {isNewItem ? constants.buttonTitles.saveItem : constants.buttonTitles.saveChanges}
+                </Text>
               </TouchableOpacity>
             )}
             <DateTimePicker
@@ -830,13 +861,10 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
-  // graphql(QUERIES.GET_CURRENT_USER_COMPANIES, {
-  //   // $FlowFixMe
-  //   props: ({ data: { current } }) => ({ currentUser: current }),
-  // }),
   graphql(QUERIES.GET_USER_ID_CLIENT, {
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
+  graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
 )(ItemForm);

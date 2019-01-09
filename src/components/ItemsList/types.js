@@ -14,6 +14,7 @@ export type Props = {
   data?: Array<Photo>,
   innerRef?: any,
   userRole: string,
+  currentUser: ?Object,
   selectItem: Function,
   currentSelectItem: number | string | null,
   companyId: null | string | number,

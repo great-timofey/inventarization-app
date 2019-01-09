@@ -11,14 +11,15 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import R from 'ramda';
-import { Query, graphql } from 'react-apollo';
+//  $FlowFixMe
+import { pluck, filter, includes } from 'ramda';
+import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
-import { GET_USER_ID_CLIENT } from '~/graphql/auth/queries';
+import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
@@ -55,12 +56,21 @@ const CategoryList = ({ children, openSideMenu }) => (
 
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
-    const { userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
-    const showRemoveButton = userRole !== constants.roles.manager;
+    const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
+    let showRemoveButton;
+
+    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
+      if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
+        showRemoveButton = true;
+      } else {
+        showRemoveButton = false;
+      }
+    }
 
     return (
       <ItemComponent
         item={item}
+        userId={userId}
         selectItem={selectItem}
         openItem={this.handleOpenItem}
         showRemoveButton={showRemoveButton}
@@ -119,6 +129,7 @@ class ItemsList extends PureComponent<Props> {
       swipeable,
       navigation,
       selectItem,
+      currentUser,
       isSortByName,
       currentSelectItem,
       handleShowSortButton,
@@ -127,7 +138,9 @@ class ItemsList extends PureComponent<Props> {
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
         {({ data, loading, error }) => {
-          if (loading) return <ActivityIndicator />;
+          if (loading) {
+            return <ActivityIndicator />;
+          }
 
           if (error) {
             return (
@@ -143,13 +156,26 @@ class ItemsList extends PureComponent<Props> {
 
           if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
             dataToRender = innerAssets.filter(
-              asset => (asset.creator.id === userId
-                  && asset.status === constants.placeholders.status.onProcessing)
-                || asset.responsible.id === userId,
+              asset => (asset.creator
+                  && asset.creator.id === userId
+                  && asset.status === 'on_processing')
+                || (asset.responsible && asset.responsible.id === userId),
             );
           }
 
-          const dataToRenderIsEmpty = R.isEmpty(dataToRender);
+          if (userRole === constants.roles.manager) {
+            if (currentUser && currentUser.places) {
+              const { places } = currentUser;
+              const userPlaces = filter(place => place.company.id === companyId, places);
+              const userCreatedPlacesIds = pluck('id', userPlaces);
+              dataToRender = dataToRender.filter(
+                asset => asset.place.manager.id === userId
+                  || includes(asset.place.id, userCreatedPlacesIds),
+              );
+            }
+          }
+
+          const dataToRenderIsEmpty = dataToRender.length === 0;
           if (dataToRenderIsEmpty) {
             handleShowSortButton(false);
           } else {
@@ -167,7 +193,7 @@ class ItemsList extends PureComponent<Props> {
                 customStyle={styles.button}
                 title={constants.buttonTitles.addItem}
                 onPress={
-                  userRole === constants.roles.admin
+                  userRole !== constants.roles.observer
                     ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
                     : () => {}
                 }
@@ -188,9 +214,10 @@ class ItemsList extends PureComponent<Props> {
               </CategoryList>
               {swipeable ? (
                 <SwipeableList
+                  userId={userId}
                   data={dataToRender}
                   selectItem={selectItem}
-                  currentUserRole={userRole}
+                  userRole={userRole}
                   openItem={this.handleOpenItem}
                   toggleDelModal={toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}
@@ -213,7 +240,11 @@ class ItemsList extends PureComponent<Props> {
   }
 }
 
-//  $FlowFixMe
-export default graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) })(
-  ItemsList,
-);
+export default compose(
+  //  $FlowFixMe
+  graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
+  /*  eslint-disable */
+  //  $FlowFixMe
+  graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })
+  /*  eslint-disable */
+)(ItemsList);

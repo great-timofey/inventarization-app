@@ -122,15 +122,19 @@ class AddItemDefects extends PureComponent<Props, State> {
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
-    if (needToAskPermissions) await this.askPermissions();
+    if (needToAskPermissions) {
+      await this.askPermissions();
+    }
 
     const { ableToTakePicture } = this.state;
 
     if (this.camera && ableToTakePicture) {
-      const options = { quality: 0.5, base64: true };
-      const { base64, uri } = await this.camera.takePictureAsync(options);
+      const options = { quality: 0.5 };
+      const { uri } = await this.camera.takePictureAsync(options);
 
-      if (isHintOpened) this.setState({ isHintOpened: false });
+      if (isHintOpened) {
+        this.setState({ isHintOpened: false });
+      }
 
       let location = new Promise((res, rej) => {
         navigator.geolocation.getCurrentPosition(
@@ -144,7 +148,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       });
 
       await location;
-      const takenPhoto = { base64, uri, location };
+      const takenPhoto = { uri, location };
 
       this.setState(
         state => assoc('photos', concat(state.photos, [takenPhoto]), state),
@@ -178,7 +182,7 @@ class AddItemDefects extends PureComponent<Props, State> {
     );
   };
 
-  renderPhoto = ({ item: { base64 }, index }: PhotosProps) => (
+  renderPhoto = ({ item: { uri }, index }: PhotosProps) => (
     <View style={styles.photoContainer}>
       <TouchableOpacity
         activeOpacity={0.5}
@@ -187,7 +191,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       >
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
-      <Image style={styles.photoImage} source={{ uri: `data:image/jpeg;base64,${base64}` }} />
+      <Image style={styles.photoImage} source={{ uri }} />
     </View>
   );
 

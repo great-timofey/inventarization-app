@@ -1,11 +1,7 @@
 // @flow
 
-export type {
-  KeyboardType,
-} from 'react-native/Libraries/Components/TextInput/TextInput';
-export type {
-  ReturnKeyType,
-} from 'react-native/Libraries/Components/TextInput/TextInput';
+export type { KeyboardType } from 'react-native/Libraries/Components/TextInput/TextInput';
+export type { ReturnKeyType } from 'react-native/Libraries/Components/TextInput/TextInput';
 
 export type Photo = {
   base64: string,
@@ -17,8 +13,10 @@ export type Photo = {
 };
 
 export type Item = {
-  id: string | number,
   name: string,
-  purchasePrice?: number,
+  status: string,
+  creator: ?Object,
   photos?: Array<any>,
-}
+  id: string | number,
+  purchasePrice?: number,
+};

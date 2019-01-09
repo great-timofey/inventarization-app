@@ -224,7 +224,9 @@ class CreateCompany extends PureComponent<Props, State> {
     }
 
     this.setState({ warnings }, () => {
-      if (isEmpty(warnings)) this.handleCreateCompany();
+      if (isEmpty(warnings)) {
+        this.handleCreateCompany();
+      }
     });
   };
 

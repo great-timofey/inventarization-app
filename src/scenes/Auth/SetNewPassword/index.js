@@ -63,7 +63,9 @@ class SetNewPassword extends PureComponent<Props, State> {
 
   checkForErrors = () => {
     const { warnings } = this.state;
-    if (warnings.length) return true;
+    if (warnings.length) {
+      return true;
+    }
     return false;
   };
 
