@@ -9,19 +9,24 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { Query } from 'react-apollo';
 import SortableList from 'react-native-sortable-list';
+import { compose, graphql, withApollo, Query } from 'react-apollo';
 
 import HeaderBackButton from '~/components/HeaderBackButton';
 import SortableCategory from '~/components/SortableCategory';
 
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
+import { SET_CATEGORY_ORDER } from '~/graphql/categories/mutations';
+import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
 
 import styles from './styles';
 
-class CategoryList extends PureComponent {
+type Props = {|
+  categoryOrder: Array<string>
+|}
+
+class CategoryList extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }) => ({
     title: constants.headers.categoryList,
     headerStyle: styles.headerStyle,
@@ -35,15 +40,10 @@ class CategoryList extends PureComponent {
     isScrollEnable: true,
   }
 
-  disableScroll = () => {
+  toogleParentScroll = () => {
+    const { isScrollEnable } = this.state;
     this.setState({
-      isScrollEnable: false,
-    });
-  }
-
-  enableScroll = () => {
-    this.setState({
-      isScrollEnable: true,
+      isScrollEnable: !isScrollEnable,
     });
   }
 
@@ -52,7 +52,7 @@ class CategoryList extends PureComponent {
       data={data}
       active={active}
       navigateToEdit={this.navigateToEdit}
-    />) ;
+    />);
 
   navigateToEdit = (id, icon, title, subCategories) => {
     const { navigation } = this.props;
@@ -68,11 +68,16 @@ class CategoryList extends PureComponent {
     );
   }
 
+  reorder = async (categoryOrder) => {
+    const { setCategoryOrder } = this.props;
+    await setCategoryOrder({ variables: { categoryOrder } });
+  }
+
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
-    const { navigation } = this.props;
     const { isScrollEnable } = this.state;
+    const { navigation, categoryOrder } = this.props;
 
     return (
       <Query query={GET_COMPANY_CATEGORIES}>
@@ -97,11 +102,13 @@ class CategoryList extends PureComponent {
               <StatusBar barStyle="dark-content" />
               <SortableList
                 data={categoryList}
+                order={categoryOrder}
                 scrollEnabled={false}
-                rowActivationTime={500}
+                rowActivationTime={300}
                 renderRow={this.categoryItem}
-                onReleaseRow={this.enableScroll}
-                onActivateRow={this.disableScroll}
+                onReleaseRow={this.toogleParentScroll}
+                onActivateRow={this.toogleParentScroll}
+                onChangeOrder={order => this.reorder(order)}
               />
               <TouchableOpacity
                 style={styles.addButtonContainer}
@@ -119,4 +126,12 @@ class CategoryList extends PureComponent {
   }
 }
 
-export default CategoryList;
+export default compose(
+  withApollo,
+  graphql(SET_CATEGORY_ORDER, {
+    name: 'setCategoryOrder',
+  }),
+  graphql(GET_CATEGORY_ORDER, {
+    props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+)(CategoryList);

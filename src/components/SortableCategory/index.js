@@ -114,7 +114,6 @@ class SortableCategory extends PureComponent<Props, {}> {
             />
           </View>
         </TouchableOpacity>
-
       </Animated.View>
     );
   }

@@ -51,7 +51,15 @@ export const DESTROY_CATEGORY = gql`
   }
 `;
 
+export const SET_CATEGORY_ORDER = gql`
+  mutation setCategoryOrder($categoryOrder: [String!]) {
+    setCategoryOrder(categoryOrder: $categoryOrder) @client 
+  }
+`;
+
 export default {
+  CREATE_CATEGORY,
   UPDATE_CATEGORY,
   DESTROY_CATEGORY,
+  SET_CATEGORY_ORDER,
 };

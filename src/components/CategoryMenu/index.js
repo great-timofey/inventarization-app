@@ -39,7 +39,7 @@ export class CategoryMenu extends PureComponent<Props, State> {
     });
   }
 
-  renderItem = (item: Object) => {
+  renderItem = ({ item }: Object) => {
     const { selectedCategory } = this.state;
     const isSubCategoryView = selectedCategory !== '';
     if (isSubCategoryView) {
@@ -83,7 +83,6 @@ export class CategoryMenu extends PureComponent<Props, State> {
           }
 
           let subCategoryList = [];
-
           if (companyCategories && selectedCategory !== '') {
             subCategoryList = [
               ...companyCategories.filter(i => i.name === selectedCategory)[0].chields,

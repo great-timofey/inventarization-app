@@ -36,6 +36,7 @@ const stateLink = withClientState({
     id: '',
     userCompany: '',
     isAuthed: false,
+    categoryOrder: [],
   },
   resolvers: {
     Mutation: {
@@ -51,12 +52,17 @@ const stateLink = withClientState({
         await innerCache.writeData({ data: { id } });
         return null;
       },
+      setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
+        await innerCache.writeData({ data: { categoryOrder } });
+        return null;
+      },
     },
   },
   typeDefs: `
     type Query {
       id: ID
       isAuthed: Boolean
+      categoryOrder: [String!]
       userCompany: {
         id: ID
         role: Role
