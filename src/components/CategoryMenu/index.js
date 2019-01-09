@@ -117,7 +117,7 @@ export class CategoryMenu extends PureComponent<Props, State> {
                 style={styles.editButton}
                 onPress={() => {
                   setIsSideMenuOpen(false);
-                  mainNavigation.navigate(SCENE_NAMES.CategoryEdit);
+                  mainNavigation.navigate(SCENE_NAMES.CategoryList);
                 }}
               >
                 <Text style={styles.editButtonText}>

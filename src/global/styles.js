@@ -26,7 +26,7 @@ export const stylesObject: Styles = {
 export default StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.blue,
   },
   container: stylesObject.container,
   wrapper: {

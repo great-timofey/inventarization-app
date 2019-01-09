@@ -60,6 +60,14 @@ const inputTypes = {
     label: 'Имя',
     warning: 'Введите имя',
   },
+  subCategory: {
+    label: 'Название подкатегории',
+    // warning: 'Введите имя',
+  },
+  category: {
+    label: 'Название категории',
+    // warning: 'Введите имя',
+  },
   companyName: {
     label: 'Название организации',
     warning: 'Введите название вашей организации',
@@ -96,22 +104,25 @@ const buttonTitles = {
   login: 'Войти',
   ready: 'Готово',
   cancel: 'Отмена',
+  save: 'Сохранить',
   update: 'Обновить',
   defects: 'Дефекты',
   skip: 'Пропустить',
   photos: 'Фотографии',
   create: 'Да, создать',
   reg: 'Зарегистрироваться',
+  addItem: 'Добавить предмет',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
-  addItem: 'Добавить предмет',
   forgotPassword: 'Забыли пароль?',
+  addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
   restorePass: 'Восстановить пароль',
   enter: 'Нет, войти как пользователь',
   createCompany: 'Создать организацию',
+  addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
@@ -207,10 +218,12 @@ const headers = {
   newItem: 'Новый предмет',
   pickDate: 'Выберите дату',
   mainInfo: 'Основная информация',
+  categoryList: 'Список категорий',
   addingItem: 'Добавление предмета',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   modifyingItem: 'Редактирование предмета',
+  editCategory: 'Редактирование категории',
   createNewCompany: 'Создание новой \n организации',
 };
 
@@ -339,6 +352,58 @@ const category = [
   'Мебель',
 ];
 
+const categoryIconList = [
+  {
+    id: 1,
+    name: 'side-menu-atom',
+  },
+  {
+    id: 2,
+    name: 'side-menu-notebook',
+  },
+  {
+    id: 3,
+    name: 'side-menu-plug',
+  },
+  {
+    id: 4,
+    name: 'side-menu-boots',
+  },
+  {
+    id: 5,
+    name: 'side-menu-ball',
+  },
+  {
+    id: 6,
+    name: 'side-menu-furniture',
+  },
+  {
+    id: 7,
+    name: 'side-menu-rudder',
+  },
+  {
+    id: 8,
+    name: 'side-menu-joystick',
+  },
+  {
+    id: 9,
+    name: 'side-menu-desk',
+  },
+  {
+    id: 10,
+    name: 'side-menu-tools',
+  },
+  {
+    id: 11,
+    name: 'power',
+  },
+  {
+    id: 12,
+    name: 'pencil',
+  },
+];
+
+
 const data = {
   assets: [
     {
@@ -401,8 +466,8 @@ export default {
   headers,
   formats,
   itemForm,
-  inputTypes,
   category,
+  inputTypes,
   fieldTypes,
   buttonTitles,
   placeholders,
@@ -410,6 +475,7 @@ export default {
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  categoryIconList,
   itemFormSections,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,

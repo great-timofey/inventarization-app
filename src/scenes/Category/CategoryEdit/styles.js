@@ -39,7 +39,7 @@ export default StyleSheet.create({
     marginTop: normalize(10),
     marginLeft: normalize(20),
     marginBottom: normalize(80),
-    fontFamily: fonts.proDisplay.regural,
+    fontFamily: fonts.proDisplay.regular,
   },
   withoutMargin: {
     marginBottom: normalize(10),

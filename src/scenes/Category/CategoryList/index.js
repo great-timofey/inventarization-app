@@ -13,7 +13,7 @@ import { Query } from 'react-apollo';
 import SortableList from 'react-native-sortable-list';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
@@ -40,10 +40,10 @@ const DrugButtons = () => {
 
 class CategoryList extends PureComponent {
   static navigationOptions = ({ navigation }) => ({
-    title: constants.text.categoryList,
+    title: constants.headers.categoryList,
     headerStyle: styles.headerStyle,
     headerTitleStyle: styles.header,
-    headerLeft: HeaderBackbutton({
+    headerLeft: HeaderBackButton({
       onPress: () => navigation.navigate(SCENE_NAMES.ItemsSceneName),
     }),
   })
@@ -122,7 +122,7 @@ class CategoryList extends PureComponent {
                 onPress={() => navigation.navigate(SCENE_NAMES.CategoryEdit)}
               >
                 <Text style={styles.addButtonText}>
-                  {constants.text.addCategory}
+                  {constants.buttonTitles.addCategory}
                 </Text>
               </TouchableOpacity>
             </ScrollView>

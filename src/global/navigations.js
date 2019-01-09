@@ -8,6 +8,7 @@ import {
   createBottomTabNavigator,
 } from 'react-navigation';
 import SideMenu from 'react-native-side-menu';
+import { createNavigatiorSetter } from 'react-navigation-extension';
 
 import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
@@ -31,9 +32,9 @@ import { CategoryMenu } from '~/components/CategoryMenu';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 
-import {
-  sideMenuRef,
-} from '~/global';
+import { sideMenuRef } from './navigationHelper';
+import { navigationNames } from './navigationNames';
+
 import colors from '~/global/colors';
 import { deviceWidth } from '~/global/device';
 
@@ -44,35 +45,25 @@ type iconType = {
   focused: Boolean,
 };
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) => createStackNavigator(
-  RouteConfigs,
-  StackNavigatorConfig,
-);
-
-const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) => createBottomTabNavigator(
-  RouteConfigs,
-  StackNavigatorConfig,
-);
-
 const generateAppContainer = navigator => createAppContainer(navigator);
 
-const itemsStack = generateStack({
+const itemsStack = createStackNavigator({
   [SCENE_NAMES.ItemsSceneName]: ItemsScene,
 });
-const categoryStack = generateStack({
+const categoryStack = createStackNavigator({
   [SCENE_NAMES.CategoryList]: CategoryList,
   [SCENE_NAMES.CategoryEdit]: CategoryEdit,
 });
-const peopleStack = generateStack({
+const peopleStack = createStackNavigator({
   [SCENE_NAMES.PeopleSceneName]: PeopleScene,
 });
-const placesStack = generateStack({
+const placesStack = createStackNavigator({
   [SCENE_NAMES.PlacesSceneName]: PlacesScene,
 });
-const profileStack = generateStack({
+const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
-const addItemStack = generateStack({
+const addItemStack = createStackNavigator({
   [SCENE_NAMES.QRScanSceneName]: QRScene,
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
   [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
@@ -95,7 +86,7 @@ const rootTabs = {
   [SCENE_NAMES.CategoryList]: {
     screen: categoryStack,
     navigationOptions: {
-      // tabBarButtonComponent: () => <View />,
+      tabBarButtonComponent: () => <View />,
       tabBarVisible: false,
     },
   },
@@ -181,8 +172,9 @@ export function setNavigatior(routeName: string, navigator: Object) {
   }
 }
 
-const rootNavigator = generateBottomTabNav(rootTabs, rootConfig);
-const authNavigator = generateStack(authStack, authConfig);
+const rootNavigator = createBottomTabNavigator(rootTabs, rootConfig);
+// $FlowFixMe
+const authNavigator = createStackNavigator(authStack, authConfig);
 
 export const RootContainer = createAppContainer(rootNavigator);
 
@@ -192,6 +184,7 @@ const targetContainerTranslateX = (
   openMenuOffset - (((deviceWidth) * (1 - targetScale)) / 2)
 );
 
+const navigatiorSetter = createNavigatiorSetter(navigationNames.main);
 export class RootNavigator extends PureComponent<{}> {
   getAnimationStyle = (value: Animated.Value) => ({
     ...stylesObject.container,
@@ -215,14 +208,15 @@ export class RootNavigator extends PureComponent<{}> {
     return (
       <View style={styles.background}>
         <SideMenu
+          disableGestures
+          ref={sideMenuRef}
           menu={<CategoryMenu />}
           animationStyle={this.getAnimationStyle}
           openMenuOffset={openMenuOffset}
-          ref={sideMenuRef}
         >
           <View style={styles.container}>
             <View style={styles.wrapper}>
-              <RootContainer />
+              <RootContainer ref={navigatiorSetter} />
             </View>
           </View>
         </SideMenu>

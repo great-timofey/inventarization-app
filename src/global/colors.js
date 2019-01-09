@@ -9,6 +9,7 @@ export default {
   green: '#39FA90',
   cancel: '#6DC1EA',
   accent: '#42BCF8',
+  dotsGray: '#C2C9D1',
   darkGreen: '#19D191',
   lightGray: '#727272',
   buttonBlue: '#35CEF1',

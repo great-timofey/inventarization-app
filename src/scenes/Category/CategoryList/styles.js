@@ -3,7 +3,6 @@
 import { StyleSheet } from 'react-native';
 
 import { fonts } from '~/global/styles';
-import assets from '~/global/assets';
 import { normalize } from '~/global/utils';
 import colors from '~/global/colors';
 
@@ -22,7 +21,7 @@ export default StyleSheet.create({
     borderRadius: 25,
     width: normalize(3),
     height: normalize(3),
-    backgroundColor: colors.anotherGray,
+    backgroundColor: colors.dotsGray,
   },
   menuContainer: {
     flexDirection: 'row',

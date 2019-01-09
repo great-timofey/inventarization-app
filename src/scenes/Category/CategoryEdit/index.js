@@ -17,7 +17,7 @@ import Input from '~/components/Input';
 import Button from '~/components/Button';
 import HeaderTitle from '~/components/HeaderTitle';
 import QuestionModal from '~/components/QuestionModal';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 
 import colors from '~/global/colors';
 import globalStyles from '~/global/styles';
@@ -64,7 +64,7 @@ class CategoryEdit extends PureComponent {
         color: colors.header.createCompany,
         title: constants.headers.editCategory,
       }),
-      headerLeft: HeaderBackbutton({
+      headerLeft: HeaderBackButton({
         onPress: () => navigation.goBack(),
       }),
       headerRight: <HeaderTrashButton onPress={toggleDelModal} />,
@@ -288,7 +288,7 @@ class CategoryEdit extends PureComponent {
       isWhite
       editable={false}
       value={item.name}
-      type={constants.inputTypes.name}
+      type={constants.inputTypes.subCategory}
     >
       <Icon.Button
         name="ios-close"
@@ -326,7 +326,7 @@ class CategoryEdit extends PureComponent {
             returnKeyType="go"
             value={inputValue}
             blurOnSubmit={false}
-            type={constants.inputTypes.name}
+            type={constants.inputTypes.category}
             onChangeText={text => this.onChangeField('inputValue', text)}
           />
           <FlatList
@@ -376,7 +376,7 @@ class CategoryEdit extends PureComponent {
           ) : (
             <TouchableOpacity onPress={this.addSubCategory}>
               <Text style={[styles.addButtonText, subCategoryList.length > 0 && styles.withoutMargin]}>
-                {constants.text.addSubCategory}
+                {constants.buttonTitles.addSubCategory}
               </Text>
             </TouchableOpacity>
           )}

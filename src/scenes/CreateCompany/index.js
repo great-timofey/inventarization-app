@@ -23,7 +23,7 @@ import Button from '~/components/Button';
 import AddButton from '~/components/AddButton';
 import HeaderTitle from '~/components/HeaderTitle';
 import PickPhotoModal from '~/components/PickPhotoModal';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
 import colors from '~/global/colors';
@@ -58,7 +58,7 @@ class CreateCompany extends PureComponent<Props, State> {
       color: colors.header.createCompany,
       title: constants.headers.createNewCompany,
     }),
-    headerLeft: HeaderBackbutton({
+    headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
   });
