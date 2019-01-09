@@ -16,7 +16,6 @@ import { Query } from 'react-apollo';
 import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
-
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 
@@ -26,6 +25,8 @@ import {
 } from '~/global';
 
 import styles from './styles';
+
+import type { Categories } from '~/types';
 
 type Props = {||}
 type State = {|
@@ -65,20 +66,29 @@ export class CategoryMenu extends PureComponent<Props, State> {
             );
           }
 
-          const categories = data
-          && data.current
-          && data.current.companies['0']
-          && data.current.companies['0'].categories;
+          let companyCategories: ?Categories;
+          if (data != null) {
+            const { current } = data;
+            if (current != null) {
+              const { companies } = current;
+              const company = companies['0'];
+              if (company != null) {
+                companyCategories = company.categories;
+              }
+            }
+          }
 
           let categoryList = [];
-          if (categories && categories.length > 0) {
-            categoryList = categories.filter(i => i.parent === null);
+          if (companyCategories && companyCategories.length > 0) {
+            categoryList = companyCategories.filter(i => i.parent === null);
           }
 
           let subCategoryList = [];
 
-          if (categories && selectedCategory !== '') {
-            subCategoryList = [...categories.filter(i => i.name === selectedCategory)[0].chields];
+          if (companyCategories && selectedCategory !== '') {
+            subCategoryList = [
+              ...companyCategories.filter(i => i.name === selectedCategory)[0].chields,
+            ];
           }
           const isSubCategoryView = selectedCategory !== '';
 
