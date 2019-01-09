@@ -27,7 +27,9 @@ class App extends Component<Props, State> {
 
   render() {
     const { loading, client } = this.state;
-    if (loading) return <Loader />;
+    if (loading) {
+      return <Loader />;
+    }
     return (
       <ApolloProvider client={client}>
         <AppNavigator />

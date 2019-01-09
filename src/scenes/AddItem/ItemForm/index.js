@@ -460,22 +460,24 @@ class ItemForm extends Component<Props, State> {
     const isDescriptionField = description === constants.itemForm.description;
 
     if (formIsEditable || isNewItem) {
-      //  eslint-disable-next-line
-      if (includes(description, constants.fieldTypes.modalFields)) callback = key => this.handleOpenModal(key);
-      //  eslint-disable-next-line
-      else if (includes(description, constants.fieldTypes.dateFields)) callback = this.handleOpenDateTimePicker;
-      else if (
+      if (includes(description, constants.fieldTypes.modalFields)) {
+        callback = fieldKey => this.handleOpenModal(fieldKey);
+      } else if (includes(description, constants.fieldTypes.dateFields)) {
+        callback = this.handleOpenDateTimePicker;
+      } else if (
         includes(description, constants.fieldTypes.nonEditableFields)
         || (description === constants.itemFormFields.onTheBalanceSheet
           && userRole !== constants.roles.admin)
-      ) callback = () => {};
+      ) {
+        callback = () => {};
+      }
     }
 
     if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
     if (includes(description, constants.fieldTypes.modalFields)) {
-      callback = key => this.handleOpenModal(key);
+      callback = fieldKey => this.handleOpenModal(fieldKey);
     } else if (includes(description, constants.fieldTypes.dateFields)) {
       callback = this.handleOpenDateTimePicker;
     }
@@ -623,13 +625,13 @@ class ItemForm extends Component<Props, State> {
       }
     }
 
-    this.setState(state => ({
+    this.setState(currentState => ({
       showSaveButton: true,
-      [currentlyActive]: remove(removedIndex, 1, state[currentlyActive]),
+      [currentlyActive]: remove(removedIndex, 1, currentState[currentlyActive]),
       activePreviewIndex:
         removedIndex <= activePreviewIndex && activePreviewIndex > 0
-          ? state.activePreviewIndex - 1
-          : state.activePreviewIndex,
+          ? currentState.activePreviewIndex - 1
+          : currentState.activePreviewIndex,
     }));
   };
 
