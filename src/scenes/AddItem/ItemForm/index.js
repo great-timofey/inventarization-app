@@ -237,7 +237,7 @@ class ItemForm extends Component<Props, State> {
       if (
         (creator
           && creator.id === currentUserId
-          && status === constants.placeholders.status.onProcessing)
+          && status === 'on_processing')
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -471,10 +471,6 @@ class ItemForm extends Component<Props, State> {
       ) callback = () => {};
     }
 
-    // if (isStatusField) {
-    //   callback = () => {};
-    // }
-
     if (includes(description, constants.fieldTypes.currencyFields)) {
       itemMask = constants.masks.price;
     }
@@ -553,21 +549,36 @@ class ItemForm extends Component<Props, State> {
 
   renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
     const {
-      state: { isNewItem },
+      state: { isNewItem, creator, status },
       props: {
+        currentUserId,
         userCompany: { role: userRole },
       },
     } = this;
 
     const isLocalFile = uri.startsWith('file');
 
-    return (!uri && isNewItem) || (!uri && userRole === constants.roles.admin) ? (
+    const isUserCreator = creator && creator.id === currentUserId && status === constants.placeholders.status.onProcessing;
+    const showRemoveButton = isNewItem || userRole === constants.roles.admin || isUserCreator;
+
+    let showAddPhotoButton = false;
+    if (!uri && isNewItem) {
+      showAddPhotoButton = true;
+    } else if (!uri && userRole === constants.roles.admin) {
+      showAddPhotoButton = true;
+    } else if (!uri && (userRole === constants.roles.manager || userRole === constants.roles.employee)) {
+      if (isUserCreator) {
+        showAddPhotoButton = true;
+      }
+    }
+
+    return showAddPhotoButton ? (
       <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
         <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
       </TouchableOpacity>
     ) : (
       <View style={styles.photoContainer}>
-        {(isNewItem || userRole === constants.roles.admin) && (
+        {showRemoveButton && (
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
@@ -580,7 +591,7 @@ class ItemForm extends Component<Props, State> {
           style={styles.photoImageContainer}
           onPress={() => this.handleSetIndexPreview(index)}
         >
-          <Image style={styles.photoImage} source={{ uri }} />
+          {uri !== '' && <Image style={styles.photoImage} source={{ uri }} />}
         </TouchableOpacity>
       </View>
     );
@@ -689,11 +700,11 @@ class ItemForm extends Component<Props, State> {
 
   render() {
     const {
-      userId: currentUserId,
       userCompany: {
         company: { id: companyId },
         role: userRole,
       },
+      userId: currentUserId,
     } = this.props;
 
     const {

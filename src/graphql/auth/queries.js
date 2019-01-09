@@ -18,6 +18,20 @@ export const GET_CURRENT_USER_COMPANIES = gql`
   }
 `;
 
+export const GET_CURRENT_USER_PLACES = gql`
+  query GetCurrentUserPlaces {
+    current {
+      id
+      places {
+        id
+        company {
+          id
+        }
+      }
+    }
+  }
+`;
+
 export const GET_COMPANY_PLACES = gql`
   query GetCompanyPlaces($companyId: ID!) {
     places(companyId: $companyId) {
@@ -66,6 +80,7 @@ export default {
   GET_USER_ID_CLIENT,
   GET_COMPANY_PLACES,
   GET_USER_AUTH_CLIENT,
+  GET_CURRENT_USER_PLACES,
   GET_COMPANY_USERS_BY_ROLE,
   GET_CURRENT_USER_COMPANIES,
   GET_CURRENT_USER_COMPANY_CLIENT,
