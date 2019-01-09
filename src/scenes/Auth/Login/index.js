@@ -18,6 +18,7 @@ import Styles from '~/global/styles';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import * as QUERIES from '~/graphql/auth/queries';
+import * as SCENES_NAMES from '~/navigation/scenes';
 import * as MUTATIONS from '~/graphql/auth/mutations';
 
 import styles from './styles';
@@ -109,8 +110,8 @@ class Login extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
+    const { signInMutation, signUpMutation } = this.props;
     const { email, password, isRegForm, name: fullName, mobile: phoneNumber } = this.state;
-    const { client, signInMutation, signUpMutation } = this.props;
 
     /**
      * 'Promise.resolve' and 'await' below used because of async setState
@@ -146,33 +147,38 @@ class Login extends PureComponent<Props, State> {
           isRegForm ? data.signUpUser.token : data.signInUser.token,
         );
 
-        const { data: currentUserData } = await client.query({
-          query: QUERIES.GET_CURRENT_USER_COMPANIES,
-        });
-        this.setupUser(currentUserData);
+        this.setupUser();
       } catch (error) {
         Alert.alert(error.message);
       }
     }
   };
 
-  setupUser = async (userData: Object) => {
+  setupUser = async () => {
     const {
+      client,
+      navigation,
       setAuthMutationClient,
       setUserIdMutationClient,
       setUserCompanyMutationClient,
     } = this.props;
 
     const {
-      current: {
-        id,
-        userCompanies: [firstCompany],
+      data: {
+        current: { id, userCompanies },
       },
-    } = userData;
+    } = await client.query({
+      query: QUERIES.GET_CURRENT_USER_COMPANIES,
+    });
 
+    if (userCompanies.length === 0) {
+      navigation.navigate(SCENES_NAMES.QuestionSceneName);
+    } else {
+      const [firstCompany] = userCompanies;
+      await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
+      await setAuthMutationClient({ variables: { isAuthed: true } });
+    }
     await setUserIdMutationClient({ variables: { id } });
-    await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
-    await setAuthMutationClient({ variables: { isAuthed: true } });
   };
 
   focusField = (ref: Object) => {
