@@ -197,7 +197,9 @@ class CategoryEdit extends PureComponent {
 
     if (inputValue.trim() !== '' && selectIconName.trim() !== '') {
       try {
+        /*  eslint-disable */
         const { data: { createCategory: { id } } } = await createCategory(
+        /*  eslint-enable */
           { variables:
               {
                 parentId: null,

@@ -62,7 +62,7 @@ const stateLink = withClientState({
     type Query {
       id: ID
       isAuthed: Boolean
-      categoryOrder: [String!]
+      categoryOrder: Array
       userCompany: {
         id: ID
         role: Role

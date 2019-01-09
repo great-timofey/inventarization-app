@@ -82,7 +82,7 @@ class CategoryList extends PureComponent<Props, {}> {
     return (
       <Query query={GET_COMPANY_CATEGORIES}>
         {({ data, loading, error }) => {
-          if (loading) return <ActivityIndicator />;
+          if (loading) { return <ActivityIndicator />; }
           if (error) {
             return (
               <View>

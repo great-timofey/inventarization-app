@@ -58,7 +58,7 @@ class CategoryMenu extends PureComponent<Props, State> {
     return (
       <Query query={GET_COMPANY_CATEGORIES}>
         {({ data, loading, error }) => {
-          if (loading) return <ActivityIndicator />;
+          if (loading) { return <ActivityIndicator />; }
           if (error) {
             return (
               <View>
@@ -81,6 +81,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
           let categoryList = {};
           if (companyCategories && companyCategories.length > 0) {
+            // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
           }
 
@@ -160,6 +161,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 export default compose(
   withApollo,
   graphql(GET_CATEGORY_ORDER, {
+    // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
   }),
 )(CategoryMenu);

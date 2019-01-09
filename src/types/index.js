@@ -108,7 +108,7 @@ export type Category = {
   company: Company,
   parent?: Category,
   createdAt: string,
-  chields: Array<Category>,
+  chields: Object,
 };
 
 export type Company = {

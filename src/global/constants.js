@@ -114,7 +114,6 @@ const buttonTitles = {
   addItem: 'Добавить предмет',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
-  addItem: 'Добавить предмет',
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   forgotPassword: 'Забыли пароль?',
