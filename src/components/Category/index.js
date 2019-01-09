@@ -7,7 +7,6 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-
 import CustomIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -17,7 +16,7 @@ import { normalize } from '~/global/utils';
 import styles from './styles';
 
 type Props ={|
-  item:Object,
+  item: Object,
   selectCategory: Function,
 |}
 

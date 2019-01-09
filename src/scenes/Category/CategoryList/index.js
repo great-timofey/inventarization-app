@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { range } from 'ramda';
 import { Query } from 'react-apollo';
 import SortableList from 'react-native-sortable-list';
 
@@ -25,12 +26,12 @@ import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import styles from './styles';
 
 const DrugButtons = () => {
-  const x = [...Array(6)];
+  const x = range(1, 7);
   return (
     <View style={styles.drugButtons}>
-      {x.map((x, index) => (
+      {x.map(xIndex => (
         <View
-          key={index}
+          key={xIndex}
           style={styles.dots}
         />
       ))}
@@ -108,7 +109,7 @@ class CategoryList extends PureComponent {
           if (data) {
             categoryList = categories.filter(i => i.parent === null);
           }
-          const categoryListTest = Object.assign({}, categoryList);
+          const categoryListTest = { ...categoryList };
 
           return (
             <ScrollView style={styles.container}>

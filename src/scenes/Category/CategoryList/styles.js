@@ -46,7 +46,9 @@ export default StyleSheet.create({
     marginBottom: normalize(5),
     fontFamily: fonts.proDisplay.light,
   },
-  arrow: { marginRight: 20 },
+  arrow: {
+    marginRight: 20,
+  },
   header: {
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,

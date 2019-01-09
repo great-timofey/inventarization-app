@@ -47,7 +47,7 @@ export const DESTROY_CATEGORY = gql`
   mutation DestroyCategory(
     $id: ID!
   ) {
-    destroyCategory( id: $id, )
+    destroyCategory( id: $id )
   }
 `;
 

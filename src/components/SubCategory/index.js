@@ -14,24 +14,12 @@ import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 
 import styles from './styles';
-
-type Props ={|
-  item:Object,
-  isBackButton?: boolean,
-  selectCategory: Function,
-|}
-
-type State = {|
-  isSelect: boolean
-|}
+import type { Props, State } from './types';
 
 export class SubCategory extends PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isSelect: false,
-    };
-  }
+  state = {
+    isSelect: false,
+  };
 
   render() {
     const { item, isBackButton, selectCategory } = this.props;

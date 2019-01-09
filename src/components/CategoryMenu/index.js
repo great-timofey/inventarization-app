@@ -23,21 +23,14 @@ import {
   mainNavigation,
   setIsSideMenuOpen,
 } from '~/global';
-
-import styles from './styles';
-
 import type { Categories } from '~/types';
 
-type Props = {||}
-type State = {|
-  selectedCategory: string
-|}
+import styles from './styles';
+import type { Props, State } from './types';
+
 export class CategoryMenu extends PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      selectedCategory: '',
-    };
+  state ={
+    selectedCategory: '',
   }
 
   selectCategory = (categoryName: string) => {
@@ -46,16 +39,20 @@ export class CategoryMenu extends PureComponent<Props, State> {
     });
   }
 
+  renderItem = (item: Object, isSubCategoryView: boolean) => {
+    if (isSubCategoryView) {
+      return <SubCategory item={item} selectCategory={this.selectCategory} />;
+    }
+    return <Category item={item} selectCategory={this.selectCategory} />;
+  }
+
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const { selectedCategory } = this.state;
 
     return (
-      <Query
-        query={GET_COMPANY_CATEGORIES}
-        fetchPolicy="cache-and-network"
-      >
+      <Query query={GET_COMPANY_CATEGORIES}>
         {({ data, loading, error }) => {
           if (loading) return <ActivityIndicator />;
           if (error) {
@@ -116,11 +113,8 @@ export class CategoryMenu extends PureComponent<Props, State> {
                 scrollEnabled={false}
                 extraData={selectedCategory}
                 keyExtractor={this.keyExtractor}
-                renderItem={({ item }) => (!isSubCategoryView
-                  ? <Category item={item} selectCategory={this.selectCategory} />
-                  : <SubCategory item={item} selectCategory={this.selectCategory} />
-                )}
                 data={isSubCategoryView ? subCategoryList : categoryList}
+                renderItem={({ item }) => this.renderItem(item, isSubCategoryView)}
               />
               { !isSubCategoryView && (
               <TouchableOpacity

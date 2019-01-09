@@ -7,7 +7,6 @@ import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
-
   menuContainer: {
     flexDirection: 'row',
     height: normalize(49),
@@ -32,5 +31,4 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.light,
   },
   arrow: { marginRight: 20 },
-
 });
