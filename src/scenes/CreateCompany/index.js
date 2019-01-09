@@ -255,7 +255,7 @@ class CreateCompany extends PureComponent<Props, State> {
 
     return (
       <ScrollViewContainer bgColor={colors.white}>
-        {/* <Animated.View
+        <Animated.View
           style={[
             styles.container,
             {
@@ -267,9 +267,9 @@ class CreateCompany extends PureComponent<Props, State> {
             },
             { paddingTop },
           ]}
-        > */}
+        >
           <StatusBar barStyle="dark-content" />
-          {/* <Animated.View style={[styles.wrapper, { marginBottom }]}> */}
+          <Animated.View style={[styles.wrapper, { marginBottom }]}>
             <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
               {chosenPhotoUri ? (
                 <Image
@@ -316,7 +316,7 @@ class CreateCompany extends PureComponent<Props, State> {
               renderItem={this.renderInvitee}
               showsHorizontalScrollIndicator={false}
             />
-          {/* </Animated.View> */}
+          </Animated.View>
           <Button
             onPress={this.checkValue}
             isDisable={!companyName || !invitees.length}
@@ -328,7 +328,7 @@ class CreateCompany extends PureComponent<Props, State> {
             navigationCallback={this.handleOpenCamera}
             setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
           />
-        {/* </Animated.View> */}
+        </Animated.View>
       </ScrollViewContainer>
     );
   }
