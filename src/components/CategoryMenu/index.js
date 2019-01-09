@@ -1,23 +1,23 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 
 import {
   Text,
   View,
-  FlatList,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 
-import { Query } from 'react-apollo';
+import SortableList from 'react-native-sortable-list';
+import { compose, graphql, withApollo, Query } from 'react-apollo';
 
 import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
+import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
 
 import {
   mainNavigation,
@@ -28,7 +28,7 @@ import type { Categories } from '~/types';
 import styles from './styles';
 import type { Props, State } from './types';
 
-export class CategoryMenu extends PureComponent<Props, State> {
+class CategoryMenu extends PureComponent<Props, State> {
   state ={
     selectedCategory: '',
   }
@@ -39,19 +39,21 @@ export class CategoryMenu extends PureComponent<Props, State> {
     });
   }
 
-  renderItem = ({ item }: Object) => {
+  renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
     const isSubCategoryView = selectedCategory !== '';
     if (isSubCategoryView) {
-      return <SubCategory item={item} selectCategory={this.selectCategory} />;
+      return <SubCategory item={data} selectCategory={this.selectCategory} />;
     }
-    return <Category item={item} selectCategory={this.selectCategory} />;
+    return <Category item={data} selectCategory={this.selectCategory} />;
   }
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const { selectedCategory } = this.state;
+    const { categoryOrder } = this.props;
+    const isSubCategoryView = selectedCategory !== '';
 
     return (
       <Query query={GET_COMPANY_CATEGORIES}>
@@ -77,18 +79,29 @@ export class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
-          let categoryList = [];
+          let categoryList = {};
           if (companyCategories && companyCategories.length > 0) {
-            categoryList = companyCategories.filter(i => i.parent === null);
+            categoryList = { ...companyCategories.filter(i => i.parent === null) };
           }
 
-          let subCategoryList = [];
-          if (companyCategories && selectedCategory !== '') {
-            subCategoryList = [
-              ...companyCategories.filter(i => i.name === selectedCategory)[0].chields,
-            ];
+          let subCategoryList = {};
+          if (companyCategories && companyCategories.length > 0 && isSubCategoryView) {
+            const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
+
+            if (parent.chields.length > 0) {
+              subCategoryList = { ...parent.chields };
+            }
           }
-          const isSubCategoryView = selectedCategory !== '';
+
+          let prefix = '';
+
+          if (selectedCategory.toString().slice(-1) === 'ь' && 'а') {
+            prefix = 'Вся';
+          } else if (selectedCategory.toString().slice(-1) === 'ы' && 'я' && 'и') {
+            prefix = 'Все';
+          } else {
+            prefix = 'Весь';
+          }
 
           return (
             <ScrollView
@@ -98,11 +111,17 @@ export class CategoryMenu extends PureComponent<Props, State> {
             >
               {isSubCategoryView
                 ? (
-                  <SubCategory
-                    isBackButton
-                    selectCategory={this.selectCategory}
-                    item={{ name: selectedCategory, icon: 'ios-arrow-back' }}
-                  />
+                  <Fragment>
+                    <SubCategory
+                      isBackButton
+                      selectCategory={this.selectCategory}
+                      item={{ name: selectedCategory, icon: 'ios-arrow-back' }}
+                    />
+                    <SubCategory
+                      selectCategory={this.selectCategory}
+                      item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
+                    />
+                  </Fragment>
                 ) : (
                   <Category
                     selectCategory={() => {}}
@@ -110,11 +129,11 @@ export class CategoryMenu extends PureComponent<Props, State> {
                   />
                 )
             }
-              <FlatList
+              <SortableList
                 scrollEnabled={false}
-                renderItem={this.renderItem}
-                extraData={selectedCategory}
-                keyExtractor={this.keyExtractor}
+                sortingEnabled={false}
+                renderRow={this.renderItem}
+                order={categoryOrder.length > 0 ? categoryOrder : null}
                 data={isSubCategoryView ? subCategoryList : categoryList}
               />
               { !isSubCategoryView && (
@@ -137,3 +156,10 @@ export class CategoryMenu extends PureComponent<Props, State> {
     );
   }
 }
+
+export default compose(
+  withApollo,
+  graphql(GET_CATEGORY_ORDER, {
+    props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+)(CategoryMenu);

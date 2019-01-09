@@ -24,12 +24,13 @@ export class SubCategory extends PureComponent<Props, State> {
   render() {
     const { item, isBackButton, selectCategory } = this.props;
 
-    return (
-      <TouchableOpacity
-        style={styles.menuContainer}
-        onPress={isBackButton ? () => selectCategory('') : () => {}}
-      >
-        {isBackButton && (
+    if (item != null) {
+      return (
+        <TouchableOpacity
+          style={styles.menuContainer}
+          onPress={isBackButton ? () => selectCategory('') : () => {}}
+        >
+          {isBackButton && (
           <Icon
             size={normalize(25)}
             name="ios-arrow-back"
@@ -37,14 +38,16 @@ export class SubCategory extends PureComponent<Props, State> {
             style={styles.subCategoryIcon}
             backgroundColor={colors.transparent}
           />
-        )}
-        <View style={[styles.wrapper, isBackButton && styles.backButtonWrapper]}>
-          <Text style={[styles.text, isBackButton && styles.backButtonText]}>
-            {item.name}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
+          )}
+          <View style={[styles.wrapper, isBackButton && styles.backButtonWrapper]}>
+            <Text style={[styles.text, isBackButton && styles.backButtonText]}>
+              {item.name}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    return null;
   }
 }
 

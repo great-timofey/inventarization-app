@@ -13,6 +13,7 @@ export default StyleSheet.create({
   addButtonContainer: {
     marginTop: normalize(20),
     marginLeft: normalize(75),
+    marginBottom: normalize(30),
   },
   addButtonText: {
     color: colors.blue,

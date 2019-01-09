@@ -101,14 +101,14 @@ class CategoryList extends PureComponent<Props, {}> {
             <ScrollView style={styles.container} scrollEnabled={isScrollEnable}>
               <StatusBar barStyle="dark-content" />
               <SortableList
-                data={categoryList}
-                order={categoryOrder}
                 scrollEnabled={false}
                 rowActivationTime={300}
+                data={categoryList || null}
                 renderRow={this.categoryItem}
                 onReleaseRow={this.toogleParentScroll}
                 onActivateRow={this.toogleParentScroll}
                 onChangeOrder={order => this.reorder(order)}
+                order={categoryOrder.length > 0 ? categoryOrder : null}
               />
               <TouchableOpacity
                 style={styles.addButtonContainer}

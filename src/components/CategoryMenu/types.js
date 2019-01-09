@@ -1,7 +1,10 @@
 // @flow
 
 export type State = {|
-  selectedCategory: string
+  selectedCategory: string,
+
 |}
 
-export type Props = {||};
+export type Props = {|
+  categoryOrder: Array<string>
+|};

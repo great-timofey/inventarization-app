@@ -28,7 +28,7 @@ import AddItemPhotos from '~/scenes/AddItem/AddItemPhotos';
 import AddItemFinish from '~/scenes/AddItem/AddItemFinish';
 import AddItemDefects from '~/scenes/AddItem/AddItemDefects';
 
-import { CategoryMenu } from '~/components/CategoryMenu';
+import CategoryMenu from '~/components/CategoryMenu';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 
