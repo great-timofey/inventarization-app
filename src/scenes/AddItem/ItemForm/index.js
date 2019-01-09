@@ -235,9 +235,7 @@ class ItemForm extends Component<Props, State> {
       }
 
       if (
-        (creator
-          && creator.id === currentUserId
-          && status === 'on_processing')
+        (creator && creator.id === currentUserId && status === 'on_processing')
         || role === constants.roles.admin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -431,11 +429,13 @@ class ItemForm extends Component<Props, State> {
 
       // console.log(variables);
       try {
-        let response;
+        // let response;
         if (assetId) {
-          response = await updateAsset({ variables });
+          // response = await updateAsset({ variables });
+          await updateAsset({ variables });
         } else {
-          response = await createAsset({ variables });
+          // response = await createAsset({ variables });
+          await createAsset({ variables });
         }
         // console.log(response);
       } catch (error) {
@@ -560,7 +560,9 @@ class ItemForm extends Component<Props, State> {
 
     const isLocalFile = uri.startsWith('file');
 
-    const isUserCreator = creator && creator.id === currentUserId && status === constants.placeholders.status.onProcessing;
+    const isUserCreator = creator
+      && creator.id === currentUserId
+      && status === constants.placeholders.status.onProcessing;
     const showRemoveButton = isNewItem || userRole === constants.roles.admin || isUserCreator;
 
     let showAddPhotoButton = false;
@@ -568,7 +570,10 @@ class ItemForm extends Component<Props, State> {
       showAddPhotoButton = true;
     } else if (!uri && userRole === constants.roles.admin) {
       showAddPhotoButton = true;
-    } else if (!uri && (userRole === constants.roles.manager || userRole === constants.roles.employee)) {
+    } else if (
+      !uri
+      && (userRole === constants.roles.manager || userRole === constants.roles.employee)
+    ) {
       if (isUserCreator) {
         showAddPhotoButton = true;
       }
@@ -822,12 +827,9 @@ class ItemForm extends Component<Props, State> {
                 />
               </View>
               <SectionList
-                //  $FlowFixMe
                 sections={sections}
                 keyExtractor={({ key }) => key}
-                // $FlowFixMe
                 renderItem={this.renderFormField}
-                //  $FlowFixMe
                 renderSectionHeader={this.renderFormSectionHeader}
                 contentContainerStyle={styles.formSectionListContainer}
               />
