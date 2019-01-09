@@ -6,7 +6,6 @@ export type Props = {
 
 type Photo = {
   uri: string,
-  base64: string,
 };
 
 export type PhotosProps = {

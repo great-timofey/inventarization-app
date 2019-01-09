@@ -17,8 +17,18 @@ import type { Props } from './types';
 
 class SwipeableList extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { toggleDelModal, selectItem, currentUserRole, openItem } = this.props;
-    const disableLeftSwipe = currentUserRole === constants.roles.observer;
+    const { userId, toggleDelModal, selectItem, userRole, openItem } = this.props;
+    const disableLeftSwipe = userRole === constants.roles.observer;
+    let showRemoveButton;
+
+    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
+      if (item && item.creator && item.creator.id === userId && item.status === 'on_processing') {
+        showRemoveButton = true;
+      } else {
+        showRemoveButton = false;
+      }
+    }
+
     const swipeoutBtns = [
       {
         component: (
@@ -31,7 +41,10 @@ class SwipeableList extends PureComponent<Props, {}> {
           />
         ),
       },
-      {
+    ];
+
+    if (showRemoveButton) {
+      swipeoutBtns.push({
         component: (
           <IconButton
             size={50}
@@ -42,8 +55,9 @@ class SwipeableList extends PureComponent<Props, {}> {
             customContStyle={styles.rightSwipeButton}
           />
         ),
-      },
-    ];
+      });
+    }
+
     return (
       <Swipeout
         autoClose
