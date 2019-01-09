@@ -26,16 +26,17 @@ export const isValid = (value: string, reg: RegExp) => {
 export const convertToApolloUpload = async (photos: Array<any>, typeSeparator: string) => {
   const photosPromises = photos.map(({ uri }) => {
     const type = uri.slice(uri.lastIndexOf(typeSeparator) + 1).toUpperCase();
+    const alreadyUploaded = uri.startsWith('https');
     return ImageResizer.createResizedImage(
       uri,
       constants.uploadCreateAssetImages.width,
       constants.uploadCreateAssetImages.height,
       type === 'JPG' ? 'JPEG' : type,
-      constants.uploadCreateAssetImages.quality,
+      alreadyUploaded ? 1 : constants.uploadCreateAssetImages.quality,
     ).then((photoPromise) => {
       const file = new ReactNativeFile({
+        name: photoPromise.uri.slice(-10),
         uri: photoPromise.uri.replace('file://', ''),
-        name: `${photoPromise.uri.slice(-10)}`,
         type: type === 'JPG' ? 'image/jpeg' : 'image/png',
       });
       return file;

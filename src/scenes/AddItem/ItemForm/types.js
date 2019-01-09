@@ -9,6 +9,7 @@ export type Props = {
   userCompany: Object,
   currentUserId: string,
   createAsset: Function,
+  updateAsset: Function,
 };
 
 type Photo = {
@@ -31,6 +32,7 @@ export type PreviewProps = {
 export type Section = SectionBase<string> & { title: string, index: number };
 
 export type State = {
+  id: ?string,
   gps: ?Object,
   name: ?string,
   status: string,
