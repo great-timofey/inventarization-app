@@ -81,12 +81,12 @@ class QRCode extends PureComponent<Props, State> {
       } = this.props;
 
       const {
-        data: { assets },
+        data: { assets: dataAssets },
       } = await client.query({
         query: ASSETS_QUERIES.GET_COMPANY_ASSETS_DATA_CODES,
         variables: { companyId },
       });
-      const match = assets.find(({ codeData }) => codeData === currentCodeData);
+      const match = dataAssets.find(({ codeData }) => codeData === currentCodeData);
       if (match) {
         const {
           data: {

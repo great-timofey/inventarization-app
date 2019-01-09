@@ -122,7 +122,9 @@ class AddItemDefects extends PureComponent<Props, State> {
     const { isHintOpened, needToAskPermissions } = this.state;
     this.setState({ isLoading: true });
 
-    if (needToAskPermissions) await this.askPermissions();
+    if (needToAskPermissions) {
+      await this.askPermissions();
+    }
 
     const { ableToTakePicture } = this.state;
 
@@ -130,7 +132,9 @@ class AddItemDefects extends PureComponent<Props, State> {
       const options = { quality: 0.5, base64: true };
       const { base64, uri } = await this.camera.takePictureAsync(options);
 
-      if (isHintOpened) this.setState({ isHintOpened: false });
+      if (isHintOpened) {
+        this.setState({ isHintOpened: false });
+      }
 
       let location = new Promise((res, rej) => {
         navigator.geolocation.getCurrentPosition(

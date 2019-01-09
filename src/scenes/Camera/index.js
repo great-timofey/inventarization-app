@@ -45,6 +45,13 @@ class Camera extends Component<CameraSceneProps, CameraSceneState> {
     });
   };
 
+  toggleFlash = () => {
+
+  };
+
+  bar = () => { };
+  bar = () => { };
+
   returnBack = () => {
     const { navigation } = this.props;
     navigation.goBack();
