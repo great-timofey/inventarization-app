@@ -429,7 +429,7 @@ class ItemForm extends Component<Props, State> {
         console.log(error.message);
       }
 
-      console.log(variables);
+      // console.log(variables);
       try {
         let response;
         if (assetId) {
@@ -437,7 +437,7 @@ class ItemForm extends Component<Props, State> {
         } else {
           response = await createAsset({ variables });
         }
-        console.log(response);
+        // console.log(response);
       } catch (error) {
         Alert.alert(error.message);
         console.dir(error);
