@@ -48,7 +48,7 @@ class CategoryList extends PureComponent {
     }),
   })
 
-  categoryItem = ({ data, active }) => {
+  categoryItem = ({ data }) => {
     const { navigation } = this.props;
 
     return (

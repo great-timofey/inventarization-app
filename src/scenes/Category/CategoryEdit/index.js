@@ -119,6 +119,7 @@ class CategoryEdit extends PureComponent {
 
   changeSubcategory = () => {
     const { subCategoryList } = this.state;
+    /* eslint-disable no-underscore-dangle */
     if (this.subCategoryValue
        && this.subCategoryValue._lastNativeText
        && this.subCategoryValue._lastNativeText.trim() !== ''
@@ -131,6 +132,7 @@ class CategoryEdit extends PureComponent {
         ],
       });
     }
+    /* eslint-enable no-underscore-dungle */
     this.setState({
       isSubCategoryEdit: false,
     });
@@ -375,7 +377,10 @@ class CategoryEdit extends PureComponent {
             </Input>
           ) : (
             <TouchableOpacity onPress={this.addSubCategory}>
-              <Text style={[styles.addButtonText, subCategoryList.length > 0 && styles.withoutMargin]}>
+              <Text style={[
+                styles.addButtonText, subCategoryList.length > 0 && styles.withoutMargin,
+              ]}
+              >
                 {constants.buttonTitles.addSubCategory}
               </Text>
             </TouchableOpacity>
