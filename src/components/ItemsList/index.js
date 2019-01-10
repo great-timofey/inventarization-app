@@ -62,7 +62,7 @@ class ItemsList extends PureComponent<Props> {
     const isUserCreator = item && item.creator && item.creator.id === userId && item.status === 'on_processing';
     let showRemoveButton = false;
 
-    if ((isUserEmployee || isUserManager) && isUserCreator) {
+    if (((isUserEmployee || isUserManager) && isUserCreator) || isUserAdmin) {
       showRemoveButton = true;
     }
 

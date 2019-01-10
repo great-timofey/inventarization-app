@@ -21,11 +21,16 @@ class SwipeableList extends PureComponent<Props, {}> {
     let enableLeftSwipe = false;
     let showRemoveButton = false;
 
-    if (userRole === constants.roles.admin) {
+    const isUserEmployee = userRole === constants.roles.employee;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserCreator = item && item.creator && item.creator.id === userId;
+
+    if (isUserAdmin) {
       showRemoveButton = true;
       enableLeftSwipe = true;
-    } else if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if ((item && item.creator && item.creator.id === userId) && item.status === 'on_processing') {
+    } else if (isUserManager || isUserEmployee) {
+      if (isUserCreator && item.status === 'on_processing') {
         showRemoveButton = true;
         enableLeftSwipe = true;
       }
@@ -70,11 +75,9 @@ class SwipeableList extends PureComponent<Props, {}> {
         onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
         }
       >
-        <View>
+        <TouchableOpacity activeOpacity={1} onPress={() => openItem(item)}>
           <View style={styles.rowItem}>
-            <TouchableOpacity onPress={() => openItem(item)}>
-              <Image style={styles.image} />
-            </TouchableOpacity>
+            <Image style={styles.image} />
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>
@@ -87,7 +90,7 @@ class SwipeableList extends PureComponent<Props, {}> {
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Swipeout>
     );
   };
