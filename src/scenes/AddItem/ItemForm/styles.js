@@ -10,7 +10,7 @@ import { deviceWidth } from '~/global/device';
 export default StyleSheet.create({
   header: {
     borderBottomWidth: 0,
-    marginHorizontal: normalize(15),
+    marginRight: normalize(15),
   },
   headerTitleStyle: {
     marginHorizontal: 0,

@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 
 import Logo from '~/components/Logo';
 import Button from '~/components/Button';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 
 import Styles from '~/global/styles';
 import constants from '~/global/constants';
@@ -16,7 +16,7 @@ import type { Props } from './types';
 class Question extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyleBig,
-    headerLeft: HeaderBackbutton({
+    headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
   });

@@ -1,9 +1,39 @@
+// @flow
+
 import { StyleSheet } from 'react-native';
 
-import colors from '~/global/colors';
-import { normalize } from '~/global/utils';
+import colors from './colors';
+import { deviceWidth, deviceHeight } from './device';
+import { normalize } from './utils';
 
-const Styles = StyleSheet.create({
+import type { Styles } from '~/types';
+
+const containerBorderRadius = 20;
+export const containerOffset = containerBorderRadius / 2;
+
+export const stylesObject: Styles = {
+  container: {
+    position: 'absolute',
+    top: -containerOffset,
+    left: -containerOffset,
+    width: deviceWidth + containerBorderRadius,
+    height: deviceHeight + containerBorderRadius,
+    backgroundColor: colors.white,
+    borderRadius: containerBorderRadius,
+  },
+};
+
+export default StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: colors.blue,
+  },
+  container: stylesObject.container,
+  wrapper: {
+    flex: 1,
+    marginTop: containerBorderRadius,
+    marginLeft: containerBorderRadius,
+  },
   logo: {
     width: normalize(41),
     height: normalize(36),
@@ -42,5 +72,3 @@ export const fonts = {
     semibold: `${proText}-SemiBold`,
   },
 };
-
-export default Styles;

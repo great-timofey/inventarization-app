@@ -1,11 +1,14 @@
 //  @flow
-import React from 'react';
-import { Image } from 'react-native';
+
+import React, { PureComponent } from 'react';
+import { View, Image, Animated } from 'react-native';
 import {
   createAppContainer,
   createStackNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
+import SideMenu from 'react-native-side-menu';
+import { createNavigatiorSetter } from 'react-navigation-extension';
 
 import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
@@ -18,47 +21,49 @@ import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
 import ItemForm from '~/scenes/AddItem/ItemForm';
 import CreateCompany from '~/scenes/CreateCompany';
+import CategoryList from '~/scenes/Category/CategoryList';
+import CategoryEdit from '~/scenes/Category/CategoryEdit';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
 import AddItemPhotos from '~/scenes/AddItem/AddItemPhotos';
 import AddItemFinish from '~/scenes/AddItem/AddItemFinish';
 import AddItemDefects from '~/scenes/AddItem/AddItemDefects';
 
+import CategoryMenu from '~/components/CategoryMenu';
+
 import * as SCENE_NAMES from '~/navigation/scenes';
 
+import { sideMenuRef } from './navigationHelper';
+import { navigationNames } from './navigationNames';
+
 import colors from '~/global/colors';
-import styles from './styles';
+import { deviceWidth } from '~/global/device';
+
+import styles, { containerOffset, stylesObject } from './styles';
 import assets from './assets';
 
 type iconType = {
   focused: Boolean,
 };
 
-const generateStack = (RouteConfigs, StackNavigatorConfig) => createStackNavigator(
-  RouteConfigs,
-  // $FlowFixMe
-  StackNavigatorConfig,
-);
-
-const generateBottomTabNav = (RouteConfigs, StackNavigatorConfig) => createBottomTabNavigator(
-  RouteConfigs,
-  StackNavigatorConfig,
-);
-
 const generateAppContainer = navigator => createAppContainer(navigator);
 
-const itemsStack = generateStack({
+const itemsStack = createStackNavigator({
   [SCENE_NAMES.ItemsSceneName]: ItemsScene,
 });
-const peopleStack = generateStack({
+const categoryStack = createStackNavigator({
+  [SCENE_NAMES.CategoryList]: CategoryList,
+  [SCENE_NAMES.CategoryEdit]: CategoryEdit,
+});
+const peopleStack = createStackNavigator({
   [SCENE_NAMES.PeopleSceneName]: PeopleScene,
 });
-const placesStack = generateStack({
+const placesStack = createStackNavigator({
   [SCENE_NAMES.PlacesSceneName]: PlacesScene,
 });
-const profileStack = generateStack({
+const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
-const addItemStack = generateStack({
+const addItemStack = createStackNavigator({
   [SCENE_NAMES.QRScanSceneName]: QRScene,
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
   [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
@@ -73,6 +78,16 @@ const rootTabs = {
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.chair} />
       ),
+      style: {
+        backgroundColor: 'red',
+      },
+    },
+  },
+  [SCENE_NAMES.CategoryList]: {
+    screen: categoryStack,
+    navigationOptions: {
+      tabBarButtonComponent: () => <View />,
+      tabBarVisible: false,
     },
   },
   [SCENE_NAMES.PlacesSceneName]: {
@@ -157,8 +172,57 @@ export function setNavigatior(routeName: string, navigator: Object) {
   }
 }
 
-const rootNavigator = generateBottomTabNav(rootTabs, rootConfig);
-const authNavigator = generateStack(authStack, authConfig);
+const rootNavigator = createBottomTabNavigator(rootTabs, rootConfig);
+// $FlowFixMe
+const authNavigator = createStackNavigator(authStack, authConfig);
 
-export const RootNavigator = generateAppContainer(rootNavigator);
+export const RootContainer = createAppContainer(rootNavigator);
+
+const openMenuOffset = 300;
+const targetScale = 0.9;
+const targetContainerTranslateX = (
+  openMenuOffset - (((deviceWidth) * (1 - targetScale)) / 2)
+);
+
+const navigatiorSetter = createNavigatiorSetter(navigationNames.main);
+export class RootNavigator extends PureComponent<{}> {
+  getAnimationStyle = (value: Animated.Value) => ({
+    ...stylesObject.container,
+    transform: [
+      {
+        translateX: value.interpolate({
+          inputRange: [0, openMenuOffset],
+          outputRange: [0, targetContainerTranslateX + containerOffset],
+        }),
+      },
+      {
+        scale: value.interpolate({
+          inputRange: [0, openMenuOffset],
+          outputRange: [1, targetScale],
+        }),
+      },
+    ],
+  });
+
+  render() {
+    return (
+      <View style={styles.background}>
+        <SideMenu
+          disableGestures
+          ref={sideMenuRef}
+          menu={<CategoryMenu />}
+          animationStyle={this.getAnimationStyle}
+          openMenuOffset={openMenuOffset}
+        >
+          <View style={styles.container}>
+            <View style={styles.wrapper}>
+              <RootContainer ref={navigatiorSetter} />
+            </View>
+          </View>
+        </SideMenu>
+      </View>
+    );
+  }
+}
+
 export const AuthNavigator = generateAppContainer(authNavigator);
