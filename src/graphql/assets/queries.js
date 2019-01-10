@@ -24,7 +24,10 @@ export const GET_COMPANY_ASSETS = gql`
       assessedDate
       dateOfPurchase
       description
-      gps
+      gps {
+        lat
+        lon
+      }
       guaranteeExpires
       inventoryId
       manufacture
@@ -63,7 +66,10 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       assessedDate
       dateOfPurchase
       description
-      gps
+      gps {
+        lat
+        lon
+      }
       guaranteeExpires
       inventoryId
       manufacture

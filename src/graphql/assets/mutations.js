@@ -61,7 +61,10 @@ export const CREATE_ASSET = gql`
       }
       dateOfPurchase
       description
-      gps
+      gps {
+        lat
+        lon
+      }
       guaranteeExpires
       id
       inventoryId

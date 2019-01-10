@@ -246,5 +246,5 @@ export default compose(
   /*  eslint-disable */
   //  $FlowFixMe
   graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })
-  /*  eslint-disable */
+  /*  eslint-enable */
 )(ItemsList);
