@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import SortableList from 'react-native-sortable-list';
-import { compose, graphql, withApollo, Query } from 'react-apollo';
+import { compose, graphql, Query } from 'react-apollo';
 
 import HeaderBackButton from '~/components/HeaderBackButton';
 import SortableCategory from '~/components/SortableCategory';

@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-
-import SortableList from 'react-native-sortable-list';
+// $FlowFixMe
 import { last, includes } from 'ramda';
-import { compose, graphql, withApollo, Query } from 'react-apollo';
+import SortableList from 'react-native-sortable-list';
+import { compose, graphql, Query } from 'react-apollo';
 
 import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';

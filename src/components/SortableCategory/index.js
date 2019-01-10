@@ -5,7 +5,6 @@ import {
   View,
   Easing,
   Animated,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 
