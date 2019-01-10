@@ -59,8 +59,8 @@ class Item extends PureComponent<Props, State> {
           </TouchableOpacity>
         )}
         <View style={[styles.image, isMenuOpen && styles.selectImage]} />
-        <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.price}>{`${purchasePrice || 0} ₽`}</Text>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+        <Text style={styles.price} numberOfLines={1} ellipsizeMode="tail">{`${purchasePrice || 0} ₽`}</Text>
       </TouchableOpacity>
     );
   }
