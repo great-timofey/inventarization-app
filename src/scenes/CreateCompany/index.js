@@ -15,6 +15,7 @@ import {
 
 import { graphql, compose } from 'react-apollo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // $FlowFixMe
 import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
 
@@ -24,7 +25,6 @@ import AddButton from '~/components/AddButton';
 import HeaderTitle from '~/components/HeaderTitle';
 import PickPhotoModal from '~/components/PickPhotoModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
-import ScrollViewContainer from '~/components/ScrollViewContainer';
 
 import colors from '~/global/colors';
 import constants from '~/global/constants';
@@ -38,22 +38,19 @@ import styles from './styles';
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
     {...props}
-    iconStyle={{ marginRight: 0 }}
     name="cancel"
     activeOpacity={0.5}
     color={colors.white}
     size={normalize(34)}
     style={styles.inviteeRemove}
+    iconStyle={{ marginRight: 0 }}
     underlayColor={colors.transparent}
     backgroundColor={colors.transparent}
   />
 );
 class CreateCompany extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: [
-      globalStyles.authHeaderStyleBig,
-      { backgroundColor: colors.white },
-    ],
+    headerStyle: [globalStyles.authHeaderStyleBig, { backgroundColor: colors.white }],
     headerTitle: HeaderTitle({
       color: colors.header.createCompany,
       title: constants.headers.createNewCompany,
@@ -79,10 +76,18 @@ class CreateCompany extends PureComponent<Props, State> {
     };
   }
 
+  navListener: any;
+
   componentDidMount() {
+    const { navigation } = this.props;
     const { keyboardPadding, marginBottom, paddingTop } = this.state;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
+
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('dark-content');
+    });
+
     Keyboard.addListener(listenerShow, (event) => {
       Animated.parallel([
         Animated.timing(keyboardPadding, {
@@ -254,7 +259,7 @@ class CreateCompany extends PureComponent<Props, State> {
     } = this.state;
 
     return (
-      <ScrollViewContainer bgColor={colors.white}>
+      <KeyboardAwareScrollView disableAutomaticScroll style={{ backgroundColor: colors.white }}>
         <Animated.View
           style={[
             styles.container,
@@ -268,18 +273,12 @@ class CreateCompany extends PureComponent<Props, State> {
             { paddingTop },
           ]}
         >
-          <StatusBar barStyle="dark-content" />
           <Animated.View style={[styles.wrapper, { marginBottom }]}>
             <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
               {chosenPhotoUri ? (
-                <Image
-                  style={styles.chosenPhoto}
-                  source={{ uri: chosenPhotoUri }}
-                />
+                <Image style={styles.chosenPhoto} source={{ uri: chosenPhotoUri }} />
               ) : (
-                <Text style={styles.photoHint}>
-                  {constants.buttonTitles.chooseLogo}
-                </Text>
+                <Text style={styles.photoHint}>{constants.buttonTitles.chooseLogo}</Text>
               )}
             </TouchableOpacity>
             <Input
@@ -329,11 +328,10 @@ class CreateCompany extends PureComponent<Props, State> {
             setPhotoUriLocalCallback={this.setPhotoUriLocalCallback}
           />
         </Animated.View>
-      </ScrollViewContainer>
+      </KeyboardAwareScrollView>
     );
   }
 }
-
 export default compose(
   graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
     name: 'setAuthMutationClient',
