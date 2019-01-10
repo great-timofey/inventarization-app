@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 
 // $FlowFixMe
 import { includes, assoc } from 'ramda';
-import { compose, graphql, withApollo } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import { Alert, View, Text, Keyboard, Animated, AsyncStorage } from 'react-native';
 
 import Logo from '~/components/Logo';
@@ -13,11 +13,11 @@ import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
-import { isValid } from '~/global/utils';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
+import { isValid } from '~/global/utils';
 import constants from '~/global/constants';
-import * as QUERIES from '~/graphql/auth/queries';
+import * as SCENES_NAMES from '~/navigation/scenes';
 import * as MUTATIONS from '~/graphql/auth/mutations';
 
 import styles from './styles';
@@ -109,8 +109,8 @@ class Login extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
+    const { signInMutation, signUpMutation, navigation } = this.props;
     const { email, password, isRegForm, name: fullName, mobile: phoneNumber } = this.state;
-    const { client, signInMutation, signUpMutation } = this.props;
 
     /**
      * 'Promise.resolve' and 'await' below used because of async setState
@@ -146,34 +146,13 @@ class Login extends PureComponent<Props, State> {
           isRegForm ? data.signUpUser.token : data.signInUser.token,
         );
 
-        const { data: currentUserData } = await client.query({
-          query: QUERIES.GET_CURRENT_USER_COMPANIES,
-        });
-        this.setupUser(currentUserData);
+        navigation.navigate(SCENES_NAMES.QuestionSceneName);
       } catch (error) {
         Alert.alert(error.message);
       }
     }
   };
 
-  setupUser = async (userData: Object) => {
-    const {
-      setAuthMutationClient,
-      setUserIdMutationClient,
-      setUserCompanyMutationClient,
-    } = this.props;
-
-    const {
-      current: {
-        id,
-        userCompanies: [firstCompany],
-      },
-    } = userData;
-
-    await setUserIdMutationClient({ variables: { id } });
-    await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
-    await setAuthMutationClient({ variables: { isAuthed: true } });
-  };
 
   focusField = (ref: Object) => {
     if (ref.input === undefined) {
@@ -267,8 +246,8 @@ class Login extends PureComponent<Props, State> {
           )}
         </Animated.View>
         <Button
-          title={isRegForm ? constants.buttonTitles.reg : constants.buttonTitles.login}
           onPress={this.onSubmitForm}
+          title={isRegForm ? constants.buttonTitles.reg : constants.buttonTitles.login}
         />
       </ScrollViewContainer>
     );
@@ -276,16 +255,6 @@ class Login extends PureComponent<Props, State> {
 }
 
 export default compose(
-  withApollo,
-  graphql(MUTATIONS.SET_AUTH_MUTATION_CLIENT, {
-    name: 'setAuthMutationClient',
-  }),
-  graphql(MUTATIONS.SET_USER_COMPANY_MUTATION_CLIENT, {
-    name: 'setUserCompanyMutationClient',
-  }),
-  graphql(MUTATIONS.SET_USER_ID_MUTATION_CLIENT, {
-    name: 'setUserIdMutationClient',
-  }),
   graphql(MUTATIONS.SIGN_IN_MUTATION, {
     name: 'signInMutation',
   }),

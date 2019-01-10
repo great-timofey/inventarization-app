@@ -26,4 +26,7 @@ export default StyleSheet.create({
     color: colors.text.questionGray,
     fontFamily: fonts.proDisplay.light,
   },
+  customButtonStyle: {
+    marginBottom: 15,
+  },
 });

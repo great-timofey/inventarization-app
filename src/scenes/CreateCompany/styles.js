@@ -53,7 +53,7 @@ export default StyleSheet.create({
     height: normalize(110),
     justifyContent: 'center',
     borderRadius: normalize(55),
-    marginBottom: normalize(30),
+    marginBottom: normalize(50),
     backgroundColor: colors.buttonChooseLogo,
   },
   chosenPhoto: {
