@@ -10,7 +10,7 @@ import Warning from '~/components/Warning';
 import Input from '~/components/Input/index';
 import Button from '~/components/Button/index';
 import HeaderTitle from '~/components/HeaderTitle';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
 import utils from '~/global/utils';
@@ -29,7 +29,7 @@ class ForgotPassword extends PureComponent<Props, State> {
       title: constants.forgotPassText.headerTitle,
       color: colors.white,
     }),
-    headerLeft: HeaderBackbutton({
+    headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
   });

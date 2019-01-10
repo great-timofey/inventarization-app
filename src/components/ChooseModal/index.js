@@ -10,7 +10,7 @@ import Modal from 'react-native-modal';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import { GET_COMPANY_PLACES, GET_COMPANY_USERS_BY_ROLE } from '~/graphql/auth/queries';
-import { GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
+import { GET_COMPANY_CATEGORIES_BY_ID } from '~/graphql/categories/queries';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -30,7 +30,7 @@ const variables = {
 
 const queries = {
   placeId: GET_COMPANY_PLACES,
-  category: GET_COMPANY_CATEGORIES,
+  category: GET_COMPANY_CATEGORIES_BY_ID,
   responsibleId: GET_COMPANY_USERS_BY_ROLE,
 };
 

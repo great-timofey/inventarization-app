@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
 
 import Button from '~/components/Button';
-import HeaderBackbutton from '~/components/HeaderBackButton';
+import HeaderBackButton from '~/components/HeaderBackButton';
 
 import Styles from '~/global/styles';
 import constants from '~/global/constants';
@@ -15,7 +15,7 @@ import styles from './styles';
 class Unorganized extends PureComponent<Props, {}> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: Styles.authHeaderStyle,
-    headerLeft: HeaderBackbutton({
+    headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
   });
