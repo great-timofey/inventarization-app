@@ -40,6 +40,7 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
 import DateTimePicker from '~/components/DateTimePicker';
+import HeaderBackButton from '~/components/HeaderBackButton';
 
 import type { Props, State, PhotosProps, PreviewProps, Section } from './types';
 import styles from './styles';
@@ -88,12 +89,6 @@ const HeaderPencilButton = ({ onPress }: { onPress: Function }) => (
     color={colors.accent}
     style={styles.pencilIcon}
   />
-);
-
-const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
-  <TouchableOpacity onPress={onPress}>
-    <Image source={assets.headerBackArrow} style={styles.backButton} />
-  </TouchableOpacity>
 );
 
 const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Function }) => (

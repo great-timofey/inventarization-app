@@ -6,8 +6,7 @@ import { normalize } from '~/global/utils';
 export default StyleSheet.create({
   headerLeft: {
     alignSelf: 'flex-start',
-    paddingHorizontal: normalize(20),
-    paddingVertical: normalize(15),
+    paddingLeft: normalize(20),
   },
   arrowImage: {
     width: normalize(25),

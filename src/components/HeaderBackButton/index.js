@@ -1,20 +1,24 @@
 // @flow
 
 import React from 'react';
-import { Image, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
-import assets from '~/global/assets';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import type { Props } from './types';
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
+
 import styles from './styles';
+import type { Props } from './types';
 
-const HeaderBackbutton = ({ onPress }: Props) => (
+const HeaderBackButton = ({ onPress }: Props) => (
   <TouchableOpacity style={styles.headerLeft} onPress={onPress}>
-    <Image
-      resizeMode="contain"
-      style={styles.arrowImage}
-      source={assets.headerBackArrow}
+    <Icon
+      color={colors.blue}
+      size={normalize(40)}
+      name="ios-arrow-round-back"
+      backgroundColor={colors.transparent}
     />
   </TouchableOpacity>
 );
-export default HeaderBackbutton;
+export default HeaderBackButton;
