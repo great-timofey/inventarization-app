@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 //  $FlowFixMe
-import { pluck, filter, includes } from 'ramda';
+import { pluck, filter, includes, isEmpty } from 'ramda';
 import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -28,7 +28,6 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import { setIsSideMenuOpen } from '~/global';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
-
 
 import type { Item } from '~/global/types';
 import type { Props } from './types';
@@ -57,14 +56,14 @@ const CategoryList = ({ children, openSideMenu }) => (
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
-    let showRemoveButton;
+    const isUserEmployee = userRole === constants.roles.employee;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserCreator = item && item.creator && item.creator.id === userId && item.status === 'on_processing';
+    let showRemoveButton = false;
 
-    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
-        showRemoveButton = true;
-      } else {
-        showRemoveButton = false;
-      }
+    if ((isUserEmployee || isUserManager) && isUserCreator) {
+      showRemoveButton = true;
     }
 
     return (
@@ -76,7 +75,7 @@ class ItemsList extends PureComponent<Props> {
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
-        showMenuButton={userRole !== constants.roles.observer}
+        showMenuButton={isUserCreator || isUserAdmin}
       />
     );
   };
@@ -99,7 +98,6 @@ class ItemsList extends PureComponent<Props> {
   openSideMenu = () => {
     setIsSideMenuOpen(true);
   };
-
 
   handleScroll = (event: Object) => {
     const { navigation } = this.props;
@@ -150,11 +148,13 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
+          const isUserManager = userRole === constants.roles.manager;
+          const isUserEmployee = userRole === constants.roles.employee;
           // $FlowFixMe
           const { assets: innerAssets } = data;
           let dataToRender = innerAssets;
 
-          if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
+          if (isUserEmployee || isUserManager) {
             dataToRender = innerAssets.filter(
               asset => (asset.creator
                   && asset.creator.id === userId
@@ -163,15 +163,18 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          if (userRole === constants.roles.manager) {
-            if (currentUser && currentUser.places) {
-              const { places } = currentUser;
-              const userPlaces = filter(place => place.company.id === companyId, places);
-              const userCreatedPlacesIds = pluck('id', userPlaces);
-              dataToRender = dataToRender.filter(
-                asset => asset.place.manager.id === userId
-                  || includes(asset.place.id, userCreatedPlacesIds),
+          if (isUserManager) {
+            //  $FlowFixMe
+            const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+            const userPlaces = [...createdPlaces, ...responsiblePlaces];
+            if (!isEmpty(userPlaces)) {
+              const placesIds = pluck('id', userPlaces);
+              dataToRender = filter(
+                asset => includes(asset.place && asset.place.id, placesIds),
+                dataToRender,
               );
+            } else {
+              dataToRender = [];
             }
           }
 

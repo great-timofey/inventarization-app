@@ -215,11 +215,12 @@ class ItemForm extends Component<Props, State> {
       const itemCopy = { ...item };
       const {
         name,
+        place,
         status,
         photos,
         creator,
-        photosOfDamages,
         responsible,
+        photosOfDamages,
         onTheBalanceSheet,
       } = item;
       navigation.setParams({ headerText: name });
@@ -236,8 +237,7 @@ class ItemForm extends Component<Props, State> {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
       }
 
-      // console.log(1, photos);
-      // console.log(photosOfDamages);
+      itemCopy.placeId = place && place.name;
       itemCopy.photos = photos.map(url => ({ uri: url }));
       itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
@@ -442,10 +442,11 @@ class ItemForm extends Component<Props, State> {
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
-      props: { userCompany, role: userRole, currentUserId },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status },
+      props: { userCompany },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem },
       state,
     } = this;
+    const { role: userRole, currentUserId } = userCompany;
 
     let callback;
     let itemMask;
@@ -524,7 +525,7 @@ class ItemForm extends Component<Props, State> {
         onChangeText={text => this.handleChangeField(key, text)}
         isBackgroundTransparent={
           userRole === constants.roles.observer
-          || (responsibleId && responsibleId.id === currentUserId && status === 'accepted')
+          || (responsibleId && responsibleId.id === currentUserId)
         }
         placeholder={isStatusField ? placeholder.onProcessing : placeholder}
       />

@@ -18,14 +18,16 @@ import type { Props } from './types';
 class SwipeableList extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
     const { userId, toggleDelModal, selectItem, userRole, openItem } = this.props;
-    const disableLeftSwipe = userRole === constants.roles.observer;
-    let showRemoveButton;
+    let enableLeftSwipe = false;
+    let showRemoveButton = false;
 
-    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if (item && item.creator && item.creator.id === userId && item.status === 'on_processing') {
+    if (userRole === constants.roles.admin) {
+      showRemoveButton = true;
+      enableLeftSwipe = true;
+    } else if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
+      if ((item && item.creator && item.creator.id === userId) && item.status === 'on_processing') {
         showRemoveButton = true;
-      } else {
-        showRemoveButton = false;
+        enableLeftSwipe = true;
       }
     }
 
@@ -62,7 +64,7 @@ class SwipeableList extends PureComponent<Props, {}> {
       <Swipeout
         autoClose
         right={swipeoutBtns}
-        disabled={disableLeftSwipe}
+        disabled={!enableLeftSwipe}
         close={item.id !== activeRowId}
         //  eslint-disable-next-line
         onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
