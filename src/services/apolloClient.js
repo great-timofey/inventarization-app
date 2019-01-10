@@ -2,8 +2,9 @@
 
 import { AsyncStorage } from 'react-native';
 
-import ApolloClient from 'apollo-client';
+import { without, includes } from 'ramda';
 import { ApolloLink } from 'apollo-link';
+import ApolloClient from 'apollo-client';
 import { setContext } from 'apollo-link-context';
 import DeviceInfo from 'react-native-device-info';
 import { createUploadLink } from 'apollo-upload-client';
@@ -12,9 +13,7 @@ import { persistCache } from 'apollo-cache-persist';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { inventoryApiUrl } from '~/global/constants';
-
-import { GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
-
+import { GET_SELECTED_CATEGORIES } from '~/graphql/categories/queries';
 
 const cache = new InMemoryCache();
 
@@ -78,10 +77,24 @@ const resolvers = {
       return null;
     },
     setSelectedCategory: async (_, { selectedCategory }, { cache: innerCache }) => {
-      console.log(innerCache);
-      const prev = await innerCache.readQuery({ GET_CATEGORY_ORDER });
-      console.log(prev, selectedCategory);
-      // await innerCache.writeData({ data: { selectedCategory } });
+      const { selectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
+      console.log(selectedCategories);
+      if (includes(selectedCategories, selectedCategories)) {
+        await innerCache.writeData(
+          {
+            data: {
+              selectedCategories: without([selectedCategories], selectedCategories),
+            },
+          },
+        );
+      }
+      await innerCache.writeData(
+        {
+          data: {
+            selectedCategories: selectedCategories.concat(selectedCategory),
+          },
+        },
+      );
       return null;
     },
   },
