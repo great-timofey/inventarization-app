@@ -44,40 +44,33 @@ class SortableCategory extends PureComponent<Props, {}> {
   active = new Animated.Value(0);
 
   style = {
-    ...Platform.select({
-      ios: {
-        transform: [{
-          scale: this.active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 1.04],
-          }),
-        }],
-      },
-      android: {
-        transform: [{
-          scale: this.active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 1.04],
-          }),
-        }],
-      },
-    }),
-  };
+    transform: [{
+      scale: this.active.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 1.04],
+      }),
+    }],
+  }
 
-  componentWillReceiveProps(nextProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const { active } = this.props;
 
-    if (active !== nextProps.active) {
+    if (active !== prevProps.active) {
       Animated.timing(this.active, {
         duration: 300,
         easing: Easing.bounce,
-        toValue: Number(nextProps.active),
+        toValue: Number(active),
       }).start();
     }
   }
 
+  navigateToEdit = () => {
+    const { data: { id, icon, name, chields }, navigateToEdit } = this.props;
+    navigateToEdit(id, icon, name, chields);
+  }
+
   render() {
-    const { data, navigateToEdit } = this.props;
+    const { data } = this.props;
 
     return (
       <Animated.View style={[
@@ -88,12 +81,7 @@ class SortableCategory extends PureComponent<Props, {}> {
         <DrugButtons />
         <TouchableOpacity
           style={styles.touchableWrapper}
-          onPress={() => navigateToEdit(
-            data.id,
-            data.icon,
-            data.name,
-            data.chields,
-          )}
+          onPress={this.navigateToEdit}
         >
           <CustomIcon
             name={data.icon}

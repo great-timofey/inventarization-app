@@ -25,8 +25,9 @@ export default {
   buttonChooseLogo: '#EFEFEF',
   itemFormErrorContainer: '#FFE7EB',
   blackOpacity: 'rgba(0, 0, 0, .3)',
-  whiteOpacity: 'rgba(255, 255, 255, .3)',
   blackOpacityLight: 'rgba(0, 0, 0, .1)',
+  whiteOpacity: 'rgba(255, 255, 255, .3)',
+  whiteOpacityLight: 'rgba(255, 255, 255, 0.2)',
   text: {
     gray: '#BDBDBD',
     blue: '#42BCF8',

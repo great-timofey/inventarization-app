@@ -32,13 +32,18 @@ export class Category extends PureComponent<Props, State> {
     };
   }
 
+  selectCategory = () => {
+    const { item: { name }, selectCategory } = this.props;
+    selectCategory(name);
+  }
+
   render() {
-    const { item, selectCategory } = this.props;
+    const { item } = this.props;
 
     if (item != null) {
       return (
         <TouchableOpacity
-          onPress={() => selectCategory(item.name)}
+          onPress={this.selectCategory}
           style={styles.menuContainer}
         >
           <CustomIcon

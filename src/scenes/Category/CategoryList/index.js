@@ -16,6 +16,7 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import SortableCategory from '~/components/SortableCategory';
 
 import constants from '~/global/constants';
+import { setIsSideMenuOpen } from '~/global';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { SET_CATEGORY_ORDER } from '~/graphql/categories/mutations';
 import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
@@ -27,18 +28,38 @@ type Props = {|
 |}
 
 class CategoryList extends PureComponent<Props, {}> {
-  static navigationOptions = ({ navigation }) => ({
-    title: constants.headers.categoryList,
-    headerStyle: styles.headerStyle,
-    headerTitleStyle: styles.header,
-    headerLeft: HeaderBackButton({
-      onPress: () => navigation.navigate(SCENE_NAMES.ItemsSceneName),
-    }),
-  })
+  static navigationOptions = ({ navigation }) => {
+    const { state } = navigation;
+    const openSideMenu = state.params && state.params.openSideMenu;
 
-  state = {
-    isScrollEnable: true,
+    return ({
+      title: constants.headers.categoryList,
+      headerStyle: styles.headerStyle,
+      headerTitleStyle: styles.header,
+      headerLeft: HeaderBackButton({
+        onPress: openSideMenu,
+      }),
+    });
   }
+
+  constructor(props) {
+    super(props);
+    const { navigation } = this.props;
+
+    this.state = {
+      isScrollEnable: true,
+    };
+
+    navigation.setParams({
+      openSideMenu: this.openSideMenu,
+    });
+  }
+
+  openSideMenu = () => {
+    const { navigation } = this.props;
+    setIsSideMenuOpen(true);
+    navigation.navigate(SCENE_NAMES.ItemsSceneName);
+  };
 
   toogleParentScroll = () => {
     const { isScrollEnable } = this.state;
@@ -52,7 +73,8 @@ class CategoryList extends PureComponent<Props, {}> {
       data={data}
       active={active}
       navigateToEdit={this.navigateToEdit}
-    />);
+    />
+  );
 
   navigateToEdit = (id, icon, title, subCategories) => {
     const { navigation } = this.props;
@@ -127,7 +149,6 @@ class CategoryList extends PureComponent<Props, {}> {
 }
 
 export default compose(
-  withApollo,
   graphql(SET_CATEGORY_ORDER, {
     name: 'setCategoryOrder',
   }),

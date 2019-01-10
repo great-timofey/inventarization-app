@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import SortableList from 'react-native-sortable-list';
+import { last, includes } from 'ramda';
 import { compose, graphql, withApollo, Query } from 'react-apollo';
 
 import Category from '~/components/Category';
@@ -29,7 +30,7 @@ import styles from './styles';
 import type { Props, State } from './types';
 
 class CategoryMenu extends PureComponent<Props, State> {
-  state ={
+  state = {
     selectedCategory: '',
   }
 
@@ -72,7 +73,7 @@ class CategoryMenu extends PureComponent<Props, State> {
             const { current } = data;
             if (current != null) {
               const { companies } = current;
-              const company = companies['0'];
+              const company = companies[0];
               if (company != null) {
                 companyCategories = company.categories;
               }
@@ -96,9 +97,9 @@ class CategoryMenu extends PureComponent<Props, State> {
 
           let prefix = '';
 
-          if (selectedCategory.toString().slice(-1) === 'ь' && 'а') {
+          if (includes(last(selectedCategory), ['ь', 'а'])) {
             prefix = 'Вся';
-          } else if (selectedCategory.toString().slice(-1) === 'ы' && 'я' && 'и') {
+          } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
             prefix = 'Все';
           } else {
             prefix = 'Весь';
@@ -159,7 +160,6 @@ class CategoryMenu extends PureComponent<Props, State> {
 }
 
 export default compose(
-  withApollo,
   graphql(GET_CATEGORY_ORDER, {
     // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),

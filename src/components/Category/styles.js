@@ -18,7 +18,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     marginLeft: normalize(15),
     justifyContent: 'space-between',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: colors.whiteOpacityLight,
   },
   categoryIcon: {
     alignSelf: 'center',
