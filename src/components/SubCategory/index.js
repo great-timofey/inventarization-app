@@ -1,17 +1,20 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-
 import {
   Text,
   View,
   TouchableOpacity,
 } from 'react-native';
 
+import { compose, graphql } from 'react-apollo';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
+import type { Category } from '~/types';
 import { normalize } from '~/global/utils';
+import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -21,14 +24,35 @@ export class SubCategory extends PureComponent<Props, State> {
     isSelect: false,
   };
 
+  saveSelectedCategory = async (selectedCategory: any) => {
+    const { setSelectedCategory } = this.props;
+    await setSelectedCategory({ variables: { selectedCategory } });
+  }
+
+  selectCategory = () => {
+    const { isSelect } = this.state;
+    const { isBackButton, selectCategory, item: { id } } = this.props;
+
+    if (isBackButton) {
+      selectCategory('');
+    }
+
+    this.setState({
+      isSelect: !isSelect,
+    });
+
+    this.saveSelectedCategory(id).catch(error => console.log('An error', error));
+  }
+
   render() {
-    const { item, isBackButton, selectCategory } = this.props;
+    const { isSelect } = this.state;
+    const { item, isBackButton } = this.props;
 
     if (item != null) {
       return (
         <TouchableOpacity
-          style={styles.menuContainer}
-          onPress={isBackButton ? () => selectCategory('') : () => {}}
+          onPress={this.selectCategory}
+          style={[styles.menuContainer, isSelect && styles.select]}
         >
           {isBackButton && (
           <Icon
@@ -51,4 +75,8 @@ export class SubCategory extends PureComponent<Props, State> {
   }
 }
 
-export default SubCategory;
+export default compose(
+  graphql(SET_SELECTED_CATEGORY, {
+    name: 'setSelectedCategory',
+  }),
+)(SubCategory);

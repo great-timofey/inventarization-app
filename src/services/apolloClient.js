@@ -13,11 +13,22 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { inventoryApiUrl } from '~/global/constants';
 
+import { GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
+
+
 const cache = new InMemoryCache();
 
 const httpLink = createUploadLink({
   uri: inventoryApiUrl,
 });
+
+const defaults = {
+  id: '',
+  userCompany: '',
+  isAuthed: false,
+  categoryOrder: [],
+  selectedCategories: [],
+};
 
 const authLink = setContext(async (_, { headers }) => {
   const token = await AsyncStorage.getItem('token');
@@ -30,48 +41,53 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
-const stateLink = withClientState({
-  cache,
-  defaults: {
-    id: '',
-    userCompany: '',
-    isAuthed: false,
-    categoryOrder: [],
-  },
-  resolvers: {
-    Mutation: {
-      setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { isAuthed } });
-        return null;
-      },
-      setUserCompany: async (_, { userCompany }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { userCompany } });
-        return null;
-      },
-      setUserId: async (_, { id }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { id } });
-        return null;
-      },
-      setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { categoryOrder } });
-        return null;
-      },
+const typeDefs = `
+type Query {
+  id: ID
+  isAuthed: Boolean
+  categoryOrder: [String]
+  selectedCategories: [String]
+  userCompany: {
+    id: ID
+    role: Role
+    company: Company
+    __typename: UserCompany 
+  }
+}
+type Mutations {
+  setSelectedCategory(selectedCategory: String!): 
+}
+`;
+
+const resolvers = {
+  Mutation: {
+    setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { isAuthed } });
+      return null;
+    },
+    setUserCompany: async (_, { userCompany }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { userCompany } });
+      return null;
+    },
+    setUserId: async (_, { id }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { id } });
+      return null;
+    },
+    setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { categoryOrder } });
+      return null;
+    },
+    setSelectedCategory: async (_, { selectedCategory }, { cache: innerCache }) => {
+      console.log(innerCache);
+      const prev = await innerCache.readQuery({ GET_CATEGORY_ORDER });
+      console.log(prev, selectedCategory);
+      // await innerCache.writeData({ data: { selectedCategory } });
+      return null;
     },
   },
-  typeDefs: `
-    type Query {
-      id: ID
-      isAuthed: Boolean
-      categoryOrder: Array
-      userCompany: {
-        id: ID
-        role: Role
-        company: Company
-        __typename: UserCompany 
-      }
-    }
-  `,
-});
+};
+
+const stateLink = withClientState({ cache, defaults, resolvers, typeDefs });
 
 async function getClient() {
   await persistCache({
