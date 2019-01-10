@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
 
@@ -24,6 +24,15 @@ class Question extends PureComponent<Props, {}> {
       onPress: () => navigation.goBack(),
     }),
   });
+
+  navListener: any;
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.navListener = navigation.addListener('didFocus', () => {
+      StatusBar.setBarStyle('light-content');
+    });
+  }
 
   setupUser = async () => {
     const { client, setUserIdMutationClient, setUserCompanyMutationClient } = this.props;

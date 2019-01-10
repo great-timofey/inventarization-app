@@ -11,12 +11,12 @@ export default StyleSheet.create({
   container: {
     paddingBottom: normalize(30),
     paddingHorizontal: normalize(30),
-    // backgroundColor: colors.white,
+    backgroundColor: colors.white,
   },
-  // wrapper: {
-  //   height: normalize(360),
-  //   alignItems: 'center',
-  // },
+  wrapper: {
+    height: normalize(360),
+    alignItems: 'center',
+  },
   title: {
     textAlign: 'center',
     fontSize: normalize(22),
@@ -53,7 +53,7 @@ export default StyleSheet.create({
     height: normalize(110),
     justifyContent: 'center',
     borderRadius: normalize(55),
-    marginBottom: normalize(30),
+    marginBottom: normalize(50),
     backgroundColor: colors.buttonChooseLogo,
   },
   chosenPhoto: {

@@ -13,9 +13,9 @@ import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
-import { isValid } from '~/global/utils';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
+import { isValid } from '~/global/utils';
 import constants from '~/global/constants';
 import * as SCENES_NAMES from '~/navigation/scenes';
 import * as MUTATIONS from '~/graphql/auth/mutations';
@@ -175,7 +175,7 @@ class Login extends PureComponent<Props, State> {
     const { name, email, mobile, password, warnings, isRegForm } = this.state;
 
     return (
-      <ScrollViewContainer isAuth bgColor={colors.backGroundBlack}>
+      <ScrollViewContainer bgColor={colors.backGroundBlack}>
         <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
           <Logo isSmall />
           {isRegForm && (
@@ -246,8 +246,8 @@ class Login extends PureComponent<Props, State> {
           )}
         </Animated.View>
         <Button
-          title={isRegForm ? constants.buttonTitles.reg : constants.buttonTitles.login}
           onPress={this.onSubmitForm}
+          title={isRegForm ? constants.buttonTitles.reg : constants.buttonTitles.login}
         />
       </ScrollViewContainer>
     );
