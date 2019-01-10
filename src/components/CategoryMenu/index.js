@@ -32,13 +32,13 @@ import type { Props, State } from './types';
 class CategoryMenu extends PureComponent<Props, State> {
   state = {
     selectedCategory: '',
-  }
+  };
 
   selectCategory = (categoryName: string) => {
     this.setState({
       selectedCategory: categoryName,
     });
-  }
+  };
 
   renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
@@ -47,7 +47,7 @@ class CategoryMenu extends PureComponent<Props, State> {
       return <SubCategory item={data} selectCategory={this.selectCategory} />;
     }
     return <Category item={data} selectCategory={this.selectCategory} />;
-  }
+  };
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
@@ -138,7 +138,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                 order={categoryOrder.length > 0 ? categoryOrder : null}
                 data={isSubCategoryView ? subCategoryList : categoryList}
               />
-              { !isSubCategoryView && (
+              {!isSubCategoryView && (
               <TouchableOpacity
                 style={styles.editButton}
                 onPress={() => {

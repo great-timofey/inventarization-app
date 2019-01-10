@@ -57,7 +57,7 @@ export type Listeners = Array<Listener>;
 
 /* eslint-disable no-use-before-define */
 
-export type Asset = {
+export type Asset = {|
   id: string,
   gps: Object,
   name: string,
@@ -82,9 +82,9 @@ export type Asset = {
   guaranteeExpires: string,
   onTheBalanceSheet: boolean,
   photosOfDamages: Array<Object>,
-};
+|};
 
-export type User = {
+export type User = {|
   id: string,
   role: string,
   email: string,
@@ -98,9 +98,9 @@ export type User = {
   createdAssets: Array<Asset>,
   userCompanies: Array<Company>,
   responsibleAssets: Array<Asset>,
-};
+|};
 
-export type Category = {
+export type Category = {|
   id: string,
   name: string,
   icon?: string,
@@ -109,9 +109,9 @@ export type Category = {
   parent?: Category,
   createdAt: string,
   chields: Object,
-};
+|};
 
-export type Company = {
+export type Company = {|
   id: string,
   name: string,
   logo?: string,
@@ -124,9 +124,9 @@ export type Company = {
   assets: Array<Asset>,
   timeToDelete?: string,
   categories: Array<Category>,
-};
+|};
 
-export type Place = {
+export type Place = {|
   id: string,
   gps: Object,
   name: string,
@@ -137,7 +137,7 @@ export type Place = {
   assets: Array<Asset>,
   photo: Array<string>,
   subPlaces: Array<Place>,
-};
+|};
 
 export type Categories = Array<Category>
 
