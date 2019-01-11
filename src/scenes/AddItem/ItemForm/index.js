@@ -35,6 +35,7 @@ import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
+import DelModal from '~/components/QuestionModal';
 import * as QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import ChooseModal from '~/components/ChooseModal';
@@ -117,8 +118,8 @@ class ItemForm extends Component<Props, State> {
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
+    const toggleDelModal = navigation.state.params && navigation.state.params.toggleDelModal;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
-    const destroyAsset = navigation.state.params && navigation.state.params.destroyAsset;
 
     return {
       headerStyle: styles.header,
@@ -153,7 +154,7 @@ class ItemForm extends Component<Props, State> {
             />
           )}
           {userCanDelete && (
-            <HeaderTrashButton onPress={() => destroyAsset({ variables: { id: item.id } })} />
+            <HeaderTrashButton onPress={toggleDelModal} />
           )}
         </View>
       ),
@@ -188,6 +189,7 @@ class ItemForm extends Component<Props, State> {
     showSaveButton: false,
     activePreviewIndex: 0,
     guaranteeExpires: null,
+    isDelModalOpened: false,
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
@@ -201,7 +203,6 @@ class ItemForm extends Component<Props, State> {
   componentDidMount() {
     const {
       navigation,
-      destroyAsset,
       currentUserId,
       userCompany: { role: userRole },
     } = this.props;
@@ -210,7 +211,7 @@ class ItemForm extends Component<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
 
-    navigation.setParams({ toggleEditMode: this.toggleEditMode });
+    navigation.setParams({ toggleEditMode: this.toggleEditMode, toggleDelModal: this.handleToggleDelModal });
 
     const item = navigation.getParam('item', null);
 
@@ -614,6 +615,23 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
+  handleDeleteItem = async () => {
+    const { state: { id, isNewItem }, props: { destroyAsset, navigation } } = this;
+    if (isNewItem) {
+      this.handleToggleDelModal();
+    } else {
+      try {
+        await destroyAsset({ variables: { id } });
+        this.handleToggleDelModal();
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    }
+    navigation.navigate(SCENE_NAMES.ItemsSceneName);
+  };
+
+  handleToggleDelModal = () => this.setState(({ isDelModalOpened }) => ({ isDelModalOpened: !isDelModalOpened }));
+
   handleAddPhoto = () => {
     const { navigation } = this.props;
     const { showPhotos } = this.state;
@@ -736,6 +754,7 @@ class ItemForm extends Component<Props, State> {
       formIsEditable,
       showSaveButton,
       photosOfDamages,
+      isDelModalOpened,
       activePreviewIndex,
       currentlyEditableField,
       isDateTimePickerOpened,
@@ -864,6 +883,14 @@ class ItemForm extends Component<Props, State> {
               type={currentlyEditableField}
               onCancel={this.handleCloseModal}
               onConfirm={this.handleConfirmModal}
+            />
+            <DelModal
+              //  $FlowFixMe
+              isModalVisible={isDelModalOpened}
+              data={constants.modalQuestion.itemDel}
+              //  $FlowFixMe
+              rightAction={this.handleDeleteItem}
+              leftAction={this.handleToggleDelModal}
             />
           </ScrollView>
         </KeyboardAvoidingView>
