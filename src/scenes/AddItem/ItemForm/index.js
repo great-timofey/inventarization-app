@@ -28,7 +28,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { CREATE_ASSET, UPDATE_ASSET } from '~/graphql/assets/mutations';
+import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -118,6 +118,7 @@ class ItemForm extends Component<Props, State> {
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
+    const destroyAsset = navigation.state.params && navigation.state.params.destroyAsset;
 
     return {
       headerStyle: styles.header,
@@ -151,7 +152,9 @@ class ItemForm extends Component<Props, State> {
               }}
             />
           )}
-          {userCanDelete && <HeaderTrashButton onPress={() => navigation.goBack()} />}
+          {userCanDelete && (
+            <HeaderTrashButton onPress={() => destroyAsset({ variables: { id: item.id } })} />
+          )}
         </View>
       ),
     };
@@ -198,6 +201,7 @@ class ItemForm extends Component<Props, State> {
   componentDidMount() {
     const {
       navigation,
+      destroyAsset,
       currentUserId,
       userCompany: { role },
     } = this.props;
@@ -218,8 +222,8 @@ class ItemForm extends Component<Props, State> {
         status,
         photos,
         creator,
-        photosOfDamages,
         responsible,
+        photosOfDamages,
         onTheBalanceSheet,
       } = item;
       navigation.setParams({ headerText: name });
@@ -230,10 +234,12 @@ class ItemForm extends Component<Props, State> {
       }
 
       if (
-        (creator && creator.id === currentUserId && status === 'on_processing')
-        || role === constants.roles.admin
+        role === constants.roles.admin
+        || (creator && creator.id === currentUserId && status === 'on_processing')
+        || (responsible && responsible.id === currentUserId && status === 'on_processing')
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
+        navigation.setParams({ destroyAsset });
       }
 
       // console.log(1, photos);
@@ -867,4 +873,5 @@ export default compose(
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
   graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
 )(ItemForm);

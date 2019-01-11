@@ -29,7 +29,6 @@ import { setIsSideMenuOpen } from '~/global';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
 
-
 import type { Item } from '~/global/types';
 import type { Props } from './types';
 
@@ -57,13 +56,13 @@ const CategoryList = ({ children, openSideMenu }) => (
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
-    let showRemoveButton;
+    let showRemoveButton = false;
 
-    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
+    if (userRole === constants.roles.admin) {
+      showRemoveButton = true;
+    } else if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
       if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
         showRemoveButton = true;
-      } else {
-        showRemoveButton = false;
       }
     }
 
@@ -99,7 +98,6 @@ class ItemsList extends PureComponent<Props> {
   openSideMenu = () => {
     setIsSideMenuOpen(true);
   };
-
 
   handleScroll = (event: Object) => {
     const { navigation } = this.props;
