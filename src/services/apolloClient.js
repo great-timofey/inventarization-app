@@ -2,7 +2,7 @@
 
 import { AsyncStorage } from 'react-native';
 // $FlowFixMe
-import { without, includes } from 'ramda';
+import { without, includes, intersection } from 'ramda';
 import { ApolloLink } from 'apollo-link';
 import ApolloClient from 'apollo-client';
 import { setContext } from 'apollo-link-context';
@@ -78,12 +78,13 @@ const resolvers = {
     },
     setSelectedCategory: async (_, { selectedCategory }, { cache: innerCache }) => {
       const { selectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
-      console.log(selectedCategories);
-      if (includes(selectedCategory, selectedCategories)) {
+      const diff = intersection(selectedCategory, selectedCategories);
+
+      if (diff && diff.length > 0) {
         await innerCache.writeData(
           {
             data: {
-              selectedCategories: without([selectedCategory], selectedCategories),
+              selectedCategories: without(diff, selectedCategories),
             },
           },
         );

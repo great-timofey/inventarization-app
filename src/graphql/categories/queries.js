@@ -29,6 +29,9 @@ export const GET_COMPANY_CATEGORIES = gql`
           chields{
             id
             name
+            parent{
+              id
+            }
           }
         }
       }

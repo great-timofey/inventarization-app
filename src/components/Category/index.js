@@ -20,18 +20,7 @@ type Props ={|
   selectCategory: Function,
 |}
 
-type State = {|
-  isSelect: boolean
-|}
-
-export class Category extends PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isSelect: false,
-    };
-  }
-
+export class Category extends PureComponent<Props, {}> {
   selectCategory = () => {
     const { item: { name }, selectCategory } = this.props;
     selectCategory(name);

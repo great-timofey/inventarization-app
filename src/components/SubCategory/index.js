@@ -30,17 +30,21 @@ export class SubCategory extends PureComponent<Props, State> {
 
   selectCategory = () => {
     const { isSelect } = this.state;
-    const { isBackButton, selectCategory, item: { id } } = this.props;
+    const { isBackButton, chieldsId, selectCategory, item: { id } } = this.props;
 
     if (isBackButton) {
       selectCategory('');
+    } else if (chieldsId) {
+      if (chieldsId.length > 0) {
+        this.saveSelectedCategory(chieldsId);
+      }
+    } else {
+      this.saveSelectedCategory(id.split());
     }
 
     this.setState({
       isSelect: !isSelect,
     });
-
-    this.saveSelectedCategory(id).catch(error => console.log('An error', error));
   }
 
   render() {
@@ -54,13 +58,13 @@ export class SubCategory extends PureComponent<Props, State> {
           style={[styles.menuContainer, isSelect && styles.select]}
         >
           {isBackButton && (
-          <Icon
-            size={normalize(25)}
-            name="ios-arrow-back"
-            color={colors.blueBorder}
-            style={styles.subCategoryIcon}
-            backgroundColor={colors.transparent}
-          />
+            <Icon
+              size={normalize(25)}
+              name="ios-arrow-back"
+              color={colors.blueBorder}
+              style={styles.subCategoryIcon}
+              backgroundColor={colors.transparent}
+            />
           )}
           <View style={[styles.wrapper, isBackButton && styles.backButtonWrapper]}>
             <Text style={[styles.text, isBackButton && styles.backButtonText]}>

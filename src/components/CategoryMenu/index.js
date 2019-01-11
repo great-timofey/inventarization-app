@@ -87,11 +87,13 @@ class CategoryMenu extends PureComponent<Props, State> {
           }
 
           let subCategoryList = {};
+          let subCategoryIdList = [];
           if (companyCategories && companyCategories.length > 0 && isSubCategoryView) {
             const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
             if (parent.chields.length > 0) {
               subCategoryList = { ...parent.chields };
+              subCategoryIdList = parent.chields.map(x => x.id);
             }
           }
 
@@ -120,6 +122,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                       item={{ name: selectedCategory, icon: 'ios-arrow-back' }}
                     />
                     <SubCategory
+                      chieldsId={subCategoryIdList}
                       selectCategory={this.selectCategory}
                       item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
                     />
