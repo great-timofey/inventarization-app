@@ -80,7 +80,7 @@ class ItemsList extends PureComponent<Props> {
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
-        showMenuButton={isUserCreator || isUserAdmin || isUserManager}
+        showMenuButton={(isUserCreator && isItemInProcessing) || isUserAdmin || (isUserManager && item.place)}
       />
     );
   };

@@ -35,7 +35,7 @@ class SwipeableList extends PureComponent<Props, {}> {
         showRemoveButton = true;
         enableLeftSwipe = true;
       }
-    } else if (isUserManager && isItemInProcessing) {
+    } else if (isUserManager && item.place) {
       enableLeftSwipe = true;
     }
 
