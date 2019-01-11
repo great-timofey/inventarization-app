@@ -1,7 +1,7 @@
 //  @flow
 
 import { AsyncStorage } from 'react-native';
-
+// $FlowFixMe
 import { without, includes } from 'ramda';
 import { ApolloLink } from 'apollo-link';
 import ApolloClient from 'apollo-client';
@@ -79,22 +79,23 @@ const resolvers = {
     setSelectedCategory: async (_, { selectedCategory }, { cache: innerCache }) => {
       const { selectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
       console.log(selectedCategories);
-      if (includes(selectedCategories, selectedCategories)) {
+      if (includes(selectedCategory, selectedCategories)) {
         await innerCache.writeData(
           {
             data: {
-              selectedCategories: without([selectedCategories], selectedCategories),
+              selectedCategories: without([selectedCategory], selectedCategories),
+            },
+          },
+        );
+      } else {
+        await innerCache.writeData(
+          {
+            data: {
+              selectedCategories: selectedCategories.concat(selectedCategory),
             },
           },
         );
       }
-      await innerCache.writeData(
-        {
-          data: {
-            selectedCategories: selectedCategories.concat(selectedCategory),
-          },
-        },
-      );
       return null;
     },
   },

@@ -12,7 +12,6 @@ import { compose, graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
-import type { Category } from '~/types';
 import { normalize } from '~/global/utils';
 import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
