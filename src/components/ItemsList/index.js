@@ -64,7 +64,7 @@ class ItemsList extends PureComponent<Props> {
       if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
         showRemoveButton = true;
       }
-    } 
+    }
 
     return (
       <ItemComponent

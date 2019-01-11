@@ -10,6 +10,7 @@ export type Props = {
   currentUserId: string,
   createAsset: Function,
   updateAsset: Function,
+  destroyAsset: Function,
 };
 
 type Photo = {
