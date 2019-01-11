@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -28,14 +28,15 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { CREATE_ASSET, UPDATE_ASSET } from '~/graphql/assets/mutations';
+import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
-import * as QUERIES from '~/graphql/auth/queries';
+import DelModal from '~/components/QuestionModal';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
@@ -117,6 +118,7 @@ class ItemForm extends Component<Props, State> {
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
+    const toggleDelModal = navigation.state.params && navigation.state.params.toggleDelModal;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
 
     return {
@@ -151,7 +153,7 @@ class ItemForm extends Component<Props, State> {
               }}
             />
           )}
-          {userCanDelete && <HeaderTrashButton onPress={() => navigation.goBack()} />}
+          {userCanDelete && <HeaderTrashButton onPress={toggleDelModal} />}
         </View>
       ),
     };
@@ -185,6 +187,7 @@ class ItemForm extends Component<Props, State> {
     showSaveButton: false,
     activePreviewIndex: 0,
     guaranteeExpires: null,
+    isDelModalOpened: false,
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
@@ -198,15 +201,19 @@ class ItemForm extends Component<Props, State> {
   componentDidMount() {
     const {
       navigation,
+      currentUser,
       currentUserId,
-      userCompany: { role },
+      userCompany: { role: userRole },
     } = this.props;
 
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
     });
 
-    navigation.setParams({ toggleEditMode: this.toggleEditMode });
+    navigation.setParams({
+      toggleEditMode: this.toggleEditMode,
+      toggleDelModal: this.handleToggleDelModal,
+    });
 
     const item = navigation.getParam('item', null);
 
@@ -214,12 +221,14 @@ class ItemForm extends Component<Props, State> {
       // console.log(item);
       const itemCopy = { ...item };
       const {
+        gps,
         name,
+        place,
         status,
         photos,
         creator,
-        photosOfDamages,
         responsible,
+        photosOfDamages,
         onTheBalanceSheet,
       } = item;
       navigation.setParams({ headerText: name });
@@ -229,18 +238,32 @@ class ItemForm extends Component<Props, State> {
         this.toggleEditMode();
       }
 
-      if (
-        (creator && creator.id === currentUserId && status === 'on_processing')
-        || role === constants.roles.admin
-      ) {
+      const isUserAdmin = userRole === constants.roles.admin;
+      const isUserManager = userRole === constants.roles.manager;
+      const isUserCreator = creator && creator.id === currentUserId;
+      const isItemInProcessing = status === 'on_processing';
+
+      if ((isUserCreator && isItemInProcessing && !isUserManager) || isUserAdmin) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
+      } else if (isUserManager) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === currentUserId;
+
+        const userCanDelete = isItemInResponsiblePlaces || isUserResponsible;
+        const userCanEdit = userCanDelete;
+
+        navigation.setParams({ userCanDelete, userCanEdit });
       }
 
-      // console.log(1, photos);
-      // console.log(photosOfDamages);
+      itemCopy.placeId = place;
       itemCopy.photos = photos.map(url => ({ uri: url }));
       itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
+      itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
@@ -442,10 +465,11 @@ class ItemForm extends Component<Props, State> {
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
-      props: { userCompany, role: userRole, currentUserId },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, status },
+      props: { userCompany },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem },
       state,
     } = this;
+    const { role: userRole, currentUserId } = userCompany;
 
     let callback;
     let itemMask;
@@ -524,7 +548,7 @@ class ItemForm extends Component<Props, State> {
         onChangeText={text => this.handleChangeField(key, text)}
         isBackgroundTransparent={
           userRole === constants.roles.observer
-          || (responsibleId && responsibleId.id === currentUserId && status === 'accepted')
+          || (responsibleId && responsibleId.id === currentUserId)
         }
         placeholder={isStatusField ? placeholder.onProcessing : placeholder}
       />
@@ -555,22 +579,44 @@ class ItemForm extends Component<Props, State> {
 
     const isLocalFile = uri.startsWith('file');
 
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserEmployee = userRole === constants.roles.employee;
     const isUserCreator = creator
       && creator.id === currentUserId
       && status === constants.placeholders.status.onProcessing;
-    const showRemoveButton = isNewItem || userRole === constants.roles.admin || isUserCreator;
 
+    let showRemoveButton = false;
     let showAddPhotoButton = false;
-    if (!uri && isNewItem) {
-      showAddPhotoButton = true;
-    } else if (!uri && userRole === constants.roles.admin) {
-      showAddPhotoButton = true;
-    } else if (
-      !uri
-      && (userRole === constants.roles.manager || userRole === constants.roles.employee)
-    ) {
-      if (isUserCreator) {
+
+    if (isUserAdmin) {
+      if (!uri) {
         showAddPhotoButton = true;
+      } else {
+        showRemoveButton = true;
+      }
+    } else if (isUserEmployee) {
+      if (isNewItem || isUserCreator) {
+        if (!uri) {
+          showAddPhotoButton = true;
+        } else {
+          showRemoveButton = true;
+        }
+      }
+    } else if (isUserManager) {
+      const { placeId, responsibleId } = this.state;
+      const { currentUser } = this.props;
+      //  $FlowFixMe
+      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+      const userPlaces = [...createdPlaces, ...responsiblePlaces];
+      const placesIds = pluck('id', userPlaces);
+      //  $FlowFixMe
+      const isItemInResponsiblePlaces = includes(placeId && placeId.id, placesIds);
+      const isUserResponsible = responsibleId && responsibleId.id === currentUserId;
+      if (!uri) {
+        showAddPhotoButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
+      } else {
+        showRemoveButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
       }
     }
 
@@ -598,6 +644,29 @@ class ItemForm extends Component<Props, State> {
       </View>
     );
   };
+
+  handleDeleteItem = async () => {
+    const {
+      state: { id, isNewItem },
+      props: { destroyAsset, navigation },
+    } = this;
+    if (isNewItem) {
+      this.handleToggleDelModal();
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    } else {
+      try {
+        await destroyAsset({ variables: { id } });
+        navigation.goBack();
+        this.handleToggleDelModal();
+      } catch (error) {
+        Alert.alert(error.message);
+        this.handleToggleDelModal();
+      }
+    }
+  };
+
+  // eslint-disable-next-line
+  handleToggleDelModal = () => this.setState(({ isDelModalOpened }) => ({ isDelModalOpened: !isDelModalOpened }));
 
   handleAddPhoto = () => {
     const { navigation } = this.props;
@@ -721,6 +790,7 @@ class ItemForm extends Component<Props, State> {
       formIsEditable,
       showSaveButton,
       photosOfDamages,
+      isDelModalOpened,
       activePreviewIndex,
       currentlyEditableField,
       isDateTimePickerOpened,
@@ -850,6 +920,14 @@ class ItemForm extends Component<Props, State> {
               onCancel={this.handleCloseModal}
               onConfirm={this.handleConfirmModal}
             />
+            <DelModal
+              //  $FlowFixMe
+              isModalVisible={isDelModalOpened}
+              data={constants.modalQuestion.itemDel}
+              //  $FlowFixMe
+              rightAction={this.handleDeleteItem}
+              leftAction={this.handleToggleDelModal}
+            />
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -857,14 +935,19 @@ class ItemForm extends Component<Props, State> {
   }
 }
 export default compose(
-  graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
-  graphql(QUERIES.GET_USER_ID_CLIENT, {
+  graphql(AUTH_QUERIES.GET_USER_ID_CLIENT, {
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
   graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ currentUser: current }),
+  }),
 )(ItemForm);

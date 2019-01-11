@@ -14,6 +14,12 @@ export type Photo = {
 
 export type Item = {
   name: string,
+  place?: {
+    id: string,
+  },
+  responsible?: {
+    id: string,
+  },
   status: string,
   creator: ?Object,
   photos?: Array<any>,

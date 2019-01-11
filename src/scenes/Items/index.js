@@ -3,7 +3,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { StatusBar } from 'react-native';
 
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import Search from '~/components/Search';
 import ItemsList from '~/components/ItemsList';
 import SortModal from '~/components/SortModal';
@@ -14,6 +14,8 @@ import SearchHeader from '~/scenes/Items/SearchHeader';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import { DESTROY_ASSET } from '~/graphql/assets/mutations';
+import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 
 import type { Props, State } from './types';
@@ -131,8 +133,9 @@ class ItemsScene extends PureComponent<Props, State> {
     showSortButton: value,
   });
 
-  handleDeleteItem = (id: number | string) => {
-    console.log('removing item ', id);
+  handleDeleteItem = async (id: number | string) => {
+    const { destroyAsset } = this.props;
+    await destroyAsset({ variables: { id } });
     this.toggleDelModalVisible();
   };
 
@@ -236,4 +239,7 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 }
 
-export default graphql(GET_CURRENT_USER_COMPANY_CLIENT)(ItemsScene);
+export default compose(
+  graphql(GET_CURRENT_USER_COMPANY_CLIENT),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+)(ItemsScene);

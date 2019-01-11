@@ -5,11 +5,13 @@ import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
 export type Props = {
   role: string,
   userId: string,
+  currentUser: ?Object,
   navigation: Object,
   userCompany: Object,
   currentUserId: string,
   createAsset: Function,
   updateAsset: Function,
+  destroyAsset: Function,
 };
 
 type Photo = {
@@ -56,6 +58,7 @@ export type State = {
   formIsEditable: boolean,
   showSaveButton: boolean,
   sections: Array<Section>,
+  isDelModalOpened: boolean,
   guaranteeExpires: ?string,
   onTheBalanceSheet: string,
   activePreviewIndex: number,

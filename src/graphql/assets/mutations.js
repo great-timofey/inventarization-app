@@ -137,7 +137,14 @@ export const UPDATE_ASSET = gql`
   }
 `;
 
+export const DESTROY_ASSET = gql`
+  mutation DestroyAsset($id: ID!) {
+    destroyAsset(id: $id)
+  }
+`;
+
 export default {
   CREATE_ASSET,
   UPDATE_ASSET,
+  DESTROY_ASSET,
 };

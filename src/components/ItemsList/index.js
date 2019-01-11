@@ -29,7 +29,6 @@ import { setIsSideMenuOpen } from '~/global';
 import InventoryIcon from '~/assets/InventoryIcon';
 import SwipeableList from '~/components/Swipe';
 
-
 import type { Item } from '~/global/types';
 import type { Props } from './types';
 
@@ -56,15 +55,40 @@ const CategoryList = ({ children, openSideMenu }) => (
 
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
-    const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
-    let showRemoveButton;
+    const {
+      userId,
+      userRole,
+      currentUser,
+      currentSelectItem,
+      selectItem,
+      toggleDelModalVisible,
+    } = this.props;
 
-    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if (item.creator && item.creator.id === userId && item.status === 'on_processing') {
-        showRemoveButton = true;
-      } else {
-        showRemoveButton = false;
-      }
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserEmployee = userRole === constants.roles.employee;
+    const isUserCreator = item && item.creator && item.creator.id === userId;
+    const isItemInProcessing = item.status === 'on_processing';
+
+    let showRemoveButton = false;
+    let showMenuButton = false;
+
+    if (isUserAdmin) {
+      showRemoveButton = true;
+      showMenuButton = true;
+    } else if (isUserEmployee && (isUserCreator && isItemInProcessing)) {
+      showRemoveButton = true;
+      showMenuButton = true;
+    } else if (isUserManager) {
+      //  $FlowFixMe
+      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+      const userPlaces = [...createdPlaces, ...responsiblePlaces];
+      const placesIds = pluck('id', userPlaces);
+      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+
+      showMenuButton = isItemInResponsiblePlaces || isUserResponsible;
+      showRemoveButton = showMenuButton;
     }
 
     return (
@@ -73,10 +97,10 @@ class ItemsList extends PureComponent<Props> {
         userId={userId}
         selectItem={selectItem}
         openItem={this.handleOpenItem}
+        showMenuButton={showMenuButton}
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
-        showMenuButton={userRole !== constants.roles.observer}
       />
     );
   };
@@ -99,7 +123,6 @@ class ItemsList extends PureComponent<Props> {
   openSideMenu = () => {
     setIsSideMenuOpen(true);
   };
-
 
   handleScroll = (event: Object) => {
     const { navigation } = this.props;
@@ -154,7 +177,10 @@ class ItemsList extends PureComponent<Props> {
           const { assets: innerAssets } = data;
           let dataToRender = innerAssets;
 
-          if (userRole === constants.roles.employee || userRole === constants.roles.manager) {
+          const isUserEmployee = userRole === constants.roles.employee;
+          const isUserManager = userRole === constants.roles.manager;
+
+          if (isUserEmployee) {
             dataToRender = innerAssets.filter(
               asset => (asset.creator
                   && asset.creator.id === userId
@@ -163,16 +189,24 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          if (userRole === constants.roles.manager) {
-            if (currentUser && currentUser.places) {
-              const { places } = currentUser;
-              const userPlaces = filter(place => place.company.id === companyId, places);
-              const userCreatedPlacesIds = pluck('id', userPlaces);
-              dataToRender = dataToRender.filter(
-                asset => asset.place.manager.id === userId
-                  || includes(asset.place.id, userCreatedPlacesIds),
-              );
-            }
+          if (isUserManager) {
+            //  $FlowFixMe
+            const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+            const userPlaces = [...createdPlaces, ...responsiblePlaces];
+
+            const placesIds = pluck('id', userPlaces);
+
+            const assetsOfNotResponsiblePlaces = filter(
+              asset => !includes(asset.place && asset.place.id, placesIds)
+                && (asset.responsible && asset.responsible.id === userId),
+              innerAssets,
+            );
+
+            dataToRender = filter(
+              asset => includes(asset.place && asset.place.id, placesIds)
+                || (asset.creator && asset.creator.id === userId && !asset.place),
+              innerAssets,
+            ).concat(assetsOfNotResponsiblePlaces);
           }
 
           const dataToRenderIsEmpty = dataToRender.length === 0;
@@ -182,7 +216,6 @@ class ItemsList extends PureComponent<Props> {
             handleShowSortButton(true);
           }
 
-          // console.log(dataToRender);
           return dataToRenderIsEmpty ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
@@ -216,8 +249,8 @@ class ItemsList extends PureComponent<Props> {
                 <SwipeableList
                   userId={userId}
                   data={dataToRender}
-                  selectItem={selectItem}
                   userRole={userRole}
+                  selectItem={selectItem}
                   openItem={this.handleOpenItem}
                   toggleDelModal={toggleDelModalVisible}
                   extraData={{ currentSelectItem, isSortByName }}

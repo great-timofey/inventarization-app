@@ -22,7 +22,13 @@ export const GET_CURRENT_USER_PLACES = gql`
   query GetCurrentUserPlaces {
     current {
       id
-      places {
+      createdPlaces {
+        id
+        company {
+          id
+        }
+      }
+      responsiblePlaces {
         id
         company {
           id

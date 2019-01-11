@@ -28,6 +28,10 @@ export const GET_COMPANY_ASSETS = gql`
         lat
         lon
       }
+      place {
+        id
+        name
+      }
       guaranteeExpires
       inventoryId
       manufacture
@@ -69,6 +73,10 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       gps {
         lat
         lon
+      }
+      place {
+        id
+        name
       }
       guaranteeExpires
       inventoryId
