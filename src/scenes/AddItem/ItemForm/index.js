@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pick, includes, remove } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -36,7 +36,7 @@ import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
 import DelModal from '~/components/QuestionModal';
-import * as QUERIES from '~/graphql/auth/queries';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
@@ -153,9 +153,7 @@ class ItemForm extends Component<Props, State> {
               }}
             />
           )}
-          {userCanDelete && (
-            <HeaderTrashButton onPress={toggleDelModal} />
-          )}
+          {userCanDelete && <HeaderTrashButton onPress={toggleDelModal} />}
         </View>
       ),
     };
@@ -203,6 +201,7 @@ class ItemForm extends Component<Props, State> {
   componentDidMount() {
     const {
       navigation,
+      currentUser,
       currentUserId,
       userCompany: { role: userRole },
     } = this.props;
@@ -211,7 +210,10 @@ class ItemForm extends Component<Props, State> {
       StatusBar.setBarStyle('dark-content');
     });
 
-    navigation.setParams({ toggleEditMode: this.toggleEditMode, toggleDelModal: this.handleToggleDelModal });
+    navigation.setParams({
+      toggleEditMode: this.toggleEditMode,
+      toggleDelModal: this.handleToggleDelModal,
+    });
 
     const item = navigation.getParam('item', null);
 
@@ -241,16 +243,23 @@ class ItemForm extends Component<Props, State> {
       const isUserCreator = creator && creator.id === currentUserId;
       const isItemInProcessing = status === 'on_processing';
 
-      if (
-        ((isUserCreator && isItemInProcessing) && !isUserManager)
-        || isUserAdmin
-      ) {
+      if ((isUserCreator && isItemInProcessing && !isUserManager) || isUserAdmin) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
-      } else if (isUserManager && isItemInProcessing) {
-        navigation.setParams({ userCanEdit: true });
+      } else if (isUserManager) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === currentUserId;
+
+        const userCanDelete = isItemInResponsiblePlaces || isUserResponsible;
+        const userCanEdit = userCanDelete;
+
+        navigation.setParams({ userCanDelete, userCanEdit });
       }
 
-      itemCopy.placeId = place && place.name;
+      itemCopy.placeId = place;
       itemCopy.photos = photos.map(url => ({ uri: url }));
       itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
@@ -436,7 +445,7 @@ class ItemForm extends Component<Props, State> {
         console.log(error.message);
       }
 
-      console.log(variables);
+      // console.log(variables);
       try {
         // let response;
         if (assetId) {
@@ -577,17 +586,38 @@ class ItemForm extends Component<Props, State> {
       && creator.id === currentUserId
       && status === constants.placeholders.status.onProcessing;
 
-    const showRemoveButton = isNewItem || isUserAdmin || isUserManager;
+    let showRemoveButton = false;
     let showAddPhotoButton = false;
 
-    if (!uri && isNewItem) {
-      showAddPhotoButton = true;
-    } else if (!uri && isUserAdmin) {
-      showAddPhotoButton = true;
-    } else if (
-      (!uri && (isUserEmployee && isUserCreator)) || (!uri && isUserManager)
-    ) {
-      showAddPhotoButton = true;
+    if (isUserAdmin) {
+      if (!uri) {
+        showAddPhotoButton = true;
+      } else {
+        showRemoveButton = true;
+      }
+    } else if (isUserEmployee) {
+      if (isNewItem || isUserCreator) {
+        if (!uri) {
+          showAddPhotoButton = true;
+        } else {
+          showRemoveButton = true;
+        }
+      }
+    } else if (isUserManager) {
+      const { placeId, responsibleId } = this.state;
+      const { currentUser } = this.props;
+      //  $FlowFixMe
+      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+      const userPlaces = [...createdPlaces, ...responsiblePlaces];
+      const placesIds = pluck('id', userPlaces);
+      //  $FlowFixMe
+      const isItemInResponsiblePlaces = includes(placeId && placeId.id, placesIds);
+      const isUserResponsible = responsibleId && responsibleId.id === currentUserId;
+      if (!uri) {
+        showAddPhotoButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
+      } else {
+        showRemoveButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
+      }
     }
 
     return showAddPhotoButton ? (
@@ -616,20 +646,26 @@ class ItemForm extends Component<Props, State> {
   };
 
   handleDeleteItem = async () => {
-    const { state: { id, isNewItem }, props: { destroyAsset, navigation } } = this;
+    const {
+      state: { id, isNewItem },
+      props: { destroyAsset, navigation },
+    } = this;
     if (isNewItem) {
       this.handleToggleDelModal();
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       try {
         await destroyAsset({ variables: { id } });
+        navigation.goBack();
         this.handleToggleDelModal();
       } catch (error) {
         Alert.alert(error.message);
+        this.handleToggleDelModal();
       }
     }
-    navigation.navigate(SCENE_NAMES.ItemsSceneName);
   };
 
+  // eslint-disable-next-line
   handleToggleDelModal = () => this.setState(({ isDelModalOpened }) => ({ isDelModalOpened: !isDelModalOpened }));
 
   handleAddPhoto = () => {
@@ -899,15 +935,19 @@ class ItemForm extends Component<Props, State> {
   }
 }
 export default compose(
-  graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
-  graphql(QUERIES.GET_USER_ID_CLIENT, {
+  graphql(AUTH_QUERIES.GET_USER_ID_CLIENT, {
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
   graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
   graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ currentUser: current }),
+  }),
 )(ItemForm);
