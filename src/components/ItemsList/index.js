@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 //  $FlowFixMe
-import { pluck, filter, includes, isEmpty } from 'ramda';
+import { pluck, filter, includes, isEmpty, isNil } from 'ramda';
 import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -56,13 +56,16 @@ const CategoryList = ({ children, openSideMenu }) => (
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
+
     const isUserEmployee = userRole === constants.roles.employee;
-    const isUserManager = userRole === constants.roles.manager;
     const isUserAdmin = userRole === constants.roles.admin;
-    const isUserCreator = item && item.creator && item.creator.id === userId && item.status === 'on_processing';
+    const isUserCreator = item && item.creator && item.creator.id === userId;
+
     let showRemoveButton = false;
 
-    if ((isUserEmployee || isUserManager) && isUserCreator) {
+    if (isUserAdmin) {
+      showRemoveButton = true;
+    } else if (isUserEmployee && (isUserCreator && item.status === 'on_processing')) {
       showRemoveButton = true;
     }
 
@@ -174,7 +177,7 @@ class ItemsList extends PureComponent<Props> {
                 dataToRender,
               );
             } else {
-              dataToRender = [];
+              dataToRender = filter(asset => isNil(asset.place), dataToRender);
             }
           }
 
