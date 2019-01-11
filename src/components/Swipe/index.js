@@ -2,33 +2,53 @@
 
 import React, { PureComponent } from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
-
+//  $FlowFixMe
+import { pluck, includes } from 'ramda';
+import { graphql } from 'react-apollo';
 import Swipeout from 'react-native-swipeout';
 
+//  $FlowFixMe
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import type { Item } from '~/global/types';
 import constants from '~/global/constants';
+import { GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 
 import styles from './styles';
 import type { Props } from './types';
 
 class SwipeableList extends PureComponent<Props, {}> {
   renderSwipeRow = (item: Item, activeRowId: any) => {
-    const { userId, toggleDelModal, selectItem, userRole, openItem } = this.props;
-    const disableLeftSwipe = userRole === constants.roles.observer;
-    let showRemoveButton;
+    const { userId, currentUser, toggleDelModal, selectItem, userRole, openItem } = this.props;
+    let enableLeftSwipe = false;
+    let showRemoveButton = false;
 
-    if (userRole === constants.roles.admin) {
+    const isUserEmployee = userRole === constants.roles.employee;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserCreator = item && item.creator && item.creator.id === userId;
+    const isItemInProcessing = item.status === 'on_processing';
+
+    if (isUserAdmin) {
+      enableLeftSwipe = true;
       showRemoveButton = true;
-    } else if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
-      if (item && item.creator && item.creator.id === userId && item.status === 'on_processing') {
+    } else if (isUserEmployee) {
+      if (isUserCreator && isItemInProcessing) {
         showRemoveButton = true;
-      } else {
-        showRemoveButton = false;
+        enableLeftSwipe = true;
       }
+    } else if (isUserManager) {
+      //  $FlowFixMe
+      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+      const userPlaces = [...createdPlaces, ...responsiblePlaces];
+      const placesIds = pluck('id', userPlaces);
+      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+
+      enableLeftSwipe = isItemInResponsiblePlaces || isUserResponsible;
+      showRemoveButton = enableLeftSwipe;
     }
 
     const swipeoutBtns = [
@@ -64,17 +84,15 @@ class SwipeableList extends PureComponent<Props, {}> {
       <Swipeout
         autoClose
         right={swipeoutBtns}
-        disabled={disableLeftSwipe}
+        disabled={!enableLeftSwipe}
         close={item.id !== activeRowId}
         //  eslint-disable-next-line
         onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
         }
       >
-        <View>
+        <TouchableOpacity activeOpacity={1} onPress={() => openItem(item)}>
           <View style={styles.rowItem}>
-            <TouchableOpacity onPress={() => openItem(item)}>
-              <Image style={styles.image} />
-            </TouchableOpacity>
+            <Image style={styles.image} />
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>
@@ -87,7 +105,7 @@ class SwipeableList extends PureComponent<Props, {}> {
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Swipeout>
     );
   };
@@ -109,4 +127,9 @@ class SwipeableList extends PureComponent<Props, {}> {
   }
 }
 
-export default SwipeableList;
+/*  eslint-disable */
+export default graphql(GET_CURRENT_USER_PLACES, {
+  //  $FlowFixMe
+  props: ({ data: { current } }) => ({ currentUser: current }),
+})(SwipeableList);
+/*  eslint-enable */

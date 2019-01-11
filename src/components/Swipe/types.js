@@ -5,6 +5,7 @@ import type { Item } from '~/global/types';
 export type Props = {
   userId: string,
   userRole: string,
+  currentUser: ?Object,
   data: Array<Item>,
   openItem: Function,
   userRole: string,
