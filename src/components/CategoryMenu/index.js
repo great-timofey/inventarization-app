@@ -18,7 +18,11 @@ import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
+import {
+  GET_CATEGORY_ORDER,
+  GET_COMPANY_CATEGORIES,
+  GET_SELECTED_CATEGORIES,
+} from '~/graphql/categories/queries';
 
 import {
   mainNavigation,
@@ -42,9 +46,16 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
+    const { selectedCategories } = this.props;
     const isSubCategoryView = selectedCategory !== '';
+    let isSelect = false;
+
+    if (data && data.id && isSubCategoryView) {
+      isSelect = includes(data.id.toString(), selectedCategories);
+    }
+
     if (isSubCategoryView) {
-      return <SubCategory item={data} selectCategory={this.selectCategory} />;
+      return <SubCategory item={data} isSelect={isSelect} selectCategory={this.selectCategory} />;
     }
     return <Category item={data} selectCategory={this.selectCategory} />;
   };
@@ -81,19 +92,20 @@ class CategoryMenu extends PureComponent<Props, State> {
           }
 
           let categoryList = {};
+          let subCategoryList = {};
+          let subCategoryIdList = [];
+
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
-          }
 
-          let subCategoryList = {};
-          let subCategoryIdList = [];
-          if (companyCategories && companyCategories.length > 0 && isSubCategoryView) {
-            const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
+            if (isSubCategoryView) {
+              const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
-            if (parent.chields.length > 0) {
-              subCategoryList = { ...parent.chields };
-              subCategoryIdList = parent.chields.map(x => x.id);
+              if (parent.chields.length > 0) {
+                subCategoryList = { ...parent.chields };
+                subCategoryIdList = parent.chields.map(x => x.id);
+              }
             }
           }
 
@@ -166,5 +178,9 @@ export default compose(
   graphql(GET_CATEGORY_ORDER, {
     // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+  graphql(GET_SELECTED_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
   }),
 )(CategoryMenu);

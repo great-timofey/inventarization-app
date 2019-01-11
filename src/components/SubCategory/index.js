@@ -1,6 +1,6 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -14,14 +14,20 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
+import { GET_SELECTED_CATEGORIES } from '~/graphql/categories/queries';
 
 import styles from './styles';
 import type { Props, State } from './types';
 
-export class SubCategory extends PureComponent<Props, State> {
-  state = {
-    isSelect: false,
-  };
+export class SubCategory extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    const { isSelect } = this.props;
+    this.state = {
+      isSelected: isSelect,
+    };
+  }
 
   saveSelectedCategory = async (selectedCategory: any) => {
     const { setSelectedCategory } = this.props;
@@ -29,8 +35,12 @@ export class SubCategory extends PureComponent<Props, State> {
   }
 
   selectCategory = () => {
-    const { isSelect } = this.state;
-    const { isBackButton, chieldsId, selectCategory, item: { id } } = this.props;
+    const {
+      chieldsId,
+      item: { id },
+      isBackButton,
+      selectCategory,
+    } = this.props;
 
     if (isBackButton) {
       selectCategory('');
@@ -41,10 +51,23 @@ export class SubCategory extends PureComponent<Props, State> {
     } else {
       this.saveSelectedCategory(id.split());
     }
+  }
 
-    this.setState({
-      isSelect: !isSelect,
-    });
+  shouldComponentUpdate(nextProps: Props) {
+    // if (nextProps.isSelect !== this.props.isSelect) {
+    //   return true;
+    // }
+    return !false;
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps !== this.props) {
+      console.log(prevProps.isSelect, this.props.isSelect);
+
+      this.setState = ({
+        isSelected: this.props.isSelect,
+      });
+    }
   }
 
   render() {
@@ -81,5 +104,8 @@ export class SubCategory extends PureComponent<Props, State> {
 export default compose(
   graphql(SET_SELECTED_CATEGORY, {
     name: 'setSelectedCategory',
+  }),
+  graphql(GET_SELECTED_CATEGORIES, {
+    props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
   }),
 )(SubCategory);

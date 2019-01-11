@@ -2,7 +2,7 @@
 
 import { AsyncStorage } from 'react-native';
 // $FlowFixMe
-import { without, includes, intersection } from 'ramda';
+import { without, intersection } from 'ramda';
 import { ApolloLink } from 'apollo-link';
 import ApolloClient from 'apollo-client';
 import { setContext } from 'apollo-link-context';
