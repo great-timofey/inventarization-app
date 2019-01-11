@@ -49,11 +49,10 @@ class ScrollViewContainer extends PureComponent<Props, State> {
 
     return (
       <KeyboardAwareScrollView
-        bottomOffset={216}
+        {...rest}
         disableAutomaticScroll
         style={{ backgroundColor: bgColor }}
         contentContainerStyle={styles.container}
-        {...rest}
       >
         <Animated.View
           style={[
