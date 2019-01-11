@@ -21,7 +21,9 @@ class SwipeableList extends PureComponent<Props, {}> {
     const disableLeftSwipe = userRole === constants.roles.observer;
     let showRemoveButton;
 
-    if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
+    if (userRole === constants.roles.admin) {
+      showRemoveButton = true;
+    } else if (userRole === constants.roles.manager || userRole === constants.roles.employee) {
       if (item && item.creator && item.creator.id === userId && item.status === 'on_processing') {
         showRemoveButton = true;
       } else {
