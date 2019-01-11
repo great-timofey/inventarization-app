@@ -199,7 +199,7 @@ class ItemForm extends Component<Props, State> {
     const {
       navigation,
       currentUserId,
-      userCompany: { role },
+      userCompany: { role: userRole },
     } = this.props;
 
     this.navListener = navigation.addListener('didFocus', () => {
@@ -214,6 +214,7 @@ class ItemForm extends Component<Props, State> {
       // console.log(item);
       const itemCopy = { ...item };
       const {
+        gps,
         name,
         place,
         status,
@@ -230,17 +231,25 @@ class ItemForm extends Component<Props, State> {
         this.toggleEditMode();
       }
 
+      const isUserAdmin = userRole === constants.roles.admin;
+      const isUserManager = userRole === constants.roles.manager;
+      const isUserCreator = creator && creator.id === currentUserId;
+      const isItemInProcessing = status === 'on_processing';
+
       if (
-        (creator && creator.id === currentUserId && status === 'on_processing')
-        || role === constants.roles.admin
+        ((isUserCreator && isItemInProcessing) && !isUserManager)
+        || isUserAdmin
       ) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
+      } else if (isUserManager && isItemInProcessing) {
+        navigation.setParams({ userCanEdit: true });
       }
 
       itemCopy.placeId = place && place.name;
       itemCopy.photos = photos.map(url => ({ uri: url }));
       itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
+      itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
@@ -422,7 +431,7 @@ class ItemForm extends Component<Props, State> {
         console.log(error.message);
       }
 
-      // console.log(variables);
+      console.log(variables);
       try {
         // let response;
         if (assetId) {
@@ -556,23 +565,24 @@ class ItemForm extends Component<Props, State> {
 
     const isLocalFile = uri.startsWith('file');
 
+    const isUserAdmin = userRole === constants.roles.admin;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserEmployee = userRole === constants.roles.employee;
     const isUserCreator = creator
       && creator.id === currentUserId
       && status === constants.placeholders.status.onProcessing;
-    const showRemoveButton = isNewItem || userRole === constants.roles.admin || isUserCreator;
 
+    const showRemoveButton = isNewItem || isUserAdmin || isUserManager;
     let showAddPhotoButton = false;
+
     if (!uri && isNewItem) {
       showAddPhotoButton = true;
-    } else if (!uri && userRole === constants.roles.admin) {
+    } else if (!uri && isUserAdmin) {
       showAddPhotoButton = true;
     } else if (
-      !uri
-      && (userRole === constants.roles.manager || userRole === constants.roles.employee)
+      (!uri && (isUserEmployee && isUserCreator)) || (!uri && isUserManager)
     ) {
-      if (isUserCreator) {
-        showAddPhotoButton = true;
-      }
+      showAddPhotoButton = true;
     }
 
     return showAddPhotoButton ? (

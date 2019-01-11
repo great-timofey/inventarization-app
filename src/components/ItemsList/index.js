@@ -57,15 +57,17 @@ class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const { userId, userRole, currentSelectItem, selectItem, toggleDelModalVisible } = this.props;
 
-    const isUserEmployee = userRole === constants.roles.employee;
     const isUserAdmin = userRole === constants.roles.admin;
+    const isUserManager = userRole === constants.roles.manager;
+    const isUserEmployee = userRole === constants.roles.employee;
     const isUserCreator = item && item.creator && item.creator.id === userId;
+    const isItemInProcessing = item.status === 'on_processing';
 
     let showRemoveButton = false;
 
     if (isUserAdmin) {
       showRemoveButton = true;
-    } else if (isUserEmployee && (isUserCreator && item.status === 'on_processing')) {
+    } else if (isUserEmployee && (isUserCreator && isItemInProcessing)) {
       showRemoveButton = true;
     }
 
@@ -78,7 +80,7 @@ class ItemsList extends PureComponent<Props> {
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
-        showMenuButton={isUserCreator || isUserAdmin}
+        showMenuButton={isUserCreator || isUserAdmin || isUserManager}
       />
     );
   };
