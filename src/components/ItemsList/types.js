@@ -10,17 +10,19 @@ export type PhotosProps = {
 };
 
 export type Props = {
+  innerRef?: any,
+  userId: string,
+  current: Object,
+  userRole: string,
   navigation: Object,
   data?: Array<Photo>,
-  innerRef?: any,
-  userRole: string,
+  swipeable: ?boolean,
   currentUser: ?Object,
   selectItem: Function,
-  currentSelectItem: number | string | null,
-  companyId: null | string | number,
   isSortByName: boolean,
-  swipeable: ?boolean,
-  toggleDelModalVisible: Function,
-  userId: string,
   handleShowSortButton: Function,
+  toggleDelModalVisible: Function,
+  selectedCategories: Array<string>,
+  companyId: null | string | number,
+  currentSelectItem: number | string | null,
 };

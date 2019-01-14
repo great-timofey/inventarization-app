@@ -16,12 +16,7 @@ import { normalize } from '~/global/utils';
 import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
 import styles from './styles';
-
-type Props ={|
-  item: Object,
-  isSelected?: boolean,
-  selectCategory: Function,
-|}
+import type { Props } from './types';
 
 export class Category extends PureComponent<Props, {}> {
   selectCategory = () => {
@@ -31,7 +26,6 @@ export class Category extends PureComponent<Props, {}> {
       allSelectButton,
       allSubCategoryList,
     } = this.props;
-    console.log(allSubCategoryList);
 
     selectCategory(name);
 
@@ -41,8 +35,6 @@ export class Category extends PureComponent<Props, {}> {
   }
 
   saveSelectedCategory = async (selectedCategory: any) => {
-    console.log(selectedCategory);
-
     const { setSelectedCategory } = this.props;
     await setSelectedCategory({ variables: { selectedCategory } });
   }
@@ -86,7 +78,4 @@ export default compose(
   graphql(SET_SELECTED_CATEGORY, {
     name: 'setSelectedCategory',
   }),
-  // graphql(GET_SELECTED_CATEGORIES, {
-  //   props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
-  // }),
 )(Category);

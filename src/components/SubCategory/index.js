@@ -83,6 +83,7 @@ export default compose(
     name: 'setSelectedCategory',
   }),
   graphql(GET_SELECTED_CATEGORIES, {
+    // $FlowFixMe
     props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
   }),
 )(SubCategory);
