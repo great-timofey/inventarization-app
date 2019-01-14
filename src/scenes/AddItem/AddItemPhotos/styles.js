@@ -18,6 +18,11 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
   },
+  headerTitleSmallStyle: {
+    color: colors.white,
+    fontSize: normalize(16),
+    fontFamily: fonts.proDisplay.medium,
+  },
   backButton: {
     width: 28,
     height: 20,
