@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 // $FlowFixMe
-import { last, includes } from 'ramda';
+import { last, includes, intersection } from 'ramda';
 import SortableList from 'react-native-sortable-list';
 import { compose, graphql, Query } from 'react-apollo';
 
@@ -46,25 +46,72 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
-    const { selectedCategories } = this.props;
+    const { selectedCategories, current } = this.props;
     const isSubCategoryView = selectedCategory !== '';
-    let isSelect = false;
+
+    let companyCategories = null;
+
+    if (current != null) {
+      const { companies } = current;
+      const company = companies[0];
+      if (company != null) {
+        companyCategories = company.categories;
+      }
+    }
+
+    let isCategorySelect = false;
+
+    if (!isSubCategoryView
+      && data.chields.length > 0
+    ) {
+      const chieldsList = data.chields.map(x => x.id);
+      isCategorySelect = !!intersection(chieldsList, selectedCategories).length;
+    }
+
+    let IdList = [];
+
+    if (companyCategories && companyCategories.length > 0) {
+      if (isSubCategoryView) {
+        const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
+
+        if (parent.chields.length > 0) {
+          IdList = parent.chields.map(x => x.id);
+        }
+      }
+    }
+
+    const isAllSelected = !!selectedCategories.length
+     && intersection(selectedCategories, IdList).length === IdList.length;
+
+    let isSubCategorySelect = false;
 
     if (data && data.id && isSubCategoryView) {
-      isSelect = includes(data.id.toString(), selectedCategories);
+      isSubCategorySelect = includes(data.id.toString(), selectedCategories);
     }
 
     if (isSubCategoryView) {
-      return <SubCategory item={data} isSelect={isSelect} selectCategory={this.selectCategory} />;
+      return (
+        <SubCategory
+          item={data}
+          selectCategory={this.selectCategory}
+          isSelected={isAllSelected ? false : isSubCategorySelect}
+        />
+      );
     }
-    return <Category item={data} selectCategory={this.selectCategory} />;
+    return (
+      <Category
+        item={data}
+        isSelected={isCategorySelect}
+        selectCategory={this.selectCategory}
+      />
+    );
   };
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const { selectedCategory } = this.state;
-    const { categoryOrder } = this.props;
+    const { categoryOrder, selectedCategories } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
     return (
@@ -93,7 +140,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
           let categoryList = {};
           let subCategoryList = {};
-          let subCategoryIdList = [];
+          let IdList = [];
 
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
@@ -104,10 +151,12 @@ class CategoryMenu extends PureComponent<Props, State> {
 
               if (parent.chields.length > 0) {
                 subCategoryList = { ...parent.chields };
-                subCategoryIdList = parent.chields.map(x => x.id);
+                IdList = parent.chields.map(x => x.id);
               }
             }
           }
+
+          const isAllSelected = intersection(selectedCategories, IdList).length === IdList.length;
 
           let prefix = '';
 
@@ -134,18 +183,19 @@ class CategoryMenu extends PureComponent<Props, State> {
                       item={{ name: selectedCategory, icon: 'ios-arrow-back' }}
                     />
                     <SubCategory
-                      chieldsId={subCategoryIdList}
+                      chieldsId={IdList}
+                      isSelected={isAllSelected}
                       selectCategory={this.selectCategory}
                       item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
                     />
                   </Fragment>
                 ) : (
                   <Category
-                    selectCategory={() => {}}
+                    selectCategory={() => { }}
                     item={{ name: 'Все категории', icon: 'side-menu-all' }}
                   />
                 )
-            }
+              }
               <SortableList
                 scrollEnabled={false}
                 sortingEnabled={false}
@@ -154,17 +204,17 @@ class CategoryMenu extends PureComponent<Props, State> {
                 data={isSubCategoryView ? subCategoryList : categoryList}
               />
               {!isSubCategoryView && (
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => {
-                  setIsSideMenuOpen(false);
-                  mainNavigation.navigate(SCENE_NAMES.CategoryList);
-                }}
-              >
-                <Text style={styles.editButtonText}>
-                  Редактировать категории
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() => {
+                    setIsSideMenuOpen(false);
+                    mainNavigation.navigate(SCENE_NAMES.CategoryList);
+                  }}
+                >
+                  <Text style={styles.editButtonText}>
+                    Редактировать категории
+                  </Text>
+                </TouchableOpacity>
               )}
             </ScrollView>
           );
@@ -178,6 +228,10 @@ export default compose(
   graphql(GET_CATEGORY_ORDER, {
     // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+  graphql(GET_COMPANY_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ current }),
   }),
   graphql(GET_SELECTED_CATEGORIES, {
     // $FlowFixMe

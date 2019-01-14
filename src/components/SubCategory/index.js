@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Text,
   View,
@@ -19,16 +19,7 @@ import { GET_SELECTED_CATEGORIES } from '~/graphql/categories/queries';
 import styles from './styles';
 import type { Props, State } from './types';
 
-export class SubCategory extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    const { isSelect } = this.props;
-    this.state = {
-      isSelect,
-    };
-  }
-
+export class SubCategory extends PureComponent<Props, State> {
   saveSelectedCategory = async (selectedCategory: any) => {
     const { setSelectedCategory } = this.props;
     await setSelectedCategory({ variables: { selectedCategory } });
@@ -53,31 +44,14 @@ export class SubCategory extends Component<Props, State> {
     }
   }
 
-  shouldComponentUpdate(nextProps: Props) {
-    if (nextProps.isSelect !== this.props.isSelect) {
-      return true;
-    }
-    return !false;
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    const { isSelect } = this.props;
-    if (prevProps.isSelect !== isSelect) {
-      this.setState = ({
-        isSelect,
-      });
-    }
-  }
-
   render() {
-    const { isSelect } = this.state;
-    const { item, isBackButton } = this.props;
+    const { item, isBackButton, isSelected } = this.props;
 
     if (item != null) {
       return (
         <TouchableOpacity
           onPress={this.selectCategory}
-          style={[styles.menuContainer, isSelect && styles.select]}
+          style={[styles.menuContainer, isSelected && styles.selectedSubCategory]}
         >
           {isBackButton && (
             <Icon

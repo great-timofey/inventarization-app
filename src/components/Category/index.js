@@ -17,6 +17,7 @@ import styles from './styles';
 
 type Props ={|
   item: Object,
+  isSelected?: boolean,
   selectCategory: Function,
 |}
 
@@ -27,13 +28,13 @@ export class Category extends PureComponent<Props, {}> {
   }
 
   render() {
-    const { item } = this.props;
+    const { item, isSelected } = this.props;
 
     if (item != null) {
       return (
         <TouchableOpacity
           onPress={this.selectCategory}
-          style={styles.menuContainer}
+          style={[styles.menuContainer, isSelected && styles.selectedCategory]}
         >
           <CustomIcon
             name={item.icon}

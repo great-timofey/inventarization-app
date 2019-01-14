@@ -37,7 +37,7 @@ export default StyleSheet.create({
   backButtonText: {
     color: colors.blueBorder,
   },
-  select: {
+  selectedSubCategory: {
     backgroundColor: colors.blackOpacityExtraLight,
   },
 });
