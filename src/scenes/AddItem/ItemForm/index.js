@@ -478,8 +478,9 @@ class ItemForm extends Component<Props, State> {
     //  $FlowFixMe
     payload.data.createAsset.id = (parseInt(last(data.assets).id) + 1).toString();
     /*  eslint-enable */
-    data.assets = data.assets.concat(payload.data.createAsset);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+    data.assets.push(payload.data.createAsset);
+    //  doesnt work for now
+    // cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   updateUpdateAsset = (cache: Object, payload: Object) => {
@@ -993,8 +994,8 @@ export default compose(
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
-  graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(UPDATE_ASSET, { name: 'updateAsset' }),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),

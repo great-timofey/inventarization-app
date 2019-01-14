@@ -19,7 +19,6 @@ export const CREATE_ASSET = gql`
     $categoryId: ID
     $placeId: ID
     $companyId: ID
-    $photos: [Upload!]
     $responsibleId: ID
     $status: AssetStatus
     $onTheBalanceSheet: Boolean
@@ -42,7 +41,6 @@ export const CREATE_ASSET = gql`
         categoryId: $categoryId
         placeId: $placeId
         companyId: $companyId
-        photos: $photos
         responsibleId: $responsibleId
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
@@ -70,7 +68,6 @@ export const CREATE_ASSET = gql`
       model
       name
       onTheBalanceSheet
-      photos
       purchasePrice
       quantity
       responsible {
@@ -98,7 +95,6 @@ export const UPDATE_ASSET = gql`
     $quantity: Int
     $categoryId: ID
     $placeId: ID
-    $photos: [Upload!]
     $responsibleId: ID
     $status: AssetStatus
     $onTheBalanceSheet: Boolean
@@ -117,7 +113,6 @@ export const UPDATE_ASSET = gql`
         manufacture: $manufacture
         model: $model
         quantity: $quantity
-        photos: $photos
         categoryId: $categoryId
         placeId: $placeId
         responsibleId: $responsibleId

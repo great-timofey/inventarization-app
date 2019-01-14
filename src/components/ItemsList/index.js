@@ -181,7 +181,7 @@ class ItemsList extends PureComponent<Props> {
 
           // $FlowFixMe
           const { assets: innerAssets } = data;
-          let dataToRender = innerAssets || [];
+          let dataToRender = innerAssets;
 
           const isUserEmployee = userRole === constants.roles.employee;
           const isUserManager = userRole === constants.roles.manager;
@@ -190,8 +190,8 @@ class ItemsList extends PureComponent<Props> {
             if (innerAssets) {
               dataToRender = innerAssets.filter(
                 asset => (asset.creator
-                    && asset.creator.id === userId
-                    && asset.status === 'on_processing')
+                  && asset.creator.id === userId
+                  && asset.status === 'on_processing')
                   || (asset.responsible && asset.responsible.id === userId),
               );
             }
