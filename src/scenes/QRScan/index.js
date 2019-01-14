@@ -34,24 +34,25 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 );
 
 class QRCode extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => ({
-    title: constants.headers.qrscanner,
-    headerTitleStyle: styles.headerTitleStyle,
-    headerStyle: styles.header,
-    headerLeft: (
-      <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
-    ),
-    headerRight: (
-      <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
-    ),
-  });
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isTorchOn: true,
+  static navigationOptions = ({ navigation }: Props) => {
+    const checkMode = navigation.state.params && navigation.state.params.checkMode;
+    return {
+      title: constants.headers.qrscanner,
+      headerTitleStyle: styles.headerTitleStyle,
+      headerStyle: styles.header,
+      headerLeft: (
+        <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+      ),
+      headerRight: (
+        checkMode ? null : <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
+      ),
     };
-  }
+  };
+
+  state = {
+    isTorchOn: true,
+    showNoMatchError: false,
+  };
 
   navListener: any;
 
@@ -98,7 +99,12 @@ class QRCode extends PureComponent<Props, State> {
         });
         navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item });
       } else {
-        navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName, { codeData: currentCodeData });
+        const checkMode = navigation.getParam('checkMode', true);
+        if (checkMode) {
+          this.setState({ showNoMatchError: true });
+        } else {
+          navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName, { codeData: currentCodeData });
+        }
       }
     } catch (error) {
       console.log(error.message);
@@ -112,7 +118,8 @@ class QRCode extends PureComponent<Props, State> {
   };
 
   render() {
-    const { isTorchOn } = this.state;
+    const { state: { isTorchOn, showNoMatchError }, props: { navigation } } = this;
+    const checkMode = navigation.getParam('checkMode', false);
     return (
       <View style={styles.container}>
         <QRCodeScanner
@@ -123,14 +130,18 @@ class QRCode extends PureComponent<Props, State> {
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
-        <TouchableOpacity style={styles.torchButton} onPress={this.toggleTorch}>
+        <TouchableOpacity style={[styles.torchButton, checkMode && styles.torchButtonCentered]} onPress={this.toggleTorch}>
           <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.makePhotoButton} disabled>
-          <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-        </TouchableOpacity>
+        {!checkMode &&
+          (<TouchableOpacity style={styles.makePhotoButton} disabled>
+            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+          </TouchableOpacity>)
+        }
         <View style={styles.hintContainer}>
-          <Text style={styles.hintText}>{constants.text.qrhint}</Text>
+          <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
+            {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
+           </Text>
         </View>
       </View>
     );

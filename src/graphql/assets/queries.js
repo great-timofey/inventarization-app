@@ -11,7 +11,6 @@ export const GET_COMPANY_ASSETS = gql`
       photos
       assessedValue
       purchasePrice
-      photosOfDamages
       codeData
       company {
         id
@@ -47,6 +46,7 @@ export const GET_COMPANY_ASSETS = gql`
   }
 `;
 
+// photosOfDamages
 export const GET_COMPANY_ASSET_BY_ID = gql`
   query GetCompanyAssetsById($companyId: ID!, $assetId: ID!) {
     assets(companyId: $companyId, assetId: $assetId) {
@@ -57,7 +57,6 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       photos
       assessedValue
       purchasePrice
-      photosOfDamages
       codeData
       company {
         id
