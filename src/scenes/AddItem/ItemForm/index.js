@@ -262,6 +262,7 @@ class ItemForm extends Component<Props, State> {
 
       itemCopy.placeId = place;
       itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
+      //  eslint-disable-next-line
       itemCopy.photosOfDamages = (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
@@ -473,8 +474,10 @@ class ItemForm extends Component<Props, State> {
       },
     } = this.props;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    // eslint-disable-next-line
+    /*  eslint-disable */
+    //  $FlowFixMe
     payload.data.createAsset.id = (parseInt(last(data.assets).id) + 1).toString();
+    /*  eslint-enable */
     data.assets = data.assets.concat(payload.data.createAsset);
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
@@ -498,9 +501,7 @@ class ItemForm extends Component<Props, State> {
           company: { id: companyId },
         },
       },
-      state: {
-        id,
-      },
+      state: { id },
     } = this;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
@@ -875,9 +876,7 @@ class ItemForm extends Component<Props, State> {
                 {currentTypeIsEmpty ? (
                   <NoItems
                     additional={
-                      isNewItem
-                      || userCanDelete
-                      || userRole === constants.roles.admin
+                      isNewItem || userCanDelete || userRole === constants.roles.admin
                       //  $FlowFixMe
                     }
                     onPress={this.handleAddPhoto}

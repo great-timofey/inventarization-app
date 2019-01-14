@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Text,
   View,
@@ -53,7 +53,7 @@ const CategoryList = ({ children, openSideMenu }) => (
   </View>
 );
 
-class ItemsList extends Component<Props> {
+class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const {
       userId,
@@ -89,6 +89,7 @@ class ItemsList extends Component<Props> {
         const isUserResponsible = item && item.responsible && item.responsible.id === userId;
         const isItemWithoutPlace = item && !item.place;
 
+        //  eslint-disable-next-line
         showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
         showRemoveButton = showMenuButton;
       }
@@ -101,6 +102,7 @@ class ItemsList extends Component<Props> {
         selectItem={selectItem}
         openItem={this.handleOpenItem}
         showMenuButton={showMenuButton}
+        //  $FlowFixMe
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
@@ -188,8 +190,8 @@ class ItemsList extends Component<Props> {
             if (innerAssets) {
               dataToRender = innerAssets.filter(
                 asset => (asset.creator
-                  && asset.creator.id === userId
-                  && asset.status === 'on_processing')
+                    && asset.creator.id === userId
+                    && asset.status === 'on_processing')
                   || (asset.responsible && asset.responsible.id === userId),
               );
             }

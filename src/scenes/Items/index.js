@@ -145,6 +145,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const {
       props: {
         data: {
+          //  $FlowFixMe
           userCompany: {
             company: { id: companyId },
           },
@@ -201,8 +202,8 @@ class ItemsScene extends PureComponent<Props, State> {
       isDeleteModalVisible,
     } = this.state;
     const {
-      // $FlowFixMe
       data: {
+        // $FlowFixMe
         userCompany: {
           role: userRole,
           company: { id: companyId },

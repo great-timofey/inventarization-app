@@ -12,6 +12,7 @@ export type State = {
 };
 
 export type Props = {
+  data?: any,
   navigation: Object,
   currentUserId: number,
   destroyAsset: Function,
