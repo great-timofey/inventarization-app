@@ -49,8 +49,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const toPass = from ? { additionalPhotos: photos } : { photos, codeData };
     return {
       headerStyle: styles.header,
-      title: constants.headers.newItem,
-      headerTitleStyle: styles.headerTitleStyle,
+      title: from ? constants.headers.addPhotos : constants.headers.newItem,
+      headerTitleStyle: from ? styles.headerTitleSmallStyle : styles.headerTitleStyle,
       headerLeft: (
         <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
       ),

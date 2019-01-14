@@ -2,6 +2,7 @@
 
 export type State = {
   isTorchOn: boolean,
+  showNoMatchError: boolean,
 };
 
 export type Props = {
