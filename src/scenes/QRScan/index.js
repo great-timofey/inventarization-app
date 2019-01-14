@@ -99,7 +99,7 @@ class QRCode extends PureComponent<Props, State> {
         });
         navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item });
       } else {
-        const checkMode = navigation.getParam('checkMode', true);
+        const checkMode = navigation.getParam('checkMode', false);
         if (checkMode) {
           this.setState({ showNoMatchError: true });
         } else {
