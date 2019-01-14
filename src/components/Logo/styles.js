@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
   logo: {
@@ -28,6 +29,6 @@ export default StyleSheet.create({
   logoText: {
     width: normalize(167),
     height: normalize(35),
-    marginBottom: normalize(48),
+    marginBottom: isIphoneX ? normalize(100) : normalize(48),
   },
 });

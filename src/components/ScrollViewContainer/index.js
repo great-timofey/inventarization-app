@@ -6,6 +6,9 @@ import { Keyboard, Animated } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { normalize, isSmallDevice } from '~/global/utils';
+
+import { isIphoneX } from '~/global/device';
+
 import styles from './styles';
 import type { Props, State } from './types';
 
@@ -17,6 +20,16 @@ class ScrollViewContainer extends PureComponent<Props, State> {
     const { keyboardPadding, paddingContainer } = this;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
+    let bottomOffset = 0;
+
+    if (isIphoneX) {
+      bottomOffset = 100;
+    } else if (isSmallDevice) {
+      bottomOffset = 57;
+    } else {
+      bottomOffset = 30;
+    }
+
     Keyboard.addListener(listenerShow, (event) => {
       Animated.parallel([
         Animated.timing(keyboardPadding, {
@@ -25,7 +38,7 @@ class ScrollViewContainer extends PureComponent<Props, State> {
         }),
         Animated.timing(paddingContainer, {
           duration: 250,
-          toValue: isSmallDevice ? normalize(57) : normalize(30),
+          toValue: normalize(bottomOffset),
         }),
       ]).start();
     });
@@ -50,9 +63,9 @@ class ScrollViewContainer extends PureComponent<Props, State> {
     return (
       <KeyboardAwareScrollView
         {...rest}
+        bottomOffset={400}
         disableAutomaticScroll
         style={{ backgroundColor: bgColor }}
-        contentContainerStyle={styles.container}
       >
         <Animated.View
           style={[
