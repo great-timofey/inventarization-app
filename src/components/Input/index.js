@@ -24,9 +24,10 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { returnKeyType, value, isWarning, containerCallback } = this.props;
+    const { returnKeyType, value, isWarning, containerCallback, secureTextEntry } = this.props;
     if (
       nextProps.value !== value
+      || nextProps.secureTextEntry !== secureTextEntry
       || nextProps.returnKeyType !== returnKeyType
       || nextProps.isWarning !== isWarning
       || nextProps.containerCallback !== containerCallback

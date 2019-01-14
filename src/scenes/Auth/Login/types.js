@@ -8,6 +8,7 @@ export type State = {
   isRegForm: boolean,
   warnings: Array<string>,
   isKeyboardActive: boolean,
+  isPasswordHidden: boolean,
 };
 
 export type Props = {

@@ -13,6 +13,7 @@ import {
   Keyboard,
   Animated,
   AsyncStorage,
+  TouchableOpacity,
 } from 'react-native';
 
 import Logo from '~/components/Logo';
@@ -40,6 +41,7 @@ const initialState = {
   password: '',
   isRegForm: false,
   isKeyboardActive: false,
+  isPasswordHidden: true,
 };
 
 const AdditionalButton = ({ title, onPress }: { title: string, onPress: Function }) => (
@@ -90,6 +92,13 @@ class Login extends PureComponent<Props, State> {
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState(state => assoc('isRegForm', !state.isRegForm, initialState));
+  };
+
+  onTogglePasswordVisibility = () => {
+    const { isPasswordHidden } = this.state;
+    this.setState({
+      isPasswordHidden: !isPasswordHidden,
+    });
   };
 
   checkForErrors = () => {
@@ -181,7 +190,7 @@ class Login extends PureComponent<Props, State> {
 
   render() {
     const { navigation } = this.props;
-    const { name, email, mobile, password, warnings, isRegForm } = this.state;
+    const { name, email, mobile, password, warnings, isRegForm, isPasswordHidden } = this.state;
 
     return (
       <ScrollViewContainer bgColor={colors.backGroundBlack}>
@@ -213,13 +222,13 @@ class Login extends PureComponent<Props, State> {
             onSubmitEditing={() => this.focusField(this.passwordRef)}
           />
           <Input
-            secureTextEntry
             value={password}
             fieldRef={(ref) => {
               this.passwordRef = ref;
             }}
             blurOnSubmit={false}
             onSubmitForm={this.onSubmitForm}
+            secureTextEntry={isPasswordHidden}
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
             isWarning={includes('password', warnings)}
@@ -227,11 +236,16 @@ class Login extends PureComponent<Props, State> {
             onSubmitEditing={() => this.focusField(this.mobileRef)}
             onChangeText={text => this.onChangeField('password', text)}
           >
-            <Image
-              resizeMode="contain"
-              source={assets.hiddenPassword}
+            <TouchableOpacity
               style={styles.toogleVisiblePasswordBtn}
-            />
+              onPress={this.onTogglePasswordVisibility}
+            >
+              <Image
+                resizeMode="contain"
+                source={isPasswordHidden ? assets.hiddenPassword : assets.visiblePassword}
+              />
+            </TouchableOpacity>
+
           </Input>
           {isRegForm && (
             <Input
