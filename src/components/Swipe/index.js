@@ -50,6 +50,7 @@ class SwipeableList extends PureComponent<Props, {}> {
         const isUserResponsible = item && item.responsible && item.responsible.id === userId;
         const isItemWithoutPlace = item && !item.place;
 
+        //  eslint-disable-next-line
         enableLeftSwipe = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
         showRemoveButton = enableLeftSwipe;
       }
