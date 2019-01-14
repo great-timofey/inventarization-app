@@ -157,9 +157,9 @@ class ItemsList extends PureComponent<Props> {
       currentUser,
       isSortByName,
       currentSelectItem,
-      selectedCategories,
       handleShowSortButton,
       toggleDelModalVisible,
+      saveSelectedCategories,
     } = this.props;
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
@@ -233,7 +233,7 @@ class ItemsList extends PureComponent<Props> {
 
           let categoryTabData = [];
 
-          selectedCategories.forEach((e) => {
+          saveSelectedCategories.forEach((e) => {
             allSubCategoryList.find((x) => {
               if (x.id === e) {
                 categoryTabData = [...categoryTabData, x.name];
@@ -304,7 +304,7 @@ export default compose(
   graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
   graphql(GET_SELECTED_CATEGORIES, {
     // $FlowFixMe
-    props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
   }),
   graphql(GET_COMPANY_CATEGORIES, {
     // $FlowFixMe

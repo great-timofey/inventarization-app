@@ -20,9 +20,9 @@ import styles from './styles';
 import type { Props, State } from './types';
 
 export class SubCategory extends PureComponent<Props, State> {
-  saveSelectedCategory = async (selectedCategory: any) => {
-    const { setSelectedCategory } = this.props;
-    await setSelectedCategory({ variables: { selectedCategory } });
+  saveSelectedCategories = async (selectedCategories: any) => {
+    const { setSelectedCategories } = this.props;
+    await setSelectedCategories({ variables: { selectedCategories } });
   }
 
   selectCategory = () => {
@@ -37,10 +37,10 @@ export class SubCategory extends PureComponent<Props, State> {
       selectCategory('');
     } else if (chieldsId) {
       if (chieldsId.length > 0) {
-        this.saveSelectedCategory(chieldsId);
+        this.saveSelectedCategories(chieldsId);
       }
     } else {
-      this.saveSelectedCategory(id.split());
+      this.saveSelectedCategories(id.split());
     }
   }
 
@@ -80,10 +80,10 @@ export class SubCategory extends PureComponent<Props, State> {
 
 export default compose(
   graphql(SET_SELECTED_CATEGORY, {
-    name: 'setSelectedCategory',
+    name: 'setSelectedCategories',
   }),
   graphql(GET_SELECTED_CATEGORIES, {
     // $FlowFixMe
-    props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
   }),
 )(SubCategory);

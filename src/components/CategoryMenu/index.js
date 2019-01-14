@@ -46,7 +46,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
-    const { selectedCategories, current } = this.props;
+    const { saveSelectedCategories, current } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
     let companyCategories = null;
@@ -72,7 +72,7 @@ class CategoryMenu extends PureComponent<Props, State> {
         }
       }
     }
-    const isAllCategorySelected = allSubCategoryList.length === selectedCategories.length;
+    const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
 
     let isCategorySelect = false;
 
@@ -83,17 +83,17 @@ class CategoryMenu extends PureComponent<Props, State> {
       if (isAllCategorySelected) {
         isCategorySelect = false;
       } else {
-        isCategorySelect = !!intersection(chieldsList, selectedCategories).length;
+        isCategorySelect = !!intersection(chieldsList, saveSelectedCategories).length;
       }
     }
 
-    const isAllSelected = !!selectedCategories.length
-     && intersection(selectedCategories, IdList).length === IdList.length;
+    const isAllSelected = !!saveSelectedCategories.length
+     && intersection(saveSelectedCategories, IdList).length === IdList.length;
 
     let isSubCategorySelect = false;
 
     if (data && data.id && isSubCategoryView) {
-      isSubCategorySelect = includes(data.id.toString(), selectedCategories);
+      isSubCategorySelect = includes(data.id.toString(), saveSelectedCategories);
     }
 
     if (isSubCategoryView) {
@@ -118,7 +118,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   render() {
     const { selectedCategory } = this.state;
-    const { categoryOrder, selectedCategories } = this.props;
+    const { categoryOrder, saveSelectedCategories } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
     return (
@@ -165,8 +165,8 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
-          const isAllCategorySelected = allSubCategoryList.length === selectedCategories.length;
-          const isAllSelected = intersection(selectedCategories, IdList).length === IdList.length;
+          const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
+          const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
 
           let prefix = '';
 
@@ -248,6 +248,6 @@ export default compose(
   }),
   graphql(GET_SELECTED_CATEGORIES, {
     // $FlowFixMe
-    props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
   }),
 )(CategoryMenu);

@@ -22,7 +22,7 @@ export type Props = {
   isSortByName: boolean,
   handleShowSortButton: Function,
   toggleDelModalVisible: Function,
-  selectedCategories: Array<string>,
   companyId: null | string | number,
+  saveSelectedCategories: Array<string>,
   currentSelectItem: number | string | null,
 };

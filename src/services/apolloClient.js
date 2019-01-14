@@ -26,7 +26,7 @@ const defaults = {
   userCompany: '',
   isAuthed: false,
   categoryOrder: [],
-  selectedCategories: [],
+  saveSelectedCategories: [],
 };
 
 const authLink = setContext(async (_, { headers }) => {
@@ -45,16 +45,13 @@ type Query {
   id: ID
   isAuthed: Boolean
   categoryOrder: [String]
-  selectedCategories: [String]
+  saveSelectedCategories: [String]
   userCompany: {
     id: ID
     role: Role
     company: Company
     __typename: UserCompany 
   }
-}
-type Mutation {
-  setSelectedCategory(selectedCategory: String!): 
 }
 `;
 
@@ -76,15 +73,15 @@ const resolvers = {
       await innerCache.writeData({ data: { categoryOrder } });
       return null;
     },
-    setSelectedCategory: async (_, { selectedCategory }, { cache: innerCache }) => {
-      const { selectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
-      const diff = intersection(selectedCategory, selectedCategories);
+    setSelectedCategories: async (_, { selectedCategories }, { cache: innerCache }) => {
+      const { saveSelectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
+      const diff = intersection(selectedCategories, saveSelectedCategories);
 
       if (diff && diff.length > 0) {
         await innerCache.writeData(
           {
             data: {
-              selectedCategories: without(diff, selectedCategories),
+              saveSelectedCategories: without(diff, saveSelectedCategories),
             },
           },
         );
@@ -92,7 +89,7 @@ const resolvers = {
         await innerCache.writeData(
           {
             data: {
-              selectedCategories: selectedCategories.concat(selectedCategory),
+              saveSelectedCategories: saveSelectedCategories.concat(selectedCategories),
             },
           },
         );

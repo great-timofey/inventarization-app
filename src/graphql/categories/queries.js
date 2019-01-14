@@ -47,7 +47,7 @@ export const GET_CATEGORY_ORDER = gql`
 
 export const GET_SELECTED_CATEGORIES = gql`
   query GetSelectedCategories {
-    selectedCategories @client
+    saveSelectedCategories @client
   }
 `;
 

@@ -9,6 +9,6 @@ export type Props = {|
   isSelected?: boolean,
   selectCategory: Function,
   allSelectButton: boolean,
-  setSelectedCategory: Function,
+  setSelectedCategories: Function,
   allSubCategoryList: Array<string>,
 |}

@@ -30,13 +30,13 @@ export class Category extends PureComponent<Props, {}> {
     selectCategory(name);
 
     if (allSelectButton) {
-      this.saveSelectedCategory(allSubCategoryList);
+      this.saveSelectedCategories(allSubCategoryList);
     }
   }
 
-  saveSelectedCategory = async (selectedCategory: any) => {
-    const { setSelectedCategory } = this.props;
-    await setSelectedCategory({ variables: { selectedCategory } });
+  saveSelectedCategories = async (selectedCategories: any) => {
+    const { setSelectedCategories } = this.props;
+    await setSelectedCategories({ variables: { selectedCategories } });
   }
 
   render() {
@@ -76,6 +76,6 @@ export class Category extends PureComponent<Props, {}> {
 
 export default compose(
   graphql(SET_SELECTED_CATEGORY, {
-    name: 'setSelectedCategory',
+    name: 'setSelectedCategories',
   }),
 )(Category);
