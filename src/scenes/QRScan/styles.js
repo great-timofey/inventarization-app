@@ -73,6 +73,9 @@ export default StyleSheet.create({
     position: 'absolute',
     bottom: normalize(125),
   },
+  torchButtonCentered: {
+    left: null,
+  },
   torchIcon: {
     width: 50,
     height: 50,
