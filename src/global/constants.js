@@ -221,6 +221,7 @@ const headers = {
   pickDate: 'Выберите дату',
   mainInfo: 'Основная информация',
   categoryList: 'Список категорий',
+  addPhotos: 'Добавить фотографии',
   addingItem: 'Добавление предмета',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
