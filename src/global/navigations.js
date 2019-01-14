@@ -208,7 +208,7 @@ export class RootNavigator extends PureComponent<{}> {
     return (
       <View style={styles.background}>
         <SideMenu
-          // disableGestures
+          disableGestures
           ref={sideMenuRef}
           menu={<CategoryMenu />}
           animationStyle={this.getAnimationStyle}

@@ -234,14 +234,13 @@ class ItemsList extends PureComponent<Props> {
           let categoryTabData = [];
 
           selectedCategories.forEach((e) => {
-            allSubCategoryList.filter((x) => {
+            allSubCategoryList.find((x) => {
               if (x.id === e) {
                 categoryTabData = [...categoryTabData, x.name];
               }
               return null;
             });
           });
-
 
           return dataToRenderIsEmpty ? (
             <View>

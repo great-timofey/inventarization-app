@@ -53,7 +53,7 @@ type Query {
     __typename: UserCompany 
   }
 }
-type Mutations {
+type Mutation {
   setSelectedCategory(selectedCategory: String!): 
 }
 `;

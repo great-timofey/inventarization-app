@@ -58,7 +58,7 @@ export const SET_CATEGORY_ORDER = gql`
 `;
 
 export const SET_SELECTED_CATEGORY = gql`
-  mutation SetSelectedCategory($selectedCategory: any) {
+  mutation SetSelectedCategory($selectedCategory: [String!]) {
     setSelectedCategory(selectedCategory: $selectedCategory) @client 
   }
 `;
