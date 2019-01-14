@@ -50,7 +50,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     return {
       headerStyle: styles.header,
       title: from ? constants.headers.addPhotos : constants.headers.newItem,
-      headerTitleStyle: styles.headerTitleStyle,
+      headerTitleStyle: from ? styles.headerTitleSmallStyle : styles.headerTitleStyle,
       headerLeft: (
         <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
       ),
