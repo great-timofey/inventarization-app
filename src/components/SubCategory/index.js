@@ -63,7 +63,11 @@ export class SubCategory extends PureComponent<Props, State> {
             />
           )}
           <View style={[styles.wrapper, isBackButton && styles.backButtonWrapper]}>
-            <Text style={[styles.text, isBackButton && styles.backButtonText]}>
+            <Text style={[
+              styles.text,
+              isBackButton && styles.backButtonText,
+              isSelected && styles.selectedText]}
+            >
               {item.name}
             </Text>
           </View>

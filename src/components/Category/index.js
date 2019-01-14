@@ -7,11 +7,13 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
+import { compose, graphql } from 'react-apollo';
 import CustomIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
 import styles from './styles';
 
@@ -23,8 +25,26 @@ type Props ={|
 
 export class Category extends PureComponent<Props, {}> {
   selectCategory = () => {
-    const { item: { name }, selectCategory } = this.props;
+    const {
+      item: { name },
+      selectCategory,
+      allSelectButton,
+      allSubCategoryList,
+    } = this.props;
+    console.log(allSubCategoryList);
+
     selectCategory(name);
+
+    if (allSelectButton) {
+      this.saveSelectedCategory(allSubCategoryList);
+    }
+  }
+
+  saveSelectedCategory = async (selectedCategory: any) => {
+    console.log(selectedCategory);
+
+    const { setSelectedCategory } = this.props;
+    await setSelectedCategory({ variables: { selectedCategory } });
   }
 
   render() {
@@ -62,4 +82,11 @@ export class Category extends PureComponent<Props, {}> {
   }
 }
 
-export default Category;
+export default compose(
+  graphql(SET_SELECTED_CATEGORY, {
+    name: 'setSelectedCategory',
+  }),
+  // graphql(GET_SELECTED_CATEGORIES, {
+  //   props: ({ data: { selectedCategories } }) => ({ selectedCategories }),
+  // }),
+)(Category);

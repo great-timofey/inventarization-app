@@ -59,24 +59,31 @@ class CategoryMenu extends PureComponent<Props, State> {
       }
     }
 
-    let isCategorySelect = false;
-
-    if (!isSubCategoryView
-      && data.chields.length > 0
-    ) {
-      const chieldsList = data.chields.map(x => x.id);
-      isCategorySelect = !!intersection(chieldsList, selectedCategories).length;
-    }
-
     let IdList = [];
+    let allSubCategoryList = [];
 
     if (companyCategories && companyCategories.length > 0) {
+      allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
       if (isSubCategoryView) {
         const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
         if (parent.chields.length > 0) {
           IdList = parent.chields.map(x => x.id);
         }
+      }
+    }
+    const isAllCategorySelected = allSubCategoryList.length === selectedCategories.length;
+
+    let isCategorySelect = false;
+
+    if (!isSubCategoryView
+      && data.chields.length > 0
+    ) {
+      const chieldsList = data.chields.map(x => x.id);
+      if (isAllCategorySelected) {
+        isCategorySelect = false;
+      } else {
+        isCategorySelect = !!intersection(chieldsList, selectedCategories).length;
       }
     }
 
@@ -138,13 +145,15 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
+          let IdList = [];
           let categoryList = {};
           let subCategoryList = {};
-          let IdList = [];
+          let allSubCategoryList = [];
 
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
+            allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
 
             if (isSubCategoryView) {
               const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
@@ -156,6 +165,7 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
+          const isAllCategorySelected = allSubCategoryList.length === selectedCategories.length;
           const isAllSelected = intersection(selectedCategories, IdList).length === IdList.length;
 
           let prefix = '';
@@ -191,7 +201,10 @@ class CategoryMenu extends PureComponent<Props, State> {
                   </Fragment>
                 ) : (
                   <Category
+                    allSelectButton
                     selectCategory={() => { }}
+                    isSelected={isAllCategorySelected}
+                    allSubCategoryList={allSubCategoryList}
                     item={{ name: 'Все категории', icon: 'side-menu-all' }}
                   />
                 )
