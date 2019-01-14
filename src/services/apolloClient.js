@@ -74,6 +74,7 @@ const resolvers = {
       return null;
     },
     setSelectedCategories: async (_, { selectedCategories }, { cache: innerCache }) => {
+      // eslint-disable-next-line max-len
       const { saveSelectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
       const diff = intersection(selectedCategories, saveSelectedCategories);
 

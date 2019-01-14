@@ -166,6 +166,7 @@ class CategoryMenu extends PureComponent<Props, State> {
           }
 
           const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
+          // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
 
           let prefix = '';
