@@ -14,7 +14,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
   },
   wrapper: {
-    height: normalize(360),
     alignItems: 'center',
   },
   title: {

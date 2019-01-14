@@ -29,11 +29,13 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
+import { isIphoneX } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
-import type { Props, State, InviteeProps } from './types';
+
 import styles from './styles';
+import type { Props, State, InviteeProps } from './types';
 
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
@@ -71,8 +73,8 @@ class CreateCompany extends PureComponent<Props, State> {
       currentInvitee: '',
       isModalVisible: false,
       keyboardPadding: new Animated.Value(0),
-      paddingTop: new Animated.Value(normalize(10)),
-      marginBottom: new Animated.Value(normalize(105)),
+      paddingTop: new Animated.Value(isIphoneX ? normalize(50) : normalize(30)),
+      marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(105)),
     };
   }
 
@@ -96,11 +98,11 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: normalize(10),
+          toValue: isIphoneX ? normalize(50) : normalize(20),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
-          toValue: normalize(event.endCoordinates.height - 90),
+          toValue: normalize(event.endCoordinates.height - 110),
         }),
       ]).start();
     });
@@ -112,7 +114,7 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: normalize(105),
+          toValue: isIphoneX ? normalize(200) : normalize(105),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
@@ -249,8 +251,8 @@ class CreateCompany extends PureComponent<Props, State> {
     const {
       invitees,
       warnings,
-      companyName,
       paddingTop,
+      companyName,
       marginBottom,
       currentInvitee,
       isModalVisible,
@@ -259,7 +261,11 @@ class CreateCompany extends PureComponent<Props, State> {
     } = this.state;
 
     return (
-      <KeyboardAwareScrollView disableAutomaticScroll style={{ backgroundColor: colors.white }}>
+      <KeyboardAwareScrollView
+        bottomOffset={400}
+        disableAutomaticScroll
+        style={{ backgroundColor: colors.white }}
+      >
         <Animated.View
           style={[
             styles.container,
@@ -289,7 +295,7 @@ class CreateCompany extends PureComponent<Props, State> {
               isWarning={includes('orgName', warnings)}
               type={constants.inputTypes.companyName}
               onSubmitEditing={() => this.focusField(this.emailRef)}
-              onChangeText={text => this.onChangeField('orgName', text)}
+              onChangeText={text => this.onChangeField('companyName', text)}
             />
             <Input
               isWhite

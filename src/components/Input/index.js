@@ -27,9 +27,9 @@ class Input extends Component<Props> {
     const { returnKeyType, value, isWarning, containerCallback, secureTextEntry } = this.props;
     if (
       nextProps.value !== value
-      || nextProps.secureTextEntry !== secureTextEntry
-      || nextProps.returnKeyType !== returnKeyType
       || nextProps.isWarning !== isWarning
+      || nextProps.returnKeyType !== returnKeyType
+      || nextProps.secureTextEntry !== secureTextEntry
       || nextProps.containerCallback !== containerCallback
     ) {
       return true;
@@ -74,6 +74,7 @@ class Input extends Component<Props> {
             isWhite && styles.whiteContainer,
             isWarning && styles.invalidContainer,
             isMultiline && styles.multilineContainer,
+            isWhite && isWarning && styles.invalidWhiteContainer,
             isBackgroundTransparent && styles.transparentBackgroundContainer,
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
           ]}
@@ -83,6 +84,7 @@ class Input extends Component<Props> {
               styles.inputTitleText,
               isWarning && styles.inputErrorText,
               isWhite && styles.inputTitleTextWhite,
+              isWarning && isWhite && styles.inputErrorText,
               showWarningInTitle && isWarning && styles.inputErrorText,
             ]}
           >
