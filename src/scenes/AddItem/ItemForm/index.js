@@ -45,6 +45,7 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 
 import type { Props, State, PhotosProps, PreviewProps, Section } from './types';
 import styles from './styles';
+import {normalize} from "../../../global/utils";
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -197,6 +198,7 @@ class ItemForm extends Component<Props, State> {
 
   carousel: any;
   navListener: any;
+  keyboardRef: any;
 
   componentDidMount() {
     const {
@@ -368,7 +370,9 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
 
-    if (!isFormInvalid) {
+    if (isFormInvalid) {
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(400), animated: true });
+    } else {
       const {
         userCompany: {
           company: { id: companyId },
@@ -807,7 +811,11 @@ class ItemForm extends Component<Props, State> {
           style={styles.container}
           keyboardVerticalOffset={isIphoneX ? 85 : 60}
         >
-          <ScrollView>
+          <ScrollView
+            ref={ref => {
+              this.keyboardRef = ref;
+            }}
+          >
             <View style={styles.preview}>
               <View style={styles.previewModeButtons}>
                 <PreviewModeButton
