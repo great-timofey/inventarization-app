@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove, last, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -262,8 +262,8 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      itemCopy.photos = photos.map(url => ({ uri: url }));
-      itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
+      itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
+      itemCopy.photosOfDamages = (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
@@ -454,10 +454,10 @@ class ItemForm extends Component<Props, State> {
         // let response;
         if (assetId) {
           // response = await updateAsset({ variables });
-          await updateAsset({ variables });
+          await updateAsset({ variables, update: this.updateUpdateAsset });
         } else {
           // response = await createAsset({ variables });
-          await createAsset({ variables });
+          await createAsset({ variables, update: this.updateCreateAsset });
         }
         // console.log(response);
       } catch (error) {
@@ -465,6 +465,31 @@ class ItemForm extends Component<Props, State> {
         console.dir(error);
       }
     }
+  };
+
+  updateCreateAsset = (cache: Object, payload: Object) => {
+    const {
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    // eslint-disable-next-line
+    payload.data.createAsset.id = (parseInt(last(data.assets).id) + 1).toString();
+    data.assets = data.assets.concat(payload.data.createAsset);
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
+  updateUpdateAsset = (cache: Object, payload: Object) => {
+    const {
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const updateIndex = findIndex(asset => asset.id === payload.data.updateAsset.id, data.assets);
+    data.assets[updateIndex] = payload.data.updateAsset;
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
@@ -779,13 +804,12 @@ class ItemForm extends Component<Props, State> {
         company: { id: companyId },
         role: userRole,
       },
-      userId: currentUserId,
+      navigation,
     } = this.props;
 
     const {
       name,
       photos,
-      creator,
       warnings,
       sections,
       isNewItem,
@@ -804,6 +828,8 @@ class ItemForm extends Component<Props, State> {
     const currentTypeIsEmpty =
       (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
 
+    const userCanDelete = navigation.getParam('userCanDelete', false);
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
@@ -812,7 +838,7 @@ class ItemForm extends Component<Props, State> {
           keyboardVerticalOffset={isIphoneX ? 85 : 60}
         >
           <ScrollView
-            ref={ref => {
+            ref={(ref) => {
               this.keyboardRef = ref;
             }}
           >
@@ -834,9 +860,9 @@ class ItemForm extends Component<Props, State> {
                   <NoItems
                     additional={
                       isNewItem
+                      || userCanDelete
                       || userRole === constants.roles.admin
                       //  $FlowFixMe
-                      || (creator && creator.id === currentUserId)
                     }
                     onPress={this.handleAddPhoto}
                   />
