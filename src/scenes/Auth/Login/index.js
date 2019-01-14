@@ -205,6 +205,7 @@ class Login extends PureComponent<Props, State> {
               blurOnSubmit={false}
               type={constants.inputTypes.name}
               isWarning={includes('name', warnings)}
+              placeholder={constants.placeholders.manufacture}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('name', text)}
             />
@@ -218,6 +219,7 @@ class Login extends PureComponent<Props, State> {
             keyboardType="email-address"
             type={constants.inputTypes.email}
             isWarning={includes('email', warnings)}
+            placeholder={constants.placeholders.email}
             onChangeText={text => this.onChangeField('email', text)}
             onSubmitEditing={() => this.focusField(this.passwordRef)}
           />
@@ -232,6 +234,7 @@ class Login extends PureComponent<Props, State> {
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
             isWarning={includes('password', warnings)}
+            placeholder={constants.placeholders.password}
             returnKeyType={!isRegForm ? 'go' : undefined}
             onSubmitEditing={() => this.focusField(this.mobileRef)}
             onChangeText={text => this.onChangeField('password', text)}

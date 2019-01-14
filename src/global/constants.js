@@ -31,6 +31,8 @@ const uploadCreateAssetImages = {
 
 const placeholders = {
   manufacture: 'Введите название',
+  email: 'Введите электронную почту',
+  password: 'Назначьте пароль',
   model: 'Введите название',
   description: 'Введите текст',
   placeId: 'Место не указано',
