@@ -10,7 +10,7 @@ export default StyleSheet.create({
   visibleContainer: {
     width: '100%',
     paddingLeft: normalize(20),
-    marginBottom: normalize(20),
+    marginBottom: normalize(10),
     paddingRight: normalize(20),
   },
   hiddenContainer: {
@@ -18,8 +18,8 @@ export default StyleSheet.create({
   },
   errorText: {
     textAlign: 'left',
-    fontSize: normalize(11),
-    color: colors.invalidBorder,
-    fontFamily: fonts.proDisplay.light,
+    fontSize: normalize(13),
+    color: colors.red,
+    fontFamily: fonts.proDisplay.regular,
   },
 });

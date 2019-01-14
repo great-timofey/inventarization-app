@@ -81,6 +81,7 @@ class Input extends Component<Props> {
           <Text
             style={[
               styles.inputTitleText,
+              isWarning && styles.inputErrorText,
               isWhite && styles.inputTitleTextWhite,
               showWarningInTitle && isWarning && styles.inputErrorText,
             ]}

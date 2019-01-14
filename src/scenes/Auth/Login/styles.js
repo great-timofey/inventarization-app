@@ -24,7 +24,7 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.light,
   },
   toogleVisiblePasswordBtn: {
-    marginRight: 20,
     alignSelf: 'center',
+    marginRight: normalize(20),
   },
 });

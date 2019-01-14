@@ -23,6 +23,7 @@ export default {
   backGroundBlack: '#0D0D0D',
   transparent: 'transparent',
   buttonChooseLogo: '#EFEFEF',
+  invalidInputContainet: '#420E18',
   itemFormErrorContainer: '#FFE7EB',
   blackOpacity: 'rgba(0, 0, 0, .3)',
   blackOpacityLight: 'rgba(0, 0, 0, .1)',
