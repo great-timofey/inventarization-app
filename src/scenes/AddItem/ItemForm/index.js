@@ -29,7 +29,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { isIphoneX } from '~/global/device';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
-import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
+import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -45,7 +45,6 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 
 import type { Props, State, PhotosProps, PreviewProps, Section } from './types';
 import styles from './styles';
-import {normalize} from "../../../global/utils";
 
 const iconProps = {
   activeOpacity: 0.5,
@@ -492,6 +491,23 @@ class ItemForm extends Component<Props, State> {
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
+  updateDestroyAsset = (cache: Object) => {
+    const {
+      props: {
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: {
+        id,
+      },
+    } = this;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const deleteIndex = findIndex(asset => asset.id === id, data.assets);
+    data.assets = remove(deleteIndex, 1, data.assets);
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
       props: { userCompany },
@@ -684,8 +700,8 @@ class ItemForm extends Component<Props, State> {
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       try {
-        await destroyAsset({ variables: { id } });
-        navigation.goBack();
+        await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
         this.handleToggleDelModal();
       } catch (error) {
         Alert.alert(error.message);

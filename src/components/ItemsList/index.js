@@ -86,8 +86,9 @@ class ItemsList extends Component<Props> {
       const placesIds = pluck('id', userPlaces);
       const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
       const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+      const isItemWithoutPlace = item && !item.place;
 
-      showMenuButton = isItemInResponsiblePlaces || isUserResponsible;
+      showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
       showRemoveButton = showMenuButton;
     }
 
