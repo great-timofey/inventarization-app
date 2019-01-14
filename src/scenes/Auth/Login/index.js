@@ -5,7 +5,15 @@ import React, { PureComponent } from 'react';
 // $FlowFixMe
 import { includes, assoc } from 'ramda';
 import { compose, graphql } from 'react-apollo';
-import { Alert, View, Text, Keyboard, Animated, AsyncStorage } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Alert,
+  Keyboard,
+  Animated,
+  AsyncStorage,
+} from 'react-native';
 
 import Logo from '~/components/Logo';
 import Input from '~/components/Input';
@@ -13,6 +21,7 @@ import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
+import assets from '~/global/assets';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
 import { isValid } from '~/global/utils';
@@ -217,7 +226,13 @@ class Login extends PureComponent<Props, State> {
             returnKeyType={!isRegForm ? 'go' : undefined}
             onSubmitEditing={() => this.focusField(this.mobileRef)}
             onChangeText={text => this.onChangeField('password', text)}
-          />
+          >
+            <Image
+              resizeMode="contain"
+              source={assets.hiddenPassword}
+              style={styles.toogleVisiblePasswordBtn}
+            />
+          </Input>
           {isRegForm && (
             <Input
               value={mobile}
