@@ -80,16 +80,18 @@ class ItemsList extends Component<Props> {
       showRemoveButton = true;
       showMenuButton = true;
     } else if (isUserManager) {
-      //  $FlowFixMe
-      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-      const userPlaces = [...createdPlaces, ...responsiblePlaces];
-      const placesIds = pluck('id', userPlaces);
-      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
-      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
-      const isItemWithoutPlace = item && !item.place;
+      if (currentUser) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+        const isItemWithoutPlace = item && !item.place;
 
-      showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
-      showRemoveButton = showMenuButton;
+        showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
+        showRemoveButton = showMenuButton;
+      }
     }
 
     return (
@@ -195,22 +197,24 @@ class ItemsList extends Component<Props> {
 
           if (isUserManager) {
             //  $FlowFixMe
-            const {createdPlaces = [], responsiblePlaces = []} = currentUser;
-            const userPlaces = [...createdPlaces, ...responsiblePlaces];
+            if (currentUser) {
+              const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+              const userPlaces = [...createdPlaces, ...responsiblePlaces];
 
-            const placesIds = pluck('id', userPlaces);
+              const placesIds = pluck('id', userPlaces);
 
-            if (innerAssets) {
-              const assetsOfNotResponsiblePlaces = filter(
-                asset => !includes(asset.place && asset.place.id, placesIds)
-                  && (asset.responsible && asset.responsible.id === userId),
-                innerAssets,
-              );
-              dataToRender = filter(
-                asset => includes(asset.place && asset.place.id, placesIds)
-                  || (asset.creator && asset.creator.id === userId && !asset.place),
-                innerAssets,
-              ).concat(assetsOfNotResponsiblePlaces);
+              if (innerAssets) {
+                const assetsOfNotResponsiblePlaces = filter(
+                  asset => !includes(asset.place && asset.place.id, placesIds)
+                    && (asset.responsible && asset.responsible.id === userId),
+                  innerAssets,
+                );
+                dataToRender = filter(
+                  asset => includes(asset.place && asset.place.id, placesIds)
+                    || (asset.creator && asset.creator.id === userId && !asset.place),
+                  innerAssets,
+                ).concat(assetsOfNotResponsiblePlaces);
+              }
             }
           }
 
