@@ -260,10 +260,8 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      console.log(1, photos)
       itemCopy.photos = photos.map(url => ({ uri: url }));
-      // itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
-      itemCopy.photosOfDamages = [];
+      itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'

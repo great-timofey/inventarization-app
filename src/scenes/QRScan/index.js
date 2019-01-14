@@ -43,8 +43,8 @@ class QRCode extends PureComponent<Props, State> {
       headerLeft: (
         <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
       ),
-      headerRight: (
-        checkMode ? null : <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
+      headerRight: checkMode ? null : (
+        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
       ),
     };
   };
@@ -118,7 +118,10 @@ class QRCode extends PureComponent<Props, State> {
   };
 
   render() {
-    const { state: { isTorchOn, showNoMatchError }, props: { navigation } } = this;
+    const {
+      state: { isTorchOn, showNoMatchError },
+      props: { navigation },
+    } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
       <View style={styles.container}>
@@ -130,18 +133,21 @@ class QRCode extends PureComponent<Props, State> {
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
-        <TouchableOpacity style={[styles.torchButton, checkMode && styles.torchButtonCentered]} onPress={this.toggleTorch}>
+        <TouchableOpacity
+          style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
+          onPress={this.toggleTorch}
+        >
           <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
         </TouchableOpacity>
-        {!checkMode &&
-          (<TouchableOpacity style={styles.makePhotoButton} disabled>
+        {!checkMode && (
+          <TouchableOpacity style={styles.makePhotoButton} disabled>
             <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>)
-        }
+          </TouchableOpacity>
+        )}
         <View style={styles.hintContainer}>
           <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
             {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
-           </Text>
+          </Text>
         </View>
       </View>
     );
