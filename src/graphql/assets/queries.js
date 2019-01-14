@@ -8,10 +8,8 @@ export const GET_COMPANY_ASSETS = gql`
       name
       model
       status
-      photos
       assessedValue
       purchasePrice
-      photosOfDamages
       codeData
       company {
         id
@@ -54,10 +52,8 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       name
       model
       status
-      photos
       assessedValue
       purchasePrice
-      photosOfDamages
       codeData
       company {
         id

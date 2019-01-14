@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove, last, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -29,7 +29,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { isIphoneX } from '~/global/device';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
-import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
+import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -197,6 +197,7 @@ class ItemForm extends Component<Props, State> {
 
   carousel: any;
   navListener: any;
+  keyboardRef: any;
 
   componentDidMount() {
     const {
@@ -260,8 +261,9 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      itemCopy.photos = photos.map(url => ({ uri: url }));
-      itemCopy.photosOfDamages = photosOfDamages.map(url => ({ uri: url }));
+      itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
+      //  eslint-disable-next-line
+      itemCopy.photosOfDamages = (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
@@ -368,7 +370,9 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
 
-    if (!isFormInvalid) {
+    if (isFormInvalid) {
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(400), animated: true });
+    } else {
       const {
         userCompany: {
           company: { id: companyId },
@@ -450,10 +454,10 @@ class ItemForm extends Component<Props, State> {
         // let response;
         if (assetId) {
           // response = await updateAsset({ variables });
-          await updateAsset({ variables });
+          await updateAsset({ variables, update: this.updateUpdateAsset });
         } else {
           // response = await createAsset({ variables });
-          await createAsset({ variables });
+          await createAsset({ variables, update: this.updateCreateAsset });
         }
         // console.log(response);
       } catch (error) {
@@ -461,6 +465,49 @@ class ItemForm extends Component<Props, State> {
         console.dir(error);
       }
     }
+  };
+
+  updateCreateAsset = (cache: Object, payload: Object) => {
+    const {
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    /*  eslint-disable */
+    //  $FlowFixMe
+    payload.data.createAsset.id = (parseInt(last(data.assets).id) + 1).toString();
+    /*  eslint-enable */
+    data.assets.push(payload.data.createAsset);
+    //  doesnt work for now
+    // cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
+  updateUpdateAsset = (cache: Object, payload: Object) => {
+    const {
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const updateIndex = findIndex(asset => asset.id === payload.data.updateAsset.id, data.assets);
+    data.assets[updateIndex] = payload.data.updateAsset;
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
+  updateDestroyAsset = (cache: Object) => {
+    const {
+      props: {
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { id },
+    } = this;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const deleteIndex = findIndex(asset => asset.id === id, data.assets);
+    data.assets = remove(deleteIndex, 1, data.assets);
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
@@ -655,8 +702,8 @@ class ItemForm extends Component<Props, State> {
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       try {
-        await destroyAsset({ variables: { id } });
-        navigation.goBack();
+        await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
         this.handleToggleDelModal();
       } catch (error) {
         Alert.alert(error.message);
@@ -775,13 +822,12 @@ class ItemForm extends Component<Props, State> {
         company: { id: companyId },
         role: userRole,
       },
-      userId: currentUserId,
+      navigation,
     } = this.props;
 
     const {
       name,
       photos,
-      creator,
       warnings,
       sections,
       isNewItem,
@@ -800,6 +846,8 @@ class ItemForm extends Component<Props, State> {
     const currentTypeIsEmpty =
       (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
 
+    const userCanDelete = navigation.getParam('userCanDelete', false);
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView
@@ -807,7 +855,11 @@ class ItemForm extends Component<Props, State> {
           style={styles.container}
           keyboardVerticalOffset={isIphoneX ? 85 : 60}
         >
-          <ScrollView>
+          <ScrollView
+            ref={(ref) => {
+              this.keyboardRef = ref;
+            }}
+          >
             <View style={styles.preview}>
               <View style={styles.previewModeButtons}>
                 <PreviewModeButton
@@ -825,10 +877,8 @@ class ItemForm extends Component<Props, State> {
                 {currentTypeIsEmpty ? (
                   <NoItems
                     additional={
-                      isNewItem
-                      || userRole === constants.roles.admin
+                      isNewItem || userCanDelete || userRole === constants.roles.admin
                       //  $FlowFixMe
-                      || (creator && creator.id === currentUserId)
                     }
                     onPress={this.handleAddPhoto}
                   />
@@ -944,8 +994,8 @@ export default compose(
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
   graphql(CREATE_ASSET, { name: 'createAsset' }),
-  graphql(UPDATE_ASSET, { name: 'updateAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(UPDATE_ASSET, { name: 'updateAsset' }),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
