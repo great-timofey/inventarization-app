@@ -25,7 +25,7 @@ export class SubCategory extends Component<Props, State> {
 
     const { isSelect } = this.props;
     this.state = {
-      isSelected: isSelect,
+      isSelect,
     };
   }
 
@@ -54,18 +54,17 @@ export class SubCategory extends Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props) {
-    // if (nextProps.isSelect !== this.props.isSelect) {
-    //   return true;
-    // }
+    if (nextProps.isSelect !== this.props.isSelect) {
+      return true;
+    }
     return !false;
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps !== this.props) {
-      console.log(prevProps.isSelect, this.props.isSelect);
-
+    const { isSelect } = this.props;
+    if (prevProps.isSelect !== isSelect) {
       this.setState = ({
-        isSelected: this.props.isSelect,
+        isSelect,
       });
     }
   }
