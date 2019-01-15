@@ -37,4 +37,10 @@ export default StyleSheet.create({
   backButtonText: {
     color: colors.blueBorder,
   },
+  selectedSubCategory: {
+    backgroundColor: colors.blackOpacityExtraLight,
+  },
+  selectedText: {
+    fontFamily: fonts.proDisplay.bold,
+  },
 });

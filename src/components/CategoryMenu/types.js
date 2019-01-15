@@ -2,9 +2,10 @@
 
 export type State = {|
   selectedCategory: string,
-
 |}
 
 export type Props = {|
-  categoryOrder: Array<string>
+  current: Object,
+  categoryOrder: Array<string>,
+  saveSelectedCategories: Array<string>
 |};

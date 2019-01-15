@@ -21,6 +21,7 @@ import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
+import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
 import constants from '~/global/constants';
@@ -80,15 +81,19 @@ class ItemsList extends PureComponent<Props> {
       showRemoveButton = true;
       showMenuButton = true;
     } else if (isUserManager) {
-      //  $FlowFixMe
-      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-      const userPlaces = [...createdPlaces, ...responsiblePlaces];
-      const placesIds = pluck('id', userPlaces);
-      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
-      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+      if (currentUser) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+        const isItemWithoutPlace = item && !item.place;
 
-      showMenuButton = isItemInResponsiblePlaces || isUserResponsible;
-      showRemoveButton = showMenuButton;
+        //  eslint-disable-next-line
+        showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
+        showRemoveButton = showMenuButton;
+      }
     }
 
     return (
@@ -98,6 +103,7 @@ class ItemsList extends PureComponent<Props> {
         selectItem={selectItem}
         openItem={this.handleOpenItem}
         showMenuButton={showMenuButton}
+        //  $FlowFixMe
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
@@ -147,6 +153,7 @@ class ItemsList extends PureComponent<Props> {
   render() {
     const {
       userId,
+      current,
       userRole,
       companyId,
       swipeable,
@@ -157,7 +164,9 @@ class ItemsList extends PureComponent<Props> {
       currentSelectItem,
       handleShowSortButton,
       toggleDelModalVisible,
+      saveSelectedCategories,
     } = this.props;
+
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
         {({ data, loading, error }) => {
@@ -181,32 +190,37 @@ class ItemsList extends PureComponent<Props> {
           const isUserManager = userRole === constants.roles.manager;
 
           if (isUserEmployee) {
-            dataToRender = innerAssets.filter(
-              asset => (asset.creator
+            if (innerAssets) {
+              dataToRender = innerAssets.filter(
+                asset => (asset.creator
                   && asset.creator.id === userId
                   && asset.status === 'on_processing')
-                || (asset.responsible && asset.responsible.id === userId),
-            );
+                  || (asset.responsible && asset.responsible.id === userId),
+              );
+            }
           }
 
           if (isUserManager) {
             //  $FlowFixMe
-            const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-            const userPlaces = [...createdPlaces, ...responsiblePlaces];
+            if (currentUser) {
+              const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+              const userPlaces = [...createdPlaces, ...responsiblePlaces];
 
-            const placesIds = pluck('id', userPlaces);
+              const placesIds = pluck('id', userPlaces);
 
-            const assetsOfNotResponsiblePlaces = filter(
-              asset => !includes(asset.place && asset.place.id, placesIds)
-                && (asset.responsible && asset.responsible.id === userId),
-              innerAssets,
-            );
-
-            dataToRender = filter(
-              asset => includes(asset.place && asset.place.id, placesIds)
-                || (asset.creator && asset.creator.id === userId && !asset.place),
-              innerAssets,
-            ).concat(assetsOfNotResponsiblePlaces);
+              if (innerAssets) {
+                const assetsOfNotResponsiblePlaces = filter(
+                  asset => !includes(asset.place && asset.place.id, placesIds)
+                    && (asset.responsible && asset.responsible.id === userId),
+                  innerAssets,
+                );
+                dataToRender = filter(
+                  asset => includes(asset.place && asset.place.id, placesIds)
+                    || (asset.creator && asset.creator.id === userId && !asset.place),
+                  innerAssets,
+                ).concat(assetsOfNotResponsiblePlaces);
+              }
+            }
           }
 
           const dataToRenderIsEmpty = dataToRender.length === 0;
@@ -215,6 +229,27 @@ class ItemsList extends PureComponent<Props> {
           } else {
             handleShowSortButton(true);
           }
+
+          let companyCategories = [];
+          let allSubCategoryList = [];
+
+          if (current != null) {
+            const { companies } = current;
+            const company = companies[0];
+            if (company != null) {
+              companyCategories = company.categories;
+              allSubCategoryList = companyCategories.filter(x => x.parent !== null);
+            }
+          }
+
+          let categoryTabData = [];
+
+          saveSelectedCategories.forEach((e) => {
+            const match = allSubCategoryList.find(x => x.id === e);
+            if (match) {
+              categoryTabData = [...categoryTabData, match.name];
+            }
+          });
 
           return dataToRenderIsEmpty ? (
             <View>
@@ -238,7 +273,7 @@ class ItemsList extends PureComponent<Props> {
               <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal
-                  data={constants.category}
+                  data={categoryTabData}
                   renderItem={this.renderTab}
                   keyExtractor={this.keyExtractor}
                   showsHorizontalScrollIndicator={false}
@@ -276,6 +311,14 @@ class ItemsList extends PureComponent<Props> {
 export default compose(
   //  $FlowFixMe
   graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
+  graphql(GET_SELECTED_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
+  }),
+  graphql(GET_COMPANY_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ current }),
+  }),
   /*  eslint-disable */
   //  $FlowFixMe
   graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })

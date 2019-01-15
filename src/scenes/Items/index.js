@@ -3,6 +3,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { StatusBar } from 'react-native';
 
+import { findIndex, remove } from 'ramda';
 import { graphql, compose } from 'react-apollo';
 import Search from '~/components/Search';
 import ItemsList from '~/components/ItemsList';
@@ -135,8 +136,29 @@ class ItemsScene extends PureComponent<Props, State> {
 
   handleDeleteItem = async (id: number | string) => {
     const { destroyAsset } = this.props;
-    await destroyAsset({ variables: { id } });
+    await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
     this.toggleDelModalVisible();
+    this.setState({ currentSelectItem: null });
+  };
+
+  updateDestroyAsset = (cache: Object) => {
+    const {
+      props: {
+        data: {
+          //  $FlowFixMe
+          userCompany: {
+            company: { id: companyId },
+          },
+        },
+      },
+      state: {
+        currentSelectItem,
+      },
+    } = this;
+    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const deleteIndex = findIndex(asset => asset.id === currentSelectItem, data.assets);
+    data.assets = remove(deleteIndex, 1, data.assets);
+    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   selectItem = (id: number | string) => {
@@ -180,8 +202,8 @@ class ItemsScene extends PureComponent<Props, State> {
       isDeleteModalVisible,
     } = this.state;
     const {
-      // $FlowFixMe
       data: {
+        // $FlowFixMe
         userCompany: {
           role: userRole,
           company: { id: companyId },

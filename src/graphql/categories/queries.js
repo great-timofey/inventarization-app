@@ -29,6 +29,9 @@ export const GET_COMPANY_CATEGORIES = gql`
           chields{
             id
             name
+            parent{
+              id
+            }
           }
         }
       }
@@ -42,8 +45,15 @@ export const GET_CATEGORY_ORDER = gql`
   }
 `;
 
+export const GET_SELECTED_CATEGORIES = gql`
+  query GetSelectedCategories {
+    saveSelectedCategories @client
+  }
+`;
+
 export default {
   GET_CATEGORY_ORDER,
   GET_COMPANY_CATEGORIES,
+  GET_SELECTED_CATEGORIES,
   GET_COMPANY_CATEGORIES_BY_ID,
 };

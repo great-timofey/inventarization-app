@@ -7,44 +7,46 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
+import { compose, graphql } from 'react-apollo';
 import CustomIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
 import styles from './styles';
+import type { Props } from './types';
 
-type Props ={|
-  item: Object,
-  selectCategory: Function,
-|}
+export class Category extends PureComponent<Props, {}> {
+  selectCategory = () => {
+    const {
+      item: { name },
+      selectCategory,
+      allSelectButton,
+      allSubCategoryList,
+    } = this.props;
 
-type State = {|
-  isSelect: boolean
-|}
+    selectCategory(name);
 
-export class Category extends PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isSelect: false,
-    };
+    if (allSelectButton) {
+      this.saveSelectedCategories(allSubCategoryList);
+    }
   }
 
-  selectCategory = () => {
-    const { item: { name }, selectCategory } = this.props;
-    selectCategory(name);
+  saveSelectedCategories = async (selectedCategories: any) => {
+    const { setSelectedCategories } = this.props;
+    await setSelectedCategories({ variables: { selectedCategories } });
   }
 
   render() {
-    const { item } = this.props;
+    const { item, isSelected } = this.props;
 
     if (item != null) {
       return (
         <TouchableOpacity
           onPress={this.selectCategory}
-          style={styles.menuContainer}
+          style={[styles.menuContainer, isSelected && styles.selectedCategory]}
         >
           <CustomIcon
             name={item.icon}
@@ -72,4 +74,8 @@ export class Category extends PureComponent<Props, State> {
   }
 }
 
-export default Category;
+export default compose(
+  graphql(SET_SELECTED_CATEGORY, {
+    name: 'setSelectedCategories',
+  }),
+)(Category);
