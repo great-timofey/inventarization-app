@@ -81,15 +81,19 @@ class ItemsList extends PureComponent<Props> {
       showRemoveButton = true;
       showMenuButton = true;
     } else if (isUserManager) {
-      //  $FlowFixMe
-      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-      const userPlaces = [...createdPlaces, ...responsiblePlaces];
-      const placesIds = pluck('id', userPlaces);
-      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
-      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+      if (currentUser) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+        const isItemWithoutPlace = item && !item.place;
 
-      showMenuButton = isItemInResponsiblePlaces || isUserResponsible;
-      showRemoveButton = showMenuButton;
+        //  eslint-disable-next-line
+        showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
+        showRemoveButton = showMenuButton;
+      }
     }
 
     return (
@@ -99,6 +103,7 @@ class ItemsList extends PureComponent<Props> {
         selectItem={selectItem}
         openItem={this.handleOpenItem}
         showMenuButton={showMenuButton}
+        //  $FlowFixMe
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
@@ -161,6 +166,7 @@ class ItemsList extends PureComponent<Props> {
       toggleDelModalVisible,
       saveSelectedCategories,
     } = this.props;
+
     return (
       <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
         {({ data, loading, error }) => {
@@ -184,32 +190,37 @@ class ItemsList extends PureComponent<Props> {
           const isUserManager = userRole === constants.roles.manager;
 
           if (isUserEmployee) {
-            dataToRender = innerAssets.filter(
-              asset => (asset.creator
+            if (innerAssets) {
+              dataToRender = innerAssets.filter(
+                asset => (asset.creator
                   && asset.creator.id === userId
                   && asset.status === 'on_processing')
-                || (asset.responsible && asset.responsible.id === userId),
-            );
+                  || (asset.responsible && asset.responsible.id === userId),
+              );
+            }
           }
 
           if (isUserManager) {
             //  $FlowFixMe
-            const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-            const userPlaces = [...createdPlaces, ...responsiblePlaces];
+            if (currentUser) {
+              const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+              const userPlaces = [...createdPlaces, ...responsiblePlaces];
 
-            const placesIds = pluck('id', userPlaces);
+              const placesIds = pluck('id', userPlaces);
 
-            const assetsOfNotResponsiblePlaces = filter(
-              asset => !includes(asset.place && asset.place.id, placesIds)
-                && (asset.responsible && asset.responsible.id === userId),
-              innerAssets,
-            );
-
-            dataToRender = filter(
-              asset => includes(asset.place && asset.place.id, placesIds)
-                || (asset.creator && asset.creator.id === userId && !asset.place),
-              innerAssets,
-            ).concat(assetsOfNotResponsiblePlaces);
+              if (innerAssets) {
+                const assetsOfNotResponsiblePlaces = filter(
+                  asset => !includes(asset.place && asset.place.id, placesIds)
+                    && (asset.responsible && asset.responsible.id === userId),
+                  innerAssets,
+                );
+                dataToRender = filter(
+                  asset => includes(asset.place && asset.place.id, placesIds)
+                    || (asset.creator && asset.creator.id === userId && !asset.place),
+                  innerAssets,
+                ).concat(assetsOfNotResponsiblePlaces);
+              }
+            }
           }
 
           const dataToRenderIsEmpty = dataToRender.length === 0;

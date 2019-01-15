@@ -19,8 +19,6 @@ export const CREATE_ASSET = gql`
     $categoryId: ID
     $placeId: ID
     $companyId: ID
-    $photos: [Upload!]
-    $photosOfDamages: [Upload!]
     $responsibleId: ID
     $status: AssetStatus
     $onTheBalanceSheet: Boolean
@@ -43,8 +41,6 @@ export const CREATE_ASSET = gql`
         categoryId: $categoryId
         placeId: $placeId
         companyId: $companyId
-        photos: $photos
-        photosOfDamages: $photosOfDamages
         responsibleId: $responsibleId
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
@@ -72,8 +68,6 @@ export const CREATE_ASSET = gql`
       model
       name
       onTheBalanceSheet
-      photos
-      photosOfDamages
       purchasePrice
       quantity
       responsible {
@@ -96,14 +90,11 @@ export const UPDATE_ASSET = gql`
     $assessedDate: String
     $guaranteeExpires: String
     $gps: GpsAttr!
-    $inventoryId: String!
     $manufacture: String
     $model: String
     $quantity: Int
     $categoryId: ID
     $placeId: ID
-    $photos: [Upload!]
-    $photosOfDamages: [Upload!]
     $responsibleId: ID
     $status: AssetStatus
     $onTheBalanceSheet: Boolean
@@ -119,20 +110,45 @@ export const UPDATE_ASSET = gql`
         assessedDate: $assessedDate
         guaranteeExpires: $guaranteeExpires
         gps: $gps
-        inventoryId: $inventoryId
         manufacture: $manufacture
         model: $model
         quantity: $quantity
         categoryId: $categoryId
         placeId: $placeId
-        photos: $photos
-        photosOfDamages: $photosOfDamages
         responsibleId: $responsibleId
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
       }
     ) {
       id
+      codeData
+      company {
+        id
+      }
+      createdAt
+      creator {
+        id
+        email
+      }
+      dateOfPurchase
+      description
+      gps {
+        lat
+        lon
+      }
+      guaranteeExpires
+      id
+      manufacture
+      model
+      name
+      onTheBalanceSheet
+      purchasePrice
+      quantity
+      responsible {
+        id
+        email
+      }
+      status
     }
   }
 `;

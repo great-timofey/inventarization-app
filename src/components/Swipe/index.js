@@ -41,14 +41,19 @@ class SwipeableList extends PureComponent<Props, {}> {
       }
     } else if (isUserManager) {
       //  $FlowFixMe
-      const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
-      const userPlaces = [...createdPlaces, ...responsiblePlaces];
-      const placesIds = pluck('id', userPlaces);
-      const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
-      const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+      if (currentUser) {
+        //  $FlowFixMe
+        const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
+        const userPlaces = [...createdPlaces, ...responsiblePlaces];
+        const placesIds = pluck('id', userPlaces);
+        const isItemInResponsiblePlaces = includes(item.place && item.place.id, placesIds);
+        const isUserResponsible = item && item.responsible && item.responsible.id === userId;
+        const isItemWithoutPlace = item && !item.place;
 
-      enableLeftSwipe = isItemInResponsiblePlaces || isUserResponsible;
-      showRemoveButton = enableLeftSwipe;
+        //  eslint-disable-next-line
+        enableLeftSwipe = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
+        showRemoveButton = enableLeftSwipe;
+      }
     }
 
     const swipeoutBtns = [
