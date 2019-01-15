@@ -73,8 +73,8 @@ class CreateCompany extends PureComponent<Props, State> {
       currentInvitee: '',
       isModalVisible: false,
       keyboardPadding: new Animated.Value(0),
-      paddingTop: new Animated.Value(isIphoneX ? normalize(50) : normalize(30)),
-      marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(105)),
+      paddingTop: new Animated.Value(normalize(20)),
+      marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(75)),
     };
   }
 
@@ -98,7 +98,7 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: isIphoneX ? normalize(50) : normalize(20),
+          toValue: isIphoneX ? normalize(50) : normalize(15),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
@@ -114,11 +114,11 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: isIphoneX ? normalize(200) : normalize(105),
+          toValue: isIphoneX ? normalize(200) : normalize(75),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
-          toValue: normalize(10),
+          toValue: normalize(20),
         }),
       ]).start();
     });
@@ -165,7 +165,6 @@ class CreateCompany extends PureComponent<Props, State> {
       if (chosenPhotoUri) {
         file = await convertToApolloUpload([chosenPhotoUri], '=');
       }
-
       await createCompany({
         variables: { name, logo: file, inviters },
       });
@@ -222,12 +221,15 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   checkValue = () => {
-    const { currentInvitee } = this.state;
+    const { companyName, chosenPhotoUri } = this.state;
     const warnings = [];
-    if (!currentInvitee) {
-      warnings.push('emailEmpty');
-    } else if (!isValid(currentInvitee, constants.regExp.email)) {
-      warnings.push('email');
+
+    if (!companyName) {
+      warnings.push('companyName');
+    }
+
+    if (chosenPhotoUri && !isValid(chosenPhotoUri, constants.regExp.photo)) {
+      warnings.push('photo');
     }
 
     this.setState({ warnings }, () => {
@@ -281,19 +283,26 @@ class CreateCompany extends PureComponent<Props, State> {
         >
           <Animated.View style={[styles.wrapper, { marginBottom }]}>
             <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
-              {chosenPhotoUri ? (
+              {chosenPhotoUri && isValid(chosenPhotoUri, constants.regExp.photo) ? (
                 <Image style={styles.chosenPhoto} source={{ uri: chosenPhotoUri }} />
               ) : (
-                <Text style={styles.photoHint}>{constants.buttonTitles.chooseLogo}</Text>
+                <Text
+                  style={[styles.photoHint, includes('photo', warnings) && styles.photoErrorText]}
+                >
+                  {constants.buttonTitles.chooseLogo}
+                </Text>
               )}
             </TouchableOpacity>
+            <Text style={[styles.hiddenError, includes('photo', warnings) && styles.photoErrorText]}>
+              {constants.errors.login.companyLogo}
+            </Text>
             <Input
               isWhite
               value={companyName}
               blurOnSubmit={false}
               placeholder="Введите"
-              isWarning={includes('orgName', warnings)}
               type={constants.inputTypes.companyName}
+              isWarning={includes('companyName', warnings)}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('companyName', text)}
             />
@@ -324,7 +333,7 @@ class CreateCompany extends PureComponent<Props, State> {
           </Animated.View>
           <Button
             onPress={this.checkValue}
-            isDisable={!companyName || !invitees.length}
+            // isDisable={!companyName || !invitees.length}
             title={constants.buttonTitles.createCompany}
           />
           <PickPhotoModal

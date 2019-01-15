@@ -10,6 +10,8 @@ const regExp = {
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   // eslint-disable-next-line no-useless-escape
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
+  // eslint-disable-next-line no-useless-escape
+  photo: /^.+[\.\=](([pP][nN][gG])|([jJ][pP][gG]))$/,
 };
 
 const masks = {
@@ -201,6 +203,7 @@ const errors = {
     password: 'Пароль должен состоять из не менее 7 знаков \n латиницей и 1 цифры',
     mobile: 'Неверный формат номера телефона',
     notMatch: 'Пароли не совпадают',
+    companyLogo: 'Неверный формат. Нужен .jpg или .png',
   },
   search: 'Подходящих результатов не найдено',
   qrcode: 'По отсканированному предмету\n нет информации',

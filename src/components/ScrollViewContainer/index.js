@@ -23,7 +23,7 @@ class ScrollViewContainer extends PureComponent<Props, State> {
     let bottomOffset = 0;
 
     if (isIphoneX) {
-      bottomOffset = 100;
+      bottomOffset = 60;
     } else if (isSmallDevice) {
       bottomOffset = 57;
     } else {

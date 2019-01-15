@@ -15,13 +15,7 @@ export default StyleSheet.create({
   },
   wrapper: {
     alignItems: 'center',
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: normalize(22),
-    marginBottom: normalize(25),
-    fontFamily: fonts.proDisplay.light,
-    color: colors.header.createCompany,
+    height: normalize(380),
   },
   inviteeContainer: {
     flexDirection: 'row',
@@ -52,17 +46,30 @@ export default StyleSheet.create({
     height: normalize(110),
     justifyContent: 'center',
     borderRadius: normalize(55),
-    marginBottom: normalize(50),
+    marginBottom: normalize(8),
     backgroundColor: colors.buttonChooseLogo,
   },
   chosenPhoto: {
     width: deviceWidth,
     height: deviceHeight,
   },
+  hiddenError: {
+    textAlign: 'center',
+    fontSize: normalize(13),
+    color: colors.transparent,
+    marginBottom: normalize(15),
+    fontFamily: fonts.proDisplay.regular,
+  },
+  photoErrorText: {
+    color: colors.red,
+  },
   photoHint: {
     color: '#818181',
     textAlign: 'center',
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.light,
+  },
+  photoHintError: {
+    color: colors.red,
   },
 });
