@@ -1,9 +1,10 @@
 //  @flow
 
 import { AsyncStorage } from 'react-native';
-
-import ApolloClient from 'apollo-client';
+// $FlowFixMe
+import { without, intersection } from 'ramda';
 import { ApolloLink } from 'apollo-link';
+import ApolloClient from 'apollo-client';
 import { setContext } from 'apollo-link-context';
 import DeviceInfo from 'react-native-device-info';
 import { createUploadLink } from 'apollo-upload-client';
@@ -12,12 +13,21 @@ import { persistCache } from 'apollo-cache-persist';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { inventoryApiUrl } from '~/global/constants';
+import { GET_SELECTED_CATEGORIES } from '~/graphql/categories/queries';
 
 const cache = new InMemoryCache();
 
 const httpLink = createUploadLink({
   uri: inventoryApiUrl,
 });
+
+const defaults = {
+  id: '',
+  userCompany: '',
+  isAuthed: false,
+  categoryOrder: [],
+  saveSelectedCategories: [],
+};
 
 const authLink = setContext(async (_, { headers }) => {
   const token = await AsyncStorage.getItem('token');
@@ -30,48 +40,67 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
-const stateLink = withClientState({
-  cache,
-  defaults: {
-    id: '',
-    userCompany: '',
-    isAuthed: false,
-    categoryOrder: [],
-  },
-  resolvers: {
-    Mutation: {
-      setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { isAuthed } });
-        return null;
-      },
-      setUserCompany: async (_, { userCompany }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { userCompany } });
-        return null;
-      },
-      setUserId: async (_, { id }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { id } });
-        return null;
-      },
-      setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
-        await innerCache.writeData({ data: { categoryOrder } });
-        return null;
-      },
+const typeDefs = `
+type Query {
+  id: ID
+  isAuthed: Boolean
+  categoryOrder: [String]
+  saveSelectedCategories: [String]
+  userCompany: {
+    id: ID
+    role: Role
+    company: Company
+    __typename: UserCompany 
+  }
+}
+`;
+
+const resolvers = {
+  Mutation: {
+    setAuth: async (_, { isAuthed }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { isAuthed } });
+      return null;
+    },
+    setUserCompany: async (_, { userCompany }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { userCompany } });
+      return null;
+    },
+    setUserId: async (_, { id }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { id } });
+      return null;
+    },
+    setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { categoryOrder } });
+      return null;
+    },
+    setSelectedCategories: async (_, { selectedCategories }, { cache: innerCache }) => {
+      // eslint-disable-next-line max-len
+      const { saveSelectedCategories } = await innerCache.readQuery({ query: GET_SELECTED_CATEGORIES });
+      const diff = intersection(selectedCategories, saveSelectedCategories);
+
+      if (diff && diff.length > 0) {
+        await innerCache.writeData(
+          {
+            data: {
+              saveSelectedCategories: without(diff, saveSelectedCategories),
+            },
+          },
+        );
+      } else {
+        await innerCache.writeData(
+          {
+            data: {
+              saveSelectedCategories: saveSelectedCategories.concat(selectedCategories),
+            },
+          },
+        );
+      }
+      return null;
     },
   },
-  typeDefs: `
-    type Query {
-      id: ID
-      isAuthed: Boolean
-      categoryOrder: Array
-      userCompany: {
-        id: ID
-        role: Role
-        company: Company
-        __typename: UserCompany 
-      }
-    }
-  `,
-});
+};
+
+const stateLink = withClientState({ cache, defaults, resolvers, typeDefs });
 
 async function getClient() {
   await persistCache({

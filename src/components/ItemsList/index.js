@@ -21,6 +21,7 @@ import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
+import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import ItemComponent from '~/components/Item';
 import Button from '~/components/Button';
 import constants from '~/global/constants';
@@ -152,6 +153,7 @@ class ItemsList extends PureComponent<Props> {
   render() {
     const {
       userId,
+      current,
       userRole,
       companyId,
       swipeable,
@@ -162,6 +164,7 @@ class ItemsList extends PureComponent<Props> {
       currentSelectItem,
       handleShowSortButton,
       toggleDelModalVisible,
+      saveSelectedCategories,
     } = this.props;
 
     return (
@@ -227,6 +230,27 @@ class ItemsList extends PureComponent<Props> {
             handleShowSortButton(true);
           }
 
+          let companyCategories = [];
+          let allSubCategoryList = [];
+
+          if (current != null) {
+            const { companies } = current;
+            const company = companies[0];
+            if (company != null) {
+              companyCategories = company.categories;
+              allSubCategoryList = companyCategories.filter(x => x.parent !== null);
+            }
+          }
+
+          let categoryTabData = [];
+
+          saveSelectedCategories.forEach((e) => {
+            const match = allSubCategoryList.find(x => x.id === e);
+            if (match) {
+              categoryTabData = [...categoryTabData, match.name];
+            }
+          });
+
           return dataToRenderIsEmpty ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
@@ -249,7 +273,7 @@ class ItemsList extends PureComponent<Props> {
               <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal
-                  data={constants.category}
+                  data={categoryTabData}
                   renderItem={this.renderTab}
                   keyExtractor={this.keyExtractor}
                   showsHorizontalScrollIndicator={false}
@@ -287,6 +311,14 @@ class ItemsList extends PureComponent<Props> {
 export default compose(
   //  $FlowFixMe
   graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
+  graphql(GET_SELECTED_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
+  }),
+  graphql(GET_COMPANY_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ current }),
+  }),
   /*  eslint-disable */
   //  $FlowFixMe
   graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })

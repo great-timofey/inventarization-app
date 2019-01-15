@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 // $FlowFixMe
-import { last, includes } from 'ramda';
+import { last, includes, intersection } from 'ramda';
 import SortableList from 'react-native-sortable-list';
 import { compose, graphql, Query } from 'react-apollo';
 
@@ -18,7 +18,11 @@ import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
+import {
+  GET_CATEGORY_ORDER,
+  GET_COMPANY_CATEGORIES,
+  GET_SELECTED_CATEGORIES,
+} from '~/graphql/categories/queries';
 
 import {
   mainNavigation,
@@ -42,18 +46,79 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   renderItem = ({ data }: Object) => {
     const { selectedCategory } = this.state;
+    const { saveSelectedCategories, current } = this.props;
     const isSubCategoryView = selectedCategory !== '';
-    if (isSubCategoryView) {
-      return <SubCategory item={data} selectCategory={this.selectCategory} />;
+
+    let companyCategories = null;
+
+    if (current != null) {
+      const { companies } = current;
+      const company = companies[0];
+      if (company != null) {
+        companyCategories = company.categories;
+      }
     }
-    return <Category item={data} selectCategory={this.selectCategory} />;
+
+    let IdList = [];
+    let allSubCategoryList = [];
+
+    if (companyCategories && companyCategories.length > 0) {
+      allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
+      if (isSubCategoryView) {
+        const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
+
+        if (parent.chields.length > 0) {
+          IdList = parent.chields.map(x => x.id);
+        }
+      }
+    }
+    const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
+
+    let isCategorySelect = false;
+
+    if (!isSubCategoryView
+      && data.chields.length > 0
+    ) {
+      const chieldsList = data.chields.map(x => x.id);
+      if (isAllCategorySelected) {
+        isCategorySelect = false;
+      } else {
+        isCategorySelect = !!intersection(chieldsList, saveSelectedCategories).length;
+      }
+    }
+
+    const isAllSelected = !!saveSelectedCategories.length
+     && intersection(saveSelectedCategories, IdList).length === IdList.length;
+
+    let isSubCategorySelect = false;
+
+    if (data && data.id && isSubCategoryView) {
+      isSubCategorySelect = includes(data.id.toString(), saveSelectedCategories);
+    }
+
+    if (isSubCategoryView) {
+      return (
+        <SubCategory
+          item={data}
+          selectCategory={this.selectCategory}
+          isSelected={isAllSelected ? false : isSubCategorySelect}
+        />
+      );
+    }
+    return (
+      <Category
+        item={data}
+        isSelected={isCategorySelect}
+        selectCategory={this.selectCategory}
+      />
+    );
   };
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
   render() {
     const { selectedCategory } = this.state;
-    const { categoryOrder } = this.props;
+    const { categoryOrder, saveSelectedCategories } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
     return (
@@ -80,20 +145,29 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
+          let IdList = [];
           let categoryList = {};
+          let subCategoryList = {};
+          let allSubCategoryList = [];
+
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
-          }
+            allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
 
-          let subCategoryList = {};
-          if (companyCategories && companyCategories.length > 0 && isSubCategoryView) {
-            const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
+            if (isSubCategoryView) {
+              const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
-            if (parent.chields.length > 0) {
-              subCategoryList = { ...parent.chields };
+              if (parent.chields.length > 0) {
+                subCategoryList = { ...parent.chields };
+                IdList = parent.chields.map(x => x.id);
+              }
             }
           }
+
+          const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
+          // eslint-disable-next-line max-len
+          const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
 
           let prefix = '';
 
@@ -120,17 +194,22 @@ class CategoryMenu extends PureComponent<Props, State> {
                       item={{ name: selectedCategory, icon: 'ios-arrow-back' }}
                     />
                     <SubCategory
+                      chieldsId={IdList}
+                      isSelected={isAllSelected}
                       selectCategory={this.selectCategory}
                       item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
                     />
                   </Fragment>
                 ) : (
                   <Category
-                    selectCategory={() => {}}
+                    allSelectButton
+                    selectCategory={() => { }}
+                    isSelected={isAllCategorySelected}
+                    allSubCategoryList={allSubCategoryList}
                     item={{ name: 'Все категории', icon: 'side-menu-all' }}
                   />
                 )
-            }
+              }
               <SortableList
                 scrollEnabled={false}
                 sortingEnabled={false}
@@ -139,17 +218,17 @@ class CategoryMenu extends PureComponent<Props, State> {
                 data={isSubCategoryView ? subCategoryList : categoryList}
               />
               {!isSubCategoryView && (
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => {
-                  setIsSideMenuOpen(false);
-                  mainNavigation.navigate(SCENE_NAMES.CategoryList);
-                }}
-              >
-                <Text style={styles.editButtonText}>
-                  Редактировать категории
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() => {
+                    setIsSideMenuOpen(false);
+                    mainNavigation.navigate(SCENE_NAMES.CategoryList);
+                  }}
+                >
+                  <Text style={styles.editButtonText}>
+                    Редактировать категории
+                  </Text>
+                </TouchableOpacity>
               )}
             </ScrollView>
           );
@@ -163,5 +242,13 @@ export default compose(
   graphql(GET_CATEGORY_ORDER, {
     // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+  graphql(GET_COMPANY_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { current } }) => ({ current }),
+  }),
+  graphql(GET_SELECTED_CATEGORIES, {
+    // $FlowFixMe
+    props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
   }),
 )(CategoryMenu);
