@@ -480,12 +480,7 @@ class ItemForm extends Component<Props, State> {
       },
     } = this.props;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    // data.assets.push(payload.data.createAsset);
-    // data.assets = concat([payload.data.createAsset], data.assets);
-    // console.log(data)
-    // console.log(payload)
     data.assets.push(payload.data.createAsset);
-    //  doesnt work for now
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
@@ -498,7 +493,6 @@ class ItemForm extends Component<Props, State> {
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
     const updateIndex = findIndex(asset => asset.id === payload.data.updateAsset.id, data.assets);
     data.assets = update(updateIndex, payload.data.updateAsset, data.assets);
-    // data.assets[updateIndex] = payload.data.updateAsset;
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
