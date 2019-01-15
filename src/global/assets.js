@@ -25,6 +25,8 @@ const flashCircled = require('~/assets/flash-circled.png');
 const checkCircled = require('~/assets/checked-circle.png');
 const noResponsibleId = require('~/assets/no-responsibles.png');
 const headerBackArrow = require('~/assets/headerBackArrow.png');
+const visiblePassword = require('~/assets/visible.png');
+const hiddenPassword = require('~/assets/hidden.png');
 
 export default {
   flip,
@@ -50,6 +52,8 @@ export default {
   deletePhoto,
   flashCircled,
   checkCircled,
+  hiddenPassword,
+  visiblePassword,
   noResponsibleId,
   headerBackArrow,
 };

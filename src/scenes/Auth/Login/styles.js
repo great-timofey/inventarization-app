@@ -3,13 +3,14 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
   regForm: {
-    marginBottom: normalize(96),
+    marginBottom: isIphoneX ? normalize(150) : normalize(96),
   },
   form: {
-    marginBottom: normalize(15),
+    marginBottom: isIphoneX ? normalize(69) : normalize(15),
   },
   additionalButtons: {
     flexDirection: 'row',
@@ -22,5 +23,9 @@ export default StyleSheet.create({
     lineHeight: normalize(19),
     paddingHorizontal: normalize(20),
     fontFamily: fonts.proDisplay.light,
+  },
+  toogleVisiblePasswordBtn: {
+    alignSelf: 'center',
+    marginRight: normalize(20),
   },
 });

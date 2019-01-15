@@ -5,7 +5,16 @@ import React, { PureComponent } from 'react';
 // $FlowFixMe
 import { includes, assoc } from 'ramda';
 import { compose, graphql } from 'react-apollo';
-import { Alert, View, Text, Keyboard, Animated, AsyncStorage } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Alert,
+  Keyboard,
+  Animated,
+  AsyncStorage,
+  TouchableOpacity,
+} from 'react-native';
 
 import Logo from '~/components/Logo';
 import Input from '~/components/Input';
@@ -13,6 +22,7 @@ import Button from '~/components/Button';
 import HeaderButton from '~/components/HeaderButton';
 import ScrollViewContainer from '~/components/ScrollViewContainer';
 
+import assets from '~/global/assets';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
 import { isValid } from '~/global/utils';
@@ -31,6 +41,7 @@ const initialState = {
   password: '',
   isRegForm: false,
   isKeyboardActive: false,
+  isPasswordHidden: true,
 };
 
 const AdditionalButton = ({ title, onPress }: { title: string, onPress: Function }) => (
@@ -81,6 +92,13 @@ class Login extends PureComponent<Props, State> {
     const { navigation } = this.props;
     navigation.setParams({ isRegForm: !isRegForm });
     this.setState(state => assoc('isRegForm', !state.isRegForm, initialState));
+  };
+
+  onTogglePasswordVisibility = () => {
+    const { isPasswordHidden } = this.state;
+    this.setState({
+      isPasswordHidden: !isPasswordHidden,
+    });
   };
 
   checkForErrors = () => {
@@ -172,7 +190,7 @@ class Login extends PureComponent<Props, State> {
 
   render() {
     const { navigation } = this.props;
-    const { name, email, mobile, password, warnings, isRegForm } = this.state;
+    const { name, email, mobile, password, warnings, isRegForm, isPasswordHidden } = this.state;
 
     return (
       <ScrollViewContainer bgColor={colors.backGroundBlack}>
@@ -187,6 +205,7 @@ class Login extends PureComponent<Props, State> {
               blurOnSubmit={false}
               type={constants.inputTypes.name}
               isWarning={includes('name', warnings)}
+              placeholder={constants.placeholders.manufacture}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('name', text)}
             />
@@ -200,24 +219,37 @@ class Login extends PureComponent<Props, State> {
             keyboardType="email-address"
             type={constants.inputTypes.email}
             isWarning={includes('email', warnings)}
+            placeholder={constants.placeholders.email}
             onChangeText={text => this.onChangeField('email', text)}
             onSubmitEditing={() => this.focusField(this.passwordRef)}
           />
           <Input
-            secureTextEntry
             value={password}
             fieldRef={(ref) => {
               this.passwordRef = ref;
             }}
             blurOnSubmit={false}
             onSubmitForm={this.onSubmitForm}
+            secureTextEntry={isPasswordHidden}
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
             isWarning={includes('password', warnings)}
+            placeholder={constants.placeholders.password}
             returnKeyType={!isRegForm ? 'go' : undefined}
             onSubmitEditing={() => this.focusField(this.mobileRef)}
             onChangeText={text => this.onChangeField('password', text)}
-          />
+          >
+            <TouchableOpacity
+              style={styles.toogleVisiblePasswordBtn}
+              onPress={this.onTogglePasswordVisibility}
+            >
+              <Image
+                resizeMode="contain"
+                source={isPasswordHidden ? assets.hiddenPassword : assets.visiblePassword}
+              />
+            </TouchableOpacity>
+
+          </Input>
           {isRegForm && (
             <Input
               value={mobile}

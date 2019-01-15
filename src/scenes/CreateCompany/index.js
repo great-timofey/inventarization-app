@@ -4,7 +4,6 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
-  Alert,
   Image,
   FlatList,
   Keyboard,
@@ -29,11 +28,13 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
+import { isIphoneX } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
-import type { Props, State, InviteeProps } from './types';
+
 import styles from './styles';
+import type { Props, State, InviteeProps } from './types';
 
 const RemoveInviteeButton = props => (
   <MaterialIcon.Button
@@ -71,8 +72,8 @@ class CreateCompany extends PureComponent<Props, State> {
       currentInvitee: '',
       isModalVisible: false,
       keyboardPadding: new Animated.Value(0),
-      paddingTop: new Animated.Value(normalize(10)),
-      marginBottom: new Animated.Value(normalize(105)),
+      paddingTop: new Animated.Value(normalize(20)),
+      marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(75)),
     };
   }
 
@@ -96,11 +97,11 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: normalize(10),
+          toValue: isIphoneX ? normalize(50) : normalize(15),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
-          toValue: normalize(event.endCoordinates.height - 90),
+          toValue: normalize(event.endCoordinates.height - 110),
         }),
       ]).start();
     });
@@ -112,11 +113,11 @@ class CreateCompany extends PureComponent<Props, State> {
         }),
         Animated.timing(marginBottom, {
           duration: 250,
-          toValue: normalize(105),
+          toValue: isIphoneX ? normalize(200) : normalize(75),
         }),
         Animated.timing(paddingTop, {
           duration: 250,
-          toValue: normalize(10),
+          toValue: normalize(20),
         }),
       ]).start();
     });
@@ -150,10 +151,6 @@ class CreateCompany extends PureComponent<Props, State> {
     });
   };
 
-  handleInputInvitee = (currentInvitee: string) => this.setState({ currentInvitee });
-
-  handleInputCompanyName = (companyName: string) => this.setState({ companyName });
-
   handleCreateCompany = async () => {
     const { createCompany, setAuthMutationClient } = this.props;
     const { invitees, companyName: name, chosenPhotoUri } = this.state;
@@ -161,16 +158,15 @@ class CreateCompany extends PureComponent<Props, State> {
     try {
       let file = '';
       if (chosenPhotoUri) {
-        file = await convertToApolloUpload([chosenPhotoUri], '=');
+        file = await convertToApolloUpload([{ uri: chosenPhotoUri }], '=');
       }
-
       await createCompany({
         variables: { name, logo: file, inviters },
       });
 
       await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
-      Alert.alert(error.message);
+      console.log(error.message);
     }
   };
 
@@ -220,12 +216,15 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   checkValue = () => {
-    const { currentInvitee } = this.state;
+    const { companyName, chosenPhotoUri } = this.state;
     const warnings = [];
-    if (!currentInvitee) {
-      warnings.push('emailEmpty');
-    } else if (!isValid(currentInvitee, constants.regExp.email)) {
-      warnings.push('email');
+
+    if (!companyName) {
+      warnings.push('companyName');
+    }
+
+    if (chosenPhotoUri && !isValid(chosenPhotoUri, constants.regExp.photo)) {
+      warnings.push('photo');
     }
 
     this.setState({ warnings }, () => {
@@ -249,8 +248,8 @@ class CreateCompany extends PureComponent<Props, State> {
     const {
       invitees,
       warnings,
-      companyName,
       paddingTop,
+      companyName,
       marginBottom,
       currentInvitee,
       isModalVisible,
@@ -259,7 +258,11 @@ class CreateCompany extends PureComponent<Props, State> {
     } = this.state;
 
     return (
-      <KeyboardAwareScrollView disableAutomaticScroll style={{ backgroundColor: colors.white }}>
+      <KeyboardAwareScrollView
+        bottomOffset={400}
+        disableAutomaticScroll
+        style={{ backgroundColor: colors.white }}
+      >
         <Animated.View
           style={[
             styles.container,
@@ -275,21 +278,28 @@ class CreateCompany extends PureComponent<Props, State> {
         >
           <Animated.View style={[styles.wrapper, { marginBottom }]}>
             <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
-              {chosenPhotoUri ? (
+              {chosenPhotoUri && isValid(chosenPhotoUri, constants.regExp.photo) ? (
                 <Image style={styles.chosenPhoto} source={{ uri: chosenPhotoUri }} />
               ) : (
-                <Text style={styles.photoHint}>{constants.buttonTitles.chooseLogo}</Text>
+                <Text
+                  style={[styles.photoHint, includes('photo', warnings) && styles.photoErrorText]}
+                >
+                  {constants.buttonTitles.chooseLogo}
+                </Text>
               )}
             </TouchableOpacity>
+            <Text style={[styles.hiddenError, includes('photo', warnings) && styles.photoErrorText]}>
+              {constants.errors.login.companyLogo}
+            </Text>
             <Input
               isWhite
               value={companyName}
               blurOnSubmit={false}
               placeholder="Введите"
-              isWarning={includes('orgName', warnings)}
               type={constants.inputTypes.companyName}
+              isWarning={includes('companyName', warnings)}
               onSubmitEditing={() => this.focusField(this.emailRef)}
-              onChangeText={text => this.onChangeField('orgName', text)}
+              onChangeText={text => this.onChangeField('companyName', text)}
             />
             <Input
               isWhite
@@ -318,7 +328,7 @@ class CreateCompany extends PureComponent<Props, State> {
           </Animated.View>
           <Button
             onPress={this.checkValue}
-            isDisable={!companyName || !invitees.length}
+            // isDisable={!companyName || !invitees.length}
             title={constants.buttonTitles.createCompany}
           />
           <PickPhotoModal

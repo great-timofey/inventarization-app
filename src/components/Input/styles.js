@@ -31,7 +31,10 @@ export default StyleSheet.create({
     paddingRight: 0,
   },
   invalidContainer: {
-    borderColor: colors.invalidBorder,
+    backgroundColor: colors.invalidInputContainer,
+  },
+  invalidWhiteContainer: {
+    backgroundColor: colors.invalidInputWhiteContainer,
   },
   inputTitleText: {
     zIndex: 2,
