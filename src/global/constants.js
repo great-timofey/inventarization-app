@@ -11,7 +11,7 @@ const regExp = {
   // eslint-disable-next-line no-useless-escape
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
   // eslint-disable-next-line no-useless-escape
-  photo: /^.+[\.\=](([pP][nN][gG])|([jJ][pP][gG]))$/,
+  photo: /^.+[\.\=](([pP][nN][gG])|([jJ][pP][gG])|([jJ][pP][eE][gG]))$/,
 };
 
 const masks = {
