@@ -4,7 +4,6 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
-  Alert,
   Image,
   FlatList,
   Keyboard,
