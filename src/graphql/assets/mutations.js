@@ -151,6 +151,7 @@ export const UPDATE_ASSET = gql`
       assessedDate
       assessedValue
       id
+      inventoryId
       manufacture
       model
       name
