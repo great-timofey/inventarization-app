@@ -152,10 +152,6 @@ class CreateCompany extends PureComponent<Props, State> {
     });
   };
 
-  handleInputInvitee = (currentInvitee: string) => this.setState({ currentInvitee });
-
-  handleInputCompanyName = (companyName: string) => this.setState({ companyName });
-
   handleCreateCompany = async () => {
     const { createCompany, setAuthMutationClient } = this.props;
     const { invitees, companyName: name, chosenPhotoUri } = this.state;
@@ -163,7 +159,7 @@ class CreateCompany extends PureComponent<Props, State> {
     try {
       let file = '';
       if (chosenPhotoUri) {
-        file = await convertToApolloUpload([chosenPhotoUri], '=');
+        file = await convertToApolloUpload([{ uri: chosenPhotoUri }], '=');
       }
       await createCompany({
         variables: { name, logo: file, inviters },
@@ -171,7 +167,7 @@ class CreateCompany extends PureComponent<Props, State> {
 
       await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
-      Alert.alert(error.message);
+      console.log(error.message);
     }
   };
 
