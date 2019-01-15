@@ -234,12 +234,10 @@ class ItemsList extends PureComponent<Props> {
           let categoryTabData = [];
 
           saveSelectedCategories.forEach((e) => {
-            allSubCategoryList.find((x) => {
-              if (x.id === e) {
-                categoryTabData = [...categoryTabData, x.name];
-              }
-              return null;
-            });
+            const match = allSubCategoryList.find(x => x.id === e);
+            if (match) {
+              categoryTabData = [...categoryTabData, match.name];
+            }
           });
 
           return dataToRenderIsEmpty ? (
