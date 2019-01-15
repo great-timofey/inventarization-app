@@ -704,12 +704,13 @@ class ItemForm extends Component<Props, State> {
     } = this;
     if (isNewItem) {
       this.handleToggleDelModal();
+      navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       try {
         await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
         this.handleToggleDelModal();
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
       } catch (error) {
         Alert.alert(error.message);
         this.handleToggleDelModal();
