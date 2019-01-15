@@ -263,7 +263,8 @@ class ItemForm extends Component<Props, State> {
       itemCopy.placeId = place;
       itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
       //  eslint-disable-next-line
-      itemCopy.photosOfDamages = (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
+      itemCopy.photosOfDamages =
+        (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
@@ -363,9 +364,10 @@ class ItemForm extends Component<Props, State> {
      * in this.checkFields and this.checkForErrors
      */
 
-    const { props: { createAsset, updateAsset, navigation, }, state: {
-       photos, photosOfDamages, id: assetId,
-    } } = this;
+    const {
+      props: { createAsset, updateAsset, navigation },
+      state: { photos, photosOfDamages, id: assetId },
+    } = this;
 
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
