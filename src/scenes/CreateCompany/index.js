@@ -64,21 +64,17 @@ class CreateCompany extends PureComponent<Props, State> {
     headerRight: <View />,
   });
 
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      invitees: [],
-      warnings: [],
-      companyName: '',
-      chosenPhotoUri: '',
-      currentInvitee: '',
-      isModalVisible: false,
-      keyboardPadding: new Animated.Value(0),
-      paddingTop: new Animated.Value(normalize(20)),
-      marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(75)),
-    };
-  }
+  state = {
+    invitees: [],
+    warnings: [],
+    companyName: '',
+    chosenPhotoUri: '',
+    currentInvitee: '',
+    isModalVisible: false,
+    keyboardPadding: new Animated.Value(0),
+    paddingTop: new Animated.Value(normalize(20)),
+    marginBottom: new Animated.Value(isIphoneX ? normalize(200) : normalize(75)),
+  };
 
   navListener: any;
 

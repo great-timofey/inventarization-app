@@ -16,6 +16,7 @@ export type Props = {
   navigation: Object,
   createCompany: Function,
   setAuthMutationClient: Function,
+  setUserCompanyMutationClient: Function,
 };
 
 export type InviteeProps = {
