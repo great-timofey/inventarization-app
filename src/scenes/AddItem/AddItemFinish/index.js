@@ -50,7 +50,6 @@ class AddItemFinish extends PureComponent<Props, State> {
       StatusBar.setBarStyle('light-content');
     });
     const creationId = navigation.getParam('creationId', '');
-    console.log(creationId);
   }
 
   handleGoToItemForm = async () => {
