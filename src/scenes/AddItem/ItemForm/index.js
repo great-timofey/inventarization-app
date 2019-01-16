@@ -16,7 +16,6 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
 import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
@@ -27,8 +26,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -36,8 +33,10 @@ import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
 import DelModal from '~/components/QuestionModal';
-import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
 import DateTimePicker from '~/components/DateTimePicker';
@@ -132,8 +131,7 @@ class ItemForm extends Component<Props, State> {
           onPress={
             item
               ? () => {
-                const resetAction = StackActions.popToTop({});
-                navigation.dispatch(resetAction);
+                navigation.popToTop({});
                 navigation.navigate(SCENE_NAMES.ItemsSceneName);
               }
               : () => navigation.goBack()
@@ -165,10 +163,10 @@ class ItemForm extends Component<Props, State> {
     gps: null,
     // $FlowFixMe
     photos: [],
+    warnings: {},
     creator: null,
     placeId: null,
     codeData: null,
-    warnings: {},
     location: null,
     category: null,
     inventoryId: '',
@@ -276,19 +274,25 @@ class ItemForm extends Component<Props, State> {
       // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
+      const showName = navigation.getParam('showName', true);
+      const id = navigation.getParam('creationId', '');
 
+      const { createdAssetsCount } = this.props;
+      const name = showName ? `Предмет ${createdAssetsCount}` : '';
       const photos = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
       this.setState({
-        photos,
-        photosOfDamages,
+        id,
         gps,
+        name,
+        photos,
+        codeData,
+        photosOfDamages,
         showSaveButton: true,
         formIsEditable: true,
-        codeData,
       });
     }
   }
@@ -365,7 +369,7 @@ class ItemForm extends Component<Props, State> {
      */
 
     const {
-      props: { createAsset, updateAsset, navigation },
+      props: { updateAsset, navigation },
       state: { photos, photosOfDamages, id: assetId },
     } = this;
 
@@ -374,7 +378,7 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkForErrors());
 
     if (isFormInvalid) {
-      this.keyboardRef.scrollTo({ x: 0, y: normalize(400), animated: true });
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(380), animated: true });
     } else {
       const {
         userCompany: {
@@ -455,16 +459,16 @@ class ItemForm extends Component<Props, State> {
       // console.log(variables);
       try {
         // let response;
-        if (assetId) {
+        // if (assetId) {
           // response = await updateAsset({ variables });
-          await updateAsset({ variables });
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        } else {
-          // response = await createAsset({ variables });
-          await createAsset({ variables, update: this.updateCreateAsset });
-          navigation.popToTop({});
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        }
+        await updateAsset({ variables });
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
+        // } else {
+        //   // response = await createAsset({ variables });
+        //   await createAsset({ variables, update: this.updateCreateAsset });
+        //   navigation.popToTop({});
+        //   navigation.navigate(SCENE_NAMES.ItemsSceneName);
+        // }
         // console.log(response);
       } catch (error) {
         Alert.alert(error.message);
@@ -473,16 +477,16 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  updateCreateAsset = (cache: Object, payload: Object) => {
-    const {
-      userCompany: {
-        company: { id: companyId },
-      },
-    } = this.props;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    data.assets.push(payload.data.createAsset);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
-  };
+  // updateCreateAsset = (cache: Object, payload: Object) => {
+  //   const {
+  //     userCompany: {
+  //       company: { id: companyId },
+  //     },
+  //   } = this.props;
+  //   const data = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+  //   data.assets.push(payload.data.createAsset);
+  //   cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
+  // };
 
   updateDestroyAsset = (cache: Object) => {
     const {
@@ -493,10 +497,10 @@ class ItemForm extends Component<Props, State> {
       },
       state: { id },
     } = this;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
     data.assets = remove(deleteIndex, 1, data.assets);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
@@ -683,22 +687,17 @@ class ItemForm extends Component<Props, State> {
 
   handleDeleteItem = async () => {
     const {
-      state: { id, isNewItem },
+      state: { id },
       props: { destroyAsset, navigation },
     } = this;
-    if (isNewItem) {
+
+    try {
+      await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    } else {
-      try {
-        await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-        this.handleToggleDelModal();
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
-      } catch (error) {
-        Alert.alert(error.message);
-        this.handleToggleDelModal();
-      }
+    } catch (error) {
+      Alert.alert(error.message);
+      this.handleToggleDelModal();
     }
   };
 
@@ -983,9 +982,13 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
-  graphql(CREATE_ASSET, { name: 'createAsset' }),
-  graphql(UPDATE_ASSET, { name: 'updateAsset' }),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_MUTATIONS.CREATE_ASSET, { name: 'createAsset' }),
+  graphql(ASSETS_MUTATIONS.UPDATE_ASSET, { name: 'updateAsset' }),
+  graphql(ASSETS_MUTATIONS.DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
+  }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
