@@ -46,6 +46,7 @@ export default StyleSheet.create({
     marginRight: 0,
   },
   authHeaderStyle: {
+    elevation: 0,
     height: normalize(60),
     borderBottomWidth: 0,
     backgroundColor: colors.backGroundBlack,

@@ -9,10 +9,10 @@ import { normalize } from '~/global/utils';
 export default StyleSheet.create({
   container: {
     width: '100%',
-    borderRadius: 7,
     alignItems: 'center',
     height: normalize(54),
     justifyContent: 'center',
+    borderRadius: normalize(7),
     backgroundColor: colors.buttonBlue,
   },
   disable: {
