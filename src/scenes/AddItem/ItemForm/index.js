@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { update, keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
