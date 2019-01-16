@@ -5,15 +5,16 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   container: {
     width: '100%',
     borderWidth: 1,
-    borderRadius: 7,
     flexDirection: 'row',
     height: normalize(54),
     borderColor: colors.black,
+    borderRadius: normalize(7),
     marginBottom: normalize(10),
     backgroundColor: colors.black,
     justifyContent: 'space-between',
@@ -39,12 +40,12 @@ export default StyleSheet.create({
   inputTitleText: {
     zIndex: 2,
     top: normalize(5),
-    left: normalize(20),
     position: 'absolute',
     fontSize: normalize(13),
     lineHeight: normalize(15),
     color: colors.text.inputTitle,
     fontFamily: fonts.proDisplay.light,
+    left: isAndroid ? normalize(22) : normalize(20),
   },
   inputTitleTextWhite: {
     color: colors.input.whiteTitle,
@@ -54,9 +55,9 @@ export default StyleSheet.create({
     flex: 1,
     color: colors.white,
     fontSize: normalize(18),
-    paddingTop: normalize(10),
     lineHeight: normalize(21),
     fontFamily: fonts.proDisplay.light,
+    paddingTop: isAndroid ? normalize(20) : normalize(10),
   },
   inputWhite: {
     color: colors.black,

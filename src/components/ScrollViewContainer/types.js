@@ -7,5 +7,6 @@ export type State = {
 };
 export type Props = {
   bgColor?: string,
+  fieldRef?: Object,
   children: React.Node,
 };

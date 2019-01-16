@@ -1,10 +1,11 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { Text, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity } from 'react-native';
 
 import { BlurView } from 'react-native-blur';
 
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 
 import styles from './styles';
 import type { Props } from './types';
@@ -32,11 +33,13 @@ class Search extends PureComponent<Props, {}> {
     if (searchValue.length >= 2) {
       result = items.filter(x => x.name.toLowerCase().trim().indexOf(searchValue) !== -1);
     }
+    const CustomView: any = isAndroid ? View : BlurView;
+
     return (
-      <BlurView
+      <CustomView
         blurAmount={20}
         blurType="light"
-        style={styles.blurContainer}
+        style={[styles.blurContainer, isAndroid && styles.androidColor]}
       >
         {!!result.length && (
         <FlatList
@@ -50,7 +53,7 @@ class Search extends PureComponent<Props, {}> {
          && searchValue.length >= 2
          && <Text style={styles.errorText}>{constants.errors.search}</Text>
         }
-      </BlurView>
+      </CustomView>
     );
   }
 }

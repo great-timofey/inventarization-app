@@ -25,9 +25,10 @@ import ScrollViewContainer from '~/components/ScrollViewContainer';
 import assets from '~/global/assets';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
-import { isValid } from '~/global/utils';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import * as SCENES_NAMES from '~/navigation/scenes';
+import { isValid, normalize } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
 
 import styles from './styles';
@@ -173,12 +174,17 @@ class Login extends PureComponent<Props, State> {
 
 
   focusField = (ref: Object) => {
-    if (ref.input === undefined) {
-      ref.focus();
-    } else {
-      ref.input.focus();
+    if (ref) {
+      if (isAndroid) {
+        this.keyboardAwareScrollView.scrollToFocusedInputWithNodeHandle(ref, normalize(100));
+      }
+      if (ref.input === undefined) {
+        ref.focus();
+      } else {
+        ref.input.focus();
+      }
     }
-  };
+  }
 
   nameRef: any;
 
@@ -188,12 +194,19 @@ class Login extends PureComponent<Props, State> {
 
   mobileRef: any;
 
+  keyboardAwareScrollView: any;
+
   render() {
     const { navigation } = this.props;
     const { name, email, mobile, password, warnings, isRegForm, isPasswordHidden } = this.state;
 
     return (
-      <ScrollViewContainer bgColor={colors.backGroundBlack}>
+      <ScrollViewContainer
+        bgColor={colors.backGroundBlack}
+        fieldRef={(ref) => {
+          this.keyboardAwareScrollView = ref;
+        }}
+      >
         <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
           <Logo isSmall />
           {isRegForm && (

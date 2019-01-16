@@ -594,8 +594,8 @@ class ItemForm extends Component<Props, State> {
   renderFormSectionHeader = ({ section: { title, index } }: { section: Section }) => (
     <View style={styles.formSectionHeaderOverflow}>
       <LinearGradient
-        start={index === 0 ? { x: 1, y: 0 } : null}
-        end={index === 0 ? { x: 0, y: 0 } : null}
+        start={index === 0 ? { x: 1.0, y: 0.0 } : undefined}
+        end={index === 0 ? { x: 0.0, y: 0.0 } : undefined}
         style={styles.formSectionHeader}
         colors={colors.itemFormHeaders[index]}
       >

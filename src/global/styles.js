@@ -46,14 +46,23 @@ export default StyleSheet.create({
     marginRight: 0,
   },
   authHeaderStyle: {
+    elevation: 0,
     height: normalize(60),
     borderBottomWidth: 0,
     backgroundColor: colors.backGroundBlack,
   },
   authHeaderStyleBig: {
-    height: normalize(90),
+    elevation: 0,
     borderBottomWidth: 0,
+    height: normalize(90),
     backgroundColor: colors.backGroundBlack,
+  },
+  headerTitleStyle: {
+    flex: 1,
+    alignSelf: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    textAlignVertical: 'center',
   },
 });
 

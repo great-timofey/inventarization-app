@@ -7,14 +7,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { normalize, isSmallDevice } from '~/global/utils';
 
-import { isIphoneX } from '~/global/device';
+import { isIphoneX, isAndroid } from '~/global/device';
 
 import styles from './styles';
 import type { Props, State } from './types';
 
 class ScrollViewContainer extends PureComponent<Props, State> {
   keyboardPadding = new Animated.Value(0);
-  paddingContainer = new Animated.Value(normalize(30));
+  paddingContainer = new Animated.Value(isAndroid ? normalize(10) : normalize(30));
 
   componentDidMount() {
     const { keyboardPadding, paddingContainer } = this;
@@ -57,14 +57,15 @@ class ScrollViewContainer extends PureComponent<Props, State> {
   }
 
   render() {
-    const { children, bgColor, ...rest } = this.props;
+    const { children, fieldRef, bgColor, ...rest } = this.props;
     const { keyboardPadding, paddingContainer } = this;
 
     return (
       <KeyboardAwareScrollView
         {...rest}
+        ref={fieldRef}
+        enableOnAndroid
         bottomOffset={400}
-        disableAutomaticScroll
         style={{ backgroundColor: bgColor }}
       >
         <Animated.View

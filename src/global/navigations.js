@@ -36,10 +36,11 @@ import { sideMenuRef } from './navigationHelper';
 import { navigationNames } from './navigationNames';
 
 import colors from '~/global/colors';
-import { deviceWidth } from '~/global/device';
+import { deviceWidth, isAndroid } from '~/global/device';
 
 import styles, { containerOffset, stylesObject } from './styles';
 import assets from './assets';
+import { normalize } from './utils';
 
 type iconType = {
   focused: Boolean,
@@ -150,6 +151,9 @@ const rootConfig = {
   swipeEnabled: false,
   tabBarOptions: {
     showLabel: false,
+    style: {
+      marginBottom: isAndroid && normalize(25),
+    },
   },
 };
 
