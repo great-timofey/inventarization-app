@@ -16,7 +16,7 @@ export default StyleSheet.create({
   wrapper: {
     alignItems: 'center',
     height: normalize(380),
-    marginBottom: normalize(50),
+    marginBottom: normalize(30),
   },
   inviteeContainer: {
     flexDirection: 'row',

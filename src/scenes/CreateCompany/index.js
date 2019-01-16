@@ -201,12 +201,17 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   focusField = (ref: Object) => {
-    if (ref.input === undefined) {
-      ref.focus();
-    } else {
-      ref.input.focus();
+    if (ref) {
+      if (isAndroid) {
+        this.keyboardAwareScrollView.scrollToFocusedInputWithNodeHandle(ref, normalize(120));
+      }
+      if (ref.input === undefined) {
+        ref.focus();
+      } else {
+        ref.input.focus();
+      }
     }
-  };
+  }
 
   validateInput = () => {
     const { companyName } = this.state;
@@ -246,6 +251,8 @@ class CreateCompany extends PureComponent<Props, State> {
 
   emailRef: any;
 
+  keyboardAwareScrollView: any;
+
   render() {
     const {
       invitees,
@@ -262,8 +269,10 @@ class CreateCompany extends PureComponent<Props, State> {
     return (
       <KeyboardAwareScrollView
         bottomOffset={400}
-        disableAutomaticScroll
         style={{ backgroundColor: colors.white }}
+        ref={(ref) => {
+          this.keyboardAwareScrollView = ref;
+        }}
       >
         <Animated.View
           style={[
