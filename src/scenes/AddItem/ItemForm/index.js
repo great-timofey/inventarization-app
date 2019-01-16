@@ -481,7 +481,6 @@ class ItemForm extends Component<Props, State> {
     if (!name.trim() && !item) {
       Alert.alert('Пожалуйста, введите название предмета');
     } else if (isNewItem) {
-      // navigation.avigate(SCENE_NAMES.ItemsSceneName);
       navigation.goBack();
     } else {
       navigation.popToTop({});
