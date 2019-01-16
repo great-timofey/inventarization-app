@@ -14,6 +14,9 @@ export default StyleSheet.create({
     bottom: 0,
     position: 'absolute',
   },
+  androidColor: {
+    backgroundColor: colors.white,
+  },
   searchResultContainer: {
     borderBottomWidth: 1,
     height: normalize(49),
