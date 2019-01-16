@@ -207,7 +207,7 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      console.log(item);
+      // console.log(item);
       const itemCopy = { ...item };
       const {
         gps,
