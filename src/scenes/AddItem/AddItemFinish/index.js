@@ -49,7 +49,6 @@ class AddItemFinish extends PureComponent<Props, State> {
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
     });
-    const creationId = navigation.getParam('creationId', '');
   }
 
   handleGoToItemForm = async () => {
