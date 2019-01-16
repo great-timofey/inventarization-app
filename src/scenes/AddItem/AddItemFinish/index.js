@@ -58,8 +58,9 @@ class AddItemFinish extends PureComponent<Props, State> {
     const photos = navigation.getParam('photos', []);
     const codeData = navigation.getParam('codeData', null);
     const creationId = navigation.getParam('creationId', '');
+    const inventoryId = navigation.getParam('inventoryId', '');
     const defectPhotos = navigation.getParam('defectPhotos', []);
-    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos, codeData, showName: false, creationId });
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos, codeData, showName: false, creationId, inventoryId });
   };
 
   handleAddMoreItems = () => {

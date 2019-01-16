@@ -68,8 +68,9 @@ class AddItemDefects extends PureComponent<Props, State> {
             if (from) {
               navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
             } else if (photos.length + defectPhotos.length) {
-              const creationId = await handleCreateAsset();
-              toPass.creationId = creationId;
+              const { id, inventoryId } = await handleCreateAsset();
+              toPass.creationId = id;
+              toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
               Alert.alert('Требуется фото предмета или его дефектов для продолежния');
@@ -113,8 +114,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     await setCreatedAssetsCount({ variables: { createdAssetsCount } });
 
     const variables = { companyId, gps, name };
-    const { data: { createAsset: { id } } } = await createAsset({ variables, update: this.updateCreateAsset });
-    return id;
+    const { data: { createAsset: { id, inventoryId } } } = await createAsset({ variables, update: this.updateCreateAsset });
+    return { id, inventoryId };
   };
 
   updateCreateAsset = (cache: Object, payload: Object) => {

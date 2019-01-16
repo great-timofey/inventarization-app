@@ -16,9 +16,9 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { compose, graphql } from 'react-apollo';
+import { compose, graphql, withApollo } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import { keys, find, propEq, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -112,12 +112,12 @@ const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Funct
 
 class ItemForm extends Component<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const item = navigation.state.params && navigation.state.params.item;
     const userCanDelete = navigation.state.params && navigation.state.params.userCanDelete;
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
     const toggleDelModal = navigation.state.params && navigation.state.params.toggleDelModal;
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
 
     return {
@@ -127,16 +127,7 @@ class ItemForm extends Component<Props, State> {
         : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
       headerLeft: (
-        <HeaderBackButton
-          onPress={
-            item
-              ? () => {
-                navigation.popToTop({});
-                navigation.navigate(SCENE_NAMES.ItemsSceneName);
-              }
-              : () => navigation.goBack()
-          }
-        />
+        <HeaderBackButton onPress={handleGoBack} />
       ),
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
@@ -210,6 +201,7 @@ class ItemForm extends Component<Props, State> {
     });
 
     navigation.setParams({
+      handleGoBack: this.handleGoBack,
       toggleEditMode: this.toggleEditMode,
       toggleDelModal: this.handleToggleDelModal,
     });
@@ -274,8 +266,10 @@ class ItemForm extends Component<Props, State> {
       // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
+
       const showName = navigation.getParam('showName', true);
       const id = navigation.getParam('creationId', '');
+      const inventoryId = navigation.getParam('inventoryId', '');
 
       const { createdAssetsCount } = this.props;
       const name = showName ? `Предмет ${createdAssetsCount}` : '';
@@ -284,12 +278,14 @@ class ItemForm extends Component<Props, State> {
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+
       this.setState({
         id,
         gps,
         name,
         photos,
         codeData,
+        inventoryId,
         photosOfDamages,
         showSaveButton: true,
         formIsEditable: true,
@@ -331,7 +327,16 @@ class ItemForm extends Component<Props, State> {
   };
 
   checkFields = () => {
-    const { name, inventoryId } = this.state;
+    const {
+      props: {
+        client,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { name, inventoryId, id },
+    } = this;
+
     const warnings = {};
 
     // $FlowFixMe
@@ -344,13 +349,12 @@ class ItemForm extends Component<Props, State> {
       warnings.inventoryId = 'empty';
     }
 
-    /*
+    const data = client.cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+    const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
 
-    if (...somethingFromBackend) {
-      warnings.push(['inventoryId', 'inventoryIdAlreadyInUse']);
+    if (match) {
+      warnings.inventoryId = 'inUse';
     }
-
-    */
 
     this.setState({ warnings });
   };
@@ -378,7 +382,7 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkForErrors());
 
     if (isFormInvalid) {
-      this.keyboardRef.scrollTo({ x: 0, y: normalize(380), animated: true });
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(390), animated: true });
     } else {
       const {
         userCompany: {
@@ -458,35 +462,26 @@ class ItemForm extends Component<Props, State> {
 
       // console.log(variables);
       try {
-        // let response;
-        // if (assetId) {
-          // response = await updateAsset({ variables });
         await updateAsset({ variables });
         navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        // } else {
-        //   // response = await createAsset({ variables });
-        //   await createAsset({ variables, update: this.updateCreateAsset });
-        //   navigation.popToTop({});
-        //   navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        // }
-        // console.log(response);
       } catch (error) {
         Alert.alert(error.message);
-        console.dir(error);
       }
     }
   };
 
-  // updateCreateAsset = (cache: Object, payload: Object) => {
-  //   const {
-  //     userCompany: {
-  //       company: { id: companyId },
-  //     },
-  //   } = this.props;
-  //   const data = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
-  //   data.assets.push(payload.data.createAsset);
-  //   cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
-  // };
+  handleGoBack = () => {
+    const { props: { navigation }, state: { name } } = this;
+    const isNewItem = navigation.getParam('item', null);
+    if (!name.trim() && !isNewItem) {
+      Alert.alert('Пожалуйста, введите название предмета');
+    } else if (isNewItem) {
+      navigation.pop();
+    } else {
+      navigation.popToTop({});
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    }
+  };
 
   updateDestroyAsset = (cache: Object) => {
     const {
@@ -690,11 +685,16 @@ class ItemForm extends Component<Props, State> {
       state: { id },
       props: { destroyAsset, navigation },
     } = this;
+    const navigateFromItemsScene = navigation.getParam('item', null);
 
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+      if (navigateFromItemsScene) {
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
+      } else {
+        navigation.pop();
+      }
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();
@@ -993,4 +993,5 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
+  withApollo,
 )(ItemForm);
