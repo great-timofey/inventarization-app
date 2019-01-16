@@ -457,7 +457,7 @@ class ItemForm extends Component<Props, State> {
         // let response;
         if (assetId) {
           // response = await updateAsset({ variables });
-          await updateAsset({ variables, update: this.updateUpdateAsset });
+          await updateAsset({ variables });
           navigation.navigate(SCENE_NAMES.ItemsSceneName);
         } else {
           // response = await createAsset({ variables });
@@ -481,18 +481,6 @@ class ItemForm extends Component<Props, State> {
     } = this.props;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
     data.assets.push(payload.data.createAsset);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
-  };
-
-  updateUpdateAsset = (cache: Object, payload: Object) => {
-    const {
-      userCompany: {
-        company: { id: companyId },
-      },
-    } = this.props;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    const updateIndex = findIndex(asset => asset.id === payload.data.updateAsset.id, data.assets);
-    data.assets = update(updateIndex, payload.data.updateAsset, data.assets);
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
