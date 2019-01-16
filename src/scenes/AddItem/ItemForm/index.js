@@ -474,14 +474,14 @@ class ItemForm extends Component<Props, State> {
   handleGoBack = () => {
     const {
       props: { navigation },
-      state: { name },
+      state: { name, isNewItem },
     } = this;
-    const isNewItem = navigation.getParam('item', null);
+    const item = navigation.getParam('item', null);
     //  $FlowFixMe
-    if (!name.trim() && !isNewItem) {
+    if (!name.trim() && !item) {
       Alert.alert('Пожалуйста, введите название предмета');
     } else if (isNewItem) {
-      navigation.pop();
+      navigation.goBack();
     } else {
       navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
