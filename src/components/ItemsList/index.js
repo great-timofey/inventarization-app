@@ -91,7 +91,8 @@ class ItemsList extends PureComponent<Props> {
         const isItemWithoutPlace = item && !item.place;
 
         //  eslint-disable-next-line
-        showMenuButton = isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
+        showMenuButton =
+          isItemInResponsiblePlaces || isUserResponsible || (isUserCreator && isItemWithoutPlace);
         showRemoveButton = showMenuButton;
       }
     }
@@ -193,8 +194,8 @@ class ItemsList extends PureComponent<Props> {
             if (innerAssets) {
               dataToRender = innerAssets.filter(
                 asset => (asset.creator
-                  && asset.creator.id === userId
-                  && asset.status === 'on_processing')
+                    && asset.creator.id === userId
+                    && asset.status === 'on_processing')
                   || (asset.responsible && asset.responsible.id === userId),
               );
             }

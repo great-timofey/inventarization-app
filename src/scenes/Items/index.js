@@ -151,9 +151,7 @@ class ItemsScene extends PureComponent<Props, State> {
           },
         },
       },
-      state: {
-        currentSelectItem,
-      },
+      state: { currentSelectItem },
     } = this;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
     const deleteIndex = findIndex(asset => asset.id === currentSelectItem, data.assets);

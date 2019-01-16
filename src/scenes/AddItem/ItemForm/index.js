@@ -19,7 +19,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove, last, findIndex } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -263,7 +263,8 @@ class ItemForm extends Component<Props, State> {
       itemCopy.placeId = place;
       itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
       //  eslint-disable-next-line
-      itemCopy.photosOfDamages = (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
+      itemCopy.photosOfDamages =
+        (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
       itemCopy.status = status === 'on_processing'
@@ -363,8 +364,10 @@ class ItemForm extends Component<Props, State> {
      * in this.checkFields and this.checkForErrors
      */
 
-    const { createAsset, updateAsset } = this.props;
-    const { photos, photosOfDamages, id: assetId } = this.state;
+    const {
+      props: { createAsset, updateAsset, navigation },
+      state: { photos, photosOfDamages, id: assetId },
+    } = this;
 
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
@@ -454,10 +457,13 @@ class ItemForm extends Component<Props, State> {
         // let response;
         if (assetId) {
           // response = await updateAsset({ variables });
-          await updateAsset({ variables, update: this.updateUpdateAsset });
+          await updateAsset({ variables });
+          navigation.navigate(SCENE_NAMES.ItemsSceneName);
         } else {
           // response = await createAsset({ variables });
           await createAsset({ variables, update: this.updateCreateAsset });
+          navigation.popToTop({});
+          navigation.navigate(SCENE_NAMES.ItemsSceneName);
         }
         // console.log(response);
       } catch (error) {
@@ -474,24 +480,7 @@ class ItemForm extends Component<Props, State> {
       },
     } = this.props;
     const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    /*  eslint-disable */
-    //  $FlowFixMe
-    payload.data.createAsset.id = (parseInt(last(data.assets).id) + 1).toString();
-    /*  eslint-enable */
     data.assets.push(payload.data.createAsset);
-    //  doesnt work for now
-    // cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
-  };
-
-  updateUpdateAsset = (cache: Object, payload: Object) => {
-    const {
-      userCompany: {
-        company: { id: companyId },
-      },
-    } = this.props;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    const updateIndex = findIndex(asset => asset.id === payload.data.updateAsset.id, data.assets);
-    data.assets[updateIndex] = payload.data.updateAsset;
     cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
@@ -699,12 +688,13 @@ class ItemForm extends Component<Props, State> {
     } = this;
     if (isNewItem) {
       this.handleToggleDelModal();
+      navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       try {
         await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
         this.handleToggleDelModal();
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
       } catch (error) {
         Alert.alert(error.message);
         this.handleToggleDelModal();

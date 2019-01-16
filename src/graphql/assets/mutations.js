@@ -46,10 +46,12 @@ export const CREATE_ASSET = gql`
         onTheBalanceSheet: $onTheBalanceSheet
       }
     ) {
+      id
       codeData
       company {
         id
       }
+      assessedValue
       createdAt
       creator {
         id
@@ -61,8 +63,12 @@ export const CREATE_ASSET = gql`
         lat
         lon
       }
+      assessedDate
+      place {
+        id
+        name
+      }
       guaranteeExpires
-      id
       inventoryId
       manufacture
       model
@@ -73,6 +79,7 @@ export const CREATE_ASSET = gql`
       responsible {
         id
         email
+        fullName
       }
       status
     }
@@ -136,8 +143,15 @@ export const UPDATE_ASSET = gql`
         lat
         lon
       }
+      place {
+        id
+        name
+      }
       guaranteeExpires
+      assessedDate
+      assessedValue
       id
+      inventoryId
       manufacture
       model
       name
