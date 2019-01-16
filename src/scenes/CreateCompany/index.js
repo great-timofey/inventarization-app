@@ -28,7 +28,7 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
-import { isIphoneX } from '~/global/device';
+import { isIphoneX, isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
@@ -56,9 +56,11 @@ class CreateCompany extends PureComponent<Props, State> {
       color: colors.header.createCompany,
       title: constants.headers.createNewCompany,
     }),
+    headerTitleStyle: globalStyles.headerTitleStyle,
     headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
+    headerRight: <View />,
   });
 
   constructor(props: Props) {
@@ -276,7 +278,7 @@ class CreateCompany extends PureComponent<Props, State> {
             { paddingTop },
           ]}
         >
-          <Animated.View style={[styles.wrapper, { marginBottom }]}>
+          <Animated.View style={[styles.wrapper, !isAndroid && { marginBottom }]}>
             <TouchableOpacity style={styles.photo} onPress={this.toggleModal}>
               {chosenPhotoUri && isValid(chosenPhotoUri, constants.regExp.photo) ? (
                 <Image style={styles.chosenPhoto} source={{ uri: chosenPhotoUri }} />
@@ -328,7 +330,6 @@ class CreateCompany extends PureComponent<Props, State> {
           </Animated.View>
           <Button
             onPress={this.checkValue}
-            // isDisable={!companyName || !invitees.length}
             title={constants.buttonTitles.createCompany}
           />
           <PickPhotoModal

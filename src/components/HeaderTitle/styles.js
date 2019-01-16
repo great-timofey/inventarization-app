@@ -8,8 +8,11 @@ import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
   headerTitle: {
-    alignSelf: 'flex-start',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    alignSelf: 'center',
     paddingTop: normalize(30),
+    backgroundColor: colors.white,
   },
   headerTitleText: {
     textAlign: 'center',
