@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
-// $FlowFixMe
 import { compose, graphql } from 'react-apollo';
+// $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
@@ -69,7 +69,9 @@ class AddItemDefects extends PureComponent<Props, State> {
               navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
             } else if (photos.length + defectPhotos.length) {
               const { id, inventoryId } = await handleCreateAsset();
+              //  $FlowFixMe
               toPass.creationId = id;
+              //  $FlowFixMe
               toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
@@ -102,7 +104,15 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 
   handleCreateAsset = async () => {
-    const { navigation, createAsset, setCreatedAssetsCount, userCompany: { company: { id: companyId } }, createdAssetsCount: oldCreatedAssetsCount } = this.props;
+    const {
+      navigation,
+      createAsset,
+      setCreatedAssetsCount,
+      userCompany: {
+        company: { id: companyId },
+      },
+      createdAssetsCount: oldCreatedAssetsCount,
+    } = this.props;
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
 
@@ -114,7 +124,11 @@ class AddItemDefects extends PureComponent<Props, State> {
     await setCreatedAssetsCount({ variables: { createdAssetsCount } });
 
     const variables = { companyId, gps, name };
-    const { data: { createAsset: { id, inventoryId } } } = await createAsset({ variables, update: this.updateCreateAsset });
+    const {
+      data: {
+        createAsset: { id, inventoryId },
+      },
+    } = await createAsset({ variables, update: this.updateCreateAsset });
     return { id, inventoryId };
   };
 
@@ -124,11 +138,13 @@ class AddItemDefects extends PureComponent<Props, State> {
         company: { id: companyId },
       },
     } = this.props;
-    const data = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
     data.assets.push(payload.data.createAsset);
     cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
-
 
   askPermissions = async () => {
     const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
@@ -304,11 +320,10 @@ export default compose(
   graphql(ASSETS_MUTATIONS.SET_CREATED_ASSETS_COUNT_CLIENT, { name: 'setCreatedAssetsCount' }),
   graphql(GET_CURRENT_USER_COMPANY_CLIENT, {
     // $FlowFixMe
-    props: ({ data: { userCompany  }  }) => ({ userCompany }),
+    props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
   graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
     // $FlowFixMe
     props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
   }),
-  )
-(AddItemDefects);
+)(AddItemDefects);

@@ -18,7 +18,7 @@ import {
 
 import { compose, graphql, withApollo } from 'react-apollo';
 // $FlowFixMe
-import { keys, find, propEq, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -126,9 +126,7 @@ class ItemForm extends Component<Props, State> {
         ? constants.headers.modifyingItem
         : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: (
-        <HeaderBackButton onPress={handleGoBack} />
-      ),
+      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
           {userCanEdit && !inEditMode && (
@@ -349,7 +347,10 @@ class ItemForm extends Component<Props, State> {
       warnings.inventoryId = 'empty';
     }
 
-    const data = client.cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = client.cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
     const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
 
     if (match) {
@@ -471,8 +472,12 @@ class ItemForm extends Component<Props, State> {
   };
 
   handleGoBack = () => {
-    const { props: { navigation }, state: { name } } = this;
+    const {
+      props: { navigation },
+      state: { name },
+    } = this;
     const isNewItem = navigation.getParam('item', null);
+    //  $FlowFixMe
     if (!name.trim() && !isNewItem) {
       Alert.alert('Пожалуйста, введите название предмета');
     } else if (isNewItem) {
@@ -492,7 +497,10 @@ class ItemForm extends Component<Props, State> {
       },
       state: { id },
     } = this;
-    const data = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
     data.assets = remove(deleteIndex, 1, data.assets);
     cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
@@ -993,5 +1001,6 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
+  // $FlowFixMe
   withApollo,
 )(ItemForm);
