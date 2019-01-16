@@ -113,9 +113,16 @@ export const GET_COMPANY_ASSETS_RESPONSIBLES = gql`
   }
 `;
 
+export const GET_CREATED_ASSETS_COUNT_CLIENT = gql`
+  query {
+    createdAssetsCount @client
+  }
+`;
+
 export default {
   GET_COMPANY_ASSETS,
   GET_COMPANY_ASSET_BY_ID,
   GET_COMPANY_ASSETS_DATA_CODES,
   GET_COMPANY_ASSETS_RESPONSIBLES,
+  GET_CREATED_ASSETS_COUNT_CLIENT,
 };

@@ -16,8 +16,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { StackActions } from 'react-navigation';
-import { compose, graphql } from 'react-apollo';
+import { compose, graphql, withApollo } from 'react-apollo';
 // $FlowFixMe
 import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
@@ -27,8 +26,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -36,8 +33,10 @@ import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
 import DelModal from '~/components/QuestionModal';
-import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
 import DateTimePicker from '~/components/DateTimePicker';
@@ -113,12 +112,12 @@ const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Funct
 
 class ItemForm extends Component<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const item = navigation.state.params && navigation.state.params.item;
     const userCanDelete = navigation.state.params && navigation.state.params.userCanDelete;
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
     const toggleDelModal = navigation.state.params && navigation.state.params.toggleDelModal;
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
 
     return {
@@ -127,19 +126,7 @@ class ItemForm extends Component<Props, State> {
         ? constants.headers.modifyingItem
         : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: (
-        <HeaderBackButton
-          onPress={
-            item
-              ? () => {
-                const resetAction = StackActions.popToTop({});
-                navigation.dispatch(resetAction);
-                navigation.navigate(SCENE_NAMES.ItemsSceneName);
-              }
-              : () => navigation.goBack()
-          }
-        />
-      ),
+      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
           {userCanEdit && !inEditMode && (
@@ -165,10 +152,10 @@ class ItemForm extends Component<Props, State> {
     gps: null,
     // $FlowFixMe
     photos: [],
+    warnings: {},
     creator: null,
     placeId: null,
     codeData: null,
-    warnings: {},
     location: null,
     category: null,
     inventoryId: '',
@@ -212,6 +199,7 @@ class ItemForm extends Component<Props, State> {
     });
 
     navigation.setParams({
+      handleGoBack: this.handleGoBack,
       toggleEditMode: this.toggleEditMode,
       toggleDelModal: this.handleToggleDelModal,
     });
@@ -277,18 +265,28 @@ class ItemForm extends Component<Props, State> {
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
+      const showName = navigation.getParam('showName', true);
+      const id = navigation.getParam('creationId', '');
+      const inventoryId = navigation.getParam('inventoryId', '');
+
+      const { createdAssetsCount } = this.props;
+      const name = showName ? `Предмет ${createdAssetsCount}` : '';
       const photos = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
       const photosOfDamages = navigation.getParam('defectPhotos', []);
       const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
       const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+
       this.setState({
-        photos,
-        photosOfDamages,
+        id,
         gps,
+        name,
+        photos,
+        codeData,
+        inventoryId,
+        photosOfDamages,
         showSaveButton: true,
         formIsEditable: true,
-        codeData,
       });
     }
   }
@@ -327,7 +325,16 @@ class ItemForm extends Component<Props, State> {
   };
 
   checkFields = () => {
-    const { name, inventoryId } = this.state;
+    const {
+      props: {
+        client,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { name, inventoryId, id },
+    } = this;
+
     const warnings = {};
 
     // $FlowFixMe
@@ -340,13 +347,15 @@ class ItemForm extends Component<Props, State> {
       warnings.inventoryId = 'empty';
     }
 
-    /*
+    const data = client.cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
+    const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
 
-    if (...somethingFromBackend) {
-      warnings.push(['inventoryId', 'inventoryIdAlreadyInUse']);
+    if (match) {
+      warnings.inventoryId = 'inUse';
     }
-
-    */
 
     this.setState({ warnings });
   };
@@ -365,7 +374,7 @@ class ItemForm extends Component<Props, State> {
      */
 
     const {
-      props: { createAsset, updateAsset, navigation },
+      props: { updateAsset, navigation },
       state: { photos, photosOfDamages, id: assetId },
     } = this;
 
@@ -374,7 +383,7 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkForErrors());
 
     if (isFormInvalid) {
-      this.keyboardRef.scrollTo({ x: 0, y: normalize(400), animated: true });
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(390), animated: true });
     } else {
       const {
         userCompany: {
@@ -454,34 +463,29 @@ class ItemForm extends Component<Props, State> {
 
       // console.log(variables);
       try {
-        // let response;
-        if (assetId) {
-          // response = await updateAsset({ variables });
-          await updateAsset({ variables });
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        } else {
-          // response = await createAsset({ variables });
-          await createAsset({ variables, update: this.updateCreateAsset });
-          navigation.popToTop({});
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        }
-        // console.log(response);
+        await updateAsset({ variables });
+        navigation.navigate(SCENE_NAMES.ItemsSceneName);
       } catch (error) {
         Alert.alert(error.message);
-        console.dir(error);
       }
     }
   };
 
-  updateCreateAsset = (cache: Object, payload: Object) => {
+  handleGoBack = () => {
     const {
-      userCompany: {
-        company: { id: companyId },
-      },
-    } = this.props;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    data.assets.push(payload.data.createAsset);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+      props: { navigation },
+      state: { name },
+    } = this;
+    const isNewItem = navigation.getParam('item', null);
+    //  $FlowFixMe
+    if (!name.trim() && !isNewItem) {
+      Alert.alert('Пожалуйста, введите название предмета');
+    } else if (isNewItem) {
+      navigation.pop();
+    } else {
+      navigation.popToTop({});
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    }
   };
 
   updateDestroyAsset = (cache: Object) => {
@@ -493,10 +497,13 @@ class ItemForm extends Component<Props, State> {
       },
       state: { id },
     } = this;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
     data.assets = remove(deleteIndex, 1, data.assets);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
@@ -683,22 +690,22 @@ class ItemForm extends Component<Props, State> {
 
   handleDeleteItem = async () => {
     const {
-      state: { id, isNewItem },
+      state: { id },
       props: { destroyAsset, navigation },
     } = this;
-    if (isNewItem) {
+    const navigateFromItemsScene = navigation.getParam('item', null);
+
+    try {
+      await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      navigation.popToTop({});
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    } else {
-      try {
-        await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-        this.handleToggleDelModal();
+      if (navigateFromItemsScene) {
         navigation.navigate(SCENE_NAMES.ItemsSceneName);
-      } catch (error) {
-        Alert.alert(error.message);
-        this.handleToggleDelModal();
+      } else {
+        navigation.pop();
       }
+    } catch (error) {
+      Alert.alert(error.message);
+      this.handleToggleDelModal();
     }
   };
 
@@ -983,11 +990,17 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
-  graphql(CREATE_ASSET, { name: 'createAsset' }),
-  graphql(UPDATE_ASSET, { name: 'updateAsset' }),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_MUTATIONS.CREATE_ASSET, { name: 'createAsset' }),
+  graphql(ASSETS_MUTATIONS.UPDATE_ASSET, { name: 'updateAsset' }),
+  graphql(ASSETS_MUTATIONS.DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
+  }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
+  // $FlowFixMe
+  withApollo,
 )(ItemForm);

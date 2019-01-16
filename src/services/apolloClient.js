@@ -26,6 +26,7 @@ const defaults = {
   userCompany: '',
   isAuthed: false,
   categoryOrder: [],
+  createdAssetsCount: 0,
   saveSelectedCategories: [],
 };
 
@@ -44,6 +45,7 @@ const typeDefs = `
 type Query {
   id: ID
   isAuthed: Boolean
+  createdAssetsCount: Int
   categoryOrder: [String]
   saveSelectedCategories: [String]
   userCompany: {
@@ -71,6 +73,10 @@ const resolvers = {
     },
     setCategoryOrder: async (_, { categoryOrder }, { cache: innerCache }) => {
       await innerCache.writeData({ data: { categoryOrder } });
+      return null;
+    },
+    setCreatedAssetsCount: async (_, { createdAssetsCount }, { cache: innerCache }) => {
+      await innerCache.writeData({ data: { createdAssetsCount } });
       return null;
     },
     setSelectedCategories: async (_, { selectedCategories }, { cache: innerCache }) => {
