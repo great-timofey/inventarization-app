@@ -12,8 +12,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { graphql, compose } from 'react-apollo';
+import dayjs from 'dayjs';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { graphql, compose } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 // $FlowFixMe
 import { or, isEmpty, concat, assoc, remove, trim, includes } from 'ramda';
@@ -28,10 +29,10 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
-import { isIphoneX, isAndroid, isIOS } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
+import { isIphoneX, isAndroid, isIOS } from '~/global/device';
+import { convertToApolloUpload, normalize, isValid } from '~/global/utils';
 
 import styles from './styles';
 import type { Props, State, InviteeProps } from './types';
@@ -154,7 +155,7 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleCreateCompany = async () => {
-    const { createCompany, setAuthMutationClient } = this.props;
+    const { createCompany, setAuthMutationClient, setUserCompanyMutationClient } = this.props;
     const { invitees, companyName: name, chosenPhotoUri } = this.state;
     const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
@@ -162,10 +163,20 @@ class CreateCompany extends PureComponent<Props, State> {
       if (chosenPhotoUri) {
         file = await convertToApolloUpload([{ uri: chosenPhotoUri }], '=');
       }
-      await createCompany({
+
+      const { data: { createCompany: { company } } } = await createCompany({
         variables: { name, logo: file, inviters },
       });
 
+      const userCompany = {
+        id: '1',
+        company,
+        role: 'admin',
+        createdAt: dayjs(Date.now()).format(constants.formats.createUserCompanyDates),
+        __typename: 'UserCompany',
+      };
+
+      await setUserCompanyMutationClient({ variables: { userCompany } });
       await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.log(error.message);
@@ -358,5 +369,8 @@ export default compose(
   }),
   graphql(MUTATIONS.CREATE_COMPANY_MUTATION, {
     name: 'createCompany',
+  }),
+  graphql(MUTATIONS.SET_USER_COMPANY_MUTATION_CLIENT, {
+    name: 'setUserCompanyMutationClient',
   }),
 )(CreateCompany);

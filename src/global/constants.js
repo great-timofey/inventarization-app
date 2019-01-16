@@ -342,6 +342,7 @@ const roles = {
 const formats = {
   newItemDates: 'DD.MM.YYYY',
   createAssetDates: 'YYYY-MM-DD',
+  createUserCompanyDates: 'YYYY-MM-DDTHH:MM:ss[Z]',
 };
 
 const category = [
