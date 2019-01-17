@@ -23,7 +23,7 @@ import Permissions from 'react-native-permissions';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
+import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
@@ -125,12 +125,38 @@ class AddItemDefects extends PureComponent<Props, State> {
     await setCreatedAssetsCount({ variables: { createdAssetsCount } });
 
     const variables = { companyId, gps, name };
-    const {
-      data: {
-        createAsset: { id, inventoryId },
-      },
-    } = await createAsset({ variables, update: this.updateCreateAsset });
-    return { id, inventoryId };
+
+    if (photos.length) {
+      try {
+        const photosObjs = photos.map(uri => ({ uri }));
+        const photosResult = await convertToApolloUpload(photosObjs, '.');
+        variables.photos = photosResult;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    if (defectPhotos.length) {
+      try {
+        const defectPhotosObjs = defectPhotos.map(uri => ({ uri }));
+        const defectsResult = await convertToApolloUpload(defectPhotosObjs, '.');
+        variables.photosOfDamages = defectsResult;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    try {
+      const {
+        data: {
+          createAsset: { id, inventoryId },
+        },
+      } = await createAsset({ variables, update: this.updateCreateAsset });
+      return { id, inventoryId };
+    } catch (error) {
+      console.log(error.message);
+      return {};
+    }
   };
 
   updateCreateAsset = (cache: Object, payload: Object) => {
@@ -204,10 +230,10 @@ class AddItemDefects extends PureComponent<Props, State> {
       });
 
       await location;
-      const takenPhoto = { uri, location };
+      navigation.setParams({ location });
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        state => assoc('photos', concat(state.photos, [uri]), state),
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ defectPhotos: this.state.photos }),
       );

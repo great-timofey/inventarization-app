@@ -12,6 +12,8 @@ export const CREATE_ASSET = gql`
     $guaranteeExpires: String
     $gps: GpsAttr!
     $inventoryId: String
+    $photos: [Upload!]
+    $photosOfDamages: [Upload!]
     $codeData: String
     $manufacture: String
     $model: String
@@ -45,6 +47,8 @@ export const CREATE_ASSET = gql`
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
       }
+      photos: $photos
+      photosOfDamages: $photosOfDamages
     ) {
       id
       codeData

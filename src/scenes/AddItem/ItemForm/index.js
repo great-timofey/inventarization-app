@@ -26,7 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
+import { isSmallDevice, normalize } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -272,8 +272,8 @@ class ItemForm extends Component<Props, State> {
       const location = navigation.getParam('location', '');
       const photosUrls = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
-      const photosOfDamagesUrls = navigation.getParam('defectPhotos', []);
       const gps = { lat: location.lat, lon: location.lon };
+      const photosOfDamagesUrls = navigation.getParam('defectPhotos', []);
 
       this.setState({
         id,
@@ -696,16 +696,11 @@ class ItemForm extends Component<Props, State> {
       state: { id },
       props: { destroyAsset, navigation },
     } = this;
-    const navigateFromItemsScene = navigation.getParam('item', null);
 
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      if (navigateFromItemsScene) {
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
-      } else {
-        navigation.pop();
-      }
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();
@@ -919,7 +914,7 @@ class ItemForm extends Component<Props, State> {
                 styles.previewPhotoBar,
                 isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
               ]}
-              data={showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview'}
+              data={showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')}
             />
             <View
               style={styles.formContainer}

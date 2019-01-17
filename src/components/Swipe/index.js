@@ -92,7 +92,7 @@ class SwipeableList extends PureComponent<Props, {}> {
     } else if (photosOfDamagesUrls.length > 0) {
       uri = photosOfDamagesUrls[0];
     } else {
-      uri = getPlaceholder(normalize(158));
+      uri = getPlaceholder(normalize(62));
     }
 
     return (

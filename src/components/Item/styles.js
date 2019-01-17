@@ -30,7 +30,7 @@ export default StyleSheet.create({
     fontFamily: fonts.proText.regular,
   },
   price: {
-    color: '#BDBDBD',
+    color: colors.text.gray,
     fontSize: normalize(15),
     fontFamily: fonts.proDisplay.medium,
   },
@@ -40,8 +40,8 @@ export default StyleSheet.create({
     zIndex: 2,
     position: 'absolute',
     width: normalize(23.5),
-    paddingHorizontal: normalize(20),
     paddingTop: normalize(15),
+    paddingHorizontal: normalize(20),
   },
   menuButtonDot: {
     borderWidth: 1,
@@ -58,9 +58,9 @@ export default StyleSheet.create({
     marginBottom: normalize(8),
   },
   menuContainer: {
-    position: 'absolute',
     top: 10,
     right: 10,
     zIndex: 2,
+    position: 'absolute',
   },
 });
