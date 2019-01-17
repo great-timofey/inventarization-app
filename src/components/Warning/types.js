@@ -1,5 +1,6 @@
 // @flow
 
 export type Props = {
-  warning?: string,
+  title?: string,
+  isVisible?: boolean,
 };

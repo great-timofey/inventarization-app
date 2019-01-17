@@ -6,9 +6,9 @@ import { View, Text } from 'react-native';
 import styles from './styles';
 import type { Props } from './types';
 
-const Warning = ({ warning }: Props) => (
-  <View style={[styles.visibleContainer, !warning && styles.hiddenContainer]}>
-    <Text style={styles.errorText}>{warning}</Text>
+const Warning = ({ title, isVisible }: Props) => (
+  <View style={[styles.visibleContainer, !isVisible && styles.hiddenContainer]}>
+    <Text style={styles.errorText}>{title}</Text>
   </View>
 );
 export default Warning;

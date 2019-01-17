@@ -247,7 +247,7 @@ class Login extends PureComponent<Props, State> {
                 this.nameRef = ref;
               }}
               blurOnSubmit={false}
-              warning={warnings.name}
+              customWarning={warnings.name}
               type={constants.inputTypes.name}
               placeholder={constants.placeholders.manufacture}
               onSubmitEditing={() => this.focusField(this.emailRef)}
@@ -260,8 +260,8 @@ class Login extends PureComponent<Props, State> {
               this.emailRef = ref;
             }}
             blurOnSubmit={false}
-            warning={warnings.email}
             keyboardType="email-address"
+            customWarning={warnings.email}
             type={constants.inputTypes.email}
             placeholder={constants.placeholders.email}
             onChangeText={text => this.onChangeField('email', text)}
@@ -273,8 +273,8 @@ class Login extends PureComponent<Props, State> {
               this.passwordRef = ref;
             }}
             blurOnSubmit={false}
-            warning={warnings.password}
             onSubmitForm={this.onSubmitForm}
+            customWarning={warnings.password}
             secureTextEntry={isPasswordHidden}
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
@@ -304,7 +304,7 @@ class Login extends PureComponent<Props, State> {
                 this.mobileRef = ref;
               }}
               blurOnSubmit={false}
-              warning={warnings.mobile}
+              customWarning={warnings.mobile}
               onSubmitForm={this.onSubmitForm}
               mask={constants.masks.mobileNumber}
               keyboardType="numbers-and-punctuation"
