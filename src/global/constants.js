@@ -337,7 +337,9 @@ const fieldTypes = {
   ],
 };
 
-const createAssetNecessaryProperties = keys(itemForm);
+const updateAssetProperties = keys(itemForm).concat([
+  'id', 'photosIdsToRemove', 'photosToAdd', 'photosOfDamagesToAdd',
+]);
 
 const assetStatuses = {
   onProcessing: 'on_processing',
@@ -500,7 +502,7 @@ export default {
   setNewPassword,
   categoryIconList,
   itemFormSections,
+  updateAssetProperties,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,
-  createAssetNecessaryProperties,
 };

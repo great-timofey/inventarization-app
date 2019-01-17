@@ -34,6 +34,18 @@ export const GET_COMPANY_ASSETS = gql`
       inventoryId
       manufacture
       onTheBalanceSheet
+      photos {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamages {
+        nodes {
+          id
+          photo
+        }  
+      }
       photosUrls
       photosOfDamagesUrls
       quantity
@@ -75,6 +87,18 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       place {
         id
         name
+      }
+      photos {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamages {
+        nodes {
+          id
+          photo
+        }  
       }
       guaranteeExpires
       inventoryId

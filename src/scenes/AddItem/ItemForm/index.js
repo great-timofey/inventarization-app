@@ -18,7 +18,7 @@ import {
 
 import { compose, graphql, withApollo } from 'react-apollo';
 // $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import { prop, without, concat, keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -26,7 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { isSmallDevice, normalize } from '~/global/utils';
+import { isSmallDevice, normalize, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
@@ -158,6 +158,7 @@ class ItemForm extends Component<Props, State> {
     location: null,
     category: null,
     photosUrls: [],
+    photosToAdd: [],
     inventoryId: '',
     isNewItem: true,
     showPhotos: true,
@@ -171,6 +172,8 @@ class ItemForm extends Component<Props, State> {
     isModalOpened: false,
     formIsEditable: false,
     showSaveButton: false,
+    photosIdsToRemove: [],
+    photosOfDamagesToAdd: [],
     activePreviewIndex: 0,
     guaranteeExpires: null,
     isDelModalOpened: false,
@@ -215,10 +218,8 @@ class ItemForm extends Component<Props, State> {
         place,
         status,
         creator,
-        photosUrls,
         responsible,
         onTheBalanceSheet,
-        photosOfDamagesUrls,
       } = item;
       navigation.setParams({ headerText: name });
       const inEditMode = navigation.getParam('inEditMode', false);
@@ -249,10 +250,8 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      itemCopy.photosUrls = photosUrls;
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
-      itemCopy.photosOfDamagesUrls = photosOfDamagesUrls;
       itemCopy.status = status === constants.assetStatuses.onProcessing
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
@@ -300,20 +299,22 @@ class ItemForm extends Component<Props, State> {
       !== navigation.state.params.additionalPhotos
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photosUrls }) => ({
+      this.setState(({ photosUrls, photosToAdd }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
         photosUrls: photosUrls.concat(navigation.state.params.additionalPhotos),
+        photosToAdd: photosToAdd.concat(navigation.state.params.additionalPhotos),
       }));
     } else if (
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photosOfDamagesUrls }) => ({
+      this.setState(({ photosOfDamagesUrls, photosOfDamagesToAdd }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
         photosOfDamagesUrls: photosOfDamagesUrls.concat(navigation.state.params.additionalDefects),
+        photosOfDamagesToAdd: photosOfDamagesToAdd.concat(navigation.state.params.additionalDefects)
       }));
     }
   }
@@ -372,8 +373,8 @@ class ItemForm extends Component<Props, State> {
      */
 
     const {
-      props: { updateAsset, navigation },
-      state: { photosUrls, photosOfDamagesUrls, id: assetId },
+      state: { id: assetId },
+      props: { updateAsset, removeAssetPhotos, addPhotosToAsset },
     } = this;
 
     const isFormInvalid = await Promise.resolve()
@@ -389,15 +390,7 @@ class ItemForm extends Component<Props, State> {
         },
       } = this.props;
 
-      let variables;
-
-      if (assetId) {
-        // $FlowFixMe
-        variables = pick(constants.createAssetNecessaryProperties.concat('id'), this.state);
-      } else {
-        // $FlowFixMe
-        variables = pick(constants.createAssetNecessaryProperties, this.state);
-      }
+      const variables = pick(constants.updateAssetProperties, this.state);
 
       variables.companyId = companyId;
       // $FlowFixMe
@@ -445,28 +438,52 @@ class ItemForm extends Component<Props, State> {
           : constants.assetStatuses.onProcessing;
       }
 
-      /*
+      if (variables.photosIdsToRemove.length) {
+        try {
+          await removeAssetPhotos({
+            variables: {
+              assetId,
+              photoIds: variables.photosIdsToRemove,
+            },
+            update: this.updateRemoveAssetPhoto,
+          });
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+      delete variables.photosIdsToRemove;
 
-      try {
-        const photosResult = await convertToApolloUpload(photosUrls, '.');
-        variables.photos = photosResult;
-      } catch (error) {
-        console.log(error.message);
+      if (variables.photosToAdd.length + variables.photosOfDamagesToAdd.length) {
+        let photos = [];
+        let photosOfDamages = [];
+        if (variables.photosToAdd.length) {
+          try {
+            const photosObjs = variables.photosToAdd.map(uri => ({ uri }));
+            photos = await convertToApolloUpload(photosObjs, '.');
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+
+        if (variables.photosOfDamagesToAdd.length) {
+          try {
+            const photosOfDamagesObjs = variables.photosOfDamagesToAdd.map(uri => ({ uri }));
+            photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+
+        await addPhotosToAsset({ variables: { assetId, photos, photosOfDamages } });
       }
 
-      try {
-        const defectsResult = await convertToApolloUpload(photosOfDamagesUrls, '.');
-        variables.photosOfDamages = defectsResult;
-      } catch (error) {
-        console.log(error.message);
-      }
+      delete variables.photosToAdd;
+      delete variables.photosOfDamagesToAdd;
 
-      */
-
-      // console.log(variables);
       try {
         await updateAsset({ variables });
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
+        this.handleGoBack();
+        // navigation.navigate(SCENE_NAMES.ItemsSceneName);
       } catch (error) {
         Alert.alert(error.message);
       }
@@ -475,15 +492,16 @@ class ItemForm extends Component<Props, State> {
 
   handleGoBack = () => {
     const {
-      props: { navigation },
       state: { name },
+      props: { navigation },
     } = this;
-    const isNewItem = navigation.getParam('item', null);
+    const fromItemsScene = navigation.getParam('item', null);
     //  $FlowFixMe
-    if (!name.trim() && !isNewItem) {
+    if (!name.trim() && !fromItemsScene) {
       Alert.alert(constants.errors.createItem.name);
-    } else if (isNewItem) {
+    } else if (fromItemsScene) {
       navigation.pop();
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     } else {
       navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
@@ -505,6 +523,27 @@ class ItemForm extends Component<Props, State> {
     });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
     data.assets = remove(deleteIndex, 1, data.assets);
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
+  updateRemoveAssetPhoto = (cache: Object) => {
+    const {
+      props: {
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { id, photosIdsToRemove },
+    } = this;
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
+    const assetIndex = findIndex(asset => asset.id === id, data.assets);
+    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove));
+    const urlsToRemove = pluck('photo', photosToRemove);
+    data.assets[assetIndex].photosUrls = without(urlsToRemove, data.assets[assetIndex].photosUrls);
+    data.assets[assetIndex].photos.nodes = without(photosToRemove, data.assets[assetIndex].photos.nodes);
     cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
@@ -622,6 +661,7 @@ class ItemForm extends Component<Props, State> {
       },
     } = this;
 
+    // console.log(uri);
     const isPreview = uri === 'preview';
     const isLocalFile = uri.startsWith('file');
 
@@ -676,7 +716,7 @@ class ItemForm extends Component<Props, State> {
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-            onPress={() => this.handleRemovePreviewPhotoBarItem(index, isLocalFile)}
+            onPress={() => this.handleRemovePreviewPhotoBarItem(uri, index, isLocalFile)}
           >
             <Image source={assets.deletePhoto} />
           </TouchableOpacity>
@@ -719,31 +759,45 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (removedIndex: number, isLocalFile: boolean) => {
+  handleRemovePreviewPhotoBarItem = async (uri: string, removedIndex: number, isLocalFile: boolean) => {
     const {
       state,
       state: { showPhotos, activePreviewIndex },
     } = this;
-    const currentlyActive = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
+    const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
     // $FlowFixMe
-    const uri = state[currentlyActive][removedIndex];
 
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
+        
+        this.setState(currentState => ({
+          showSaveButton: true,
+          [toShow]: without([uri], currentState[toShow]),
+          activePreviewIndex:
+            removedIndex <= activePreviewIndex && activePreviewIndex > 0
+              ? currentState.activePreviewIndex - 1
+              : currentState.activePreviewIndex,
+        }));
       } catch (error) {
         Alert.alert(error.message);
       }
-    }
+    } else {
+      const { photos: { nodes: photosNodes }, photosOfDamages: { nodes: photosOfDamagesNodes } } = state;
 
-    this.setState(currentState => ({
-      showSaveButton: true,
-      [currentlyActive]: remove(removedIndex, 1, currentState[currentlyActive]),
-      activePreviewIndex:
-        removedIndex <= activePreviewIndex && activePreviewIndex > 0
-          ? currentState.activePreviewIndex - 1
-          : currentState.activePreviewIndex,
-    }));
+      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(({ photo }) => photo === uri);
+      const id = prop('id', match);
+      //
+      this.setState(currentState => ({
+        showSaveButton: true,
+        [toShow]: without([uri], currentState[toShow]),
+        photosIdsToRemove: concat([id], currentState.photosIdsToRemove),
+        activePreviewIndex:
+          removedIndex <= activePreviewIndex && activePreviewIndex > 0
+            ? currentState.activePreviewIndex - 1
+            : currentState.activePreviewIndex,
+      }));
+    }
   };
 
   handleOpenDateTimePicker = (key: string) => this.setState({
@@ -991,6 +1045,8 @@ export default compose(
   graphql(ASSETS_MUTATIONS.CREATE_ASSET, { name: 'createAsset' }),
   graphql(ASSETS_MUTATIONS.UPDATE_ASSET, { name: 'updateAsset' }),
   graphql(ASSETS_MUTATIONS.DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_MUTATIONS.ADD_PHOTOS_TO_ASSET, { name: 'addPhotosToAsset' }),
+  graphql(ASSETS_MUTATIONS.REMOVE_ASSET_PHOTOS, { name: 'removeAssetPhotos' }),
   graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
     // $FlowFixMe
     props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
