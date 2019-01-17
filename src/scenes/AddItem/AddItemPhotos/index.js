@@ -46,7 +46,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const from = navigation.state.params && navigation.state.params.from;
     const photos = navigation.state.params && navigation.state.params.photos;
     const codeData = navigation.state.params && navigation.state.params.codeData;
-    const toPass = from ? { additionalPhotos: photos } : { photos, codeData };
+    const location = navigation.state.params && navigation.state.params.location;
+    const toPass = from ? { additionalPhotos: photos } : { photos, codeData, location };
     return {
       headerStyle: styles.header,
       title: from ? constants.headers.addPhotos : constants.headers.newItem,
@@ -141,10 +142,10 @@ class AddItemPhotos extends PureComponent<Props, State> {
       });
 
       await location;
-      const takenPhoto = { uri, location };
+      navigation.setParams({ location });
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        state => assoc('photos', concat(state.photos, [uri]), state),
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ photos: this.state.photos }),
       );
@@ -159,10 +160,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const { photos } = this.state;
     const { navigation } = this.props;
 
-    const { uri } = photos[index];
-
     try {
-      RNFS.unlink(uri);
+      RNFS.unlink(photos[index]);
     } catch (error) {
       Alert.alert(error.message);
     }
@@ -173,7 +172,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     );
   };
 
-  renderPhoto = ({ item: { uri }, index }: PhotosProps) => (
+  renderPhoto = ({ item: uri, index }: PhotosProps) => (
     <View style={styles.photoContainer}>
       <TouchableOpacity
         activeOpacity={0.5}

@@ -73,6 +73,8 @@ export const CREATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -157,6 +159,8 @@ export const UPDATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -175,6 +179,15 @@ export const DESTROY_ASSET = gql`
   }
 `;
 
+export const ADD_PHOTOS_TO_ASSET = gql`
+  mutation AddPhotosToAssets($assetId: ID!, $photos: [Upload!], $photosOfDamages: [Upload!]) {
+    addPhotosToAssets(assetId: $assetId, photos: $photos, photosOfDamages: $photosOfDamages){
+      message
+    }
+  }
+`;
+
+
 export const SET_CREATED_ASSETS_COUNT_CLIENT = gql`
   mutation SetCreatedAssetsCount($createdAssetsCount: Int!) {
     setCreatedAssetsCount(createdAssetsCount: $createdAssetsCount) @client 
@@ -185,5 +198,6 @@ export default {
   CREATE_ASSET,
   UPDATE_ASSET,
   DESTROY_ASSET,
+  ADD_PHOTOS_TO_ASSET,
   SET_CREATED_ASSETS_COUNT_CLIENT,
 };

@@ -151,13 +151,13 @@ class ItemForm extends Component<Props, State> {
     name: '',
     gps: null,
     // $FlowFixMe
-    photos: [],
     warnings: {},
     creator: null,
     placeId: null,
     codeData: null,
     location: null,
     category: null,
+    photosUrls: [],
     inventoryId: '',
     isNewItem: true,
     showPhotos: true,
@@ -167,7 +167,6 @@ class ItemForm extends Component<Props, State> {
     purchasePrice: null,
     responsibleId: null,
     // $FlowFixMe
-    photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
     formIsEditable: false,
@@ -175,6 +174,7 @@ class ItemForm extends Component<Props, State> {
     activePreviewIndex: 0,
     guaranteeExpires: null,
     isDelModalOpened: false,
+    photosOfDamagesUrls: [],
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
@@ -214,11 +214,11 @@ class ItemForm extends Component<Props, State> {
         name,
         place,
         status,
-        photos,
         creator,
+        photosUrls,
         responsible,
-        photosOfDamages,
         onTheBalanceSheet,
+        photosOfDamagesUrls,
       } = item;
       navigation.setParams({ headerText: name });
       const inEditMode = navigation.getParam('inEditMode', false);
@@ -249,42 +249,40 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
-      //  eslint-disable-next-line
-      itemCopy.photosOfDamages =
-        (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
+      itemCopy.photosUrls = photosUrls;
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
+      itemCopy.photosOfDamagesUrls = photosOfDamagesUrls;
       itemCopy.status = status === constants.assetStatuses.onProcessing
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
-      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
+      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? constants.words.yes : constants.words.no;
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
       // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
-      const showName = navigation.getParam('showName', true);
       const id = navigation.getParam('creationId', '');
+      const showName = navigation.getParam('showName', true);
       const inventoryId = navigation.getParam('inventoryId', '');
 
       const { createdAssetsCount } = this.props;
       const name = showName ? `Предмет ${createdAssetsCount}` : '';
-      const photos = navigation.getParam('photos', []);
+      const location = navigation.getParam('location', '');
+      const photosUrls = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
-      const photosOfDamages = navigation.getParam('defectPhotos', []);
-      const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
-      const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+      const photosOfDamagesUrls = navigation.getParam('defectPhotos', []);
+      const gps = { lat: location.lat, lon: location.lon };
 
       this.setState({
         id,
         gps,
         name,
-        photos,
         codeData,
+        photosUrls,
         inventoryId,
-        photosOfDamages,
+        photosOfDamagesUrls,
         showSaveButton: true,
         formIsEditable: true,
       });
@@ -302,20 +300,20 @@ class ItemForm extends Component<Props, State> {
       !== navigation.state.params.additionalPhotos
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photos }) => ({
+      this.setState(({ photosUrls }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
-        photos: photos.concat(navigation.state.params.additionalPhotos),
+        photosUrls: photosUrls.concat(navigation.state.params.additionalPhotos),
       }));
     } else if (
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photosOfDamages }) => ({
+      this.setState(({ photosOfDamagesUrls }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
-        photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
+        photosOfDamagesUrls: photosOfDamagesUrls.concat(navigation.state.params.additionalDefects),
       }));
     }
   }
@@ -375,7 +373,7 @@ class ItemForm extends Component<Props, State> {
 
     const {
       props: { updateAsset, navigation },
-      state: { photos, photosOfDamages, id: assetId },
+      state: { photosUrls, photosOfDamagesUrls, id: assetId },
     } = this;
 
     const isFormInvalid = await Promise.resolve()
@@ -447,19 +445,23 @@ class ItemForm extends Component<Props, State> {
           : constants.assetStatuses.onProcessing;
       }
 
+      /*
+
       try {
-        const photosResult = await convertToApolloUpload(photos, '.');
+        const photosResult = await convertToApolloUpload(photosUrls, '.');
         variables.photos = photosResult;
       } catch (error) {
         console.log(error.message);
       }
 
       try {
-        const defectsResult = await convertToApolloUpload(photosOfDamages, '.');
+        const defectsResult = await convertToApolloUpload(photosOfDamagesUrls, '.');
         variables.photosOfDamages = defectsResult;
       } catch (error) {
         console.log(error.message);
       }
+
+      */
 
       // console.log(variables);
       try {
@@ -611,7 +613,7 @@ class ItemForm extends Component<Props, State> {
     </View>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
+  renderPreviewPhotoBarItem = ({ item: uri, index }: PhotosProps) => {
     const {
       state: { isNewItem, creator, status },
       props: {
@@ -620,6 +622,7 @@ class ItemForm extends Component<Props, State> {
       },
     } = this;
 
+    const isPreview = uri === 'preview';
     const isLocalFile = uri.startsWith('file');
 
     const isUserAdmin = userRole === constants.roles.admin;
@@ -633,14 +636,14 @@ class ItemForm extends Component<Props, State> {
     let showAddPhotoButton = false;
 
     if (isUserAdmin) {
-      if (!uri) {
+      if (isPreview) {
         showAddPhotoButton = true;
       } else {
         showRemoveButton = true;
       }
     } else if (isUserEmployee) {
       if (isNewItem || isUserCreator) {
-        if (!uri) {
+        if (isPreview) {
           showAddPhotoButton = true;
         } else {
           showRemoveButton = true;
@@ -656,7 +659,7 @@ class ItemForm extends Component<Props, State> {
       //  $FlowFixMe
       const isItemInResponsiblePlaces = includes(placeId && placeId.id, placesIds);
       const isUserResponsible = responsibleId && responsibleId.id === currentUserId;
-      if (!uri) {
+      if (isPreview) {
         showAddPhotoButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
       } else {
         showRemoveButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
@@ -682,7 +685,7 @@ class ItemForm extends Component<Props, State> {
           style={styles.photoImageContainer}
           onPress={() => this.handleSetIndexPreview(index)}
         >
-          {uri !== '' && <Image style={styles.photoImage} source={{ uri }} />}
+          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
         </TouchableOpacity>
       </View>
     );
@@ -726,9 +729,9 @@ class ItemForm extends Component<Props, State> {
       state,
       state: { showPhotos, activePreviewIndex },
     } = this;
-    const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
+    const currentlyActive = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
     // $FlowFixMe
-    const { uri } = state[currentlyActive][removedIndex];
+    const uri = state[currentlyActive][removedIndex];
 
     if (isLocalFile) {
       try {
@@ -797,7 +800,7 @@ class ItemForm extends Component<Props, State> {
     });
   };
 
-  keyExtractor = ({ uri }, index) => uri || index.toString();
+  keyExtractor = (uri, index) => uri;
 
   showPhotos = () => {
     this.setState({ showPhotos: true, activePreviewIndex: 0 });
@@ -824,24 +827,24 @@ class ItemForm extends Component<Props, State> {
 
     const {
       name,
-      photos,
       warnings,
       sections,
       isNewItem,
       showPhotos,
+      photosUrls,
       isModalOpened,
       formIsEditable,
       showSaveButton,
-      photosOfDamages,
       isDelModalOpened,
       activePreviewIndex,
+      photosOfDamagesUrls,
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
 
     // eslint-disable-next-line
     const currentTypeIsEmpty =
-      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+      (showPhotos && isEmpty(photosUrls)) || (!showPhotos && isEmpty(photosOfDamagesUrls));
 
     const userCanDelete = navigation.getParam('userCanDelete', false);
 
@@ -886,10 +889,10 @@ class ItemForm extends Component<Props, State> {
                     }}
                     index={activePreviewIndex}
                     // $FlowFixMe
-                    data={showPhotos ? photos : photosOfDamages}
+                    data={showPhotos ? photosUrls : photosOfDamagesUrls}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
-                    key={(showPhotos ? photos : photosOfDamages).length + (showPhotos ? 'p' : 'd')}
+                    key={(showPhotos ? photosUrls : photosOfDamagesUrls).length + (showPhotos ? 'p' : 'd')}
                   />
                 )}
                 <View style={styles.previewInfo}>
@@ -898,7 +901,7 @@ class ItemForm extends Component<Props, State> {
                     {currentTypeIsEmpty
                       ? '0/0'
                       : `${activePreviewIndex + 1} / ${
-                        showPhotos ? photos.length : photosOfDamages.length
+                        showPhotos ? photosUrls.length : photosOfDamagesUrls.length
                       }`}
                   </Text>
                 </View>
@@ -914,9 +917,9 @@ class ItemForm extends Component<Props, State> {
               contentContainerStyle={[
                 styles.photosInner,
                 styles.previewPhotoBar,
-                isEmpty(showPhotos ? photos : photosOfDamages) && styles.hide,
+                isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
               ]}
-              data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
+              data={showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview'}
             />
             <View
               style={styles.formContainer}

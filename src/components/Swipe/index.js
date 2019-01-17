@@ -11,7 +11,7 @@ import Swipeout from 'react-native-swipeout';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
-import { normalize } from '~/global/utils';
+import { normalize, getPlaceholder } from '~/global/utils';
 import type { Item } from '~/global/types';
 import constants from '~/global/constants';
 import { GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
@@ -85,6 +85,16 @@ class SwipeableList extends PureComponent<Props, {}> {
       });
     }
 
+    const { photosUrls, photosOfDamagesUrls } = item;
+    let uri;
+    if (photosUrls.length > 0) {
+      uri = photosUrls[0];
+    } else if (photosOfDamagesUrls.length > 0) {
+      uri = photosOfDamagesUrls[0];
+    } else {
+      uri = getPlaceholder(normalize(158));
+    }
+
     return (
       <Swipeout
         autoClose
@@ -97,7 +107,7 @@ class SwipeableList extends PureComponent<Props, {}> {
       >
         <TouchableOpacity activeOpacity={1} onPress={() => openItem(item)}>
           <View style={styles.rowItem}>
-            <Image style={styles.image} />
+            <Image style={styles.image} source={{ uri }} />
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>

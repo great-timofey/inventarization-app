@@ -8,6 +8,7 @@ import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
   container: {
+    overflow: 'hidden',
     width: normalize(158),
     height: normalize(218),
     marginBottom: normalize(5),
@@ -18,7 +19,6 @@ export default StyleSheet.create({
     width: normalize(158),
     height: normalize(158),
     marginBottom: normalize(6),
-    backgroundColor: colors.darkGreen,
   },
   selectImage: {
     backgroundColor: colors.blackOpacity,

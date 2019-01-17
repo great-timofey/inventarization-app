@@ -34,6 +34,8 @@ export const GET_COMPANY_ASSETS = gql`
       inventoryId
       manufacture
       onTheBalanceSheet
+      photosUrls
+      photosOfDamagesUrls
       quantity
       responsible {
         id
@@ -77,6 +79,8 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       guaranteeExpires
       inventoryId
       manufacture
+      photosUrls
+      photosOfDamagesUrls
       onTheBalanceSheet
       quantity
       responsible {

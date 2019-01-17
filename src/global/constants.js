@@ -31,6 +31,11 @@ const uploadCreateAssetImages = {
   quality: 0.5,
 };
 
+const words = {
+  yes: 'Да',
+  no: 'Нет',
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
@@ -475,6 +480,7 @@ export default {
   sort,
   text,
   masks,
+  words,
   roles,
   hints,
   errors,
