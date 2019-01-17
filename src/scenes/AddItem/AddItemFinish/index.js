@@ -3,13 +3,14 @@
 import React, { PureComponent } from 'react';
 import { Text, StatusBar, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
+import { graphql } from 'react-apollo';
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
-import { StackActions } from 'react-navigation';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { GET_CREATED_ASSETS_COUNT_CLIENT } from '~/graphql/assets/queries';
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -34,8 +35,7 @@ class AddItemFinish extends PureComponent<Props, State> {
     headerRight: (
       <HeaderExitButton
         onPress={() => {
-          const resetAction = StackActions.popToTop({});
-          navigation.dispatch(resetAction);
+          navigation.popToTop({});
           navigation.navigate(SCENE_NAMES.ItemsSceneName);
         }}
       />
@@ -55,13 +55,22 @@ class AddItemFinish extends PureComponent<Props, State> {
     const { navigation } = this.props;
     const photos = navigation.getParam('photos', []);
     const codeData = navigation.getParam('codeData', null);
+    const creationId = navigation.getParam('creationId', '');
+    const inventoryId = navigation.getParam('inventoryId', '');
     const defectPhotos = navigation.getParam('defectPhotos', []);
-    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { photos, defectPhotos, codeData });
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, {
+      photos,
+      defectPhotos,
+      codeData,
+      showName: false,
+      creationId,
+      inventoryId,
+    });
   };
 
   handleAddMoreItems = () => {
     const { navigation } = this.props;
-    navigation.dispatch(StackActions.popToTop({}));
+    navigation.popToTop({});
   };
 
   camera: ?RNCamera;
@@ -98,4 +107,4 @@ class AddItemFinish extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemFinish;
+export default graphql(GET_CREATED_ASSETS_COUNT_CLIENT)(AddItemFinish);

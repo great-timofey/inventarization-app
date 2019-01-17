@@ -11,7 +11,7 @@ export const CREATE_ASSET = gql`
     $assessedDate: String
     $guaranteeExpires: String
     $gps: GpsAttr!
-    $inventoryId: String!
+    $inventoryId: String
     $codeData: String
     $manufacture: String
     $model: String
@@ -89,7 +89,7 @@ export const CREATE_ASSET = gql`
 export const UPDATE_ASSET = gql`
   mutation UpdateAsset(
     $id: ID!
-    $name: String!
+    $name: String
     $description: String
     $purchasePrice: Float
     $dateOfPurchase: String
@@ -101,6 +101,7 @@ export const UPDATE_ASSET = gql`
     $model: String
     $quantity: Int
     $categoryId: ID
+    $inventoryId: String
     $placeId: ID
     $responsibleId: ID
     $status: AssetStatus
@@ -110,6 +111,7 @@ export const UPDATE_ASSET = gql`
       id: $id
       attributes: {
         name: $name
+        inventoryId: $inventoryId
         description: $description
         purchasePrice: $purchasePrice
         dateOfPurchase: $dateOfPurchase
@@ -173,8 +175,15 @@ export const DESTROY_ASSET = gql`
   }
 `;
 
+export const SET_CREATED_ASSETS_COUNT_CLIENT = gql`
+  mutation SetCreatedAssetsCount($createdAssetsCount: Int!) {
+    setCreatedAssetsCount(createdAssetsCount: $createdAssetsCount) @client 
+  }
+`;
+
 export default {
   CREATE_ASSET,
   UPDATE_ASSET,
   DESTROY_ASSET,
+  SET_CREATED_ASSETS_COUNT_CLIENT,
 };

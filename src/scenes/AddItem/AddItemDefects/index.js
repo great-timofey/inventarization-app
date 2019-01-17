@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import RNFS from 'react-native-fs';
+import { compose, graphql } from 'react-apollo';
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 import { all, assoc, remove, concat, values, equals } from 'ramda';
@@ -24,6 +25,9 @@ import assets from '~/global/assets';
 import constants from '~/global/constants';
 import { isSmallDevice } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -48,6 +52,9 @@ class AddItemDefects extends PureComponent<Props, State> {
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const from = navigation.state.params && navigation.state.params.from;
     const toPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos, codeData };
+
+    const handleCreateAsset = navigation.state.params && navigation.state.params.handleCreateAsset;
+
     return {
       headerStyle: styles.header,
       title: constants.headers.defects,
@@ -57,10 +64,15 @@ class AddItemDefects extends PureComponent<Props, State> {
       ),
       headerRight: (
         <HeaderFinishButton
-          onPress={() => {
+          onPress={async () => {
             if (from) {
               navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
             } else if (photos.length + defectPhotos.length) {
+              const { id, inventoryId } = await handleCreateAsset();
+              //  $FlowFixMe
+              toPass.creationId = id;
+              //  $FlowFixMe
+              toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
               Alert.alert('Требуется фото предмета или его дефектов для продолежния');
@@ -88,8 +100,51 @@ class AddItemDefects extends PureComponent<Props, State> {
       StatusBar.setBarStyle('light-content');
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ defectPhotos: [] });
+    navigation.setParams({ defectPhotos: [], handleCreateAsset: this.handleCreateAsset });
   }
+
+  handleCreateAsset = async () => {
+    const {
+      navigation,
+      createAsset,
+      setCreatedAssetsCount,
+      userCompany: {
+        company: { id: companyId },
+      },
+      createdAssetsCount: oldCreatedAssetsCount,
+    } = this.props;
+    const photos = navigation.getParam('photos', []);
+    const defectPhotos = navigation.getParam('defectPhotos', []);
+
+    const firstPhotoForCoords = photos.length ? photos[0] : defectPhotos[0];
+    const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+
+    const createdAssetsCount = oldCreatedAssetsCount + 1;
+    const name = `Предмет ${createdAssetsCount}`;
+    await setCreatedAssetsCount({ variables: { createdAssetsCount } });
+
+    const variables = { companyId, gps, name };
+    const {
+      data: {
+        createAsset: { id, inventoryId },
+      },
+    } = await createAsset({ variables, update: this.updateCreateAsset });
+    return { id, inventoryId };
+  };
+
+  updateCreateAsset = (cache: Object, payload: Object) => {
+    const {
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
+    data.assets.push(payload.data.createAsset);
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
 
   askPermissions = async () => {
     const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
@@ -260,4 +315,15 @@ class AddItemDefects extends PureComponent<Props, State> {
   }
 }
 
-export default AddItemDefects;
+export default compose(
+  graphql(ASSETS_MUTATIONS.CREATE_ASSET, { name: 'createAsset' }),
+  graphql(ASSETS_MUTATIONS.SET_CREATED_ASSETS_COUNT_CLIENT, { name: 'setCreatedAssetsCount' }),
+  graphql(GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+  graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
+  }),
+)(AddItemDefects);

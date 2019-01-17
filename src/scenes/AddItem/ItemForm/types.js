@@ -5,13 +5,15 @@ import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
 export type Props = {
   role: string,
   userId: string,
-  currentUser: ?Object,
+  client: Object,
   navigation: Object,
   userCompany: Object,
+  currentUser: ?Object,
   currentUserId: string,
   createAsset: Function,
   updateAsset: Function,
   destroyAsset: Function,
+  createdAssetsCount: number,
 };
 
 type Photo = {
