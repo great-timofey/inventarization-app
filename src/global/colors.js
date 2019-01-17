@@ -28,6 +28,7 @@ export default {
   blackOpacity: 'rgba(0, 0, 0, .3)',
   invalidInputWhiteContainer: '#FFE7EB',
   blackOpacityLight: 'rgba(0, 0, 0, .1)',
+  assetMenuOverlay: 'rgba(0, 0, 0, 0.8)',
   whiteOpacity: 'rgba(255, 255, 255, .3)',
   blackOpacityExtraLight: 'rgba(0, 0, 0, .05)',
   whiteOpacityLight: 'rgba(255, 255, 255, 0.2)',

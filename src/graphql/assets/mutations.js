@@ -12,6 +12,8 @@ export const CREATE_ASSET = gql`
     $guaranteeExpires: String
     $gps: GpsAttr!
     $inventoryId: String
+    $photos: [Upload!]
+    $photosOfDamages: [Upload!]
     $codeData: String
     $manufacture: String
     $model: String
@@ -45,6 +47,8 @@ export const CREATE_ASSET = gql`
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
       }
+      photos: $photos
+      photosOfDamages: $photosOfDamages
     ) {
       id
       codeData
@@ -73,6 +77,20 @@ export const CREATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photos {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamages {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -157,6 +175,8 @@ export const UPDATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -175,6 +195,22 @@ export const DESTROY_ASSET = gql`
   }
 `;
 
+export const REMOVE_ASSET_PHOTOS = gql`
+  mutation RemoveAssetsPhotos($assetId: ID!, $photoIds: [ID!]!) {
+    removePhotosFromAssets(assetId: $assetId, photoIds: $photoIds){
+      message
+    }
+  }
+`;
+
+export const ADD_PHOTOS_TO_ASSET = gql`
+  mutation AddPhotosToAssets($assetId: ID!, $photos: [Upload!], $photosOfDamages: [Upload!]) {
+    addPhotosToAssets(assetId: $assetId, photos: $photos, photosOfDamages: $photosOfDamages){
+      message
+    }
+  }
+`;
+
 export const SET_CREATED_ASSETS_COUNT_CLIENT = gql`
   mutation SetCreatedAssetsCount($createdAssetsCount: Int!) {
     setCreatedAssetsCount(createdAssetsCount: $createdAssetsCount) @client 
@@ -185,5 +221,7 @@ export default {
   CREATE_ASSET,
   UPDATE_ASSET,
   DESTROY_ASSET,
+  REMOVE_ASSET_PHOTOS,
+  ADD_PHOTOS_TO_ASSET,
   SET_CREATED_ASSETS_COUNT_CLIENT,
 };

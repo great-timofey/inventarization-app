@@ -54,17 +54,19 @@ class AddItemFinish extends PureComponent<Props, State> {
   handleGoToItemForm = async () => {
     const { navigation } = this.props;
     const photos = navigation.getParam('photos', []);
+    const location = navigation.getParam('location', '');
     const codeData = navigation.getParam('codeData', null);
     const creationId = navigation.getParam('creationId', '');
     const inventoryId = navigation.getParam('inventoryId', '');
     const defectPhotos = navigation.getParam('defectPhotos', []);
     navigation.navigate(SCENE_NAMES.ItemFormSceneName, {
       photos,
-      defectPhotos,
+      location,
       codeData,
-      showName: false,
       creationId,
       inventoryId,
+      defectPhotos,
+      showName: false,
     });
   };
 

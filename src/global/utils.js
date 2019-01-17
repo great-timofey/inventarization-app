@@ -23,7 +23,7 @@ export const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-export const convertToApolloUpload = async (photos: Array<any>, typeSeparator: string) => {
+export const convertToApolloUpload = async (photos: Array<Object>, typeSeparator: string) => {
   const photosPromises = photos.map(({ uri }) => {
     const type = uri.slice(uri.lastIndexOf(typeSeparator) + 1).toUpperCase();
     const alreadyUploaded = uri.startsWith('https');
@@ -33,10 +33,10 @@ export const convertToApolloUpload = async (photos: Array<any>, typeSeparator: s
       constants.uploadCreateAssetImages.height,
       type === 'JPG' ? 'JPEG' : type,
       alreadyUploaded ? 1 : constants.uploadCreateAssetImages.quality,
-    ).then((photoPromise) => {
+    ).then((photoUrlPromise) => {
       const file = new ReactNativeFile({
-        name: photoPromise.uri.slice(-10),
-        uri: photoPromise.uri.replace('file://', ''),
+        name: photoUrlPromise.uri.slice(-10),
+        uri: photoUrlPromise.uri.replace('file://', ''),
         type: type === 'JPG' ? 'image/jpeg' : 'image/png',
       });
       return file;
