@@ -5,8 +5,8 @@ export type State = {
   email: string,
   mobile: string,
   password: string,
+  warnings: Object,
   isRegForm: boolean,
-  warnings: Array<string>,
   isKeyboardActive: boolean,
   isPasswordHidden: boolean,
 };

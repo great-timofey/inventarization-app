@@ -39,7 +39,8 @@ const words = {
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
-  password: 'Назначьте пароль',
+  setPassword: 'Назначьте пароль',
+  enterPassword: 'Введите пароль',
   model: 'Введите название',
   description: 'Введите текст',
   placeId: 'Место не указано',
@@ -71,11 +72,9 @@ const inputTypes = {
   },
   subCategory: {
     label: 'Название подкатегории',
-    // warning: 'Введите имя',
   },
   category: {
     label: 'Название категории',
-    // warning: 'Введите имя',
   },
   companyName: {
     label: 'Название организации',
@@ -338,7 +337,10 @@ const fieldTypes = {
 };
 
 const updateAssetProperties = keys(itemForm).concat([
-  'id', 'photosIdsToRemove', 'photosToAdd', 'photosOfDamagesToAdd',
+  'id',
+  'photosIdsToRemove',
+  'photosToAdd',
+  'photosOfDamagesToAdd',
 ]);
 
 const assetStatuses = {
@@ -426,7 +428,6 @@ const categoryIconList = [
   },
 ];
 
-
 const data = {
   assets: [
     {
@@ -477,6 +478,22 @@ const data = {
   ],
 };
 
+const warnings = {
+  emptyName: 'Введите имя',
+  emptyEmail: 'Введите email',
+  emptyPassword: 'Введите пароль',
+  invalidEmail: 'Вы указали неверный email',
+  userNotFound: 'Неверный email или пароль',
+  invalidMobile: 'Не верный формат номера телефона',
+  emailAlreadyExists: 'Этот email уже зарегистрирован',
+  invalidPassword: 'Минимальная длинна пароля - 7 символов',
+};
+
+const graphqlErrors = {
+  userNotFound: 'GraphQL error: User not found',
+  emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
+};
+
 export default {
   data,
   sort,
@@ -490,12 +507,14 @@ export default {
   headers,
   formats,
   itemForm,
+  warnings,
   category,
   inputTypes,
   fieldTypes,
   buttonTitles,
   placeholders,
   assetStatuses,
+  graphqlErrors,
   modalQuestion,
   itemFormFields,
   forgotPassText,
