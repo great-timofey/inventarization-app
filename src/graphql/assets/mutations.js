@@ -101,6 +101,7 @@ export const UPDATE_ASSET = gql`
     $model: String
     $quantity: Int
     $categoryId: ID
+    $inventoryId: String
     $placeId: ID
     $responsibleId: ID
     $status: AssetStatus
@@ -110,6 +111,7 @@ export const UPDATE_ASSET = gql`
       id: $id
       attributes: {
         name: $name
+        inventoryId: $inventoryId
         description: $description
         purchasePrice: $purchasePrice
         dateOfPurchase: $dateOfPurchase
