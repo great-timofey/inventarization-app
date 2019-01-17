@@ -87,10 +87,12 @@ class SwipeableList extends PureComponent<Props, {}> {
 
     const { photosUrls, photosOfDamagesUrls } = item;
     let uri;
+    /* eslint-disable */
     if (photosUrls.length > 0) {
       uri = photosUrls[0];
     } else if (photosOfDamagesUrls.length > 0) {
       uri = photosOfDamagesUrls[0];
+    /* eslint-enable */
     } else {
       uri = getPlaceholder(normalize(62));
     }
