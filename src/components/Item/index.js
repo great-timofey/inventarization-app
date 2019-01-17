@@ -50,9 +50,11 @@ class Item extends PureComponent<Props, State> {
 
     let uri;
     if (photosUrls.length > 0) {
+      /*  eslint-disable */
       uri = photosUrls[0];
     } else if (photosOfDamagesUrls.length > 0) {
       uri = photosOfDamagesUrls[0];
+      /** eslint-enable */
     } else {
       uri = getPlaceholder(normalize(158));
     }
@@ -70,10 +72,7 @@ class Item extends PureComponent<Props, State> {
             <View style={styles.menuButtonDot} />
           </TouchableOpacity>
         )}
-        <Image
-          source={{ uri }}
-          style={[styles.image, isMenuOpen && styles.selectImage]}
-        />
+        <Image source={{ uri }} style={[styles.image, isMenuOpen && styles.selectImage]} />
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {item.name}
         </Text>

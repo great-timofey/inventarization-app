@@ -52,7 +52,9 @@ class AddItemDefects extends PureComponent<Props, State> {
     const location = navigation.state.params && navigation.state.params.location;
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const from = navigation.state.params && navigation.state.params.from;
-    const toPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos, codeData, location };
+    const toPass = from
+      ? { additionalDefects: defectPhotos }
+      : { photos, defectPhotos, codeData, location };
 
     const handleCreateAsset = navigation.state.params && navigation.state.params.handleCreateAsset;
 
@@ -76,7 +78,7 @@ class AddItemDefects extends PureComponent<Props, State> {
               toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
-              Alert.alert(constants.erros.needPhoto);
+              Alert.alert(constants.errors.camera.needPhoto);
             }
           }}
         />
@@ -130,6 +132,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       try {
         const photosObjs = photos.map(uri => ({ uri }));
         const photosResult = await convertToApolloUpload(photosObjs, '.');
+        //  $FlowFixMe
         variables.photos = photosResult;
       } catch (error) {
         console.log(error.message);
@@ -140,6 +143,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       try {
         const defectPhotosObjs = defectPhotos.map(uri => ({ uri }));
         const defectsResult = await convertToApolloUpload(defectPhotosObjs, '.');
+        //  $FlowFixMe
         variables.photosOfDamages = defectsResult;
       } catch (error) {
         console.log(error.message);

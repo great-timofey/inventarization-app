@@ -17,8 +17,20 @@ import {
 } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
-// $FlowFixMe
-import { prop, without, concat, keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import {
+  prop,
+  keys,
+  drop,
+  pick,
+  pluck,
+  concat,
+  remove,
+  without,
+  isEmpty,
+  findIndex,
+  // $FlowFixMe
+  includes,
+} from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -157,7 +169,9 @@ class ItemForm extends Component<Props, State> {
     codeData: null,
     location: null,
     category: null,
+    // $FlowFixMe
     photosUrls: [],
+    // $FlowFixMe
     photosToAdd: [],
     inventoryId: '',
     isNewItem: true,
@@ -172,11 +186,14 @@ class ItemForm extends Component<Props, State> {
     isModalOpened: false,
     formIsEditable: false,
     showSaveButton: false,
+    // $FlowFixMe
     photosIdsToRemove: [],
+    // $FlowFixMe
     photosOfDamagesToAdd: [],
     activePreviewIndex: 0,
     guaranteeExpires: null,
     isDelModalOpened: false,
+    // $FlowFixMe
     photosOfDamagesUrls: [],
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
@@ -212,15 +229,7 @@ class ItemForm extends Component<Props, State> {
     if (item) {
       // console.log(item);
       const itemCopy = { ...item };
-      const {
-        gps,
-        name,
-        place,
-        status,
-        creator,
-        responsible,
-        onTheBalanceSheet,
-      } = item;
+      const { gps, name, place, status, creator, responsible, onTheBalanceSheet } = item;
       navigation.setParams({ headerText: name });
       const inEditMode = navigation.getParam('inEditMode', false);
 
@@ -314,7 +323,9 @@ class ItemForm extends Component<Props, State> {
         showSaveButton: true,
         activePreviewIndex: 0,
         photosOfDamagesUrls: photosOfDamagesUrls.concat(navigation.state.params.additionalDefects),
-        photosOfDamagesToAdd: photosOfDamagesToAdd.concat(navigation.state.params.additionalDefects)
+        photosOfDamagesToAdd: photosOfDamagesToAdd.concat(
+          navigation.state.params.additionalDefects,
+        ),
       }));
     }
   }
@@ -373,6 +384,7 @@ class ItemForm extends Component<Props, State> {
      */
 
     const {
+      state,
       state: { id: assetId },
       props: { updateAsset, removeAssetPhotos, addPhotosToAsset },
     } = this;
@@ -390,7 +402,8 @@ class ItemForm extends Component<Props, State> {
         },
       } = this.props;
 
-      const variables = pick(constants.updateAssetProperties, this.state);
+      // $FlowFixMe
+      const variables = pick(constants.updateAssetProperties, state);
 
       variables.companyId = companyId;
       // $FlowFixMe
@@ -438,6 +451,7 @@ class ItemForm extends Component<Props, State> {
           : constants.assetStatuses.onProcessing;
       }
 
+      //  $FlowFixMe
       if (variables.photosIdsToRemove.length) {
         try {
           await removeAssetPhotos({
@@ -453,11 +467,14 @@ class ItemForm extends Component<Props, State> {
       }
       delete variables.photosIdsToRemove;
 
+      //  $FlowFixMe
       if (variables.photosToAdd.length + variables.photosOfDamagesToAdd.length) {
         let photos = [];
         let photosOfDamages = [];
+        //  $FlowFixMe
         if (variables.photosToAdd.length) {
           try {
+            //  $FlowFixMe
             const photosObjs = variables.photosToAdd.map(uri => ({ uri }));
             photos = await convertToApolloUpload(photosObjs, '.');
           } catch (error) {
@@ -465,8 +482,10 @@ class ItemForm extends Component<Props, State> {
           }
         }
 
+        //  $FlowFixMe
         if (variables.photosOfDamagesToAdd.length) {
           try {
+            //  $FlowFixMe
             const photosOfDamagesObjs = variables.photosOfDamagesToAdd.map(uri => ({ uri }));
             photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
           } catch (error) {
@@ -539,10 +558,14 @@ class ItemForm extends Component<Props, State> {
       variables: { companyId },
     });
     const assetIndex = findIndex(asset => asset.id === id, data.assets);
+    //  eslint-disable-next-line
     const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove));
     const urlsToRemove = pluck('photo', photosToRemove);
     data.assets[assetIndex].photosUrls = without(urlsToRemove, data.assets[assetIndex].photosUrls);
-    data.assets[assetIndex].photos.nodes = without(photosToRemove, data.assets[assetIndex].photos.nodes);
+    data.assets[assetIndex].photos.nodes = without(
+      photosToRemove,
+      data.assets[assetIndex].photos.nodes,
+    );
     cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
@@ -660,7 +683,6 @@ class ItemForm extends Component<Props, State> {
       },
     } = this;
 
-    // console.log(uri);
     const isPreview = uri === 'preview';
     const isLocalFile = uri.startsWith('file');
 
@@ -758,7 +780,11 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (uri: string, removedIndex: number, isLocalFile: boolean) => {
+  handleRemovePreviewPhotoBarItem = async (
+    uri: string,
+    removedIndex: number,
+    isLocalFile: boolean,
+  ) => {
     const {
       state,
       state: { showPhotos, activePreviewIndex },
@@ -769,7 +795,7 @@ class ItemForm extends Component<Props, State> {
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
-        
+
         this.setState(currentState => ({
           showSaveButton: true,
           [toShow]: without([uri], currentState[toShow]),
@@ -782,9 +808,16 @@ class ItemForm extends Component<Props, State> {
         Alert.alert(error.message);
       }
     } else {
-      const { photos: { nodes: photosNodes }, photosOfDamages: { nodes: photosOfDamagesNodes } } = state;
+      const {
+        //  $FlowFixMe
+        photos: { nodes: photosNodes },
+        //  $FlowFixMe
+        photosOfDamages: { nodes: photosOfDamagesNodes },
+      } = state;
 
-      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(({ photo }) => photo === uri);
+      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(
+        ({ photo }) => photo === uri,
+      );
       const id = prop('id', match);
       //
       this.setState(currentState => ({
@@ -848,7 +881,7 @@ class ItemForm extends Component<Props, State> {
     });
   };
 
-  keyExtractor = (uri, index) => uri;
+  keyExtractor = (uri: string) => uri;
 
   showPhotos = () => {
     this.setState({ showPhotos: true, activePreviewIndex: 0 });
@@ -940,7 +973,10 @@ class ItemForm extends Component<Props, State> {
                     data={showPhotos ? photosUrls : photosOfDamagesUrls}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
-                    key={(showPhotos ? photosUrls : photosOfDamagesUrls).length + (showPhotos ? 'p' : 'd')}
+                    key={
+                      (showPhotos ? photosUrls : photosOfDamagesUrls).length
+                      + (showPhotos ? 'p' : 'd')
+                    }
                   />
                 )}
                 <View style={styles.previewInfo}>
@@ -967,7 +1003,9 @@ class ItemForm extends Component<Props, State> {
                 styles.previewPhotoBar,
                 isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
               ]}
-              data={showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')}
+              data={
+                showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')
+              }
             />
             <View
               style={styles.formContainer}

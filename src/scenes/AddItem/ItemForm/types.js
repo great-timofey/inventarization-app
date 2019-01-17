@@ -14,14 +14,12 @@ export type Props = {
   updateAsset: Function,
   destroyAsset: Function,
   createdAssetsCount: number,
-};
-
-type Photo = {
-  uri: string,
+  addPhotosToAsset: Function,
+  removeAssetPhotos: Function,
 };
 
 export type PhotosProps = {
-  item: Photo,
+  item: string,
   index: number,
 };
 
@@ -51,7 +49,6 @@ export type State = {
   showPhotos: boolean,
   inventoryId: ?string,
   manufacture: ?string,
-  photos: Array<Photo>,
   isModalOpened: boolean,
   assessedValue: ?string,
   purchasePrice: ?string,
@@ -64,7 +61,11 @@ export type State = {
   guaranteeExpires: ?string,
   onTheBalanceSheet: string,
   activePreviewIndex: number,
-  photosOfDamages: Array<Photo>,
   currentlyEditableField: ?string,
   isDateTimePickerOpened: boolean,
+  photosUrls: Array<string>,
+  photosToAdd: Array<string>,
+  photosIdsToRemove: Array<string>,
+  photosOfDamagesUrls: Array<string>,
+  photosOfDamagesToAdd: Array<string>,
 };
