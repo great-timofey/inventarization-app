@@ -483,7 +483,6 @@ class ItemForm extends Component<Props, State> {
       try {
         await updateAsset({ variables });
         this.handleGoBack();
-        // navigation.navigate(SCENE_NAMES.ItemsSceneName);
       } catch (error) {
         Alert.alert(error.message);
       }

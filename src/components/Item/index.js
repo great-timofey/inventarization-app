@@ -15,28 +15,30 @@ class Item extends PureComponent<Props, State> {
   renderMenu = () => {
     const { selectItem, toggleDelModal, showRemoveButton, item, openItem } = this.props;
     return (
-      <View style={styles.menuContainer}>
-        <IconButton
-          size={30}
-          iconName="ios-close"
-          onPress={() => (selectItem ? selectItem(null) : undefined)}
-          customContStyle={[styles.menu, { backgroundColor: colors.white }]}
-        />
-        {showRemoveButton && (
+      <View style={styles.menuOverlay}>
+        <View style={styles.menuContainer}>
           <IconButton
-            size={20}
-            iconColor={colors.white}
-            iconName="ios-trash"
-            onPress={toggleDelModal}
-            customContStyle={[styles.menu, { backgroundColor: colors.red }]}
+            size={30}
+            iconName="ios-close"
+            onPress={() => (selectItem ? selectItem(null) : undefined)}
+            customContStyle={[styles.menu, { backgroundColor: colors.white }]}
           />
-        )}
-        <IconButton
-          isCustomIcon
-          iconName="pencil"
-          onPress={() => openItem(item, true)}
-          customContStyle={[styles.menu, { backgroundColor: colors.blue }]}
-        />
+          {showRemoveButton && (
+            <IconButton
+              size={20}
+              iconColor={colors.white}
+              iconName="ios-trash"
+              onPress={toggleDelModal}
+              customContStyle={[styles.menu, { backgroundColor: colors.red }]}
+            />
+          )}
+          <IconButton
+            isCustomIcon
+            iconName="pencil"
+            onPress={() => openItem(item, true)}
+            customContStyle={[styles.menu, { backgroundColor: colors.blue }]}
+          />
+        </View>
       </View>
     );
   };

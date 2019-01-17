@@ -63,4 +63,12 @@ export default StyleSheet.create({
     zIndex: 2,
     position: 'absolute',
   },
+  menuOverlay: {
+    zIndex: 1,
+    borderRadius: 10,
+    position: 'absolute',
+    width: normalize(158),
+    height: normalize(158),
+    backgroundColor: colors.assetMenuOverlay,
+  },
 });
