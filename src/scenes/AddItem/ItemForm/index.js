@@ -755,13 +755,13 @@ class ItemForm extends Component<Props, State> {
   handleDeleteItem = async () => {
     const {
       state: { id },
-      props: { destroyAsset, navigation },
+      props: { destroyAsset },
     } = this;
 
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+      this.handleGoBack();
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();
