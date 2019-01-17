@@ -3,13 +3,12 @@
 import React, { PureComponent } from 'react';
 
 // $FlowFixMe
-import { includes, assoc } from 'ramda';
+import { assoc } from 'ramda';
 import { compose, graphql } from 'react-apollo';
 import {
   View,
   Text,
   Image,
-  Alert,
   Keyboard,
   Animated,
   AsyncStorage,
@@ -38,7 +37,7 @@ const initialState = {
   name: '',
   email: '',
   mobile: '',
-  warnings: [],
+  warnings: {},
   password: '',
   isRegForm: false,
   isKeyboardActive: false,
@@ -103,26 +102,42 @@ class Login extends PureComponent<Props, State> {
   };
 
   checkForErrors = () => {
-    const {
-      state: { warnings },
-    } = this;
-    return !!warnings.length;
+    const { warnings } = this.state;
+    return !!warnings.count;
   };
 
   checkFields = () => {
     const { name, email, password, mobile, isRegForm } = this.state;
-    const warnings = [];
+    const warnings = {
+      count: 0,
+      name: '',
+      email: '',
+      mobile: '',
+      password: '',
+    };
     if (isRegForm && !name.trim()) {
-      warnings.push('name');
+      warnings.name = constants.warnings.emptyName;
+      warnings.count += 1;
     }
-    if (!isValid(email, constants.regExp.email)) {
-      warnings.push('email');
+    if (!email) {
+      warnings.email = constants.warnings.emptyEmail;
+      warnings.count += 1;
     }
-    if (!isValid(password, constants.regExp.password)) {
-      warnings.push('password');
+    if (email && !isValid(email, constants.regExp.email)) {
+      warnings.email = constants.warnings.invalidEmail;
+      warnings.count += 1;
+    }
+    if (!password) {
+      warnings.password = constants.warnings.emptyPassword;
+      warnings.count += 1;
+    }
+    if (password && !isValid(password, constants.regExp.password)) {
+      warnings.password = constants.warnings.invalidPassword;
+      warnings.count += 1;
     }
     if (isRegForm && mobile && !isValid(mobile, constants.regExp.mobileNumber)) {
-      warnings.push('mobile');
+      warnings.mobile = constants.warnings.invalidMobile;
+      warnings.count += 1;
     }
     this.setState({ warnings });
   };
@@ -167,7 +182,23 @@ class Login extends PureComponent<Props, State> {
 
         navigation.navigate(SCENES_NAMES.QuestionSceneName);
       } catch (error) {
-        Alert.alert(error.message);
+        if (isRegForm && error.message === constants.graphqlErrors.emailAlreadyExists) {
+          this.setState({
+            warnings: {
+              count: 1,
+              email: constants.warnings.emailAlreadyExists,
+            },
+          });
+        }
+        if (error.message === constants.graphqlErrors.userNotFound) {
+          this.setState({
+            warnings: {
+              count: 1,
+              email: constants.warnings.userNotFound,
+              password: constants.warnings.userNotFound,
+            },
+          });
+        }
       }
     }
   };
@@ -216,8 +247,8 @@ class Login extends PureComponent<Props, State> {
                 this.nameRef = ref;
               }}
               blurOnSubmit={false}
+              warning={warnings.name}
               type={constants.inputTypes.name}
-              isWarning={includes('name', warnings)}
               placeholder={constants.placeholders.manufacture}
               onSubmitEditing={() => this.focusField(this.emailRef)}
               onChangeText={text => this.onChangeField('name', text)}
@@ -229,9 +260,9 @@ class Login extends PureComponent<Props, State> {
               this.emailRef = ref;
             }}
             blurOnSubmit={false}
+            warning={warnings.email}
             keyboardType="email-address"
             type={constants.inputTypes.email}
-            isWarning={includes('email', warnings)}
             placeholder={constants.placeholders.email}
             onChangeText={text => this.onChangeField('email', text)}
             onSubmitEditing={() => this.focusField(this.passwordRef)}
@@ -242,12 +273,14 @@ class Login extends PureComponent<Props, State> {
               this.passwordRef = ref;
             }}
             blurOnSubmit={false}
+            warning={warnings.password}
             onSubmitForm={this.onSubmitForm}
             secureTextEntry={isPasswordHidden}
             type={constants.inputTypes.password}
             keyboardType="numbers-and-punctuation"
-            isWarning={includes('password', warnings)}
-            placeholder={constants.placeholders.password}
+            placeholder={!isRegForm
+              ? constants.placeholders.enterPassword
+              : constants.placeholders.setPassword}
             returnKeyType={!isRegForm ? 'go' : undefined}
             onSubmitEditing={() => this.focusField(this.mobileRef)}
             onChangeText={text => this.onChangeField('password', text)}
@@ -271,10 +304,10 @@ class Login extends PureComponent<Props, State> {
                 this.mobileRef = ref;
               }}
               blurOnSubmit={false}
+              warning={warnings.mobile}
               onSubmitForm={this.onSubmitForm}
               mask={constants.masks.mobileNumber}
               keyboardType="numbers-and-punctuation"
-              isWarning={includes('mobile', warnings)}
               type={constants.inputTypes.mobileNumber}
               placeholder={constants.placeholders.mobileNumber}
               onChangeText={text => this.onChangeField('mobile', text)}
