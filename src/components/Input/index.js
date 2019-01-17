@@ -108,7 +108,7 @@ class Input extends Component<Props> {
           />
           {children}
         </View>
-        {!showWarningInTitle && <Warning isVisible={!!warning || false} title={warning} />}
+        {!showWarningInTitle && <Warning warning={warning} />}
       </Wrapper>
     );
   }
