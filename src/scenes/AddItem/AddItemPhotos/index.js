@@ -149,7 +149,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
         () => navigation.setParams({ photos: this.state.photos }),
       );
     } else {
-      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
+      Alert.alert(constants.errors.camera.location);
     }
 
     this.setState({ isLoading: false });

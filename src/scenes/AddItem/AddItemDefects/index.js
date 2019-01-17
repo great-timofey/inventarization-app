@@ -75,7 +75,7 @@ class AddItemDefects extends PureComponent<Props, State> {
               toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
-              Alert.alert('Требуется фото предмета или его дефектов для продолежния');
+              Alert.alert(constants.erros.needPhoto);
             }
           }}
         />
@@ -211,7 +211,7 @@ class AddItemDefects extends PureComponent<Props, State> {
         () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
     } else {
-      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
+      Alert.alert(constants.errors.camera.location);
     }
 
     this.setState({ isLoading: false });

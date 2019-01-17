@@ -209,6 +209,8 @@ const errors = {
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+    location: 'Не можем сделать фотографию без доступа к вашему местоположению',
+    needPhoto: 'Требуется фото предмета или его дефектов для продолежния',
   },
   createItem: {
     name: 'Нельзя сохранить без названия',
@@ -331,6 +333,11 @@ const fieldTypes = {
 };
 
 const createAssetNecessaryProperties = keys(itemForm);
+
+const assetStatuses = {
+  onProcessing: 'on_processing',
+  accepted: 'accepted',
+};
 
 const roles = {
   admin: 'admin',
@@ -479,6 +486,7 @@ export default {
   fieldTypes,
   buttonTitles,
   placeholders,
+  assetStatuses,
   modalQuestion,
   itemFormFields,
   forgotPassText,

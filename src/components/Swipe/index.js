@@ -29,7 +29,7 @@ class SwipeableList extends PureComponent<Props, {}> {
     const isUserManager = userRole === constants.roles.manager;
     const isUserAdmin = userRole === constants.roles.admin;
     const isUserCreator = item && item.creator && item.creator.id === userId;
-    const isItemInProcessing = item.status === 'on_processing';
+    const isItemInProcessing = item.status === constants.assetStatuses.onProcessing;
 
     if (isUserAdmin) {
       enableLeftSwipe = true;

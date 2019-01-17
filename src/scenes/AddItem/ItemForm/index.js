@@ -230,7 +230,7 @@ class ItemForm extends Component<Props, State> {
       const isUserAdmin = userRole === constants.roles.admin;
       const isUserManager = userRole === constants.roles.manager;
       const isUserCreator = creator && creator.id === currentUserId;
-      const isItemInProcessing = status === 'on_processing';
+      const isItemInProcessing = status === constants.assetStatuses.onProcessing;
 
       if ((isUserCreator && isItemInProcessing && !isUserManager) || isUserAdmin) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -255,7 +255,7 @@ class ItemForm extends Component<Props, State> {
         (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
-      itemCopy.status = status === 'on_processing'
+      itemCopy.status = status === constants.assetStatuses.onProcessing
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
@@ -443,8 +443,8 @@ class ItemForm extends Component<Props, State> {
       }
       if (variables.status) {
         variables.status = variables.status === constants.placeholders.status.accepted
-          ? 'accepted'
-          : 'on_processing';
+          ? constants.assetStatuses.accepted
+          : constants.assetStatuses.onProcessing;
       }
 
       try {
@@ -479,7 +479,7 @@ class ItemForm extends Component<Props, State> {
     const isNewItem = navigation.getParam('item', null);
     //  $FlowFixMe
     if (!name.trim() && !isNewItem) {
-      Alert.alert('Пожалуйста, введите название предмета');
+      Alert.alert(constants.errors.createItem.name);
     } else if (isNewItem) {
       navigation.pop();
     } else {
