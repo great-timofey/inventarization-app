@@ -16,17 +16,17 @@ export const CREATE_CATEGORY = gql`
         companyId: $companyId
       }
     ) {
-    id
-    name
-    icon
-    parent {
       id
       name
-    }
-    chields {
-      id
-      name
-    }
+      icon
+      parent {
+        id
+        name
+      }
+      chields {
+        id
+        name
+      }
     }
   }
 `;

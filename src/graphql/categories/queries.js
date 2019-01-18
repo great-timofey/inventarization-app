@@ -13,6 +13,7 @@ export const GET_COMPANY_CATEGORIES_BY_ID = gql`
       }
       parent{
         id
+        name
       }
     }
   }
@@ -29,11 +30,13 @@ export const GET_COMPANY_CATEGORIES = gql`
           icon
           parent{
             id
+            name
           }
           chields{
             id
             name
             parent{
+              name
               id
             }
           }

@@ -143,8 +143,8 @@ class CategoryList extends PureComponent<Props, {}> {
                 renderRow={this.categoryItem}
                 onReleaseRow={this.toogleParentScroll}
                 onActivateRow={this.toogleParentScroll}
-                onChangeOrder={order => this.reorder(order)}
-                order={categoryOrder.length > 0 ? categoryOrder : null}
+                // onChangeOrder={order => this.reorder(order)}
+                // order={categoryOrder.length > 0 ? categoryOrder : null}
               />
               <TouchableOpacity
                 style={styles.addButtonContainer}

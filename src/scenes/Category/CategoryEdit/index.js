@@ -25,11 +25,15 @@ import globalStyles from '~/global/styles';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import * as QUERIES from '~/graphql/auth/queries';
-import { GET_COMPANY_CATEGORIES_BY_ID } from '~/graphql/categories/queries';
+import {
+  GET_CATEGORY_ORDER,
+  GET_COMPANY_CATEGORIES_BY_ID,
+} from '~/graphql/categories/queries';
 import {
   UPDATE_CATEGORY,
   CREATE_CATEGORY,
   DESTROY_CATEGORY,
+  SET_CATEGORY_ORDER,
 } from '~/graphql/categories/mutations';
 
 import styles from './styles';
@@ -55,7 +59,9 @@ const HeaderTrashButton = ({ onPress }: { onPress: Function }) => (
 class CategoryEdit extends PureComponent {
   static navigationOptions = ({ navigation }) => {
     const { state } = navigation;
+    const id = navigation.state.params && navigation.state.params.id;
     const toggleDelModal = state.params && state.params.toggleDelModal;
+
     return ({
       headerStyle: [
         globalStyles.authHeaderStyleBig,
@@ -68,7 +74,7 @@ class CategoryEdit extends PureComponent {
       headerLeft: HeaderBackButton({
         onPress: () => navigation.goBack(),
       }),
-      headerRight: <HeaderTrashButton onPress={toggleDelModal} />,
+      headerRight: <HeaderTrashButton onPress={id ? toggleDelModal : undefined} />,
     });
   }
 
@@ -92,8 +98,8 @@ class CategoryEdit extends PureComponent {
     }
 
     this.state = {
-      delSubcategoryId: '',
       selectCategoryId: id,
+      delSubcategoryId: '',
       inputValue: title || '',
       isSubCategoryEdit: false,
       selectIconName: icon || '',
@@ -161,6 +167,7 @@ class CategoryEdit extends PureComponent {
         userCompany,
         createCategory,
         updateCategory,
+        setCategoryOrder,
       },
       state: {
         inputValue,
@@ -189,7 +196,7 @@ class CategoryEdit extends PureComponent {
             { variables },
           );
         } catch (error) {
-          console.log(error.message);
+          alert(error.message);
         }
       }
 
@@ -206,7 +213,7 @@ class CategoryEdit extends PureComponent {
               update: this.updateCreateSubCategory,
             });
           } catch (error) {
-            console.log(error.message);
+            alert(error.message);
           }
         });
       }
@@ -236,29 +243,35 @@ class CategoryEdit extends PureComponent {
                 update: this.updateCreateSubCategory,
               });
             } catch (error) {
-              console.log(error.message);
+              alert(error.message);
             }
           });
         }
       } catch (error) {
-        console.log(error.message);
+        alert(error.message);
       }
     }
     navigation.goBack();
   }
 
   handleDestroyCategory = async () => {
-    const { destroyCategory, navigation } = this.props;
-    const id = navigation.state.params && navigation.state.params.id;
+    const {
+      props: { destroyCategory, navigation },
+      state: { selectCategoryId },
+    } = this;
 
+    this.toggleDelModal();
     try {
       await destroyCategory(
-        { variables: { id } },
+        {
+          variables: { id: selectCategoryId },
+          update: this.updateDestroyCategory,
+        },
       );
-      await navigation.goBack();
     } catch (error) {
-      console.log(error.message);
+      alert(error.message);
     }
+    navigation.goBack();
   };
 
   updateCreateCategory = (cache: Object, payload: Object) => {
@@ -269,30 +282,29 @@ class CategoryEdit extends PureComponent {
             id: companyId,
           },
         },
+        setCategoryOrder,
       },
+
     } = this;
 
-    const data = cache.readQuery({
+    const categoriesData = cache.readQuery({
       query: GET_COMPANY_CATEGORIES_BY_ID,
       variables: { companyId },
     });
 
-    if (data && data.categories) {
-      data.categories = [...data.categories, payload.data.createCategory];
-      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
+
+    if (categoriesData && categoriesData.categories) {
+      categoriesData.categories = [...categoriesData.categories, payload.data.createCategory];
+      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data: categoriesData });
     }
+
+    const data = cache.readQuery({ query: GET_CATEGORY_ORDER });
+    data.categoryOrder.push(data.categoryOrder.length.toString());
+    cache.writeQuery({ query: GET_CATEGORY_ORDER, data });
   }
 
   updateCreateSubCategory = (cache: Object, payload: Object) => {
-    const {
-      props: {
-        userCompany: {
-          company: {
-            id: companyId,
-          },
-        },
-      },
-    } = this;
+    const { props: { userCompany: { company: { id: companyId } } } } = this;
 
     const data = cache.readQuery({
       query: GET_COMPANY_CATEGORIES_BY_ID,
@@ -310,6 +322,24 @@ class CategoryEdit extends PureComponent {
           payload.data.createCategory,
         ];
       }
+      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
+    }
+  }
+
+  updateDestroyCategory = (cache: Object) => {
+    const {
+      state: { selectCategoryId },
+      props: { userCompany: { company: { id: companyId } } },
+    } = this;
+
+    const data = cache.readQuery({
+      query: GET_COMPANY_CATEGORIES_BY_ID,
+      variables: { companyId },
+    });
+
+    if (data && data.categories && data.categories.length > 0) {
+      const deleteIndex = findIndex(category => category.id === selectCategoryId, data.categories);
+      data.categories = remove(deleteIndex, 1, data.categories);
       cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
     }
   }
@@ -371,7 +401,7 @@ class CategoryEdit extends PureComponent {
           update: this.updateDestroySubCategory,
         });
       } catch (error) {
-        console.log(error.message);
+        alert(error.message);
       }
     }
   };
@@ -503,6 +533,9 @@ class CategoryEdit extends PureComponent {
 export default compose(
   graphql(QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+  graphql(SET_CATEGORY_ORDER, {
+    name: 'setCategoryOrder',
   }),
   graphql(UPDATE_CATEGORY, { name: 'updateCategory' }),
   graphql(CREATE_CATEGORY, { name: 'createCategory' }),

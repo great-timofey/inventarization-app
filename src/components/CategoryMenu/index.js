@@ -69,7 +69,7 @@ class CategoryMenu extends PureComponent<Props, State> {
       if (isSubCategoryView) {
         const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
-        if (parent.chields.length > 0) {
+        if (parent.chields && parent.chields.length > 0) {
           IdList = parent.chields.map(x => x.id);
         }
       }
@@ -78,9 +78,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
     let isCategorySelect = false;
 
-    if (!isSubCategoryView
-      && data.chields.length > 0
-    ) {
+    if (!isSubCategoryView && data.chields.length > 0 && data.chields) {
       const chieldsList = data.chields.map(x => x.id);
       if (isAllCategorySelected) {
         isCategorySelect = false;
@@ -161,7 +159,7 @@ class CategoryMenu extends PureComponent<Props, State> {
             if (isSubCategoryView) {
               const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
-              if (parent.chields.length > 0) {
+              if (parent.chields && parent.chields.length > 0) {
                 subCategoryList = { ...parent.chields };
                 IdList = parent.chields.map(x => x.id);
               }
@@ -217,7 +215,6 @@ class CategoryMenu extends PureComponent<Props, State> {
                 scrollEnabled={false}
                 sortingEnabled={false}
                 renderRow={this.renderItem}
-                order={categoryOrder.length > 0 ? categoryOrder : null}
                 data={isSubCategoryView ? subCategoryList : categoryList}
               />
               {!isSubCategoryView && (
