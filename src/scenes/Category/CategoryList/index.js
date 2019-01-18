@@ -16,10 +16,12 @@ import HeaderBackButton from '~/components/HeaderBackButton';
 import SortableCategory from '~/components/SortableCategory';
 
 import constants from '~/global/constants';
+import type { Categories } from '~/types';
 import { setIsSideMenuOpen } from '~/global';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { SET_CATEGORY_ORDER } from '~/graphql/categories/mutations';
-import { GET_COMPANY_CATEGORIES, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
+import { GET_COMPANY_CATEGORIES_BY_ID, GET_CATEGORY_ORDER } from '~/graphql/categories/queries';
 
 import styles from './styles';
 
@@ -98,10 +100,18 @@ class CategoryList extends PureComponent<Props, {}> {
 
   render() {
     const { isScrollEnable } = this.state;
-    const { navigation, categoryOrder } = this.props;
+    const {
+      navigation,
+      categoryOrder,
+      userCompany: {
+        company: {
+          id: companyId,
+        },
+      },
+    } = this.props;
 
     return (
-      <Query query={GET_COMPANY_CATEGORIES}>
+      <Query query={GET_COMPANY_CATEGORIES_BY_ID} variables={{ companyId }}>
         {({ data, loading, error }) => {
           if (loading) { return <ActivityIndicator />; }
           if (error) {
@@ -111,11 +121,16 @@ class CategoryList extends PureComponent<Props, {}> {
               </View>
             );
           }
-          const { categories } = data.current.companies['0'];
+
+          let companyCategories: ?Categories;
+          if (data != null) {
+            companyCategories = data.categories;
+          }
+
           let categoryList = null;
 
           if (data) {
-            categoryList = { ...categories.filter(i => i.parent === null) };
+            categoryList = { ...companyCategories.filter(i => i.parent === null) };
           }
 
           return (
@@ -153,5 +168,9 @@ export default compose(
   }),
   graphql(GET_CATEGORY_ORDER, {
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),
+  }),
+  graphql(GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
 )(CategoryList);

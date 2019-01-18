@@ -19,6 +19,14 @@ export const CREATE_CATEGORY = gql`
     id
     name
     icon
+    parent {
+      id
+      name
+    }
+    chields {
+      id
+      name
+    }
     }
   }
 `;

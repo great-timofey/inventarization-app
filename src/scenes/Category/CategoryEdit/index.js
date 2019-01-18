@@ -142,9 +142,13 @@ class CategoryEdit extends PureComponent {
        && this.subCategoryValue._lastNativeText
        && this.subCategoryValue._lastNativeText.trim() !== ''
     ) {
+      const subCategoryData = {
+        name: this.subCategoryValue._lastNativeText.trim(),
+      };
+
       this.setState({
         isSubCategoryEdit: false,
-        subCategoryList: [...subCategoryList, this.subCategoryValue._lastNativeText.trim()],
+        subCategoryList: [...subCategoryList, subCategoryData],
       });
     }
     /* eslint-enable no-underscore-dungle */
@@ -194,11 +198,12 @@ class CategoryEdit extends PureComponent {
           try {
             await createCategory({
               variables: {
-                name: i,
                 icon: '',
-                parentId: selectCategoryId,
+                name: i.name,
                 companyId: userCompany.id,
+                parentId: selectCategoryId,
               },
+              update: this.updateCreateSubCategory,
             });
           } catch (error) {
             console.log(error.message);
@@ -216,17 +221,19 @@ class CategoryEdit extends PureComponent {
             name: variables.name.trim(),
             companyId: userCompany.id,
           },
+          update: this.updateCreateCategory,
         });
         if (subCategoryList.length && id) {
           subCategoryList.forEach(async (i) => {
             try {
               await createCategory({
                 variables: {
-                  name: i,
                   icon: '',
+                  name: i.name,
                   parentId: id,
                   companyId: userCompany.id,
                 },
+                update: this.updateCreateSubCategory,
               });
             } catch (error) {
               console.log(error.message);
@@ -248,36 +255,64 @@ class CategoryEdit extends PureComponent {
       await destroyCategory(
         { variables: { id } },
       );
+      await navigation.goBack();
     } catch (error) {
       console.log(error.message);
     }
-    navigation.goBack();
   };
 
-  handleDestroySubCategory = async (subCategoryId) => {
+  updateCreateCategory = (cache: Object, payload: Object) => {
     const {
-      props: { destroyCategory },
-      state: { subCategoryList },
+      props: {
+        userCompany: {
+          company: {
+            id: companyId,
+          },
+        },
+      },
     } = this;
 
-    const updateCategoryList = [...subCategoryList.filter(item => item.id !== subCategoryId)];
-
-    this.setState({
-      delSubcategoryId: subCategoryId,
-      subCategoryList: updateCategoryList,
+    const data = cache.readQuery({
+      query: GET_COMPANY_CATEGORIES_BY_ID,
+      variables: { companyId },
     });
 
-    if (subCategoryId !== null) {
-      try {
-        await destroyCategory({
-          variables: { id: subCategoryId },
-          update: this.updateDestroySubCategory,
-        });
-      } catch (error) {
-        console.log(error.message);
-      }
+    if (data && data.categories) {
+      data.categories = [...data.categories, payload.data.createCategory];
+      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
     }
-  };
+  }
+
+  updateCreateSubCategory = (cache: Object, payload: Object) => {
+    const {
+      props: {
+        userCompany: {
+          company: {
+            id: companyId,
+          },
+        },
+      },
+    } = this;
+
+    const data = cache.readQuery({
+      query: GET_COMPANY_CATEGORIES_BY_ID,
+      variables: { companyId },
+    });
+
+    if (data && data.categories && data.categories.length > 0) {
+      const parentIndex = findIndex(
+        item => item.id === payload.data.createCategory.parent.id,
+        data.categories,
+      );
+      if (data.categories[parentIndex].chields) {
+        data.categories[parentIndex].chields = [
+          ...data.categories[parentIndex].chields,
+          payload.data.createCategory,
+        ];
+      }
+      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
+    }
+  }
 
   updateDestroySubCategory = (cache: Object) => {
     const {
@@ -303,16 +338,43 @@ class CategoryEdit extends PureComponent {
       const parentIndex = findIndex(
         item => item.id === selectCategoryId, data.categories,
       );
-      const deleteIndex = findIndex(
-        subCategory => subCategory.id === delSubcategoryId,
-        data.categories[parentIndex].chields,
-      );
-      data.categories[parentIndex].chields = remove(
-        deleteIndex, 1, data.categories[parentIndex].chields,
-      );
+      if (data.categories[parentIndex].chields) {
+        const deleteIndex = findIndex(
+          subCategory => subCategory.id === delSubcategoryId,
+          data.categories[parentIndex].chields,
+        );
+        data.categories[parentIndex].chields = remove(
+          deleteIndex, 1, data.categories[parentIndex].chields,
+        );
+      }
       cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
     }
   }
+
+  handleDestroySubCategory = async (subCategoryId) => {
+    const {
+      props: { destroyCategory },
+      state: { subCategoryList },
+    } = this;
+
+    const updateCategoryList = [...subCategoryList.filter(item => item.id !== subCategoryId)];
+
+    this.setState({
+      delSubcategoryId: subCategoryId,
+      subCategoryList: updateCategoryList,
+    });
+
+    if (subCategoryId !== null) {
+      try {
+        await destroyCategory({
+          variables: { id: subCategoryId },
+          update: this.updateDestroySubCategory,
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+  };
 
   iconRender = ({ item }) => {
     const { selectIconName } = this.state;
