@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { compose, graphql } from 'react-apollo';
+import { findIndex, remove } from 'ramda';
 import CustomIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { compose, graphql, withApollo } from 'react-apollo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -24,7 +25,7 @@ import globalStyles from '~/global/styles';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import * as QUERIES from '~/graphql/auth/queries';
-
+import { GET_COMPANY_CATEGORIES_BY_ID } from '~/graphql/categories/queries';
 import {
   UPDATE_CATEGORY,
   CREATE_CATEGORY,
@@ -73,16 +74,32 @@ class CategoryEdit extends PureComponent {
 
   constructor(props) {
     super(props);
-    const { navigation } = this.props;
+    const { navigation, client, userCompany } = this.props;
+    const id = navigation.state.params && navigation.state.params.id;
     const icon = navigation.state.params && navigation.state.params.icon;
     const title = navigation.state.params && navigation.state.params.title;
 
+    const { categories } = client.cache.readQuery({
+      query: GET_COMPANY_CATEGORIES_BY_ID,
+      variables: { companyId: userCompany.id },
+    });
+
+    let subCategoryList = [];
+
+    if (id) {
+      const parentIndex = findIndex(item => item.id === id, categories);
+      subCategoryList = [...categories[parentIndex].chields];
+    }
+
     this.state = {
-      subCategoryList: [],
+      delSubcategoryId: '',
+      selectCategoryId: id,
       inputValue: title || '',
       isSubCategoryEdit: false,
       selectIconName: icon || '',
       isDeleteModalVisible: false,
+      currentSubcategoryInputValue: '',
+      subCategoryList: subCategoryList || [],
     };
 
     navigation.setParams({
@@ -117,8 +134,9 @@ class CategoryEdit extends PureComponent {
     });
   }
 
-  changeSubcategory = () => {
+  saveSubcategory = () => {
     const { subCategoryList } = this.state;
+
     /* eslint-disable no-underscore-dangle */
     if (this.subCategoryValue
        && this.subCategoryValue._lastNativeText
@@ -126,34 +144,32 @@ class CategoryEdit extends PureComponent {
     ) {
       this.setState({
         isSubCategoryEdit: false,
-        subCategoryList: [
-          ...subCategoryList,
-          { name: this.subCategoryValue._lastNativeText.trim() },
-        ],
+        subCategoryList: [...subCategoryList, this.subCategoryValue._lastNativeText.trim()],
       });
     }
     /* eslint-enable no-underscore-dungle */
-    this.setState({
-      isSubCategoryEdit: false,
-    });
   }
 
   onSubmitForm = async () => {
     const {
-      navigation,
-      userCompany,
-      createCategory,
-      updateCategory } = this.props;
-    const {
-      inputValue,
-      selectIconName,
-      subCategoryList } = this.state;
+      props: {
+        navigation,
+        userCompany,
+        createCategory,
+        updateCategory,
+      },
+      state: {
+        inputValue,
+        selectIconName,
+        subCategoryList,
+        selectCategoryId,
+      },
+    } = this;
 
-    const id = navigation.state.params && navigation.state.params.id;
     const icon = navigation.state.params && navigation.state.params.icon;
     const title = navigation.state.params && navigation.state.params.title;
 
-    const variables = { id };
+    const variables = { id: selectCategoryId };
 
     if (inputValue.trim() !== title && inputValue.trim() !== '') {
       variables.name = inputValue;
@@ -162,9 +178,8 @@ class CategoryEdit extends PureComponent {
       variables.icon = selectIconName;
     }
 
-    if (id && title) {
-      if ((inputValue.trim() !== title && inputValue.trim() !== '')
-          || (selectIconName.trim() !== icon && selectIconName.trim() !== '')) {
+    if (selectCategoryId) {
+      if (variables.name || variables.icon) {
         try {
           await updateCategory(
             { variables },
@@ -174,54 +189,45 @@ class CategoryEdit extends PureComponent {
         }
       }
 
-      if (subCategoryList.length) {
+      if (subCategoryList.length && selectCategoryId) {
         subCategoryList.forEach(async (i) => {
           try {
-            await createCategory(
-              { variables:
-                {
-                  icon: '',
-                  name: i.name,
-                  parentId: id,
-                  companyId: userCompany.id,
-                },
+            await createCategory({
+              variables: {
+                name: i,
+                icon: '',
+                parentId: selectCategoryId,
+                companyId: userCompany.id,
               },
-            );
+            });
           } catch (error) {
             console.log(error.message);
           }
         });
       }
-      navigation.goBack();
     }
 
-    if (inputValue.trim() !== '' && selectIconName.trim() !== '') {
+    if (variables.name && variables.icon) {
       try {
-        /*  eslint-disable */
-        const { data: { createCategory: { id } } } = await createCategory(
-        /*  eslint-enable */
-          { variables:
-              {
-                parentId: null,
-                icon: selectIconName,
-                name: inputValue.trim(),
-                companyId: userCompany.id,
-              },
+        const { data: { createCategory: { id } } } = await createCategory({
+          variables: {
+            parentId: null,
+            icon: variables.icon,
+            name: variables.name.trim(),
+            companyId: userCompany.id,
           },
-        );
+        });
         if (subCategoryList.length && id) {
           subCategoryList.forEach(async (i) => {
             try {
-              await createCategory(
-                { variables:
-                  {
-                    icon: '',
-                    name: i.name,
-                    parentId: id,
-                    companyId: userCompany.id,
-                  },
+              await createCategory({
+                variables: {
+                  name: i,
+                  icon: '',
+                  parentId: id,
+                  companyId: userCompany.id,
                 },
-              );
+              });
             } catch (error) {
               console.log(error.message);
             }
@@ -230,8 +236,8 @@ class CategoryEdit extends PureComponent {
       } catch (error) {
         console.log(error.message);
       }
-      navigation.goBack();
     }
+    navigation.goBack();
   }
 
   handleDestroyCategory = async () => {
@@ -249,23 +255,63 @@ class CategoryEdit extends PureComponent {
   };
 
   handleDestroySubCategory = async (subCategoryId) => {
-    const { destroyCategory } = this.props;
+    const {
+      props: { destroyCategory },
+      state: { subCategoryList },
+    } = this;
+
+    const updateCategoryList = [...subCategoryList.filter(item => item.id !== subCategoryId)];
+
+    this.setState({
+      delSubcategoryId: subCategoryId,
+      subCategoryList: updateCategoryList,
+    });
+
     if (subCategoryId !== null) {
       try {
-        await destroyCategory(
-          { variables: { id: subCategoryId } },
-        );
+        await destroyCategory({
+          variables: { id: subCategoryId },
+          update: this.updateDestroySubCategory,
+        });
       } catch (error) {
         console.log(error.message);
       }
     }
   };
 
-  handleDelSubCategory = (name) => {
-    const { subCategoryList } = this.state;
-    this.setState({
-      subCategoryList: subCategoryList.filter(i => i.name !== name),
+  updateDestroySubCategory = (cache: Object) => {
+    const {
+      state: {
+        delSubcategoryId,
+        selectCategoryId,
+      },
+      props: {
+        userCompany: {
+          company: {
+            id: companyId,
+          },
+        },
+      },
+    } = this;
+
+    const data = cache.readQuery({
+      query: GET_COMPANY_CATEGORIES_BY_ID,
+      variables: { companyId },
     });
+
+    if (data && data.categories && data.categories.length > 0) {
+      const parentIndex = findIndex(
+        item => item.id === selectCategoryId, data.categories,
+      );
+      const deleteIndex = findIndex(
+        subCategory => subCategory.id === delSubcategoryId,
+        data.categories[parentIndex].chields,
+      );
+      data.categories[parentIndex].chields = remove(
+        deleteIndex, 1, data.categories[parentIndex].chields,
+      );
+      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });
+    }
   }
 
   iconRender = ({ item }) => {
@@ -301,10 +347,7 @@ class CategoryEdit extends PureComponent {
         size={normalize(34)}
         underlayColor={colors.transparent}
         backgroundColor={colors.transparent}
-        onPress={item.id
-          ? () => this.handleDestroySubCategory(item.id)
-          : () => this.handleDelSubCategory(item.name)
-        }
+        onPress={() => this.handleDestroySubCategory(item.id)}
       />
     </Input>
   )
@@ -319,8 +362,6 @@ class CategoryEdit extends PureComponent {
       isSubCategoryEdit,
       isDeleteModalVisible,
     } = this.state;
-    const { navigation } = this.props;
-    const subCategories = navigation.state.params && navigation.state.params.subCategories;
 
     return (
       <KeyboardAwareScrollView contentContainerStyle={styles.container}>
@@ -342,28 +383,22 @@ class CategoryEdit extends PureComponent {
             data={constants.categoryIconList}
             contentContainerStyle={styles.flatlistContainer}
           />
-          {subCategories && subCategories.length > 0 && (
-            <FlatList
-              data={subCategories}
-              scrollEnabled={false}
-              renderItem={this.renderSubCategory}
-              keyExtractor={(_, index) => index.toString()}
-            />
-          )}
+          {subCategoryList && subCategoryList.length > 0 && (
           <FlatList
             scrollEnabled={false}
             data={subCategoryList}
             renderItem={this.renderSubCategory}
             keyExtractor={(_, index) => index.toString()}
           />
+          )}
           {isSubCategoryEdit ? (
             <Input
               isWhite
               autoFocus
               returnKeyType="go"
               blurOnSubmit={false}
-              onSubmitForm={this.changeSubcategory}
               type={constants.inputTypes.name}
+              onSubmitForm={this.saveSubcategory}
               fieldRef={(ref) => { this.subCategoryValue = ref; }}
             >
               <Icon.Button
@@ -371,7 +406,7 @@ class CategoryEdit extends PureComponent {
                 activeOpacity={0.5}
                 size={normalize(34)}
                 iconStyle={{ marginRight: 0 }}
-                onPress={this.changeSubcategory}
+                onPress={this.saveSubcategory}
                 underlayColor={colors.transparent}
                 backgroundColor={colors.transparent}
                 name={isSubCategoryEdit ? 'ios-checkmark-circle' : 'ios-close'}
@@ -410,5 +445,5 @@ export default compose(
   graphql(UPDATE_CATEGORY, { name: 'updateCategory' }),
   graphql(CREATE_CATEGORY, { name: 'createCategory' }),
   graphql(DESTROY_CATEGORY, { name: 'destroyCategory' }),
-
+  withApollo,
 )(CategoryEdit);

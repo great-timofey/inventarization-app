@@ -18,10 +18,12 @@ import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import {
   GET_CATEGORY_ORDER,
   GET_COMPANY_CATEGORIES,
   GET_SELECTED_CATEGORIES,
+  GET_COMPANY_CATEGORIES_BY_ID,
 } from '~/graphql/categories/queries';
 
 import {
@@ -118,11 +120,19 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   render() {
     const { selectedCategory } = this.state;
-    const { categoryOrder, saveSelectedCategories } = this.props;
+    const {
+      categoryOrder,
+      saveSelectedCategories,
+      userCompany: {
+        company: {
+          id: companyId,
+        },
+      },
+    } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
     return (
-      <Query query={GET_COMPANY_CATEGORIES}>
+      <Query query={GET_COMPANY_CATEGORIES_BY_ID} variables={{ companyId }}>
         {({ data, loading, error }) => {
           if (loading) { return <ActivityIndicator />; }
           if (error) {
@@ -135,14 +145,7 @@ class CategoryMenu extends PureComponent<Props, State> {
 
           let companyCategories: ?Categories;
           if (data != null) {
-            const { current } = data;
-            if (current != null) {
-              const { companies } = current;
-              const company = companies[0];
-              if (company != null) {
-                companyCategories = company.categories;
-              }
-            }
+            companyCategories = data.categories;
           }
 
           let IdList = [];
@@ -239,6 +242,10 @@ class CategoryMenu extends PureComponent<Props, State> {
 }
 
 export default compose(
+  graphql(GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
   graphql(GET_CATEGORY_ORDER, {
     // $FlowFixMe
     props: ({ data: { categoryOrder } }) => ({ categoryOrder }),

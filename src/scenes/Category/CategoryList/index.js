@@ -76,7 +76,7 @@ class CategoryList extends PureComponent<Props, {}> {
     />
   );
 
-  navigateToEdit = (id, icon, title, subCategories) => {
+  navigateToEdit = (id, icon, title) => {
     const { navigation } = this.props;
 
     navigation.navigate(
@@ -85,7 +85,6 @@ class CategoryList extends PureComponent<Props, {}> {
         id,
         icon,
         title,
-        subCategories,
       },
     );
   }

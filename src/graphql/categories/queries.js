@@ -5,10 +5,14 @@ export const GET_COMPANY_CATEGORIES_BY_ID = gql`
   query GetCompanyCategories($companyId: ID!) {
     categories(companyId: $companyId){
       id
-      name
       icon
+      name
       chields{
+        id
         name
+      }
+      parent{
+        id
       }
     }
   }
