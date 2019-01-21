@@ -23,7 +23,7 @@ import Permissions from 'react-native-permissions';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice } from '~/global/utils';
+import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
@@ -49,9 +49,12 @@ class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const photos = navigation.state.params && navigation.state.params.photos;
     const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
+    const location = navigation.state.params && navigation.state.params.location;
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const from = navigation.state.params && navigation.state.params.from;
-    const toPass = from ? { additionalDefects: defectPhotos } : { photos, defectPhotos, codeData };
+    const toPass = from
+      ? { additionalDefects: defectPhotos }
+      : { photos, defectPhotos, codeData, location };
 
     const handleCreateAsset = navigation.state.params && navigation.state.params.handleCreateAsset;
 
@@ -75,7 +78,7 @@ class AddItemDefects extends PureComponent<Props, State> {
               toPass.inventoryId = inventoryId;
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
-              Alert.alert('Требуется фото предмета или его дефектов для продолежния');
+              Alert.alert(constants.errors.camera.needPhoto);
             }
           }}
         />
@@ -116,20 +119,48 @@ class AddItemDefects extends PureComponent<Props, State> {
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
 
-    const firstPhotoForCoords = photos.length ? photos[0] : defectPhotos[0];
-    const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+    const location = navigation.getParam('location', '');
+    const gps = { lat: location.lat, lon: location.lon };
 
     const createdAssetsCount = oldCreatedAssetsCount + 1;
     const name = `Предмет ${createdAssetsCount}`;
     await setCreatedAssetsCount({ variables: { createdAssetsCount } });
 
     const variables = { companyId, gps, name };
-    const {
-      data: {
-        createAsset: { id, inventoryId },
-      },
-    } = await createAsset({ variables, update: this.updateCreateAsset });
-    return { id, inventoryId };
+
+    if (photos.length) {
+      try {
+        const photosObjs = photos.map(uri => ({ uri }));
+        const photosResult = await convertToApolloUpload(photosObjs, '.');
+        //  $FlowFixMe
+        variables.photos = photosResult;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    if (defectPhotos.length) {
+      try {
+        const defectPhotosObjs = defectPhotos.map(uri => ({ uri }));
+        const defectsResult = await convertToApolloUpload(defectPhotosObjs, '.');
+        //  $FlowFixMe
+        variables.photosOfDamages = defectsResult;
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    try {
+      const {
+        data: {
+          createAsset: { id, inventoryId },
+        },
+      } = await createAsset({ variables, update: this.updateCreateAsset });
+      return { id, inventoryId };
+    } catch (error) {
+      console.log(error.message);
+      return {};
+    }
   };
 
   updateCreateAsset = (cache: Object, payload: Object) => {
@@ -203,15 +234,15 @@ class AddItemDefects extends PureComponent<Props, State> {
       });
 
       await location;
-      const takenPhoto = { uri, location };
+      navigation.setParams({ location });
 
       this.setState(
-        state => assoc('photos', concat(state.photos, [takenPhoto]), state),
+        state => assoc('photos', concat(state.photos, [uri]), state),
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
     } else {
-      Alert.alert('Не можем сделать фотографию без доступа к вашему местоположению');
+      Alert.alert(constants.errors.camera.location);
     }
 
     this.setState({ isLoading: false });

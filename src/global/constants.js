@@ -31,6 +31,11 @@ const uploadCreateAssetImages = {
   quality: 0.5,
 };
 
+const words = {
+  yes: 'Да',
+  no: 'Нет',
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
@@ -208,6 +213,8 @@ const errors = {
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+    location: 'Не можем сделать фотографию без доступа к вашему местоположению',
+    needPhoto: 'Требуется фото предмета или его дефектов для продолежния',
   },
   createItem: {
     name: 'Нельзя сохранить без названия',
@@ -329,7 +336,17 @@ const fieldTypes = {
   ],
 };
 
-const createAssetNecessaryProperties = keys(itemForm);
+const updateAssetProperties = keys(itemForm).concat([
+  'id',
+  'photosIdsToRemove',
+  'photosToAdd',
+  'photosOfDamagesToAdd',
+]);
+
+const assetStatuses = {
+  onProcessing: 'on_processing',
+  accepted: 'accepted',
+};
 
 const roles = {
   admin: 'admin',
@@ -411,7 +428,6 @@ const categoryIconList = [
   },
 ];
 
-
 const data = {
   assets: [
     {
@@ -483,6 +499,7 @@ export default {
   sort,
   text,
   masks,
+  words,
   roles,
   hints,
   errors,
@@ -496,6 +513,7 @@ export default {
   fieldTypes,
   buttonTitles,
   placeholders,
+  assetStatuses,
   graphqlErrors,
   modalQuestion,
   itemFormFields,
@@ -503,7 +521,7 @@ export default {
   setNewPassword,
   categoryIconList,
   itemFormSections,
+  updateAssetProperties,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,
-  createAssetNecessaryProperties,
 };
