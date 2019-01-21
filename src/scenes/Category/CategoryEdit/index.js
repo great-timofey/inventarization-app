@@ -98,6 +98,7 @@ class CategoryEdit extends PureComponent {
     }
 
     this.state = {
+      error: '',
       selectCategoryId: id,
       delSubcategoryId: '',
       inputValue: title || '',
@@ -167,7 +168,6 @@ class CategoryEdit extends PureComponent {
         userCompany,
         createCategory,
         updateCategory,
-        setCategoryOrder,
       },
       state: {
         inputValue,
@@ -196,7 +196,7 @@ class CategoryEdit extends PureComponent {
             { variables },
           );
         } catch (error) {
-          alert(error.message);
+          console.log(error.message);
         }
       }
 
@@ -213,18 +213,18 @@ class CategoryEdit extends PureComponent {
               update: this.updateCreateSubCategory,
             });
           } catch (error) {
-            alert(error.message);
+            console.log(error.message);
           }
         });
       }
     }
 
-    if (variables.name && variables.icon) {
+    if (variables.name) {
       try {
         const { data: { createCategory: { id } } } = await createCategory({
           variables: {
             parentId: null,
-            icon: variables.icon,
+            icon: variables.icon || '',
             name: variables.name.trim(),
             companyId: userCompany.id,
           },
@@ -243,12 +243,12 @@ class CategoryEdit extends PureComponent {
                 update: this.updateCreateSubCategory,
               });
             } catch (error) {
-              alert(error.message);
+              console.log(error.message);
             }
           });
         }
       } catch (error) {
-        alert(error.message);
+        console.log(error.message);
       }
     }
     navigation.goBack();
@@ -269,7 +269,7 @@ class CategoryEdit extends PureComponent {
         },
       );
     } catch (error) {
-      alert(error.message);
+      console.log(error.message);
     }
     navigation.goBack();
   };
@@ -282,7 +282,6 @@ class CategoryEdit extends PureComponent {
             id: companyId,
           },
         },
-        setCategoryOrder,
       },
 
     } = this;
@@ -295,7 +294,11 @@ class CategoryEdit extends PureComponent {
 
     if (categoriesData && categoriesData.categories) {
       categoriesData.categories = [...categoriesData.categories, payload.data.createCategory];
-      cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data: categoriesData });
+      cache.writeQuery({
+        query: GET_COMPANY_CATEGORIES_BY_ID,
+        variables: { companyId },
+        data: categoriesData,
+      });
     }
 
     const data = cache.readQuery({ query: GET_CATEGORY_ORDER });
@@ -401,7 +404,7 @@ class CategoryEdit extends PureComponent {
           update: this.updateDestroySubCategory,
         });
       } catch (error) {
-        alert(error.message);
+        console.log(error.message);
       }
     }
   };
@@ -425,24 +428,28 @@ class CategoryEdit extends PureComponent {
     );
   }
 
-  renderSubCategory = ({ item }) => (
-    <Input
-      isWhite
-      editable={false}
-      value={item.name}
-      type={constants.inputTypes.subCategory}
-    >
-      <Icon.Button
-        name="ios-close"
-        color={colors.red}
-        activeOpacity={0.5}
-        size={normalize(34)}
-        underlayColor={colors.transparent}
-        backgroundColor={colors.transparent}
-        onPress={() => this.handleDestroySubCategory(item.id)}
-      />
-    </Input>
-  )
+  renderSubCategory = ({ item }) => {
+    const { error } = this.state;
+    return (
+      <Input
+        isWhite
+        editable={false}
+        value={item.name}
+        customWarning={error}
+        type={constants.inputTypes.subCategory}
+      >
+        <Icon.Button
+          name="ios-close"
+          color={colors.red}
+          activeOpacity={0.5}
+          size={normalize(34)}
+          underlayColor={colors.transparent}
+          backgroundColor={colors.transparent}
+          onPress={() => this.handleDestroySubCategory(item.id)}
+        />
+      </Input>
+    );
+  }
 
   subCategoryValue: any
 

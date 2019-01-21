@@ -119,7 +119,6 @@ class CategoryMenu extends PureComponent<Props, State> {
   render() {
     const { selectedCategory } = this.state;
     const {
-      categoryOrder,
       saveSelectedCategories,
       userCompany: {
         company: {

@@ -102,7 +102,6 @@ class CategoryList extends PureComponent<Props, {}> {
     const { isScrollEnable } = this.state;
     const {
       navigation,
-      categoryOrder,
       userCompany: {
         company: {
           id: companyId,
