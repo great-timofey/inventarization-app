@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { setIsSideMenuOpen } from '~/global';
 import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 
 import styles from './styles';
@@ -21,16 +22,19 @@ import type { Props } from './types';
 export class Category extends PureComponent<Props, {}> {
   selectCategory = () => {
     const {
-      item: { name },
+      item,
       selectCategory,
       allSelectButton,
       allSubCategoryList,
     } = this.props;
 
-    selectCategory(name);
+    if (item.chields && item.chields.length > 1) {
+      selectCategory(item.name);
+    }
 
     if (allSelectButton) {
       this.saveSelectedCategories(allSubCategoryList);
+      setIsSideMenuOpen(false);
     }
   }
 
