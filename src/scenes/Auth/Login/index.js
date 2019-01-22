@@ -182,6 +182,15 @@ class Login extends PureComponent<Props, State> {
 
         navigation.navigate(SCENES_NAMES.QuestionSceneName);
       } catch (error) {
+        if (!isRegForm && error.message === constants.graphqlErrors.passwordIsIncorrect) {
+          this.setState({
+            warnings: {
+              count: 1,
+              email: constants.warnings.userNotFound,
+              password: constants.warnings.userNotFound,
+            },
+          });
+        }
         if (isRegForm && error.message === constants.graphqlErrors.emailAlreadyExists) {
           this.setState({
             warnings: {
