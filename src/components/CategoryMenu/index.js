@@ -49,7 +49,7 @@ class CategoryMenu extends PureComponent<Props, State> {
     const { saveSelectedCategories, current } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
-    let companyCategories = null;
+    let companyCategories = [];
 
     if (current != null) {
       const { companies } = current;
@@ -197,7 +197,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                 ) : (
                   <Category
                     allSelectButton
-                    selectCategory={() => { }}
+                    selectCategory={() => {}}
                     isSelected={isAllCategorySelected}
                     allSubCategoryList={allCategoriesList}
                     item={{ name: 'Все категории', icon: 'side-menu-all' }}
