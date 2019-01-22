@@ -76,6 +76,7 @@ class CategoryMenu extends PureComponent<Props, State> {
     let isSubCategorySelect = false;
 
     const isAllCategoriesSelected = companyCategories.length === saveSelectedCategories.length;
+    // eslint-disable-next-line max-len
     const isAllSubCategoriesSelected = intersection(saveSelectedCategories, chieldsIdList).length === chieldsIdList.length;
 
     if (!isSubCategoryView) {
