@@ -250,6 +250,12 @@ class ItemsList extends PureComponent<Props> {
             }
           });
 
+          if (saveSelectedCategories.length > 0) {
+            dataToRender = dataToRender.filter(el => el.category
+              && el.category.id
+              && includes(el.category.id, saveSelectedCategories));
+          }
+
           return dataToRenderIsEmpty ? (
             <View>
               <Text style={styles.header}>{constants.headers.items}</Text>
