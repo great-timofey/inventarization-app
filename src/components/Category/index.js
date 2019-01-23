@@ -28,7 +28,6 @@ export class Category extends PureComponent<Props, {}> {
       defaultCategoryId,
       allSubCategoryList,
     } = this.props;
-    console.log(defaultCategoryId);
 
     if (item.chields && item.chields.length > 0) {
       selectCategory(item.name);
