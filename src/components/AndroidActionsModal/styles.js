@@ -7,6 +7,10 @@ import { normalize } from '~/global/utils';
 
 export default StyleSheet.create({
   modal: {
-    justifyContent: 'flex-end', alignItems: 'center',
+    margin: 0,
+    padding: 0,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });

@@ -6,7 +6,7 @@ import Modal from 'react-native-modal';
 
 import Button from '~/components/Button';
 
-
+import { deviceWidth, deviceHeight } from '~/global/device';
 import { fonts } from '~/global/styles';
 import colors from '~/global/colors';
 
@@ -19,22 +19,25 @@ const AndroidActionsModal = ({ isModalVisible, toggleActionsModal, itemData }: P
     style={styles.modal}
     animationIn="fadeIn"
     animationOut="fadeOut"
+    animationOutTiming={1}
     animationInTiming={300}
+    deviceWidth={deviceWidth}
     isVisible={isModalVisible}
+    deviceHeight={deviceHeight}
+    onBackdropPress={toggleActionsModal}
   >
     {itemData && (
     <View style={{
-      backgroundColor: 'white',
-      width: normalize(itemData.width),
-      height: normalize(itemData.height),
+      top: itemData.y - normalize(10),
+      left: itemData.x - normalize(10),
       position: 'absolute',
-      top: itemData.y,
-      left: itemData.x,
-      borderRadius: normalize(17),
       padding: normalize(10),
+      backgroundColor: 'white',
+      borderRadius: normalize(17),
     }}
     >
-      <View style={{ borderRadius: 10,
+      <View style={{
+        borderRadius: 10,
         width: normalize(158),
         height: normalize(158),
         marginBottom: normalize(6),
@@ -72,7 +75,7 @@ const AndroidActionsModal = ({ isModalVisible, toggleActionsModal, itemData }: P
     />
     <Button
       onPress={toggleActionsModal}
-      customStyle={{ width: normalize(315), backgroundColor: colors.red }}
+      customStyle={{ width: normalize(315), backgroundColor: colors.red, marginBottom: normalize(15) }}
     />
   </Modal>
 );

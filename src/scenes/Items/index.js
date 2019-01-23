@@ -181,7 +181,7 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 
   getItemPosition = (itemRef, parentScrollViewRef, item) => {
-    const headerHeight = 65;
+    const headerHeight = normalize(65);
     UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, width, height, pageX, pageY) => console.log(pageY, 'view'));
     this.setState({
       itemData: {
@@ -192,25 +192,27 @@ class ItemsScene extends PureComponent<Props, State> {
       },
     });
     if (itemRef) {
-      itemRef.measure((fx, fy, w, h, px, py) => {
-        console.log(py, 'item');
-
+      itemRef.measure((fx, fy, width, height, px, py) => {
         const currentItemPosition = py;
-        const itemPositionDiff = headerHeight - currentItemPosition;
-        console.log(itemPositionDiff, 'itemPositionDiff');
+        let itemPositionDiff = 0;
+        if (currentItemPosition > 0) {
+          itemPositionDiff = headerHeight - currentItemPosition;
+        } else {
+          itemPositionDiff = Math.abs(currentItemPosition) + headerHeight;
+        }
 
         if (py <= headerHeight) {
-          UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, width, height, pageX, pageY) => {
-            const currentViewPosition = pageY;
-            const coordinateToScroll = headerHeight - currentViewPosition;
-            console.log(coordinateToScroll, '');
+          UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, w, h, pageX, pageY) => {
+            const currentViewPosition = pageY - headerHeight;
+            const coordinateToScroll = currentViewPosition + itemPositionDiff;
 
-            parentScrollViewRef.scrollTo({ x: 0, y: 100, animated: true });
+            parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
+
             this.setState({
               itemData: {
                 name: item.name,
-                x: px - normalize(29),
-                y: py - normalize(29 - headerHeight - Math.abs(pageY)),
+                x: px,
+                y: py + itemPositionDiff,
                 purchasePrice: item.purchasePrice,
               },
             });
@@ -222,8 +224,8 @@ class ItemsScene extends PureComponent<Props, State> {
           this.setState({
             itemData: {
               name: item.name,
-              x: px - normalize(29),
-              y: py - normalize(29),
+              x: px,
+              y: py,
               purchasePrice: item.purchasePrice,
             },
           });
