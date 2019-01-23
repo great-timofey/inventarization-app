@@ -131,6 +131,7 @@ const buttonTitles = {
   saveChanges: 'Сохранить изменения',
   enter: 'Нет, войти как пользователь',
   createCompany: 'Создать организацию',
+  editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
   addAnotherYetItem: 'Добавить ещё один предмет',

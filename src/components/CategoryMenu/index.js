@@ -24,6 +24,7 @@ import {
   GET_SELECTED_CATEGORIES,
 } from '~/graphql/categories/queries';
 
+import constants from '~/global/constants';
 import {
   mainNavigation,
   setIsSideMenuOpen,
@@ -111,6 +112,20 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
+  getCategoryPrefix = () => {
+    const { selectedCategory } = this.state;
+    let prefix = '';
+
+    if (includes(last(selectedCategory), ['ь', 'а'])) {
+      prefix = 'Вся';
+    } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
+      prefix = 'Все';
+    } else {
+      prefix = 'Весь';
+    }
+    return prefix;
+  }
+
   render() {
     const { selectedCategory } = this.state;
     const { categoryOrder, saveSelectedCategories } = this.props;
@@ -160,19 +175,11 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
+          const prefix = this.getCategoryPrefix();
+
           const isAllCategorySelected = allCategoriesList.length === saveSelectedCategories.length;
           // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
-
-          let prefix = '';
-
-          if (includes(last(selectedCategory), ['ь', 'а'])) {
-            prefix = 'Вся';
-          } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
-            prefix = 'Все';
-          } else {
-            prefix = 'Весь';
-          }
 
           return (
             <ScrollView
@@ -221,7 +228,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                   }}
                 >
                   <Text style={styles.editButtonText}>
-                    Редактировать категории
+                    {constants.buttonTitles.editCategory}
                   </Text>
                 </TouchableOpacity>
               )}
