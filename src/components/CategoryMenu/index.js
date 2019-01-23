@@ -70,7 +70,7 @@ class CategoryMenu extends PureComponent<Props, State> {
       chieldsIdList = data.chields.map(x => x.id);
     } else if (isSubCategoryView) {
       const parentIndex = findIndex(el => el.name === selectedCategory, companyCategories);
-      chieldsIdList = [...companyCategories[parentIndex].chields];
+      chieldsIdList = companyCategories[parentIndex].chields.map(el => el.id);
     }
 
     let isCategorySelect = false;
@@ -88,7 +88,9 @@ class CategoryMenu extends PureComponent<Props, State> {
       } else if (data.chields && data.chields.length > 0) {
         isCategorySelect = !!intersection(chieldsIdList, saveSelectedCategories).length;
       }
-    } else if (data && data.id) {
+    }
+
+    if (isSubCategoryView && data && data.id) {
       isSubCategorySelect = includes(data.id, saveSelectedCategories);
     }
 
@@ -159,12 +161,12 @@ class CategoryMenu extends PureComponent<Props, State> {
           let categoryList = {};
           let subCategoryList = {};
           let allCategoriesList = [];
+          let defaultCategoryId = 0;
 
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
             allCategoriesList = companyCategories.map(x => x.id);
-
             if (isSubCategoryView) {
               const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
@@ -173,13 +175,19 @@ class CategoryMenu extends PureComponent<Props, State> {
                 IdList = parent.chields.map(x => x.id);
               }
             }
+            const defaultCategoryIndex = findIndex(el => el.name === 'Without category', companyCategories);
+            if (defaultCategoryIndex !== -1) {
+              defaultCategoryId = companyCategories[defaultCategoryIndex].id;
+            }
           }
 
           const prefix = this.getCategoryPrefix();
-
           const isAllCategorySelected = allCategoriesList.length === saveSelectedCategories.length;
           // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
+          const isSelectedWithoutCategory = includes(defaultCategoryId, saveSelectedCategories)
+            && saveSelectedCategories.length === 1;
+          console.log(defaultCategoryId);
 
           return (
             <ScrollView
@@ -203,13 +211,21 @@ class CategoryMenu extends PureComponent<Props, State> {
                     />
                   </Fragment>
                 ) : (
-                  <Category
-                    allSelectButton
-                    selectCategory={() => {}}
-                    isSelected={isAllCategorySelected}
-                    allSubCategoryList={allCategoriesList}
-                    item={{ name: 'Все категории', icon: 'side-menu-all' }}
-                  />
+                  <Fragment>
+                    <Category
+                      allSelectButton
+                      selectCategory={() => {}}
+                      isSelected={isAllCategorySelected}
+                      allSubCategoryList={allCategoriesList}
+                      item={{ name: 'Все категории', icon: 'side-menu-all' }}
+                    />
+                    <Category
+                      defaultCategoryId={defaultCategoryId}
+                      isSelected={isSelectedWithoutCategory}
+                      item={{ name: 'Без категории', icon: 'side-menu-all' }}
+                    />
+                  </Fragment>
+
                 )
               }
               <SortableList

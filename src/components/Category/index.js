@@ -25,8 +25,10 @@ export class Category extends PureComponent<Props, {}> {
       item,
       selectCategory,
       allSelectButton,
+      defaultCategoryId,
       allSubCategoryList,
     } = this.props;
+    console.log(defaultCategoryId);
 
     if (item.chields && item.chields.length > 0) {
       selectCategory(item.name);
@@ -36,6 +38,11 @@ export class Category extends PureComponent<Props, {}> {
 
     if (allSelectButton) {
       this.saveSelectedCategories(allSubCategoryList);
+      setIsSideMenuOpen(false);
+    }
+
+    if (defaultCategoryId) {
+      this.saveSelectedCategories(defaultCategoryId);
       setIsSideMenuOpen(false);
     }
   }
