@@ -59,9 +59,10 @@ class ItemsList extends PureComponent<Props> {
     const {
       userId,
       userRole,
-      currentUser,
-      currentSelectItem,
       selectItem,
+      currentUser,
+      getItemPosition,
+      currentSelectItem,
       toggleDelModalVisible,
     } = this.props;
 
@@ -105,9 +106,11 @@ class ItemsList extends PureComponent<Props> {
         openItem={this.handleOpenItem}
         showMenuButton={showMenuButton}
         //  $FlowFixMe
+        getItemPosition={getItemPosition}
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
+        parentScrollViewRef={this.scrollViewRef}
       />
     );
   };
@@ -151,6 +154,8 @@ class ItemsList extends PureComponent<Props> {
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
+  scrollViewRef: any;
+
   render() {
     const {
       userId,
@@ -166,6 +171,7 @@ class ItemsList extends PureComponent<Props> {
       handleShowSortButton,
       toggleDelModalVisible,
       saveSelectedCategories,
+      isAndroidActionsModalVisible,
     } = this.props;
 
     return (
@@ -269,7 +275,12 @@ class ItemsList extends PureComponent<Props> {
               />
             </View>
           ) : (
-            <ScrollView scrollEventThrottle={16} onScroll={this.handleScroll}>
+            <ScrollView
+              scrollEventThrottle={16}
+              onScroll={this.handleScroll}
+              ref={(ref) => { this.scrollViewRef = ref; }}
+              scrollEnabled={!isAndroidActionsModalVisible}
+            >
               <Text style={styles.header}>{constants.headers.items}</Text>
               <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
@@ -298,7 +309,8 @@ class ItemsList extends PureComponent<Props> {
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
                   contentContainerStyle={styles.grid}
-                  extraData={{ currentSelectItem, isSortByName }}
+                  scrollEnabled={!isAndroidActionsModalVisible}
+                  extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
                 />
               )}
             </ScrollView>

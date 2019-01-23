@@ -40,13 +40,33 @@ class Item extends PureComponent<Props, State> {
     );
   };
 
+  itemRef: any;
+
   render() {
-    const { item, selectItem, showMenuButton, currentSelectItem, openItem } = this.props;
+    const {
+      item,
+      openItem,
+      selectItem,
+      showMenuButton,
+      getItemPosition,
+      currentSelectItem,
+      parentScrollViewRef,
+    } = this.props;
     const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
 
+    const itemCallbackData = {
+      name: item.name,
+      purchasePrice: item.purchasePrice,
+    };
+
     return (
-      <TouchableOpacity style={styles.container} onPress={() => openItem(item)}>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => openItem(item)}
+        ref={(ref) => { this.itemRef = ref; }}
+        onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, itemCallbackData)}
+      >
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && (
           <TouchableOpacity

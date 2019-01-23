@@ -1,7 +1,7 @@
 //  @flow
 
 import React, { Fragment, PureComponent } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, UIManager } from 'react-native';
 
 import { findIndex, remove } from 'ramda';
 import { graphql, compose } from 'react-apollo';
@@ -12,6 +12,7 @@ import IconButton from '~/components/IconButton';
 import MainHeader from '~/scenes/Items/MainHeader';
 import QuestionModal from '~/components/QuestionModal';
 import SearchHeader from '~/scenes/Items/SearchHeader';
+import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
@@ -63,6 +64,13 @@ class ItemsScene extends PureComponent<Props, State> {
       currentSelectItem: null,
       isSortModalVisible: false,
       isDeleteModalVisible: false,
+      isAndroidActionsModalVisible: false,
+      itemData: {
+        x: 0,
+        y: 0,
+        name: '',
+        purchasePrice: '',
+      },
     };
 
     navigation.setParams({
@@ -165,6 +173,66 @@ class ItemsScene extends PureComponent<Props, State> {
     });
   };
 
+  toggleActionsModal = () => {
+    const { isAndroidActionsModalVisible } = this.state;
+    this.setState({
+      isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
+    });
+  }
+
+  getItemPosition = (itemRef, parentScrollViewRef, item) => {
+    const headerHeight = 65;
+    UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, width, height, pageX, pageY) => console.log(pageY, 'view'));
+    this.setState({
+      itemData: {
+        x: 0,
+        y: 0,
+        name: '',
+        purchasePrice: '',
+      },
+    });
+    if (itemRef) {
+      itemRef.measure((fx, fy, w, h, px, py) => {
+        console.log(py, 'item');
+
+        const currentItemPosition = py;
+        const itemPositionDiff = headerHeight - currentItemPosition;
+        console.log(itemPositionDiff, 'itemPositionDiff');
+
+        if (py <= headerHeight) {
+          UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, width, height, pageX, pageY) => {
+            const currentViewPosition = pageY;
+            const coordinateToScroll = headerHeight - currentViewPosition;
+            console.log(coordinateToScroll, '');
+
+            parentScrollViewRef.scrollTo({ x: 0, y: 100, animated: true });
+            this.setState({
+              itemData: {
+                name: item.name,
+                x: px - normalize(29),
+                y: py - normalize(29 - headerHeight - Math.abs(pageY)),
+                purchasePrice: item.purchasePrice,
+              },
+            });
+            setTimeout(() => {
+              this.toggleActionsModal();
+            }, 150);
+          });
+        } else {
+          this.setState({
+            itemData: {
+              name: item.name,
+              x: px - normalize(29),
+              y: py - normalize(29),
+              purchasePrice: item.purchasePrice,
+            },
+          });
+          this.toggleActionsModal();
+        }
+      });
+    }
+  }
+
   onChangeSearchField = (value: string) => {
     const { navigation } = this.props;
     navigation.setParams({
@@ -190,6 +258,7 @@ class ItemsScene extends PureComponent<Props, State> {
 
   render() {
     const {
+      itemData,
       searchValue,
       isSortByName,
       isSearchActive,
@@ -198,7 +267,9 @@ class ItemsScene extends PureComponent<Props, State> {
       currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
+      isAndroidActionsModalVisible,
     } = this.state;
+
     const {
       data: {
         // $FlowFixMe
@@ -209,6 +280,7 @@ class ItemsScene extends PureComponent<Props, State> {
       },
       navigation,
     } = this.props;
+
     return (
       <Fragment>
         <ItemsList
@@ -219,9 +291,11 @@ class ItemsScene extends PureComponent<Props, State> {
           isSortByName={isSortByName}
           selectItem={this.selectItem}
           currentSelectItem={currentSelectItem}
+          getItemPosition={this.getItemPosition}
           isDeleteModalVisible={isDeleteModalVisible}
           handleShowSortButton={this.handleShowSortButton}
           toggleDelModalVisible={this.toggleDelModalVisible}
+          isAndroidActionsModalVisible={isAndroidActionsModalVisible}
         />
         {isSearchActive && (
           <Search
@@ -230,7 +304,11 @@ class ItemsScene extends PureComponent<Props, State> {
             toggleSearch={this.toggleSearch}
           />
         )}
-        {!isSortModalVisible && !isSearchActive && showSortButton && (
+        {showSortButton
+        && !isSearchActive
+        && !isSortModalVisible
+        && !isAndroidActionsModalVisible
+        && (
           <IconButton
             isCustomIcon
             size={isSortByName ? 50 : 70}
@@ -253,6 +331,11 @@ class ItemsScene extends PureComponent<Props, State> {
           data={constants.modalQuestion.itemDel}
           //  $FlowFixMe
           rightAction={() => this.handleDeleteItem(currentSelectItem)}
+        />
+        <AndroidActionsModal
+          itemData={itemData}
+          isModalVisible={isAndroidActionsModalVisible}
+          toggleActionsModal={this.toggleActionsModal}
         />
       </Fragment>
     );

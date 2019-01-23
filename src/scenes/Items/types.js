@@ -8,7 +8,14 @@ export type State = {
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
   isDeleteModalVisible: boolean,
+  isAndroidActionsModalVisible: boolean,
   currentSelectItem: number | string | null,
+  itemData: {
+    x: number,
+    y: number,
+    name: string,
+    purchasePrice: string,
+  },
 };
 
 export type Props = {
