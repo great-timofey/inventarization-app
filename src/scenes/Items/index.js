@@ -181,8 +181,9 @@ class ItemsScene extends PureComponent<Props, State> {
   }
 
   getItemPosition = (itemRef, parentScrollViewRef, item) => {
-    const headerHeight = normalize(65);
-    UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, width, height, pageX, pageY) => console.log(pageY, 'view'));
+    const itemHeight = normalize(220);
+    const headerPosition = normalize(65);
+    const bottomPosition = normalize(530);
     this.setState({
       itemData: {
         x: 0,
@@ -194,16 +195,17 @@ class ItemsScene extends PureComponent<Props, State> {
     if (itemRef) {
       itemRef.measure((fx, fy, width, height, px, py) => {
         const currentItemPosition = py;
-        let itemPositionDiff = 0;
-        if (currentItemPosition > 0) {
-          itemPositionDiff = headerHeight - currentItemPosition;
-        } else {
-          itemPositionDiff = Math.abs(currentItemPosition) + headerHeight;
-        }
 
-        if (py <= headerHeight) {
+        if (py <= headerPosition) {
+          let itemPositionDiff = 0;
+          if (currentItemPosition > 0) {
+            itemPositionDiff = headerPosition - currentItemPosition;
+          } else {
+            itemPositionDiff = Math.abs(currentItemPosition) + headerPosition;
+          }
+
           UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, w, h, pageX, pageY) => {
-            const currentViewPosition = pageY - headerHeight;
+            const currentViewPosition = pageY - headerPosition;
             const coordinateToScroll = currentViewPosition + itemPositionDiff;
 
             parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
@@ -213,6 +215,27 @@ class ItemsScene extends PureComponent<Props, State> {
                 name: item.name,
                 x: px,
                 y: py + itemPositionDiff,
+                purchasePrice: item.purchasePrice,
+              },
+            });
+            setTimeout(() => {
+              this.toggleActionsModal();
+            }, 150);
+          });
+        } else if (py + itemHeight >= bottomPosition) {
+          const itemPositionDiff = (py + itemHeight) - bottomPosition;
+
+          UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, w, h, pageX, pageY) => {
+            const currentViewPosition = pageY - headerPosition;
+            const coordinateToScroll = currentViewPosition - itemPositionDiff;
+
+            parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
+
+            this.setState({
+              itemData: {
+                name: item.name,
+                x: px,
+                y: py - itemPositionDiff,
                 purchasePrice: item.purchasePrice,
               },
             });
