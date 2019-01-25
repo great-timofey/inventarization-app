@@ -6,7 +6,7 @@ export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
   price: /^\d+(.|,){0,2}\d/,
-  password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
+  password: /^((?=\S*?[a-z,A-Z,0-9]).{7,})\S$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   // eslint-disable-next-line no-useless-escape
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
@@ -486,7 +486,7 @@ const warnings = {
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  invalidPassword: 'Минимальная длинна пароля - 7 символов',
+  invalidPassword: 'Минимальная длинна пароля - 8 символов',
 };
 
 const graphqlErrors = {
