@@ -9,8 +9,6 @@ export type Props = {
     y: number,
   },
   item: Item | Object,
-  delAction: Function,
-  destroyAsset: Function,
   isModalVisible: boolean,
   handleOpenItem: Function,
   isListViewStyle: boolean,
