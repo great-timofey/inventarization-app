@@ -175,7 +175,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                 IdList = parent.chields.map(x => x.id);
               }
             }
-            const defaultCategoryIndex = findIndex(el => el.isDefault, companyCategories);
+            const defaultCategoryIndex = findIndex(el => el.isDefault === true, companyCategories);
             if (defaultCategoryIndex !== -1) {
               defaultCategoryId = companyCategories[defaultCategoryIndex].id;
             }
