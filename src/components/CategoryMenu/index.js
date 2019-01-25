@@ -118,12 +118,12 @@ class CategoryMenu extends PureComponent<Props, State> {
     const { selectedCategory } = this.state;
     let prefix = '';
 
-    if (includes(last(selectedCategory), ['ь', 'а'])) {
-      prefix = 'Вся';
-    } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
-      prefix = 'Все';
+    if (includes(last(selectedCategory), constants.suffixes.all)) {
+      prefix = constants.prefixes.all;
+    } else if (includes(last(selectedCategory), constants.suffixes.everything)) {
+      prefix = constants.prefixes.everything;
     } else {
-      prefix = 'Весь';
+      prefix = constants.prefixes.whole;
     }
     return prefix;
   }
@@ -175,7 +175,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                 IdList = parent.chields.map(x => x.id);
               }
             }
-            const defaultCategoryIndex = findIndex(el => el.name === 'Without category', companyCategories);
+            const defaultCategoryIndex = findIndex(el => el.isDefault, companyCategories);
             if (defaultCategoryIndex !== -1) {
               defaultCategoryId = companyCategories[defaultCategoryIndex].id;
             }

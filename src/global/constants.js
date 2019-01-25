@@ -19,6 +19,17 @@ const masks = {
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
+const suffixes = {
+  all: ['ь', 'а'],
+  everything: ['ы', 'я', 'и'],
+};
+
+const prefixes = {
+  all: 'Вся',
+  whole: 'Весь',
+  everything: 'Все',
+};
+
 const uploadCreateCompanyImages = {
   width: 110,
   height: 110,
@@ -507,6 +518,8 @@ export default {
   regExp,
   headers,
   formats,
+  prefixes,
+  suffixes,
   itemForm,
   warnings,
   category,
