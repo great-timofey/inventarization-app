@@ -74,7 +74,7 @@ class ItemsList extends PureComponent<Props> {
     const isUserManager = userRole === constants.roles.manager;
     const isUserEmployee = userRole === constants.roles.employee;
     const isUserCreator = item && item.creator && item.creator.id === userId;
-    const isItemInProcessing = item.status === 'on_processing';
+    const isItemInProcessing = item.status === constants.assetStatuses.onProcessing;
 
     let showRemoveButton = false;
     let showMenuButton = false;
@@ -219,7 +219,7 @@ class ItemsList extends PureComponent<Props> {
               dataToRender = innerAssets.filter(
                 asset => (asset.creator
                     && asset.creator.id === userId
-                    && asset.status === 'on_processing')
+                    && asset.status === constants.assetStatuses.onProcessing)
                   || (asset.responsible && asset.responsible.id === userId),
               );
             }

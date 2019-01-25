@@ -31,10 +31,16 @@ const uploadCreateAssetImages = {
   quality: 0.5,
 };
 
+const words = {
+  yes: 'Да',
+  no: 'Нет',
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
-  password: 'Назначьте пароль',
+  setPassword: 'Назначьте пароль',
+  enterPassword: 'Введите пароль',
   model: 'Введите название',
   description: 'Введите текст',
   placeId: 'Место не указано',
@@ -66,11 +72,9 @@ const inputTypes = {
   },
   subCategory: {
     label: 'Название подкатегории',
-    // warning: 'Введите имя',
   },
   category: {
     label: 'Название категории',
-    // warning: 'Введите имя',
   },
   companyName: {
     label: 'Название организации',
@@ -211,6 +215,8 @@ const errors = {
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
     photo: 'Произошла ошибка выбора фотографии. Пожалуйста, попробуйте еще раз.',
+    location: 'Не можем сделать фотографию без доступа к вашему местоположению',
+    needPhoto: 'Требуется фото предмета или его дефектов для продолежния',
   },
   createItem: {
     name: 'Нельзя сохранить без названия',
@@ -332,7 +338,17 @@ const fieldTypes = {
   ],
 };
 
-const createAssetNecessaryProperties = keys(itemForm);
+const updateAssetProperties = keys(itemForm).concat([
+  'id',
+  'photosIdsToRemove',
+  'photosToAdd',
+  'photosOfDamagesToAdd',
+]);
+
+const assetStatuses = {
+  onProcessing: 'on_processing',
+  accepted: 'accepted',
+};
 
 const roles = {
   admin: 'admin',
@@ -344,6 +360,7 @@ const roles = {
 const formats = {
   newItemDates: 'DD.MM.YYYY',
   createAssetDates: 'YYYY-MM-DD',
+  createUserCompanyDates: 'YYYY-MM-DDTHH:MM:ss[Z]',
 };
 
 const category = [
@@ -413,7 +430,6 @@ const categoryIconList = [
   },
 ];
 
-
 const data = {
   assets: [
     {
@@ -464,11 +480,28 @@ const data = {
   ],
 };
 
+const warnings = {
+  emptyName: 'Введите имя',
+  emptyEmail: 'Введите email',
+  emptyPassword: 'Введите пароль',
+  invalidEmail: 'Вы указали неверный email',
+  userNotFound: 'Неверный email или пароль',
+  invalidMobile: 'Не верный формат номера телефона',
+  emailAlreadyExists: 'Этот email уже зарегистрирован',
+  invalidPassword: 'Минимальная длинна пароля - 7 символов',
+};
+
+const graphqlErrors = {
+  userNotFound: 'GraphQL error: User not found',
+  emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
+};
+
 export default {
   data,
   sort,
   text,
   masks,
+  words,
   roles,
   hints,
   errors,
@@ -476,18 +509,21 @@ export default {
   headers,
   formats,
   itemForm,
+  warnings,
   category,
   inputTypes,
   fieldTypes,
   buttonTitles,
   placeholders,
+  assetStatuses,
+  graphqlErrors,
   modalQuestion,
   itemFormFields,
   forgotPassText,
   setNewPassword,
   categoryIconList,
   itemFormSections,
+  updateAssetProperties,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,
-  createAssetNecessaryProperties,
 };

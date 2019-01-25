@@ -5,21 +5,21 @@ import type { SectionBase } from 'react-native/Libraries/Lists/SectionList';
 export type Props = {
   role: string,
   userId: string,
-  currentUser: ?Object,
+  client: Object,
   navigation: Object,
   userCompany: Object,
+  currentUser: ?Object,
   currentUserId: string,
   createAsset: Function,
   updateAsset: Function,
   destroyAsset: Function,
-};
-
-type Photo = {
-  uri: string,
+  createdAssetsCount: number,
+  addPhotosToAsset: Function,
+  removeAssetPhotos: Function,
 };
 
 export type PhotosProps = {
-  item: Photo,
+  item: string,
   index: number,
 };
 
@@ -49,7 +49,6 @@ export type State = {
   showPhotos: boolean,
   inventoryId: ?string,
   manufacture: ?string,
-  photos: Array<Photo>,
   isModalOpened: boolean,
   assessedValue: ?string,
   purchasePrice: ?string,
@@ -62,7 +61,11 @@ export type State = {
   guaranteeExpires: ?string,
   onTheBalanceSheet: string,
   activePreviewIndex: number,
-  photosOfDamages: Array<Photo>,
   currentlyEditableField: ?string,
   isDateTimePickerOpened: boolean,
+  photosUrls: Array<string>,
+  photosToAdd: Array<string>,
+  photosIdsToRemove: Array<string>,
+  photosOfDamagesUrls: Array<string>,
+  photosOfDamagesToAdd: Array<string>,
 };

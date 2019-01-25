@@ -24,10 +24,18 @@ class Input extends Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props) {
-    const { returnKeyType, value, isWarning, containerCallback, secureTextEntry } = this.props;
+    const {
+      value,
+      isWarning,
+      returnKeyType,
+      customWarning,
+      secureTextEntry,
+      containerCallback,
+    } = this.props;
     if (
       nextProps.value !== value
       || nextProps.isWarning !== isWarning
+      || nextProps.customWarning !== customWarning
       || nextProps.returnKeyType !== returnKeyType
       || nextProps.secureTextEntry !== secureTextEntry
       || nextProps.containerCallback !== containerCallback
@@ -45,10 +53,11 @@ class Input extends Component<Props> {
       isWhite,
       fieldRef,
       children,
-      isWarning,
       customKey,
+      isWarning,
       isMultiline,
       onSubmitForm,
+      customWarning,
       returnKeyType,
       onSubmitEditing,
       containerCallback,
@@ -72,20 +81,20 @@ class Input extends Component<Props> {
             styles.container,
             children && styles.withButton,
             isWhite && styles.whiteContainer,
-            isWarning && styles.invalidContainer,
             isMultiline && styles.multilineContainer,
-            isWhite && isWarning && styles.invalidWhiteContainer,
+            (isWarning || customWarning) && styles.invalidContainer,
             isBackgroundTransparent && styles.transparentBackgroundContainer,
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
+            isWhite && (isWarning || customWarning) && styles.invalidWhiteContainer,
           ]}
         >
           <Text
             style={[
               styles.inputTitleText,
-              isWarning && styles.inputErrorText,
               isWhite && styles.inputTitleTextWhite,
-              isWarning && isWhite && styles.inputErrorText,
+              (isWarning || customWarning) && styles.inputErrorText,
               showWarningInTitle && isWarning && styles.inputErrorText,
+              (isWarning || customWarning) && isWhite && styles.inputErrorText,
             ]}
           >
             {showWarningInTitle && isWarning ? type.warning : type.label}
@@ -108,7 +117,12 @@ class Input extends Component<Props> {
           />
           {children}
         </View>
-        {!showWarningInTitle && <Warning isVisible={isWarning} title={type.warning} />}
+        {!showWarningInTitle && (
+          <Warning
+            isVisible={isWarning || !!customWarning}
+            title={isWarning ? type.warning : customWarning}
+          />
+        )}
       </Wrapper>
     );
   }

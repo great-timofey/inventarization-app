@@ -16,10 +16,21 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import { StackActions } from 'react-navigation';
-import { compose, graphql } from 'react-apollo';
-// $FlowFixMe
-import { keys, drop, isEmpty, pluck, pick, includes, remove, findIndex } from 'ramda';
+import { compose, graphql, withApollo } from 'react-apollo';
+import {
+  prop,
+  keys,
+  drop,
+  pick,
+  pluck,
+  concat,
+  remove,
+  without,
+  isEmpty,
+  findIndex,
+  // $FlowFixMe
+  includes,
+} from 'ramda';
 import dayjs from 'dayjs';
 import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -27,17 +38,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { isIphoneX } from '~/global/device';
-import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { CREATE_ASSET, UPDATE_ASSET, DESTROY_ASSET } from '~/graphql/assets/mutations';
-import { isSmallDevice, convertToApolloUpload, normalize } from '~/global/utils';
+import { isSmallDevice, normalize, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
 import DelModal from '~/components/QuestionModal';
-import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
 import DateTimePicker from '~/components/DateTimePicker';
@@ -113,12 +124,12 @@ const NoItems = ({ additional, onPress }: { additional?: boolean, onPress: Funct
 
 class ItemForm extends Component<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
-    const item = navigation.state.params && navigation.state.params.item;
     const userCanDelete = navigation.state.params && navigation.state.params.userCanDelete;
     const userCanEdit = navigation.state.params && navigation.state.params.userCanEdit;
     const headerText = navigation.state.params && navigation.state.params.headerText;
     const toggleEditMode = navigation.state.params && navigation.state.params.toggleEditMode;
     const toggleDelModal = navigation.state.params && navigation.state.params.toggleDelModal;
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
     const inEditMode = navigation.state.params && navigation.state.params.inEditMode;
 
     return {
@@ -127,19 +138,7 @@ class ItemForm extends Component<Props, State> {
         ? constants.headers.modifyingItem
         : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: (
-        <HeaderBackButton
-          onPress={
-            item
-              ? () => {
-                const resetAction = StackActions.popToTop({});
-                navigation.dispatch(resetAction);
-                navigation.navigate(SCENE_NAMES.ItemsSceneName);
-              }
-              : () => navigation.goBack()
-          }
-        />
-      ),
+      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
           {userCanEdit && !inEditMode && (
@@ -164,13 +163,16 @@ class ItemForm extends Component<Props, State> {
     name: '',
     gps: null,
     // $FlowFixMe
-    photos: [],
+    warnings: {},
     creator: null,
     placeId: null,
     codeData: null,
-    warnings: {},
     location: null,
     category: null,
+    // $FlowFixMe
+    photosUrls: [],
+    // $FlowFixMe
+    photosToAdd: [],
     inventoryId: '',
     isNewItem: true,
     showPhotos: true,
@@ -180,14 +182,19 @@ class ItemForm extends Component<Props, State> {
     purchasePrice: null,
     responsibleId: null,
     // $FlowFixMe
-    photosOfDamages: [],
     dateOfPurchase: null,
     isModalOpened: false,
     formIsEditable: false,
     showSaveButton: false,
+    // $FlowFixMe
+    photosIdsToRemove: [],
+    // $FlowFixMe
+    photosOfDamagesToAdd: [],
     activePreviewIndex: 0,
     guaranteeExpires: null,
     isDelModalOpened: false,
+    // $FlowFixMe
+    photosOfDamagesUrls: [],
     onTheBalanceSheet: 'Нет',
     currentlyEditableField: null,
     isDateTimePickerOpened: false,
@@ -212,6 +219,7 @@ class ItemForm extends Component<Props, State> {
     });
 
     navigation.setParams({
+      handleGoBack: this.handleGoBack,
       toggleEditMode: this.toggleEditMode,
       toggleDelModal: this.handleToggleDelModal,
     });
@@ -221,17 +229,7 @@ class ItemForm extends Component<Props, State> {
     if (item) {
       // console.log(item);
       const itemCopy = { ...item };
-      const {
-        gps,
-        name,
-        place,
-        status,
-        photos,
-        creator,
-        responsible,
-        photosOfDamages,
-        onTheBalanceSheet,
-      } = item;
+      const { gps, name, place, status, creator, responsible, onTheBalanceSheet } = item;
       navigation.setParams({ headerText: name });
       const inEditMode = navigation.getParam('inEditMode', false);
 
@@ -242,7 +240,7 @@ class ItemForm extends Component<Props, State> {
       const isUserAdmin = userRole === constants.roles.admin;
       const isUserManager = userRole === constants.roles.manager;
       const isUserCreator = creator && creator.id === currentUserId;
-      const isItemInProcessing = status === 'on_processing';
+      const isItemInProcessing = status === constants.assetStatuses.onProcessing;
 
       if ((isUserCreator && isItemInProcessing && !isUserManager) || isUserAdmin) {
         navigation.setParams({ userCanDelete: true, userCanEdit: true });
@@ -261,34 +259,40 @@ class ItemForm extends Component<Props, State> {
       }
 
       itemCopy.placeId = place;
-      itemCopy.photos = (photos && photos.map(url => ({ uri: url }))) || [];
-      //  eslint-disable-next-line
-      itemCopy.photosOfDamages =
-        (photosOfDamages && photosOfDamages.map(url => ({ uri: url }))) || [];
       itemCopy.responsibleId = responsible;
       itemCopy.gps = { lat: gps.lat, lon: gps.lon };
-      itemCopy.status = status === 'on_processing'
+      itemCopy.status = status === constants.assetStatuses.onProcessing
         ? constants.placeholders.status.onProcessing
         : constants.placeholders.status.accepted;
-      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? 'Да' : 'Нет';
+      itemCopy.onTheBalanceSheet = onTheBalanceSheet ? constants.words.yes : constants.words.no;
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
       // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
-      const photos = navigation.getParam('photos', []);
+      const id = navigation.getParam('creationId', '');
+      const showName = navigation.getParam('showName', true);
+      const inventoryId = navigation.getParam('inventoryId', '');
+
+      const { createdAssetsCount } = this.props;
+      const name = showName ? `Предмет ${createdAssetsCount}` : '';
+      const location = navigation.getParam('location', '');
+      const photosUrls = navigation.getParam('photos', []);
       const codeData = navigation.getParam('codeData', '');
-      const photosOfDamages = navigation.getParam('defectPhotos', []);
-      const firstPhotoForCoords = photos.length ? photos[0] : photosOfDamages[0];
-      const gps = { lat: firstPhotoForCoords.location.lat, lon: firstPhotoForCoords.location.lon };
+      const gps = { lat: location.lat, lon: location.lon };
+      const photosOfDamagesUrls = navigation.getParam('defectPhotos', []);
+
       this.setState({
-        photos,
-        photosOfDamages,
+        id,
         gps,
+        name,
+        codeData,
+        photosUrls,
+        inventoryId,
+        photosOfDamagesUrls,
         showSaveButton: true,
         formIsEditable: true,
-        codeData,
       });
     }
   }
@@ -304,20 +308,24 @@ class ItemForm extends Component<Props, State> {
       !== navigation.state.params.additionalPhotos
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photos }) => ({
+      this.setState(({ photosUrls, photosToAdd }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
-        photos: photos.concat(navigation.state.params.additionalPhotos),
+        photosUrls: photosUrls.concat(navigation.state.params.additionalPhotos),
+        photosToAdd: photosToAdd.concat(navigation.state.params.additionalPhotos),
       }));
     } else if (
       prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ photosOfDamages }) => ({
+      this.setState(({ photosOfDamagesUrls, photosOfDamagesToAdd }) => ({
         showSaveButton: true,
         activePreviewIndex: 0,
-        photosOfDamages: photosOfDamages.concat(navigation.state.params.additionalDefects),
+        photosOfDamagesUrls: photosOfDamagesUrls.concat(navigation.state.params.additionalDefects),
+        photosOfDamagesToAdd: photosOfDamagesToAdd.concat(
+          navigation.state.params.additionalDefects,
+        ),
       }));
     }
   }
@@ -327,7 +335,16 @@ class ItemForm extends Component<Props, State> {
   };
 
   checkFields = () => {
-    const { name, inventoryId } = this.state;
+    const {
+      props: {
+        client,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { name, inventoryId, id },
+    } = this;
+
     const warnings = {};
 
     // $FlowFixMe
@@ -340,13 +357,15 @@ class ItemForm extends Component<Props, State> {
       warnings.inventoryId = 'empty';
     }
 
-    /*
+    const data = client.cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
+    const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
 
-    if (...somethingFromBackend) {
-      warnings.push(['inventoryId', 'inventoryIdAlreadyInUse']);
+    if (match) {
+      warnings.inventoryId = 'inUse';
     }
-
-    */
 
     this.setState({ warnings });
   };
@@ -365,8 +384,9 @@ class ItemForm extends Component<Props, State> {
      */
 
     const {
-      props: { createAsset, updateAsset, navigation },
-      state: { photos, photosOfDamages, id: assetId },
+      state,
+      state: { id: assetId },
+      props: { updateAsset, removeAssetPhotos, addPhotosToAsset },
     } = this;
 
     const isFormInvalid = await Promise.resolve()
@@ -374,7 +394,7 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkForErrors());
 
     if (isFormInvalid) {
-      this.keyboardRef.scrollTo({ x: 0, y: normalize(400), animated: true });
+      this.keyboardRef.scrollTo({ x: 0, y: normalize(390), animated: true });
     } else {
       const {
         userCompany: {
@@ -382,15 +402,8 @@ class ItemForm extends Component<Props, State> {
         },
       } = this.props;
 
-      let variables;
-
-      if (assetId) {
-        // $FlowFixMe
-        variables = pick(constants.createAssetNecessaryProperties.concat('id'), this.state);
-      } else {
-        // $FlowFixMe
-        variables = pick(constants.createAssetNecessaryProperties, this.state);
-      }
+      // $FlowFixMe
+      const variables = pick(constants.updateAssetProperties, state);
 
       variables.companyId = companyId;
       // $FlowFixMe
@@ -434,54 +447,83 @@ class ItemForm extends Component<Props, State> {
       }
       if (variables.status) {
         variables.status = variables.status === constants.placeholders.status.accepted
-          ? 'accepted'
-          : 'on_processing';
+          ? constants.assetStatuses.accepted
+          : constants.assetStatuses.onProcessing;
       }
 
-      try {
-        const photosResult = await convertToApolloUpload(photos, '.');
-        variables.photos = photosResult;
-      } catch (error) {
-        console.log(error.message);
-      }
-
-      try {
-        const defectsResult = await convertToApolloUpload(photosOfDamages, '.');
-        variables.photosOfDamages = defectsResult;
-      } catch (error) {
-        console.log(error.message);
-      }
-
-      // console.log(variables);
-      try {
-        // let response;
-        if (assetId) {
-          // response = await updateAsset({ variables });
-          await updateAsset({ variables });
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
-        } else {
-          // response = await createAsset({ variables });
-          await createAsset({ variables, update: this.updateCreateAsset });
-          navigation.popToTop({});
-          navigation.navigate(SCENE_NAMES.ItemsSceneName);
+      //  $FlowFixMe
+      if (variables.photosIdsToRemove.length) {
+        try {
+          await removeAssetPhotos({
+            variables: {
+              assetId,
+              photoIds: variables.photosIdsToRemove,
+            },
+            update: this.updateRemoveAssetPhoto,
+          });
+        } catch (error) {
+          console.log(error.message);
         }
-        // console.log(response);
+      }
+      delete variables.photosIdsToRemove;
+
+      //  $FlowFixMe
+      if (variables.photosToAdd.length + variables.photosOfDamagesToAdd.length) {
+        let photos = [];
+        let photosOfDamages = [];
+        //  $FlowFixMe
+        if (variables.photosToAdd.length) {
+          try {
+            //  $FlowFixMe
+            const photosObjs = variables.photosToAdd.map(uri => ({ uri }));
+            photos = await convertToApolloUpload(photosObjs, '.');
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+
+        //  $FlowFixMe
+        if (variables.photosOfDamagesToAdd.length) {
+          try {
+            //  $FlowFixMe
+            const photosOfDamagesObjs = variables.photosOfDamagesToAdd.map(uri => ({ uri }));
+            photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+
+        await addPhotosToAsset({ variables: { assetId, photos, photosOfDamages } });
+      }
+
+      delete variables.photosToAdd;
+      delete variables.photosOfDamagesToAdd;
+
+      try {
+        await updateAsset({ variables });
+        this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
-        console.dir(error);
       }
     }
   };
 
-  updateCreateAsset = (cache: Object, payload: Object) => {
+  handleGoBack = () => {
     const {
-      userCompany: {
-        company: { id: companyId },
-      },
-    } = this.props;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
-    data.assets.push(payload.data.createAsset);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+      state: { name },
+      props: { navigation },
+    } = this;
+    const fromItemsScene = navigation.getParam('item', null);
+    //  $FlowFixMe
+    if (!name.trim() && !fromItemsScene) {
+      Alert.alert(constants.errors.createItem.name);
+    } else if (fromItemsScene) {
+      navigation.pop();
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    } else {
+      navigation.popToTop({});
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    }
   };
 
   updateDestroyAsset = (cache: Object) => {
@@ -493,10 +535,38 @@ class ItemForm extends Component<Props, State> {
       },
       state: { id },
     } = this;
-    const data = cache.readQuery({ query: GET_COMPANY_ASSETS, variables: { companyId } });
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
     const deleteIndex = findIndex(asset => asset.id === id, data.assets);
     data.assets = remove(deleteIndex, 1, data.assets);
-    cache.writeQuery({ query: GET_COMPANY_ASSETS, variables: { companyId }, data });
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
+  };
+
+  updateRemoveAssetPhoto = (cache: Object) => {
+    const {
+      props: {
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+      state: { id, photosIdsToRemove },
+    } = this;
+    const data = cache.readQuery({
+      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+      variables: { companyId },
+    });
+    const assetIndex = findIndex(asset => asset.id === id, data.assets);
+    //  eslint-disable-next-line
+    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove));
+    const urlsToRemove = pluck('photo', photosToRemove);
+    data.assets[assetIndex].photosUrls = without(urlsToRemove, data.assets[assetIndex].photosUrls);
+    data.assets[assetIndex].photos.nodes = without(
+      photosToRemove,
+      data.assets[assetIndex].photos.nodes,
+    );
+    cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
   };
 
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
@@ -604,7 +674,7 @@ class ItemForm extends Component<Props, State> {
     </View>
   );
 
-  renderPreviewPhotoBarItem = ({ item: { uri }, index }: PhotosProps) => {
+  renderPreviewPhotoBarItem = ({ item: uri, index }: PhotosProps) => {
     const {
       state: { isNewItem, creator, status },
       props: {
@@ -613,6 +683,7 @@ class ItemForm extends Component<Props, State> {
       },
     } = this;
 
+    const isPreview = uri === 'preview';
     const isLocalFile = uri.startsWith('file');
 
     const isUserAdmin = userRole === constants.roles.admin;
@@ -626,14 +697,14 @@ class ItemForm extends Component<Props, State> {
     let showAddPhotoButton = false;
 
     if (isUserAdmin) {
-      if (!uri) {
+      if (isPreview) {
         showAddPhotoButton = true;
       } else {
         showRemoveButton = true;
       }
     } else if (isUserEmployee) {
       if (isNewItem || isUserCreator) {
-        if (!uri) {
+        if (isPreview) {
           showAddPhotoButton = true;
         } else {
           showRemoveButton = true;
@@ -649,7 +720,7 @@ class ItemForm extends Component<Props, State> {
       //  $FlowFixMe
       const isItemInResponsiblePlaces = includes(placeId && placeId.id, placesIds);
       const isUserResponsible = responsibleId && responsibleId.id === currentUserId;
-      if (!uri) {
+      if (isPreview) {
         showAddPhotoButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
       } else {
         showRemoveButton = isNewItem ? true : isItemInResponsiblePlaces || isUserResponsible;
@@ -666,7 +737,7 @@ class ItemForm extends Component<Props, State> {
           <TouchableOpacity
             activeOpacity={0.5}
             style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-            onPress={() => this.handleRemovePreviewPhotoBarItem(index, isLocalFile)}
+            onPress={() => this.handleRemovePreviewPhotoBarItem(uri, index, isLocalFile)}
           >
             <Image source={assets.deletePhoto} />
           </TouchableOpacity>
@@ -675,7 +746,7 @@ class ItemForm extends Component<Props, State> {
           style={styles.photoImageContainer}
           onPress={() => this.handleSetIndexPreview(index)}
         >
-          {uri !== '' && <Image style={styles.photoImage} source={{ uri }} />}
+          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
         </TouchableOpacity>
       </View>
     );
@@ -683,22 +754,17 @@ class ItemForm extends Component<Props, State> {
 
   handleDeleteItem = async () => {
     const {
-      state: { id, isNewItem },
-      props: { destroyAsset, navigation },
+      state: { id },
+      props: { destroyAsset },
     } = this;
-    if (isNewItem) {
+
+    try {
+      await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      navigation.popToTop({});
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    } else {
-      try {
-        await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-        this.handleToggleDelModal();
-        navigation.navigate(SCENE_NAMES.ItemsSceneName);
-      } catch (error) {
-        Alert.alert(error.message);
-        this.handleToggleDelModal();
-      }
+      this.handleGoBack();
+    } catch (error) {
+      Alert.alert(error.message);
+      this.handleToggleDelModal();
     }
   };
 
@@ -714,31 +780,56 @@ class ItemForm extends Component<Props, State> {
     );
   };
 
-  handleRemovePreviewPhotoBarItem = async (removedIndex: number, isLocalFile: boolean) => {
+  handleRemovePreviewPhotoBarItem = async (
+    uri: string,
+    removedIndex: number,
+    isLocalFile: boolean,
+  ) => {
     const {
       state,
       state: { showPhotos, activePreviewIndex },
     } = this;
-    const currentlyActive = showPhotos ? 'photos' : 'photosOfDamages';
+    const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
     // $FlowFixMe
-    const { uri } = state[currentlyActive][removedIndex];
 
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
+
+        this.setState(currentState => ({
+          showSaveButton: true,
+          [toShow]: without([uri], currentState[toShow]),
+          activePreviewIndex:
+            removedIndex <= activePreviewIndex && activePreviewIndex > 0
+              ? currentState.activePreviewIndex - 1
+              : currentState.activePreviewIndex,
+        }));
       } catch (error) {
         Alert.alert(error.message);
       }
-    }
+    } else {
+      const {
+        //  $FlowFixMe
+        photos: { nodes: photosNodes },
+        //  $FlowFixMe
+        photosOfDamages: { nodes: photosOfDamagesNodes },
+      } = state;
 
-    this.setState(currentState => ({
-      showSaveButton: true,
-      [currentlyActive]: remove(removedIndex, 1, currentState[currentlyActive]),
-      activePreviewIndex:
-        removedIndex <= activePreviewIndex && activePreviewIndex > 0
-          ? currentState.activePreviewIndex - 1
-          : currentState.activePreviewIndex,
-    }));
+      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(
+        ({ photo }) => photo === uri,
+      );
+      const id = prop('id', match);
+      //
+      this.setState(currentState => ({
+        showSaveButton: true,
+        [toShow]: without([uri], currentState[toShow]),
+        photosIdsToRemove: concat([id], currentState.photosIdsToRemove),
+        activePreviewIndex:
+          removedIndex <= activePreviewIndex && activePreviewIndex > 0
+            ? currentState.activePreviewIndex - 1
+            : currentState.activePreviewIndex,
+      }));
+    }
   };
 
   handleOpenDateTimePicker = (key: string) => this.setState({
@@ -790,7 +881,7 @@ class ItemForm extends Component<Props, State> {
     });
   };
 
-  keyExtractor = ({ uri }, index) => uri || index.toString();
+  keyExtractor = (uri: string) => uri;
 
   showPhotos = () => {
     this.setState({ showPhotos: true, activePreviewIndex: 0 });
@@ -817,24 +908,24 @@ class ItemForm extends Component<Props, State> {
 
     const {
       name,
-      photos,
       warnings,
       sections,
       isNewItem,
       showPhotos,
+      photosUrls,
       isModalOpened,
       formIsEditable,
       showSaveButton,
-      photosOfDamages,
       isDelModalOpened,
       activePreviewIndex,
+      photosOfDamagesUrls,
       currentlyEditableField,
       isDateTimePickerOpened,
     } = this.state;
 
     // eslint-disable-next-line
     const currentTypeIsEmpty =
-      (showPhotos && isEmpty(photos)) || (!showPhotos && isEmpty(photosOfDamages));
+      (showPhotos && isEmpty(photosUrls)) || (!showPhotos && isEmpty(photosOfDamagesUrls));
 
     const userCanDelete = navigation.getParam('userCanDelete', false);
 
@@ -879,10 +970,13 @@ class ItemForm extends Component<Props, State> {
                     }}
                     index={activePreviewIndex}
                     // $FlowFixMe
-                    data={showPhotos ? photos : photosOfDamages}
+                    data={showPhotos ? photosUrls : photosOfDamagesUrls}
                     onIndexChanged={this.handleSwipePreview}
                     //  use custom key for correct rerendering of carousel component
-                    key={(showPhotos ? photos : photosOfDamages).length + (showPhotos ? 'p' : 'd')}
+                    key={
+                      (showPhotos ? photosUrls : photosOfDamagesUrls).length
+                      + (showPhotos ? 'p' : 'd')
+                    }
                   />
                 )}
                 <View style={styles.previewInfo}>
@@ -891,7 +985,7 @@ class ItemForm extends Component<Props, State> {
                     {currentTypeIsEmpty
                       ? '0/0'
                       : `${activePreviewIndex + 1} / ${
-                        showPhotos ? photos.length : photosOfDamages.length
+                        showPhotos ? photosUrls.length : photosOfDamagesUrls.length
                       }`}
                   </Text>
                 </View>
@@ -907,9 +1001,11 @@ class ItemForm extends Component<Props, State> {
               contentContainerStyle={[
                 styles.photosInner,
                 styles.previewPhotoBar,
-                isEmpty(showPhotos ? photos : photosOfDamages) && styles.hide,
+                isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
               ]}
-              data={showPhotos ? photos.concat({ uri: '' }) : photosOfDamages.concat({ uri: '' })}
+              data={
+                showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')
+              }
             />
             <View
               style={styles.formContainer}
@@ -983,11 +1079,19 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { id } }) => ({ currentUserId: id }),
   }),
-  graphql(CREATE_ASSET, { name: 'createAsset' }),
-  graphql(UPDATE_ASSET, { name: 'updateAsset' }),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_MUTATIONS.CREATE_ASSET, { name: 'createAsset' }),
+  graphql(ASSETS_MUTATIONS.UPDATE_ASSET, { name: 'updateAsset' }),
+  graphql(ASSETS_MUTATIONS.DESTROY_ASSET, { name: 'destroyAsset' }),
+  graphql(ASSETS_MUTATIONS.ADD_PHOTOS_TO_ASSET, { name: 'addPhotosToAsset' }),
+  graphql(ASSETS_MUTATIONS.REMOVE_ASSET_PHOTOS, { name: 'removeAssetPhotos' }),
+  graphql(ASSETS_QUERIES.GET_CREATED_ASSETS_COUNT_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
+  }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
+  // $FlowFixMe
+  withApollo,
 )(ItemForm);

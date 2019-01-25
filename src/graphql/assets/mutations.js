@@ -11,7 +11,9 @@ export const CREATE_ASSET = gql`
     $assessedDate: String
     $guaranteeExpires: String
     $gps: GpsAttr!
-    $inventoryId: String!
+    $inventoryId: String
+    $photos: [Upload!]
+    $photosOfDamages: [Upload!]
     $codeData: String
     $manufacture: String
     $model: String
@@ -45,6 +47,8 @@ export const CREATE_ASSET = gql`
         status: $status
         onTheBalanceSheet: $onTheBalanceSheet
       }
+      photos: $photos
+      photosOfDamages: $photosOfDamages
     ) {
       id
       codeData
@@ -73,6 +77,20 @@ export const CREATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photos {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamages {
+        nodes {
+          id
+          photo
+        }  
+      }
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -89,7 +107,7 @@ export const CREATE_ASSET = gql`
 export const UPDATE_ASSET = gql`
   mutation UpdateAsset(
     $id: ID!
-    $name: String!
+    $name: String
     $description: String
     $purchasePrice: Float
     $dateOfPurchase: String
@@ -101,6 +119,7 @@ export const UPDATE_ASSET = gql`
     $model: String
     $quantity: Int
     $categoryId: ID
+    $inventoryId: String
     $placeId: ID
     $responsibleId: ID
     $status: AssetStatus
@@ -110,6 +129,7 @@ export const UPDATE_ASSET = gql`
       id: $id
       attributes: {
         name: $name
+        inventoryId: $inventoryId
         description: $description
         purchasePrice: $purchasePrice
         dateOfPurchase: $dateOfPurchase
@@ -155,6 +175,8 @@ export const UPDATE_ASSET = gql`
       manufacture
       model
       name
+      photosUrls
+      photosOfDamagesUrls
       onTheBalanceSheet
       purchasePrice
       quantity
@@ -173,8 +195,33 @@ export const DESTROY_ASSET = gql`
   }
 `;
 
+export const REMOVE_ASSET_PHOTOS = gql`
+  mutation RemoveAssetsPhotos($assetId: ID!, $photoIds: [ID!]!) {
+    removePhotosFromAssets(assetId: $assetId, photoIds: $photoIds){
+      message
+    }
+  }
+`;
+
+export const ADD_PHOTOS_TO_ASSET = gql`
+  mutation AddPhotosToAssets($assetId: ID!, $photos: [Upload!], $photosOfDamages: [Upload!]) {
+    addPhotosToAssets(assetId: $assetId, photos: $photos, photosOfDamages: $photosOfDamages){
+      message
+    }
+  }
+`;
+
+export const SET_CREATED_ASSETS_COUNT_CLIENT = gql`
+  mutation SetCreatedAssetsCount($createdAssetsCount: Int!) {
+    setCreatedAssetsCount(createdAssetsCount: $createdAssetsCount) @client 
+  }
+`;
+
 export default {
   CREATE_ASSET,
   UPDATE_ASSET,
   DESTROY_ASSET,
+  REMOVE_ASSET_PHOTOS,
+  ADD_PHOTOS_TO_ASSET,
+  SET_CREATED_ASSETS_COUNT_CLIENT,
 };

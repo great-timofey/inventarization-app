@@ -2,6 +2,10 @@
 
 export type Props = {
   navigation: Object,
+  userCompany: Object,
+  createAsset: Function,
+  createdAssetsCount: number,
+  setCreatedAssetsCount: Function,
 };
 
 type Photo = {

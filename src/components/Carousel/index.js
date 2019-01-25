@@ -20,8 +20,8 @@ class Carousel extends PureComponent<Props> {
         showsPagination={false}
         removeClippedSubviews={false}
       >
-        {data.map((photo, index) => (
-          <Image key={photo.uri} style={styles.photo} source={{ uri: data[index].uri }} />
+        {data.map(uri => (
+          <Image key={uri} style={styles.photo} source={{ uri }} />
         ))}
       </Swiper>
     );

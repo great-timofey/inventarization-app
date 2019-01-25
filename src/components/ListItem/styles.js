@@ -21,7 +21,6 @@ export default StyleSheet.create({
     height: normalize(62),
     marginRight: normalize(8),
     marginLeft: normalize(20),
-    backgroundColor: colors.darkGreen,
   },
   description: {
     flex: 1,

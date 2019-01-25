@@ -7,8 +7,8 @@ import Modal from 'react-native-modal';
 import Button from '~/components/Button';
 import QuestionModal from '~/components/QuestionModal';
 
-import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import { getPlaceholder, normalize } from '~/global/utils';
 import { deviceWidth, deviceHeight } from '~/global/device';
 
 import styles from './styles';
@@ -57,6 +57,25 @@ class AndroidActionsModal extends PureComponent<Props, State> {
       },
     } = this;
 
+
+    let uri;
+    let smallPhotosUrls;
+
+    if (item && item.photosUrls) {
+      const { photosUrls, photosOfDamagesUrls } = item;
+      smallPhotosUrls = item.photosUrls;
+      if (photosUrls.length > 0) {
+        /*  eslint-disable */
+        uri = photosUrls[0];
+      } else if (photosOfDamagesUrls.length > 0) {
+        uri = photosOfDamagesUrls[0];
+        /** eslint-enable */
+      } else {
+        uri = getPlaceholder(normalize(isListViewStyle ? 62 : 158));
+      }
+    }
+
+
     return (
       <Modal
         style={styles.modal}
@@ -75,7 +94,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
               left: elementPosition.x - normalize(10) },
           ]}
           >
-            <View style={styles.photo} />
+            <Image source={{ uri }} style={styles.photo} />
             <Text
               numberOfLines={1}
               style={styles.name}
@@ -93,12 +112,12 @@ class AndroidActionsModal extends PureComponent<Props, State> {
           </View>
         ) : (
           <View style={[styles.rowItem, { top: elementPosition.y, left: 0 }]}>
-            <Image style={styles.smallImage} />
+            <Image source={{ uri }} style={styles.smallImage} />
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>
                 <Text style={styles.botText}>
-                  {`${0} Фото`}
+                  {`${(smallPhotosUrls && smallPhotosUrls.length) || 0} Фото`}
                 </Text>
               </View>
               <View style={styles.count}>

@@ -26,7 +26,6 @@ export default StyleSheet.create({
     width: normalize(158),
     height: normalize(158),
     marginBottom: normalize(6),
-    backgroundColor: colors.darkGreen,
   },
   name: {
     letterSpacing: -0.2,
