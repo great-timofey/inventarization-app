@@ -16,6 +16,7 @@ import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
@@ -56,6 +57,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const { navigation } = this.props;
 
     this.state = {
+      item: null,
       searchValue: '',
       isSortByName: true,
       showSortButton: false,
@@ -65,11 +67,9 @@ class ItemsScene extends PureComponent<Props, State> {
       isSortModalVisible: false,
       isDeleteModalVisible: false,
       isAndroidActionsModalVisible: false,
-      itemData: {
+      elementPosition: {
         x: 0,
         y: 0,
-        name: '',
-        purchasePrice: '',
       },
     };
 
@@ -142,11 +142,15 @@ class ItemsScene extends PureComponent<Props, State> {
     showSortButton: value,
   });
 
-  handleDeleteItem = async (id: number | string) => {
+  handleDeleteItem = async (id: number | string, android: boolean) => {
     const { destroyAsset } = this.props;
     await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
-    this.toggleDelModalVisible();
-    this.setState({ currentSelectItem: null });
+    if (android) {
+      this.setState({ isAndroidActionsModalVisible: false });
+    } else {
+      this.toggleDelModalVisible();
+      this.setState({ currentSelectItem: null });
+    }
   };
 
   updateDestroyAsset = (cache: Object) => {
@@ -180,19 +184,29 @@ class ItemsScene extends PureComponent<Props, State> {
     });
   }
 
+  handleOpenItem = (item: Object, inEditMode: boolean) => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.ItemFormSceneName, { item, inEditMode });
+    this.setState({
+      isAndroidActionsModalVisible: false,
+    });
+  };
+
   getItemPosition = (itemRef, parentScrollViewRef, item) => {
     const itemHeight = normalize(220);
     const headerPosition = normalize(65);
-    const bottomPosition = normalize(530);
+    const bottomPosition = normalize(500);
+    const { isListViewStyle } = this.state;
+
     this.setState({
-      itemData: {
+      elementPosition: {
         x: 0,
         y: 0,
-        name: '',
-        purchasePrice: '',
       },
+      item,
     });
-    if (itemRef) {
+
+    if (itemRef && !isListViewStyle) {
       itemRef.measure((fx, fy, width, height, px, py) => {
         const currentItemPosition = py;
 
@@ -211,11 +225,9 @@ class ItemsScene extends PureComponent<Props, State> {
             parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
 
             this.setState({
-              itemData: {
-                name: item.name,
+              elementPosition: {
                 x: px,
                 y: py + itemPositionDiff,
-                purchasePrice: item.purchasePrice,
               },
             });
             setTimeout(() => {
@@ -232,11 +244,9 @@ class ItemsScene extends PureComponent<Props, State> {
             parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
 
             this.setState({
-              itemData: {
-                name: item.name,
+              elementPosition: {
                 x: px,
                 y: py - itemPositionDiff,
-                purchasePrice: item.purchasePrice,
               },
             });
             setTimeout(() => {
@@ -245,11 +255,44 @@ class ItemsScene extends PureComponent<Props, State> {
           });
         } else {
           this.setState({
-            itemData: {
-              name: item.name,
+            elementPosition: {
               x: px,
               y: py,
-              purchasePrice: item.purchasePrice,
+            },
+          });
+          this.toggleActionsModal();
+        }
+      });
+    }
+
+    if (itemRef && isListViewStyle) {
+      itemRef.measure((fx, fy, width, height, px, py) => {
+        const listItemHeight = normalize(78);
+
+        if (py + listItemHeight >= bottomPosition) {
+          const itemPositionDiff = (py + listItemHeight) - bottomPosition;
+
+          UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, w, h, pageX, pageY) => {
+            const currentViewPosition = pageY - headerPosition;
+            const coordinateToScroll = currentViewPosition - itemPositionDiff;
+
+            parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
+
+            this.setState({
+              elementPosition: {
+                x: px,
+                y: py - itemPositionDiff,
+              },
+            });
+            setTimeout(() => {
+              this.toggleActionsModal();
+            }, 150);
+          });
+        } else {
+          this.setState({
+            elementPosition: {
+              x: px,
+              y: py,
             },
           });
           this.toggleActionsModal();
@@ -283,11 +326,12 @@ class ItemsScene extends PureComponent<Props, State> {
 
   render() {
     const {
-      itemData,
+      item,
       searchValue,
       isSortByName,
       isSearchActive,
       showSortButton,
+      elementPosition,
       isListViewStyle,
       currentSelectItem,
       isSortModalVisible,
@@ -350,17 +394,20 @@ class ItemsScene extends PureComponent<Props, State> {
           toggleModalVisible={this.toggleSortModalVisible}
         />
         <QuestionModal
-          leftAction={this.toggleDelModalVisible}
-          //  $FlowFixMe
           isModalVisible={isDeleteModalVisible}
+          leftAction={this.toggleDelModalVisible}
           data={constants.modalQuestion.itemDel}
           //  $FlowFixMe
-          rightAction={() => this.handleDeleteItem(currentSelectItem)}
+          rightAction={() => this.handleDeleteItem(currentSelectItem, false)}
         />
         <AndroidActionsModal
-          itemData={itemData}
-          isModalVisible={isAndroidActionsModalVisible}
+          item={item || {}}
+          elementPosition={elementPosition}
+          isListViewStyle={isListViewStyle}
+          handleOpenItem={this.handleOpenItem}
+          handleDeleteItem={this.handleDeleteItem}
           toggleActionsModal={this.toggleActionsModal}
+          isModalVisible={isAndroidActionsModalVisible}
         />
       </Fragment>
     );

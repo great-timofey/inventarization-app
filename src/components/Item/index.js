@@ -6,6 +6,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
+import { isAndroid } from '~/global/device';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -52,23 +53,19 @@ class Item extends PureComponent<Props, State> {
       currentSelectItem,
       parentScrollViewRef,
     } = this.props;
+
     const { purchasePrice } = item;
     const isMenuOpen = currentSelectItem === item.id;
-
-    const itemCallbackData = {
-      name: item.name,
-      purchasePrice: item.purchasePrice,
-    };
 
     return (
       <TouchableOpacity
         style={styles.container}
         onPress={() => openItem(item)}
         ref={(ref) => { this.itemRef = ref; }}
-        onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, itemCallbackData)}
+        onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, item)}
       >
         {isMenuOpen && this.renderMenu()}
-        {!isMenuOpen && showMenuButton && (
+        {!isMenuOpen && showMenuButton && !isAndroid && (
           <TouchableOpacity
             onPress={() => (selectItem ? selectItem(item.id) : undefined)}
             style={styles.menuButton}

@@ -12,27 +12,28 @@ class ListItem extends PureComponent<Props, {}> {
   render() {
     const {
       item,
+      openItem,
       getItemPosition,
       parentScrollViewRef,
     } = this.props;
 
     return (
       <TouchableOpacity
+        style={styles.rowItem}
+        onPress={() => openItem(item)}
         ref={(ref) => { this.itemRef = ref; }}
         onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, item)}
       >
-        <View style={styles.rowItem}>
-          <Image style={styles.smallImage} />
-          <View style={styles.description}>
-            <View>
-              <Text style={styles.topText}>{item.name}</Text>
-              <Text style={styles.botText}>
-                {`${(item.photos && item.photos.length) || 0} Фото`}
-              </Text>
-            </View>
-            <View style={styles.count}>
-              <Text style={styles.countText}>{item.purchasePrice}</Text>
-            </View>
+        <Image style={styles.smallImage} />
+        <View style={styles.description}>
+          <View>
+            <Text style={styles.topText}>{item.name}</Text>
+            <Text style={styles.botText}>
+              {`${(item.photos && item.photos.length) || 0} Фото`}
+            </Text>
+          </View>
+          <View style={styles.count}>
+            <Text style={styles.countText}>{item.purchasePrice}</Text>
           </View>
         </View>
       </TouchableOpacity>

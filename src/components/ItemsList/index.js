@@ -16,19 +16,23 @@ import { pluck, filter, includes } from 'ramda';
 import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
+import Button from '~/components/Button';
+import ListItem from '~/components/ListItem';
+import ItemComponent from '~/components/Item';
+import SwipeableList from '~/components/Swipe';
+
 import assets from '~/global/assets';
 import colors from '~/global/colors';
+import constants from '~/global/constants';
 import { normalize } from '~/global/utils';
-import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
+import { isAndroid } from '~/global/device';
+import { setIsSideMenuOpen } from '~/global';
+
+import * as SCENE_NAMES from '~/navigation/scenes';
+import InventoryIcon from '~/assets/InventoryIcon';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
-import ItemComponent from '~/components/Item';
-import Button from '~/components/Button';
-import constants from '~/global/constants';
-import * as SCENE_NAMES from '~/navigation/scenes';
-import { setIsSideMenuOpen } from '~/global';
-import InventoryIcon from '~/assets/InventoryIcon';
-import SwipeableList from '~/components/Swipe';
+import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 
 import type { Item } from '~/global/types';
 import type { Props } from './types';
@@ -105,8 +109,8 @@ class ItemsList extends PureComponent<Props> {
         selectItem={selectItem}
         openItem={this.handleOpenItem}
         showMenuButton={showMenuButton}
-        //  $FlowFixMe
         getItemPosition={getItemPosition}
+        //  $FlowFixMe
         showRemoveButton={showRemoveButton}
         currentSelectItem={currentSelectItem}
         toggleDelModal={toggleDelModalVisible}
@@ -114,6 +118,18 @@ class ItemsList extends PureComponent<Props> {
       />
     );
   };
+
+  renderAndroidRow = ({ item }) => {
+    const { getItemPosition } = this.props;
+    return (
+      <ListItem
+        item={item}
+        openItem={this.handleOpenItem}
+        getItemPosition={getItemPosition}
+        parentScrollViewRef={this.scrollViewRef}
+      />
+    );
+  }
 
   renderTab = ({ item, index }: { item: string, index: number }) => (
     <TouchableOpacity>
@@ -156,6 +172,8 @@ class ItemsList extends PureComponent<Props> {
 
   scrollViewRef: any;
 
+  itemRef: any;
+
   render() {
     const {
       userId,
@@ -167,6 +185,7 @@ class ItemsList extends PureComponent<Props> {
       selectItem,
       currentUser,
       isSortByName,
+      getItemPosition,
       currentSelectItem,
       handleShowSortButton,
       toggleDelModalVisible,
@@ -292,17 +311,29 @@ class ItemsList extends PureComponent<Props> {
                   contentContainerStyle={styles.horizontalFlatList}
                 />
               </CategoryList>
-              {swipeable ? (
+              {swipeable && !isAndroid && (
                 <SwipeableList
                   userId={userId}
                   data={dataToRender}
                   userRole={userRole}
                   selectItem={selectItem}
                   openItem={this.handleOpenItem}
+                  getItemPosition={getItemPosition}
                   toggleDelModal={toggleDelModalVisible}
+                  parentScrollViewRef={this.scrollViewRef}
                   extraData={{ currentSelectItem, isSortByName }}
                 />
-              ) : (
+              )}
+              {swipeable && isAndroid && (
+                <FlatList
+                  data={dataToRender}
+                  keyExtractor={this.keyExtractor}
+                  renderItem={this.renderAndroidRow}
+                  scrollEnabled={!isAndroidActionsModalVisible}
+                  extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
+                />
+              )}
+              {!swipeable && (
                 <FlatList
                   numColumns={2}
                   data={dataToRender}

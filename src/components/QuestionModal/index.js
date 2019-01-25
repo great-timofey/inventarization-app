@@ -28,7 +28,6 @@ const QuestionModal = ({
         </TouchableOpacity>
       </View>
     </View>
-
   </Modal>
 );
 

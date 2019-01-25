@@ -1,6 +1,9 @@
 // @flow
 
+import type { Item } from '~/global/types';
+
 export type State = {
+  item: Item | null,
   searchValue: string,
   isSortByName: boolean,
   isSearchActive: boolean,
@@ -10,11 +13,9 @@ export type State = {
   isDeleteModalVisible: boolean,
   isAndroidActionsModalVisible: boolean,
   currentSelectItem: number | string | null,
-  itemData: {
+  elementPosition: {
     x: number,
     y: number,
-    name: string,
-    purchasePrice: string,
   },
 };
 

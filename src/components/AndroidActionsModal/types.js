@@ -1,8 +1,23 @@
+
 // @flow
 
+import type { Item } from '~/global/types';
+
 export type Props = {
-  data: Object,
+  elementPosition: {
+    x: number,
+    y: number,
+  },
+  item: Item | Object,
+  delAction: Function,
+  destroyAsset: Function,
   isModalVisible: boolean,
-  leftAction: () => void,
-  rightAction: () => void,
+  handleOpenItem: Function,
+  isListViewStyle: boolean,
+  handleDeleteItem: Function,
+  toggleActionsModal: Function,
 };
+
+export type State = {
+  isDeleteModalVisible: boolean
+}
