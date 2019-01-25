@@ -87,7 +87,6 @@ class ItemsList extends PureComponent<Props> {
       showMenuButton = true;
     } else if (isUserManager) {
       if (currentUser) {
-        //  $FlowFixMe
         const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
         const userPlaces = [...createdPlaces, ...responsiblePlaces];
         const placesIds = pluck('id', userPlaces);
@@ -227,7 +226,6 @@ class ItemsList extends PureComponent<Props> {
           }
 
           if (isUserManager) {
-            //  $FlowFixMe
             if (currentUser) {
               const { createdPlaces = [], responsiblePlaces = [] } = currentUser;
               const userPlaces = [...createdPlaces, ...responsiblePlaces];
