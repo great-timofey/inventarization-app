@@ -79,10 +79,13 @@ class ChooseModal extends PureComponent<Props, State> {
       this.setState({ loading: true });
       client
         .query({ query: queries[type], variables: { ...variables[type], companyId } })
-        .then(({ data }) => this.setState({
+        .then(({ data }) => {
+          console.log(data)
+        this.setState({
           loading: false,
           data: data[keys(data)[0]],
-        }))
+        })
+        })
         .catch(error => this.setState({ loading: false, error }));
     }
   };
