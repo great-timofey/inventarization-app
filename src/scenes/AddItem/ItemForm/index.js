@@ -450,6 +450,9 @@ class ItemForm extends Component<Props, State> {
           ? constants.assetStatuses.accepted
           : constants.assetStatuses.onProcessing;
       }
+      if (variables.category) {
+        variables.categoryId = variables.category.id;
+      }
 
       //  $FlowFixMe
       if (variables.photosIdsToRemove.length) {
@@ -572,7 +575,7 @@ class ItemForm extends Component<Props, State> {
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
       props: { userCompany },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem },
+      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, placeId, category },
       state,
     } = this;
     const { role: userRole, currentUserId } = userCompany;
@@ -635,7 +638,10 @@ class ItemForm extends Component<Props, State> {
       customValue = state[key] ? responsibleId.fullName : null;
     } else if (description === constants.itemForm.placeId) {
       // $FlowFixMe
-      customValue = state[key] ? state.placeId.name : null;
+      customValue = state[key] ? placeId.name : null;
+    } else if (description === constants.itemForm.category) {
+      // $FlowFixMe
+      customValue = state[key] ? category.name : null;
     }
 
     return (
@@ -852,13 +858,13 @@ class ItemForm extends Component<Props, State> {
     currentlyEditableField: null,
   });
 
-  handleConfirmModal = (option: string) => {
+  handleConfirmModal = (option: Object) => {
     this.setState(({ isModalOpened, currentlyEditableField }) => ({
       isModalOpened: !isModalOpened,
       // $FlowFixMe
       [currentlyEditableField]: option,
       currentlyEditableField: null,
-    }));
+    }), () => console.log(this.state.category));
   };
 
   handleChooseDate = (date: Date) => this.setState(({ currentlyEditableField }) => ({

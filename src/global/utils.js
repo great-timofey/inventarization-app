@@ -23,6 +23,8 @@ export const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
+export const capitalize = (string: string) => string[0].toUpperCase().concat(string.slice(1))
+
 export const convertToApolloUpload = async (photos: Array<Object>, typeSeparator: string) => {
   const photosPromises = photos.map(({ uri }) => {
     const type = uri.slice(uri.lastIndexOf(typeSeparator) + 1).toUpperCase();
@@ -66,6 +68,7 @@ export const normalizeInt = (value: number) => Math.round(value * scale);
 export default {
   isValid,
   normalize,
+  capitalize,
   normalizeInt,
   isSmallDevice,
   getPlaceholder,

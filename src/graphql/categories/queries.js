@@ -7,7 +7,11 @@ export const GET_COMPANY_CATEGORIES_BY_ID = gql`
       id
       name
       icon
+      parent {
+        id
+      }
       chields{
+        id
         name
       }
     }
