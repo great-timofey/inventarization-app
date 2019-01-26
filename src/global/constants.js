@@ -36,6 +36,11 @@ const words = {
   no: 'Нет',
 };
 
+const suffixes = {
+  firstType: ['ь', 'а'],
+  secondType: ['ы', 'я', 'и'],
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
@@ -509,6 +514,7 @@ export default {
   itemForm,
   warnings,
   category,
+  suffixes,
   inputTypes,
   fieldTypes,
   buttonTitles,

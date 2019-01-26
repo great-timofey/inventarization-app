@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 // $FlowFixMe
 import ImageResizer from 'react-native-image-resizer';
+import { last, includes } from 'ramda';
 import { ReactNativeFile } from 'apollo-upload-client';
 
 import constants from '~/global/constants';
@@ -57,6 +58,21 @@ export const isValidPassword = (password: string, confirmPassword: string) => {
   return false;
 };
 
+export const getPrefix = (string: string) => {
+  let prefix = '';
+  const lastLetter = last(string);
+
+  if (includes(lastLetter, constants.suffixes.firstType)) {
+    prefix = 'Вся';
+  } else if (includes(lastLetter, constants.suffixes.secondType)) {
+    prefix = 'Все';
+  } else {
+    prefix = 'Весь';
+  }
+
+  return prefix;
+}
+
 export const designWidth = 375;
 export const designHeight = 667;
 
@@ -68,6 +84,7 @@ export const normalizeInt = (value: number) => Math.round(value * scale);
 export default {
   isValid,
   normalize,
+  getPrefix,
   capitalize,
   normalizeInt,
   isSmallDevice,

@@ -17,6 +17,7 @@ import { compose, graphql, Query } from 'react-apollo';
 import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
+import { getPrefix } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import {
   GET_CATEGORY_ORDER,
@@ -169,16 +170,6 @@ class CategoryMenu extends PureComponent<Props, State> {
           // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
 
-          let prefix = '';
-
-          if (includes(last(selectedCategory), ['ь', 'а'])) {
-            prefix = 'Вся';
-          } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
-            prefix = 'Все';
-          } else {
-            prefix = 'Весь';
-          }
-
           return (
             <ScrollView
               scrollsToTop={false}
@@ -197,7 +188,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                       chieldsId={IdList}
                       isSelected={isAllSelected}
                       selectCategory={this.selectCategory}
-                      item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
+                      item={{ name: `${getPrefix(selectedCategory)} ${selectedCategory.toLowerCase()}` }}
                     />
                   </Fragment>
                 ) : (

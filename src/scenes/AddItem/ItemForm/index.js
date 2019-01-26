@@ -450,6 +450,7 @@ class ItemForm extends Component<Props, State> {
           ? constants.assetStatuses.accepted
           : constants.assetStatuses.onProcessing;
       }
+      //  TODO: fix choose category bug: after selection it doesnt changing
       if (variables.category) {
         variables.categoryId = variables.category.id;
       }

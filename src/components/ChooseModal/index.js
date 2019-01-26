@@ -12,7 +12,7 @@ import CustomIcon from '~/assets/InventoryIcon';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { capitalize, normalize } from '~/global/utils';
+import { capitalize, normalize, getPrefix } from '~/global/utils';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as CATEGORIES_QUERIES from '~/graphql/categories/queries';
 
@@ -128,7 +128,7 @@ class ChooseModal extends PureComponent<Props, State> {
     const { name, id, chields } = categories[index];
     const toShow = [
       { name },
-      { name: `Вся ${name}` },
+      { name: `${getPrefix(name)} ${name}` },
       ...chields,
     ];
     this.setState({ data: toShow, isDrilledDown: true, currentlyActiveCategoryId: id });
@@ -151,11 +151,10 @@ class ChooseModal extends PureComponent<Props, State> {
         const categoryToSelect = find(pred, categories);
         onPress = () => onConfirm(categoryToSelect);
       }
-    } else {
-      if (haveChildren) {
-        onPress = () => this.getDown(index);
-      }
+    } else if (haveChildren) {
+      onPress = () => this.getDown(index);
     }
+
 
     return (
       <TouchableOpacity style={styles.modalItem} onPress={onPress}>
