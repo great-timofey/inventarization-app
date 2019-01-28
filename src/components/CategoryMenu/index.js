@@ -70,7 +70,9 @@ class CategoryMenu extends PureComponent<Props, State> {
       chieldsIdList = data.chields.map(x => x.id);
     } else if (isSubCategoryView) {
       const parentIndex = findIndex(el => el.name === selectedCategory, companyCategories);
-      chieldsIdList = companyCategories[parentIndex].chields.map(el => el.id);
+      if (companyCategories[parentIndex] && companyCategories[parentIndex].chields) {
+        chieldsIdList = companyCategories[parentIndex].chields.map(el => el.id);
+      }
     }
 
     let isCategorySelect = false;
