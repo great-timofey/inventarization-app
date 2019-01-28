@@ -35,10 +35,10 @@ import type { Props, State } from './types';
 
 const initialState = {
   name: '',
-  email: 'tim@allmax.team',
+  email: '',
   mobile: '',
   warnings: {},
-  password: 'Qwerty123',
+  password: '',
   isRegForm: false,
   isKeyboardActive: false,
   isPasswordHidden: true,
