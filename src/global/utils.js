@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 // $FlowFixMe
 import ImageResizer from 'react-native-image-resizer';
+//  $FlowFixMe
 import { last, includes } from 'ramda';
 import { ReactNativeFile } from 'apollo-upload-client';
 
@@ -24,7 +25,7 @@ export const isValid = (value: string, reg: RegExp) => {
   return false;
 };
 
-export const capitalize = (string: string) => string[0].toUpperCase().concat(string.slice(1))
+export const capitalize = (string: string) => string[0].toUpperCase().concat(string.slice(1));
 
 export const convertToApolloUpload = async (photos: Array<Object>, typeSeparator: string) => {
   const photosPromises = photos.map(({ uri }) => {
@@ -71,7 +72,7 @@ export const getPrefix = (string: string) => {
   }
 
   return prefix;
-}
+};
 
 export const designWidth = 375;
 export const designHeight = 667;

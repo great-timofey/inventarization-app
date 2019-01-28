@@ -451,6 +451,7 @@ class ItemForm extends Component<Props, State> {
       }
       //  TODO: fix choose category bug: after selection it doesnt changing
       if (variables.category) {
+        //  $FlowFixMe
         variables.categoryId = variables.category.id;
       }
 
@@ -503,7 +504,7 @@ class ItemForm extends Component<Props, State> {
       delete variables.photosOfDamagesToAdd;
 
       try {
-        await updateAsset({ variables, update: this.updateAsset });
+        await updateAsset({ variables });
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
@@ -562,7 +563,7 @@ class ItemForm extends Component<Props, State> {
     });
     const assetIndex = findIndex(asset => asset.id === id, data.assets);
     //  eslint-disable-next-line
-    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove));
+    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove),);
     const urlsToRemove = pluck('photo', photosToRemove);
     data.assets[assetIndex].photosUrls = without(urlsToRemove, data.assets[assetIndex].photosUrls);
     data.assets[assetIndex].photos.nodes = without(
@@ -575,7 +576,14 @@ class ItemForm extends Component<Props, State> {
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
       props: { userCompany },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem, placeId, category },
+      state: {
+        warnings: stateWarnings,
+        responsibleId,
+        formIsEditable,
+        isNewItem,
+        placeId,
+        category,
+      },
       state,
     } = this;
     const { role: userRole, currentUserId } = userCompany;

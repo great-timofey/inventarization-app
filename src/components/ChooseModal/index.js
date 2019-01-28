@@ -126,11 +126,7 @@ class ChooseModal extends PureComponent<Props, State> {
   getDown = (index: number) => {
     const { categories } = this.state;
     const { name, id, chields } = categories[index];
-    const toShow = [
-      { name },
-      { name: `${getPrefix(name)} ${name}` },
-      ...chields,
-    ];
+    const toShow = [{ name }, { name: `${getPrefix(name)} ${name}` }, ...chields];
     this.setState({ data: toShow, isDrilledDown: true, currentlyActiveCategoryId: id });
   };
 
@@ -155,7 +151,6 @@ class ChooseModal extends PureComponent<Props, State> {
       onPress = () => this.getDown(index);
     }
 
-
     return (
       <TouchableOpacity style={styles.modalItem} onPress={onPress}>
         {isDrilledDown && !index && (
@@ -176,7 +171,16 @@ class ChooseModal extends PureComponent<Props, State> {
             backgroundColor={colors.transparent}
           />
         )}
-        <Text style={[styles.modalItemText, isDrilledDown && index && styles.drilledDownText, isDrilledDown && index === 1 && styles.allCategoryText]}>{name}</Text>
+        <Text
+          style={[
+            styles.modalItemText,
+            //  $FlowFixMe
+            isDrilledDown && index && styles.drilledDownText,
+            isDrilledDown && index === 1 && styles.allCategoryText,
+          ]}
+        >
+          {name}
+        </Text>
         {haveChildren && !isDrilledDown && (
           <FeatherIcon
             name="chevron-right"
