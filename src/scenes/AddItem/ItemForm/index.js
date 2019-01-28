@@ -227,7 +227,6 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      // console.log(item);
       const itemCopy = { ...item };
       const { gps, name, place, status, creator, responsible, onTheBalanceSheet } = item;
       navigation.setParams({ headerText: name });
@@ -504,7 +503,7 @@ class ItemForm extends Component<Props, State> {
       delete variables.photosOfDamagesToAdd;
 
       try {
-        await updateAsset({ variables });
+        await updateAsset({ variables, update: this.updateAsset });
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
@@ -865,7 +864,7 @@ class ItemForm extends Component<Props, State> {
       // $FlowFixMe
       [currentlyEditableField]: option,
       currentlyEditableField: null,
-    }), () => console.log(this.state.category));
+    }));
   };
 
   handleChooseDate = (date: Date) => this.setState(({ currentlyEditableField }) => ({

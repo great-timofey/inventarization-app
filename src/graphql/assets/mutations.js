@@ -72,6 +72,10 @@ export const CREATE_ASSET = gql`
         id
         name
       }
+      category {
+        id
+        name
+      }
       guaranteeExpires
       inventoryId
       manufacture
@@ -157,6 +161,10 @@ export const UPDATE_ASSET = gql`
         id
         email
       }
+      category {
+        id
+        name
+      }
       dateOfPurchase
       description
       gps {
@@ -170,7 +178,6 @@ export const UPDATE_ASSET = gql`
       guaranteeExpires
       assessedDate
       assessedValue
-      id
       inventoryId
       manufacture
       model

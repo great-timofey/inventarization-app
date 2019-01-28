@@ -19,6 +19,10 @@ export const GET_COMPANY_ASSETS = gql`
         id
         email
       }
+      category {
+        id
+        name
+      }
       assessedDate
       dateOfPurchase
       description
@@ -76,6 +80,10 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       creator {
         id
         email
+      }
+      category {
+        id
+        name
       }
       assessedDate
       dateOfPurchase
