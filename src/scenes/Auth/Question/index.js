@@ -50,28 +50,26 @@ class Question extends PureComponent<Props, {}> {
 
     if (userHaveCompany) {
       const [firstCompany] = userCompanies;
-      console.log(firstCompany);
-      // await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
+      await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
     }
-    // await setUserIdMutationClient({ variables: { id } });
+    await setUserIdMutationClient({ variables: { id } });
 
     return userHaveCompany;
   };
 
   handleCreateCompany = async () => {
     const { navigation } = this.props;
-    await this.setupUser();
     navigation.navigate(SCENES_NAMES.CreateCompanySceneName);
   };
 
   handleEnterAsUser = async () => {
     const { navigation, setAuthMutationClient } = this.props;
     const userHaveCompany = await this.setupUser();
-    // if (userHaveCompany) {
-    //   await setAuthMutationClient({ variables: { isAuthed: true } });
-    // } else {
-    //   navigation.navigate(SCENES_NAMES.UnorganizedSceneName);
-    // }
+    if (userHaveCompany) {
+      await setAuthMutationClient({ variables: { isAuthed: true } });
+    } else {
+      navigation.navigate(SCENES_NAMES.UnorganizedSceneName);
+    }
   };
 
   render() {
