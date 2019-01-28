@@ -138,7 +138,7 @@ class ItemForm extends Component<Props, State> {
         ? constants.headers.modifyingItem
         : headerText || constants.headers.addingItem,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
+      headerLeft: <HeaderBackButton onPress={handleGoBack} customStyle={styles.backButton} />,
       headerRight: (
         <View style={styles.headerRightButtonsContainer}>
           {userCanEdit && !inEditMode && (

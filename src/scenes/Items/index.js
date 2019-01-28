@@ -15,6 +15,7 @@ import SearchHeader from '~/scenes/Items/SearchHeader';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
@@ -211,6 +212,7 @@ class ItemsScene extends PureComponent<Props, State> {
     } = this.props;
     return (
       <Fragment>
+        {isAndroid && <StatusBar backgroundColor="white" barStyle="dark-content" />}
         <ItemsList
           userRole={userRole}
           companyId={companyId}

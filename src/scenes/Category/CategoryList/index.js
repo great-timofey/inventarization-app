@@ -38,7 +38,9 @@ class CategoryList extends PureComponent<Props, {}> {
       headerTitleStyle: styles.header,
       headerLeft: HeaderBackButton({
         onPress: openSideMenu,
+        customStyle: styles.backButton,
       }),
+      headerRight: <View />,
     });
   }
 
