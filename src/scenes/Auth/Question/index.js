@@ -42,6 +42,7 @@ class Question extends PureComponent<Props, {}> {
         current: { id, userCompanies },
       },
     } = await client.query({
+      fetchPolicy: 'network-only',
       query: QUERIES.GET_CURRENT_USER_COMPANIES,
     });
 
@@ -49,9 +50,10 @@ class Question extends PureComponent<Props, {}> {
 
     if (userHaveCompany) {
       const [firstCompany] = userCompanies;
-      await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
+      console.log(firstCompany);
+      // await setUserCompanyMutationClient({ variables: { userCompany: firstCompany } });
     }
-    await setUserIdMutationClient({ variables: { id } });
+    // await setUserIdMutationClient({ variables: { id } });
 
     return userHaveCompany;
   };
@@ -65,11 +67,11 @@ class Question extends PureComponent<Props, {}> {
   handleEnterAsUser = async () => {
     const { navigation, setAuthMutationClient } = this.props;
     const userHaveCompany = await this.setupUser();
-    if (userHaveCompany) {
-      await setAuthMutationClient({ variables: { isAuthed: true } });
-    } else {
-      navigation.navigate(SCENES_NAMES.UnorganizedSceneName);
-    }
+    // if (userHaveCompany) {
+    //   await setAuthMutationClient({ variables: { isAuthed: true } });
+    // } else {
+    //   navigation.navigate(SCENES_NAMES.UnorganizedSceneName);
+    // }
   };
 
   render() {

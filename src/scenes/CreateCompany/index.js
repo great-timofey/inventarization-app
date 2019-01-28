@@ -151,7 +151,7 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleCreateCompany = async () => {
-    const { createCompany, setAuthMutationClient, setUserCompanyMutationClient } = this.props;
+    const { createCompany, navigation, setAuthMutationClient, setUserCompanyMutationClient } = this.props;
     const { invitees, companyName: name, chosenPhotoUri } = this.state;
     const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
@@ -160,20 +160,22 @@ class CreateCompany extends PureComponent<Props, State> {
         file = await convertToApolloUpload([{ uri: chosenPhotoUri }], '=');
       }
 
-      const { data: { createCompany: { company } } } = await createCompany({
+      await createCompany({
         variables: { name, logo: file, inviters },
       });
 
-      const userCompany = {
-        id: '1',
-        company,
-        role: 'admin',
-        createdAt: dayjs(Date.now()).format(constants.formats.createUserCompanyDates),
-        __typename: 'UserCompany',
-      };
+      navigation.pop();
 
-      await setUserCompanyMutationClient({ variables: { userCompany } });
-      await setAuthMutationClient({ variables: { isAuthed: true } });
+      // const userCompany = {
+      //   id: '1',
+      //   company,
+      //   role: 'admin',
+      //   createdAt: dayjs(Date.now()).format(constants.formats.createUserCompanyDates),
+      //   __typename: 'UserCompany',
+      // };
+      //
+      // await setUserCompanyMutationClient({ variables: { userCompany } });
+      // await setAuthMutationClient({ variables: { isAuthed: true } });
     } catch (error) {
       console.log(error.message);
     }
