@@ -11,6 +11,7 @@ import {
   Image,
   Keyboard,
   Animated,
+  StatusBar,
   AsyncStorage,
   TouchableOpacity,
 } from 'react-native';
@@ -238,6 +239,8 @@ class Login extends PureComponent<Props, State> {
           this.keyboardAwareScrollView = ref;
         }}
       >
+        {isAndroid && <StatusBar backgroundColor={colors.backGroundBlack} barStyle="light-content" />}
+
         <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
           <Logo isSmall />
           {isRegForm && (
