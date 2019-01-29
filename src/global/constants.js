@@ -41,6 +41,12 @@ const suffixes = {
   secondType: ['ы', 'я', 'и'],
 };
 
+const prefixes = {
+  firstType: 'Вся',
+  secondType: 'Все',
+  thirdType: 'Весь',
+};
+
 const placeholders = {
   manufacture: 'Введите название',
   email: 'Введите электронную почту',
@@ -515,6 +521,7 @@ export default {
   warnings,
   category,
   suffixes,
+  prefixes,
   inputTypes,
   fieldTypes,
   buttonTitles,

@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 // $FlowFixMe
-import { last, includes, intersection } from 'ramda';
+import { includes, intersection } from 'ramda';
 import SortableList from 'react-native-sortable-list';
 import { compose, graphql, Query } from 'react-apollo';
 

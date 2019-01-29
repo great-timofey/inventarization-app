@@ -59,16 +59,16 @@ export const isValidPassword = (password: string, confirmPassword: string) => {
   return false;
 };
 
-export const getPrefix = (string: string) => {
+export const getPrefix = (inputString: string) => {
   let prefix = '';
-  const lastLetter = last(string);
+  const lastLetter = last(inputString);
 
   if (includes(lastLetter, constants.suffixes.firstType)) {
-    prefix = 'Вся';
+    prefix = constants.prefixes.firstType;
   } else if (includes(lastLetter, constants.suffixes.secondType)) {
-    prefix = 'Все';
+    prefix = constants.prefixes.secondType;
   } else {
-    prefix = 'Весь';
+    prefix = constants.prefixes.thirdType;
   }
 
   return prefix;
