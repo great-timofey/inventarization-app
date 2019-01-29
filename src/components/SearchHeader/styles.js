@@ -25,6 +25,7 @@ export default StyleSheet.create({
   },
   customContStyle: {
     borderRadius: 0,
+    paddingRight: normalize(20),
     backgroundColor: colors.transparent,
   },
   customPosition: { top: 5 },

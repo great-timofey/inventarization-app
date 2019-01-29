@@ -1,6 +1,8 @@
 // @flow
 
 export type State = {
+  searchValue: string,
+  isSearchActive: boolean,
   currentSelectItem: null | string | number
 };
 

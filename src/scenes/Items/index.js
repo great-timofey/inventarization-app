@@ -10,8 +10,8 @@ import ItemsList from '~/components/ItemsList';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
 import MainHeader from '~/scenes/Items/MainHeader';
+import SearchHeader from '~/components/SearchHeader';
 import QuestionModal from '~/components/QuestionModal';
-import SearchHeader from '~/scenes/Items/SearchHeader';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';

@@ -3,11 +3,20 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { isIphoneX } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
-    borderBottomWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: normalize(65),
+    paddingTop: normalize(17),
+    paddingLeft: normalize(10),
+    paddingRight: normalize(4),
+    borderTopColor: colors.white,
     backgroundColor: colors.white,
+    justifyContent: 'space-between',
+    borderTopWidth: isIphoneX ? normalize(15) : 0,
   },
   headerTitle: {
     textAlign: 'center',
