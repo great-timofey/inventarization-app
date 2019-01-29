@@ -19,7 +19,13 @@ export default StyleSheet.create({
     height: normalize(62),
     marginRight: normalize(8),
     marginLeft: normalize(20),
-    backgroundColor: colors.darkGreen,
+  },
+  pinImage: {
+    zIndex: 2,
+    left: normalize(43),
+    width: normalize(16),
+    position: 'absolute',
+    height: normalize(26),
   },
   description: {
     flex: 1,
