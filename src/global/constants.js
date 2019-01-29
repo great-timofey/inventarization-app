@@ -43,6 +43,7 @@ const placeholders = {
   enterPassword: 'Введите пароль',
   model: 'Введите название',
   description: 'Введите текст',
+  place: 'Введите название места',
   placeId: 'Место не указано',
   inputHeader: 'Введите название',
   inventoryId: 'Введите код',
@@ -78,6 +79,10 @@ const inputTypes = {
   },
   companyName: {
     label: 'Название организации',
+    warning: 'Введите название вашей организации',
+  },
+  place: {
+    label: 'Название',
     warning: 'Введите название вашей организации',
   },
   invitees: {
@@ -234,6 +239,7 @@ const headers = {
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
   addingItem: 'Добавление предмета',
+  places: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   modifyingItem: 'Редактирование предмета',

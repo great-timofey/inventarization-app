@@ -79,9 +79,6 @@ const rootTabs = {
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.chair} />
       ),
-      style: {
-        backgroundColor: 'red',
-      },
     },
   },
   [SCENE_NAMES.CategoryList]: {
@@ -94,6 +91,7 @@ const rootTabs = {
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
     navigationOptions: {
+      tabBarVisible: false,
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
