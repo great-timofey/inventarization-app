@@ -490,8 +490,8 @@ const warnings = {
 };
 
 const graphqlErrors = {
-  passwordIsIncorrect: 'GraphQL error: Password is incorrect',
   userNotFound: 'GraphQL error: User not found',
+  passwordIsIncorrect: 'GraphQL error: Password is incorrect',
   emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
 };
 
