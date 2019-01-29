@@ -5,30 +5,34 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceWidth } from '~/global/device';
+import { deviceWidth, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
+    elevation: 0,
     borderBottomWidth: 0,
-    marginRight: normalize(15),
   },
   headerTitleStyle: {
+    flex: 1,
+    alignSelf: 'center',
+    textAlign: 'center',
     marginHorizontal: 0,
     color: colors.black,
     fontWeight: 'normal',
     fontSize: normalize(17),
+    justifyContent: 'center',
+    textAlignVertical: 'center',
     fontFamily: fonts.proDisplay.medium,
   },
   trashIcon: {
-    marginRight: -10,
+    marginRight: normalize(10),
+    marginTop: isAndroid ? normalize(2) : 0,
   },
   pencilIcon: {
     marginRight: -5,
   },
   backButton: {
-    width: 28,
-    height: 20,
-    tintColor: colors.accent,
+    marginTop: isAndroid ? normalize(5) : 0,
   },
   container: {
     flex: 1,
