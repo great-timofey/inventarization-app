@@ -219,12 +219,12 @@ class CategoryMenu extends PureComponent<Props, State> {
                       selectCategory={() => {}}
                       isSelected={isAllCategorySelected}
                       allSubCategoryList={allCategoriesList}
-                      item={{ name: 'Все категории', icon: 'side-menu-all' }}
+                      item={constants.generalCategories.allCategories}
                     />
                     <Category
                       defaultCategoryId={defaultCategoryId}
                       isSelected={isSelectedWithoutCategory}
-                      item={{ name: 'Без категории', icon: 'side-menu-all' }}
+                      item={constants.generalCategories.withoutCategories}
                     />
                   </Fragment>
 

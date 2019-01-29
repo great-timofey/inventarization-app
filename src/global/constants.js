@@ -490,6 +490,17 @@ const data = {
   ],
 };
 
+const generalCategories = {
+  allCategories: {
+    name: 'Все категории',
+    icon: 'side-menu-all',
+  },
+  withoutCategories: {
+    name: 'Без категории',
+    icon: 'side-menu-all',
+  },
+};
+
 const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
@@ -535,6 +546,7 @@ export default {
   setNewPassword,
   categoryIconList,
   itemFormSections,
+  generalCategories,
   updateAssetProperties,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,
