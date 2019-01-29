@@ -263,5 +263,5 @@ class ItemsScene extends PureComponent<Props, State> {
 
 export default compose(
   graphql(GET_CURRENT_USER_COMPANY_CLIENT),
-  graphql(DESTROY_ASSET, { name: 'destroyAsset', refetchQueries: [GET_COMPANY_ASSETS] }),
+  graphql(DESTROY_ASSET, { name: 'destroyAsset' }),
 )(ItemsScene);

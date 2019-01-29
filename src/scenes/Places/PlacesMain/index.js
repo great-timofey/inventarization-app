@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { isEmpty } from 'ramda';
+import { isEmpty, findIndex, remove } from 'ramda';
 
 import { compose, graphql, Query } from 'react-apollo';
 import InventoryIcon from '~/assets/InventoryIcon';
@@ -18,9 +18,11 @@ import Button from '~/components/Button';
 import Search from '~/components/Search';
 import SwipeableList from '~/components/Swipe';
 import SearchHeader from '~/components/SearchHeader';
+import QuestionModal from '~/components/QuestionModal';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
+import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
@@ -88,6 +90,7 @@ constructor(props: Props) {
     searchValue: '',
     isSearchActive: false,
     currentSelectItem: null,
+    isDeleteModalVisible: false,
   };
 
   navigation.setParams({
@@ -132,6 +135,45 @@ toggleSearch = () => {
   });
 };
 
+toggleDelModalVisible = () => {
+  const { isDeleteModalVisible } = this.state;
+  this.setState({
+    isDeleteModalVisible: !isDeleteModalVisible,
+  });
+};
+
+handleDeletePlace = async (id: number | string) => {
+  const { destroyPlace } = this.props;
+  await destroyPlace({ variables: { id }, update: this.updateDestroyPlace });
+  this.toggleDelModalVisible();
+  this.setState({ currentSelectItem: null });
+};
+
+updateDestroyPlace = (cache: Object) => {
+  const {
+    props: {
+      userCompany: {
+        company: { id: companyId },
+      },
+    },
+    state: { currentSelectItem },
+  } = this;
+
+  const data = cache.readQuery({
+    query: PLACES_QUERIES.GET_COMPANY_PLACES_BY_ID,
+    variables: { companyId },
+  });
+
+  const deleteIndex = findIndex(place => place.id === currentSelectItem, data.places);
+  data.places = remove(deleteIndex, 1, data.places);
+
+  cache.writeQuery({
+    query: PLACES_QUERIES.GET_COMPANY_PLACES_BY_ID,
+    variables: { companyId },
+    data,
+  });
+};
+
 onChangeSearchField = (value: string) => {
   const { navigation } = this.props;
   navigation.setParams({
@@ -156,6 +198,7 @@ render() {
       searchValue,
       isSearchActive,
       currentSelectItem,
+      isDeleteModalVisible,
     },
   } = this;
 
@@ -191,6 +234,7 @@ render() {
                 openItem={() => {}}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
+                toggleDelModal={this.toggleDelModalVisible}
               />
               {isNoPlaces && (
               <View style={styles.wrapper}>
@@ -212,6 +256,13 @@ render() {
               toggleSearch={this.toggleSearch}
             />
             )}
+            <QuestionModal
+              isModalVisible={isDeleteModalVisible}
+              leftAction={this.toggleDelModalVisible}
+              data={constants.modalQuestion.placeDel}
+              // $FlowFixMe
+              rightAction={() => this.handleDeletePlace(currentSelectItem)}
+            />
           </Fragment>
         );
       }}
@@ -225,4 +276,5 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
+  graphql(PLACES_MUTATIONS.DESTROY_PLACE, { name: 'destroyPlace' }),
 )(PlacesScene);

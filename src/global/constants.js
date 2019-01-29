@@ -143,6 +143,11 @@ const modalQuestion = {
     question: 'Вы точно хотите удалить \n предмет?',
     button: 'Удалить',
   },
+  placeDel: {
+    title: 'Удаление места',
+    question: 'Вы точно хотите удалить \n место?',
+    button: 'Удалить',
+  },
   categotyDel: {
     title: 'Удаление категории',
     question: 'Вы точно хотите удалить \n категорию?',
