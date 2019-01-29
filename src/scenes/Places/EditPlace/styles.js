@@ -19,4 +19,16 @@ export default StyleSheet.create({
     marginBottom: normalize(10),
     paddingHorizontal: normalize(25),
   },
+  addressInputView: {
+    zIndex: 3,
+    top: normalize(100),
+    position: 'absolute',
+  },
+  submitButton: {
+    zIndex: 3,
+    width: '85%',
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: normalize(30),
+  },
 });

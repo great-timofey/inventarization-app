@@ -1,6 +1,4 @@
-
 // @flow
-
 import React, { PureComponent } from 'react';
 
 import MapView from 'react-native-maps';
@@ -8,22 +6,24 @@ import MapView from 'react-native-maps';
 import type { Props } from './types';
 import styles from './styles';
 
+const deltas = {
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
 class Map extends PureComponent<Props> {
   state = {
 
   };
 
   render() {
-    const { customStyles } = this.props;
+    const { customStyles, region, ...rest } = this.props;
+    const coordsToShow = { ...region, ...deltas };
     return (
       <MapView
+        {...rest}
+        initialRegion={coordsToShow}
         style={[styles.map, customStyles]}
-        region={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
       />
     );
   }

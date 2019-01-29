@@ -46,6 +46,7 @@ const placeholders = {
   place: 'Введите название места',
   placeId: 'Место не указано',
   inputHeader: 'Введите название',
+  address: 'Введите адрес места',
   inventoryId: 'Введите код',
   codeData: 'Введите код',
   assessedDate: 'Не оценивалось',
@@ -81,9 +82,11 @@ const inputTypes = {
     label: 'Название организации',
     warning: 'Введите название вашей организации',
   },
+  address: {
+    label: 'Адрес',
+  },
   place: {
     label: 'Название',
-    warning: 'Введите название вашей организации',
   },
   invitees: {
     label: 'Добавьте людей:',
@@ -129,6 +132,7 @@ const buttonTitles = {
   choosePhoto: 'Выбрать фото',
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
+  createPlace: 'Добавить место',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -493,11 +497,13 @@ const warnings = {
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 7 символов',
+  placeAlreadyExists: 'Место с таким названием уже существует',
 };
 
 const graphqlErrors = {
   userNotFound: 'GraphQL error: User not found',
   emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
+  placeAlreadyExists: 'GraphQL error: Validation failed: Name already exists',
 };
 
 export default {
