@@ -56,6 +56,9 @@ export const CREATE_ASSET = gql`
         id
       }
       assessedValue
+      category {
+        id
+      }
       createdAt
       creator {
         id
@@ -69,6 +72,10 @@ export const CREATE_ASSET = gql`
       }
       assessedDate
       place {
+        id
+        name
+      }
+      category {
         id
         name
       }
@@ -148,6 +155,9 @@ export const UPDATE_ASSET = gql`
       }
     ) {
       id
+      category {
+        id
+      }
       codeData
       company {
         id
@@ -156,6 +166,10 @@ export const UPDATE_ASSET = gql`
       creator {
         id
         email
+      }
+      category {
+        id
+        name
       }
       dateOfPurchase
       description
@@ -170,7 +184,6 @@ export const UPDATE_ASSET = gql`
       guaranteeExpires
       assessedDate
       assessedValue
-      id
       inventoryId
       manufacture
       model

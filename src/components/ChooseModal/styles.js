@@ -35,17 +35,36 @@ export default StyleSheet.create({
   },
   modalItem: {
     paddingLeft: 20,
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
     height: normalize(54),
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   modalItemText: {
     color: colors.black,
     fontSize: normalize(18),
+    marginLeft: normalize(15),
     fontFamily: fonts.proDisplay.light,
   },
   modalSeparator: {
     height: 1,
     backgroundColor: colors.gray,
+  },
+  categoryIcon: {
+    marginLeft: 0,
+    alignSelf: 'center',
+  },
+  getDownIcon: {
+    right: 10,
+    alignSelf: 'center',
+    position: 'absolute',
+  },
+  drilledDownText: {
+    marginLeft: normalize(40),
+  },
+  allCategoryText: {
+    fontWeight: 'bold',
   },
   noItemsImage: {
     alignSelf: 'center',

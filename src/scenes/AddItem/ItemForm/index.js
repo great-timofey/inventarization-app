@@ -227,7 +227,6 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      // console.log(item);
       const itemCopy = { ...item };
       const { gps, name, place, status, creator, responsible, onTheBalanceSheet } = item;
       navigation.setParams({ headerText: name });
@@ -450,6 +449,11 @@ class ItemForm extends Component<Props, State> {
           ? constants.assetStatuses.accepted
           : constants.assetStatuses.onProcessing;
       }
+      //  TODO: fix choose category bug: after selection it doesnt changing
+      if (variables.category) {
+        //  $FlowFixMe
+        variables.categoryId = variables.category.id;
+      }
 
       //  $FlowFixMe
       if (variables.photosIdsToRemove.length) {
@@ -476,7 +480,12 @@ class ItemForm extends Component<Props, State> {
           try {
             //  $FlowFixMe
             const photosObjs = variables.photosToAdd.map(uri => ({ uri }));
-            photos = await convertToApolloUpload(photosObjs, '.');
+            if (photosObjs.length > 1) {
+              photos = await convertToApolloUpload(photosObjs, '.');
+            } else {
+              const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosObjs, '.');
+              photos.push(oneAndOnlyUploadPhoto);
+            }
           } catch (error) {
             console.log(error.message);
           }
@@ -487,7 +496,12 @@ class ItemForm extends Component<Props, State> {
           try {
             //  $FlowFixMe
             const photosOfDamagesObjs = variables.photosOfDamagesToAdd.map(uri => ({ uri }));
-            photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+            if (photosOfDamagesObjs.length > 1) {
+              photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+            } else {
+              const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosOfDamagesObjs, '.');
+              photos.push(oneAndOnlyUploadPhoto);
+            }
           } catch (error) {
             console.log(error.message);
           }
@@ -559,7 +573,7 @@ class ItemForm extends Component<Props, State> {
     });
     const assetIndex = findIndex(asset => asset.id === id, data.assets);
     //  eslint-disable-next-line
-    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove));
+    const photosToRemove = data.assets[assetIndex].photos.nodes.filter(node => includes(node.id, photosIdsToRemove),);
     const urlsToRemove = pluck('photo', photosToRemove);
     data.assets[assetIndex].photosUrls = without(urlsToRemove, data.assets[assetIndex].photosUrls);
     data.assets[assetIndex].photos.nodes = without(
@@ -572,7 +586,14 @@ class ItemForm extends Component<Props, State> {
   renderFormField = ({ item: { key, description, placeholder, ...rest } }: PreviewProps) => {
     const {
       props: { userCompany },
-      state: { warnings: stateWarnings, responsibleId, formIsEditable, isNewItem },
+      state: {
+        warnings: stateWarnings,
+        responsibleId,
+        formIsEditable,
+        isNewItem,
+        placeId,
+        category,
+      },
       state,
     } = this;
     const { role: userRole, currentUserId } = userCompany;
@@ -635,7 +656,10 @@ class ItemForm extends Component<Props, State> {
       customValue = state[key] ? responsibleId.fullName : null;
     } else if (description === constants.itemForm.placeId) {
       // $FlowFixMe
-      customValue = state[key] ? state.placeId.name : null;
+      customValue = state[key] ? placeId.name : null;
+    } else if (description === constants.itemForm.category) {
+      // $FlowFixMe
+      customValue = state[key] ? category.name : null;
     }
 
     return (
@@ -819,7 +843,7 @@ class ItemForm extends Component<Props, State> {
         ({ photo }) => photo === uri,
       );
       const id = prop('id', match);
-      //
+
       this.setState(currentState => ({
         showSaveButton: true,
         [toShow]: without([uri], currentState[toShow]),
@@ -852,7 +876,7 @@ class ItemForm extends Component<Props, State> {
     currentlyEditableField: null,
   });
 
-  handleConfirmModal = (option: string) => {
+  handleConfirmModal = (option: Object) => {
     this.setState(({ isModalOpened, currentlyEditableField }) => ({
       isModalOpened: !isModalOpened,
       // $FlowFixMe
