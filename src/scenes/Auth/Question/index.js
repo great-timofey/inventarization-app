@@ -42,6 +42,7 @@ class Question extends PureComponent<Props, {}> {
         current: { id, userCompanies },
       },
     } = await client.query({
+      fetchPolicy: 'network-only',
       query: QUERIES.GET_CURRENT_USER_COMPANIES,
     });
 
@@ -58,7 +59,6 @@ class Question extends PureComponent<Props, {}> {
 
   handleCreateCompany = async () => {
     const { navigation } = this.props;
-    await this.setupUser();
     navigation.navigate(SCENES_NAMES.CreateCompanySceneName);
   };
 

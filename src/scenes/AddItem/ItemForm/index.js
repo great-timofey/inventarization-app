@@ -480,7 +480,12 @@ class ItemForm extends Component<Props, State> {
           try {
             //  $FlowFixMe
             const photosObjs = variables.photosToAdd.map(uri => ({ uri }));
-            photos = await convertToApolloUpload(photosObjs, '.');
+            if (photosObjs.length > 1) {
+              photos = await convertToApolloUpload(photosObjs, '.');
+            } else {
+              const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosObjs, '.');
+              photos.push(oneAndOnlyUploadPhoto);
+            }
           } catch (error) {
             console.log(error.message);
           }
@@ -491,7 +496,12 @@ class ItemForm extends Component<Props, State> {
           try {
             //  $FlowFixMe
             const photosOfDamagesObjs = variables.photosOfDamagesToAdd.map(uri => ({ uri }));
-            photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+            if (photosOfDamagesObjs.length > 1) {
+              photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
+            } else {
+              const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosOfDamagesObjs, '.');
+              photos.push(oneAndOnlyUploadPhoto);
+            }
           } catch (error) {
             console.log(error.message);
           }
@@ -833,7 +843,7 @@ class ItemForm extends Component<Props, State> {
         ({ photo }) => photo === uri,
       );
       const id = prop('id', match);
-      //
+
       this.setState(currentState => ({
         showSaveButton: true,
         [toShow]: without([uri], currentState[toShow]),
