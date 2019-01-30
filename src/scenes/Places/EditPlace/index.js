@@ -10,6 +10,7 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
+import { getAddressByCoords } from '~/services/geocoding';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -90,7 +91,7 @@ class EditPlaceScene extends PureComponent<Props> {
   componentDidMount() {
     this.setState({ loading: true });
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
+      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }, () => getAddressByCoords(this.state.latitude, this.state.longitude).then(response => console.log(response))),
       error => console.log(error),
     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
   }
