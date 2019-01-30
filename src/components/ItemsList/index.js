@@ -232,25 +232,29 @@ class ItemsList extends PureComponent<Props> {
           }
 
           let companyCategories = [];
-          let allSubCategoryList = [];
 
           if (current != null) {
             const { companies } = current;
             const company = companies[0];
             if (company != null) {
               companyCategories = company.categories;
-              allSubCategoryList = companyCategories.filter(x => x.parent !== null);
             }
           }
 
           let categoryTabData = [];
 
           saveSelectedCategories.forEach((e) => {
-            const match = allSubCategoryList.find(x => x.id === e);
+            const match = companyCategories.find(x => x.id === e);
             if (match) {
               categoryTabData = [...categoryTabData, match.name];
             }
           });
+
+          if (saveSelectedCategories.length > 0) {
+            dataToRender = dataToRender.filter(el => el.category
+              && el.category.id
+              && includes(el.category.id, saveSelectedCategories));
+          }
 
           return dataToRenderIsEmpty ? (
             <View>

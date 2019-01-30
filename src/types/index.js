@@ -109,6 +109,7 @@ export type Category = {|
   parent?: Category,
   createdAt: string,
   chields: Object,
+  isDefault?: boolean,
 |};
 
 export type Company = {|

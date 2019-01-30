@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 // $FlowFixMe
-import { last, includes, intersection } from 'ramda';
+import { last, includes, findIndex, intersection } from 'ramda';
 import SortableList from 'react-native-sortable-list';
 import { compose, graphql, Query } from 'react-apollo';
 
@@ -26,6 +26,7 @@ import {
   GET_COMPANY_CATEGORIES_BY_ID,
 } from '~/graphql/categories/queries';
 
+import constants from '~/global/constants';
 import {
   mainNavigation,
   setIsSideMenuOpen,
@@ -51,7 +52,7 @@ class CategoryMenu extends PureComponent<Props, State> {
     const { saveSelectedCategories, current } = this.props;
     const isSubCategoryView = selectedCategory !== '';
 
-    let companyCategories = null;
+    let companyCategories = [];
 
     if (current != null) {
       const { companies } = current;
@@ -61,39 +62,40 @@ class CategoryMenu extends PureComponent<Props, State> {
       }
     }
 
-    let IdList = [];
-    let allSubCategoryList = [];
+    let chieldsIdList = [];
 
-    if (companyCategories && companyCategories.length > 0) {
-      allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
-      if (isSubCategoryView) {
-        const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
-
-        if (parent.chields && parent.chields.length > 0) {
-          IdList = parent.chields.map(x => x.id);
-        }
+    if (companyCategories
+      && data.chields
+      && data.chields.length > 0
+      && companyCategories.length > 0
+    ) {
+      chieldsIdList = data.chields.map(x => x.id);
+    } else if (isSubCategoryView) {
+      const parentIndex = findIndex(el => el.name === selectedCategory, companyCategories);
+      if (companyCategories[parentIndex] && companyCategories[parentIndex].chields) {
+        chieldsIdList = companyCategories[parentIndex].chields.map(el => el.id);
       }
     }
-    const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
 
     let isCategorySelect = false;
+    let isSubCategorySelect = false;
 
-    if (!isSubCategoryView && data.chields.length > 0 && data.chields) {
-      const chieldsList = data.chields.map(x => x.id);
-      if (isAllCategorySelected) {
+    const isAllCategoriesSelected = companyCategories.length === saveSelectedCategories.length;
+    // eslint-disable-next-line max-len
+    const isAllSubCategoriesSelected = intersection(saveSelectedCategories, chieldsIdList).length === chieldsIdList.length;
+
+    if (!isSubCategoryView) {
+      if (isAllCategoriesSelected) {
         isCategorySelect = false;
-      } else {
-        isCategorySelect = !!intersection(chieldsList, saveSelectedCategories).length;
+      } else if (data.chields && data.chields.length === 0) {
+        isCategorySelect = includes(data.id, saveSelectedCategories);
+      } else if (data.chields && data.chields.length > 0) {
+        isCategorySelect = !!intersection(chieldsIdList, saveSelectedCategories).length;
       }
     }
 
-    const isAllSelected = !!saveSelectedCategories.length
-     && intersection(saveSelectedCategories, IdList).length === IdList.length;
-
-    let isSubCategorySelect = false;
-
-    if (data && data.id && isSubCategoryView) {
-      isSubCategorySelect = includes(data.id.toString(), saveSelectedCategories);
+    if (isSubCategoryView && data && data.id) {
+      isSubCategorySelect = includes(data.id, saveSelectedCategories);
     }
 
     if (isSubCategoryView) {
@@ -101,7 +103,7 @@ class CategoryMenu extends PureComponent<Props, State> {
         <SubCategory
           item={data}
           selectCategory={this.selectCategory}
-          isSelected={isAllSelected ? false : isSubCategorySelect}
+          isSelected={isAllSubCategoriesSelected ? false : isSubCategorySelect}
         />
       );
     }
@@ -115,6 +117,20 @@ class CategoryMenu extends PureComponent<Props, State> {
   };
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
+
+  getCategoryPrefix = () => {
+    const { selectedCategory } = this.state;
+    let prefix = '';
+
+    if (includes(last(selectedCategory), constants.suffixes.all)) {
+      prefix = constants.prefixes.all;
+    } else if (includes(last(selectedCategory), constants.suffixes.everything)) {
+      prefix = constants.prefixes.everything;
+    } else {
+      prefix = constants.prefixes.whole;
+    }
+    return prefix;
+  }
 
   render() {
     const { selectedCategory } = this.state;
@@ -148,13 +164,13 @@ class CategoryMenu extends PureComponent<Props, State> {
           let IdList = [];
           let categoryList = {};
           let subCategoryList = {};
-          let allSubCategoryList = [];
+          let allCategoriesList = [];
+          let defaultCategoryId = 0;
 
           if (companyCategories && companyCategories.length > 0) {
             // $FlowFixMe
             categoryList = { ...companyCategories.filter(i => i.parent === null) };
-            allSubCategoryList = companyCategories.filter(x => x.parent !== null).map(x => x.id);
-
+            allCategoriesList = companyCategories.map(x => x.id);
             if (isSubCategoryView) {
               const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
@@ -163,21 +179,19 @@ class CategoryMenu extends PureComponent<Props, State> {
                 IdList = parent.chields.map(x => x.id);
               }
             }
+            const defaultCategoryIndex = findIndex(el => el.isDefault === true, companyCategories);
+            if (defaultCategoryIndex !== -1) {
+              defaultCategoryId = companyCategories[defaultCategoryIndex].id;
+            }
           }
 
-          const isAllCategorySelected = allSubCategoryList.length === saveSelectedCategories.length;
+          const prefix = this.getCategoryPrefix();
+          const isAllCategorySelected = allCategoriesList.length === saveSelectedCategories.length;
           // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
-
-          let prefix = '';
-
-          if (includes(last(selectedCategory), ['ь', 'а'])) {
-            prefix = 'Вся';
-          } else if (includes(last(selectedCategory), ['ы', 'я', 'и'])) {
-            prefix = 'Все';
-          } else {
-            prefix = 'Весь';
-          }
+          const isSelectedWithoutCategory = includes(defaultCategoryId, saveSelectedCategories)
+            && saveSelectedCategories.length === 1;
+          console.log(defaultCategoryId);
 
           return (
             <ScrollView
@@ -201,13 +215,21 @@ class CategoryMenu extends PureComponent<Props, State> {
                     />
                   </Fragment>
                 ) : (
-                  <Category
-                    allSelectButton
-                    selectCategory={() => { }}
-                    isSelected={isAllCategorySelected}
-                    allSubCategoryList={allSubCategoryList}
-                    item={{ name: 'Все категории', icon: 'side-menu-all' }}
-                  />
+                  <Fragment>
+                    <Category
+                      allSelectButton
+                      selectCategory={() => {}}
+                      isSelected={isAllCategorySelected}
+                      allSubCategoryList={allCategoriesList}
+                      item={constants.generalCategories.allCategories}
+                    />
+                    <Category
+                      defaultCategoryId={defaultCategoryId}
+                      isSelected={isSelectedWithoutCategory}
+                      item={constants.generalCategories.withoutCategories}
+                    />
+                  </Fragment>
+
                 )
               }
               <SortableList
@@ -225,7 +247,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                   }}
                 >
                   <Text style={styles.editButtonText}>
-                    Редактировать категории
+                    {constants.buttonTitles.editCategory}
                   </Text>
                 </TouchableOpacity>
               )}
