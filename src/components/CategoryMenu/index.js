@@ -10,13 +10,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 // $FlowFixMe
-import { last, includes, findIndex, intersection } from 'ramda';
+import { includes, findIndex, intersection } from 'ramda';
 import SortableList from 'react-native-sortable-list';
 import { compose, graphql, Query } from 'react-apollo';
 
 import Category from '~/components/Category';
 import SubCategory from '~/components/SubCategory';
 
+import { getPrefix } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import {
@@ -118,20 +119,6 @@ class CategoryMenu extends PureComponent<Props, State> {
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
-  getCategoryPrefix = () => {
-    const { selectedCategory } = this.state;
-    let prefix = '';
-
-    if (includes(last(selectedCategory), constants.suffixes.all)) {
-      prefix = constants.prefixes.all;
-    } else if (includes(last(selectedCategory), constants.suffixes.everything)) {
-      prefix = constants.prefixes.everything;
-    } else {
-      prefix = constants.prefixes.whole;
-    }
-    return prefix;
-  }
-
   render() {
     const { selectedCategory } = this.state;
     const {
@@ -185,10 +172,10 @@ class CategoryMenu extends PureComponent<Props, State> {
             }
           }
 
-          const prefix = this.getCategoryPrefix();
           const isAllCategorySelected = allCategoriesList.length === saveSelectedCategories.length;
           // eslint-disable-next-line max-len
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
+
           const isSelectedWithoutCategory = includes(defaultCategoryId, saveSelectedCategories)
             && saveSelectedCategories.length === 1;
           console.log(defaultCategoryId);
@@ -211,7 +198,7 @@ class CategoryMenu extends PureComponent<Props, State> {
                       chieldsId={IdList}
                       isSelected={isAllSelected}
                       selectCategory={this.selectCategory}
-                      item={{ name: `${prefix} ${selectedCategory.toLowerCase()}` }}
+                      item={{ name: `${getPrefix(selectedCategory)} ${selectedCategory.toLowerCase()}` }}
                     />
                   </Fragment>
                 ) : (
