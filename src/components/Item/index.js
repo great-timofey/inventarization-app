@@ -76,7 +76,10 @@ class Item extends PureComponent<Props, State> {
         style={styles.container}
         onPress={() => openItem(item)}
         ref={(ref) => { this.itemRef = ref; }}
-        onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, item)}
+        onLongPress={isAndroid 
+          ? () => getItemPosition(this.itemRef, parentScrollViewRef, item)
+          : () => {}
+        }
       >
         {isMenuOpen && this.renderMenu()}
         {!isMenuOpen && showMenuButton && !isAndroid && (

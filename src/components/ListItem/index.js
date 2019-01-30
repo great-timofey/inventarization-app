@@ -6,6 +6,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import type { Props } from './types';
 
+import { isAndroid } from '~/global/device';
 import { getPlaceholder, normalize } from '~/global/utils';
 
 class ListItem extends PureComponent<Props, {}> {
@@ -37,7 +38,10 @@ class ListItem extends PureComponent<Props, {}> {
         style={styles.rowItem}
         onPress={() => openItem(item)}
         ref={(ref) => { this.itemRef = ref; }}
-        onLongPress={() => getItemPosition(this.itemRef, parentScrollViewRef, item)}
+        onLongPress={isAndroid 
+          ? () => getItemPosition(this.itemRef, parentScrollViewRef, item)
+          : () => {}
+        }
       >
         <Image source={{ uri }} style={styles.smallImage} />
         <View style={styles.description}>

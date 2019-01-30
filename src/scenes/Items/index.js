@@ -16,6 +16,7 @@ import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
@@ -195,7 +196,7 @@ class ItemsScene extends PureComponent<Props, State> {
   getItemPosition = (itemRef, parentScrollViewRef, item) => {
     const itemHeight = normalize(220);
     const headerPosition = normalize(65);
-    const bottomPosition = normalize(500);
+    const bottomPosition = normalize(480);
     const { isListViewStyle } = this.state;
 
     this.setState({
@@ -227,7 +228,7 @@ class ItemsScene extends PureComponent<Props, State> {
             this.setState({
               elementPosition: {
                 x: px,
-                y: py + itemPositionDiff,
+                y: py + itemPositionDiff - normalize(20),
               },
             });
             setTimeout(() => {
@@ -246,7 +247,7 @@ class ItemsScene extends PureComponent<Props, State> {
             this.setState({
               elementPosition: {
                 x: px,
-                y: py - itemPositionDiff,
+                y: py - itemPositionDiff - normalize(20),
               },
             });
             setTimeout(() => {
@@ -352,6 +353,7 @@ class ItemsScene extends PureComponent<Props, State> {
 
     return (
       <Fragment>
+        {isAndroid && <StatusBar backgroundColor="white" barStyle="dark-content" />}
         <ItemsList
           userRole={userRole}
           companyId={companyId}

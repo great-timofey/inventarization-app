@@ -6,6 +6,7 @@ export type State = {|
 
 export type Props = {|
   current: Object,
+  userCompany: Object,
   categoryOrder: Array<string>,
   saveSelectedCategories: Array<string>
 |};
