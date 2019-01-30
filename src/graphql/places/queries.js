@@ -1,7 +1,7 @@
 //  @flow
 import gql from 'graphql-tag';
 
-export const GET_COMPANY_PLACES_BY_ID = gql`
+export const GET_COMPANY_PLACES = gql`
   query GetCompanyPlaces($companyId: ID!) {
     places(companyId: $companyId){
       id
@@ -13,5 +13,5 @@ export const GET_COMPANY_PLACES_BY_ID = gql`
 `;
 
 export default {
-  GET_COMPANY_PLACES_BY_ID,
+  GET_COMPANY_PLACES,
 };

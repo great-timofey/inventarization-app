@@ -1,5 +1,7 @@
 // @flow
 
+import * as React from 'react';
+
 import type { Item } from '~/global/types';
 
 export type Props = {
@@ -10,6 +12,8 @@ export type Props = {
   data: Array<Item>,
   openItem: Function,
   userRole: string,
+  parentScrollViewRef: React.Node,
+  getItemPosition: Function,
   toggleDelModal?: () => void,
   selectItem: (x: number | string) => void,
   extraData: {
