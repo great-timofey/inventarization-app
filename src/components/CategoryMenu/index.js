@@ -191,7 +191,6 @@ class CategoryMenu extends PureComponent<Props, State> {
           const isAllSelected = intersection(saveSelectedCategories, IdList).length === IdList.length;
           const isSelectedWithoutCategory = includes(defaultCategoryId, saveSelectedCategories)
             && saveSelectedCategories.length === 1;
-          console.log(defaultCategoryId);
 
           return (
             <ScrollView

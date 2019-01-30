@@ -7,6 +7,7 @@ import Modal from 'react-native-modal';
 import Button from '~/components/Button';
 import QuestionModal from '~/components/QuestionModal';
 
+import assets from '~/global/assets';
 import constants from '~/global/constants';
 import { getPlaceholder, normalize } from '~/global/utils';
 import { deviceWidth, deviceHeight } from '~/global/device';
@@ -46,6 +47,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
   render() {
     const {
       props: {
+        type,
         item,
         isModalVisible,
         isListViewStyle,
@@ -74,8 +76,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
         uri = getPlaceholder(normalize(isListViewStyle ? 62 : 158));
       }
     }
-
-
+    
     return (
       <Modal
         style={styles.modal}
@@ -88,7 +89,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
         deviceHeight={deviceHeight}
         onBackdropPress={toggleActionsModal}
       >
-        {!isListViewStyle ? (
+        {type === 'items' && !isListViewStyle && (
           <View style={[styles.container,
             { top: elementPosition.y - normalize(10),
               left: elementPosition.x - normalize(10) },
@@ -110,8 +111,10 @@ class AndroidActionsModal extends PureComponent<Props, State> {
               {`${item.purchasePrice || 0} ₽`}
             </Text>
           </View>
-        ) : (
-          <View style={[styles.rowItem, { top: elementPosition.y, left: 0 }]}>
+        )}
+            
+        {type === 'items' && isListViewStyle && (
+          <View style={[styles.rowItem, { top: elementPosition.y, left: elementPosition.x }]}>
             <Image source={{ uri }} style={styles.smallImage} />
             <View style={styles.description}>
               <View>
@@ -125,6 +128,24 @@ class AndroidActionsModal extends PureComponent<Props, State> {
               </View>
             </View>
           </View>
+          )}
+
+        {type === 'places' && (
+            <View style={[styles.rowItem, { top: elementPosition.y, left: elementPosition.x }]}>
+              <Image style={styles.pinImage} source={assets.pin} />
+              <Image style={styles.image} source={assets.mapLayout} />
+              <View style={styles.description}>
+                <View>
+                  <Text style={styles.topText}>{item.name}</Text>
+                  <Text style={styles.botText}>
+                    {item.address}
+                  </Text>
+                </View>
+                <View style={styles.count}>
+                  <Text style={styles.countText}>{item.assetsCount || '0'}</Text>
+                </View>
+              </View>
+            </View>
         )}
         <Button
           onPress={this.editItem}

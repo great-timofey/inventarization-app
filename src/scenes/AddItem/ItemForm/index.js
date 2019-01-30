@@ -227,7 +227,6 @@ class ItemForm extends Component<Props, State> {
     const item = navigation.getParam('item', null);
 
     if (item) {
-      // console.log(item);
       const itemCopy = { ...item };
       const { gps, name, place, status, creator, responsible, onTheBalanceSheet } = item;
       navigation.setParams({ headerText: name });
@@ -267,7 +266,6 @@ class ItemForm extends Component<Props, State> {
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? constants.words.yes : constants.words.no;
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
-      // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 

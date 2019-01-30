@@ -4,6 +4,7 @@ import {
   Text,
   View,
   Image,
+  UIManager,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
@@ -18,6 +19,7 @@ import Button from '~/components/Button';
 import Search from '~/components/Search';
 import SwipeableList from '~/components/Swipe';
 import SearchHeader from '~/components/SearchHeader';
+import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
@@ -85,9 +87,15 @@ constructor(props: Props) {
   const { navigation } = this.props;
 
   this.state = {
+    place: null,
+    elementPosition: {
+      x: 0,
+      y: 0,
+    },
     searchValue: '',
     isSearchActive: false,
     currentSelectItem: null,
+    isAndroidActionsModalVisible: false,
   };
 
   navigation.setParams({
@@ -132,6 +140,13 @@ toggleSearch = () => {
   });
 };
 
+toggleActionsModal = () => {
+  const { isAndroidActionsModalVisible } = this.state;
+  this.setState({
+    isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
+  });
+}
+
 onChangeSearchField = (value: string) => {
   const { navigation } = this.props;
   navigation.setParams({
@@ -141,6 +156,56 @@ onChangeSearchField = (value: string) => {
     searchValue: value.toLowerCase().trim(),
   });
 };
+
+getItemPosition = (itemRef, parentScrollViewRef, place) => {
+  const headerPosition = normalize(65);
+  const bottomPosition = normalize(480);
+
+  this.setState({
+    elementPosition: {
+      x: 0,
+      y: 0,
+    },
+    place,
+  });
+
+  if (itemRef) {
+    itemRef.measure((fx, fy, width, height, px, py) => {
+      const listItemHeight = normalize(78);
+
+      if (py + listItemHeight >= bottomPosition) {
+        const itemPositionDiff = (py + listItemHeight) - bottomPosition;
+
+        UIManager.measure(parentScrollViewRef.getInnerViewNode(), (x, y, w, h, pageX, pageY) => {
+          const currentViewPosition = pageY - headerPosition;
+          const coordinateToScroll = currentViewPosition - itemPositionDiff;
+
+          parentScrollViewRef.scrollTo({ x: 0, y: Math.abs(coordinateToScroll), animated: true });
+
+          this.setState({
+            elementPosition: {
+              x: px,
+              y: py - itemPositionDiff - normalize(20),
+            },
+          });
+          setTimeout(() => {
+            this.toggleActionsModal();
+          }, 150);
+        });
+      } else {
+        this.setState({
+          elementPosition: {
+            x: px,
+            y: py,
+          },
+        });
+        this.toggleActionsModal();
+      }
+    });
+  }
+}
+
+scrollViewRef: any;
 
 render() {
   const {
@@ -153,9 +218,12 @@ render() {
       },
     },
     state: {
+      place,
       searchValue,
       isSearchActive,
+      elementPosition,
       currentSelectItem,
+      isAndroidActionsModalVisible,
     },
   } = this;
 
@@ -180,7 +248,12 @@ render() {
 
         return (
           <Fragment>
-            <ScrollView scrollEventThrottle={16} onScroll={this.handleScroll}>
+            <ScrollView
+              scrollEventThrottle={16}
+              onScroll={this.handleScroll}
+              ref={(ref) => { this.scrollViewRef = ref; }}
+              scrollEnabled={!isAndroidActionsModalVisible}
+            >
               <Text style={[styles.noPlacesTitle, !isNoPlaces && styles.title]}>
                 {constants.headers.places}
               </Text>
@@ -191,6 +264,8 @@ render() {
                 openItem={() => {}}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
+                getItemPosition={this.getItemPosition}
+                parentScrollViewRef={this.scrollViewRef}
               />
               {isNoPlaces && (
               <View style={styles.wrapper}>
@@ -212,6 +287,15 @@ render() {
               toggleSearch={this.toggleSearch}
             />
             )}
+            <AndroidActionsModal
+              type="places"
+              item={place || {}}
+              handleOpenItem={() => {}}
+              handleDeleteItem={() => {}}
+              elementPosition={elementPosition}
+              toggleActionsModal={this.toggleActionsModal}
+              isModalVisible={isAndroidActionsModalVisible}
+            />
           </Fragment>
         );
       }}

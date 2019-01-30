@@ -7,13 +7,13 @@ import { pluck, includes } from 'ramda';
 import { graphql } from 'react-apollo';
 import Swipeout from 'react-native-swipeout';
 
-//  $FlowFixMe
+import Place from '~/components/Place';
 import IconButton from '~/components/IconButton';
 
-import assets from '~/global/assets';
 import colors from '~/global/colors';
 import type { Item } from '~/global/types';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import { normalize, getPlaceholder } from '~/global/utils';
 import { GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
 
@@ -104,23 +104,26 @@ class SwipeableList extends PureComponent<Props, {}> {
         right={swipeoutBtns}
         disabled={!enableLeftSwipe}
         close={item.id !== activeRowId}
-        //  eslint-disable-next-line
-        onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
+        onOpen={(sectionID, rowId, direction: string) => (direction !== undefined
+          ? selectItem(item.id)
+          : null)
         }
       >
-        <TouchableOpacity activeOpacity={1} onPress={() => openItem(item)}>
-          <View style={styles.rowItem}>
-            <Image style={styles.image} source={{ uri }} />
-            <View style={styles.description}>
-              <View>
-                <Text style={styles.topText}>{item.name}</Text>
-                <Text style={styles.botText}>
-                  {`${(item.photos && item.photos.length) || 0} Фото`}
-                </Text>
-              </View>
-              <View style={styles.count}>
-                <Text style={styles.countText}>{item.purchasePrice}</Text>
-              </View>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.rowItem}
+          onPress={() => openItem(item)}
+        >
+          <Image style={styles.image} source={{ uri }} />
+          <View style={styles.description}>
+            <View>
+              <Text style={styles.topText}>{item.name}</Text>
+              <Text style={styles.botText}>
+                {`${(item.photos && item.photos.length) || 0} Фото`}
+              </Text>
+            </View>
+            <View style={styles.count}>
+              <Text style={styles.countText}>{item.purchasePrice}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -129,7 +132,7 @@ class SwipeableList extends PureComponent<Props, {}> {
   };
 
   renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
-    const { selectItem } = this.props;
+    const { selectItem, openItem, getItemPosition, parentScrollViewRef } = this.props;
 
     const swipeoutBtns = [
       {
@@ -161,33 +164,25 @@ class SwipeableList extends PureComponent<Props, {}> {
       <Swipeout
         autoClose
         right={swipeoutBtns}
+        disabled={isAndroid}
         close={place.id !== activeRowId}
         //  eslint-disable-next-line
         onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(place.id) : null
         }
       >
-        <TouchableOpacity activeOpacity={1} onPress={() => {}}>
-          <View style={styles.rowItem}>
-            <Image style={styles.pinImage} source={assets.pin} />
-            <Image style={styles.image} source={assets.mapLayout} />
-            <View style={styles.description}>
-              <View>
-                <Text style={styles.topText}>{place.name}</Text>
-                <Text style={styles.botText}>
-                  {place.address}
-                </Text>
-              </View>
-              <View style={styles.count}>
-                <Text style={styles.countText}>123123123</Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+        <Place
+          place={place}
+          openItem={openItem}
+          getItemPosition={getItemPosition}
+          parentScrollViewRef={parentScrollViewRef}
+        />
       </Swipeout>
     );
   }
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
+
+  itemRef: any;
 
   render() {
     const { extraData, data, isPlaces } = this.props;

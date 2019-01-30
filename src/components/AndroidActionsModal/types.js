@@ -1,17 +1,16 @@
 
 // @flow
 
-import type { Item } from '~/global/types';
-
 export type Props = {
+  type: string,
   elementPosition: {
     x: number,
     y: number,
   },
-  item: Item | Object,
+  item: Object,
   isModalVisible: boolean,
   handleOpenItem: Function,
-  isListViewStyle: boolean,
+  isListViewStyle?: boolean,
   handleDeleteItem: Function,
   toggleActionsModal: Function,
 };

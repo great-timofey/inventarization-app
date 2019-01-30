@@ -282,7 +282,7 @@ class ItemsScene extends PureComponent<Props, State> {
             this.setState({
               elementPosition: {
                 x: px,
-                y: py - itemPositionDiff,
+                y: py - itemPositionDiff - normalize(20),
               },
             });
             setTimeout(() => {
@@ -403,6 +403,7 @@ class ItemsScene extends PureComponent<Props, State> {
           rightAction={() => this.handleDeleteItem(currentSelectItem, false)}
         />
         <AndroidActionsModal
+          type="items"
           item={item || {}}
           elementPosition={elementPosition}
           isListViewStyle={isListViewStyle}
