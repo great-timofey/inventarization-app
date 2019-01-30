@@ -30,6 +30,7 @@ export default {
   blackOpacityLight: 'rgba(0, 0, 0, .1)',
   assetMenuOverlay: 'rgba(0, 0, 0, 0.8)',
   whiteOpacity: 'rgba(255, 255, 255, .3)',
+  whiteOpacityStrong: 'rgba(255, 255, 255, .1)',
   blackOpacityExtraLight: 'rgba(0, 0, 0, .05)',
   whiteOpacityLight: 'rgba(255, 255, 255, 0.2)',
   text: {
