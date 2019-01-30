@@ -10,6 +10,9 @@ export const GET_COMPANY_ASSETS = gql`
       status
       assessedValue
       purchasePrice
+      category {
+        id
+      }
       codeData
       company {
         id
@@ -18,6 +21,10 @@ export const GET_COMPANY_ASSETS = gql`
       creator {
         id
         email
+      }
+      category {
+        id
+        name
       }
       assessedDate
       dateOfPurchase
@@ -76,6 +83,10 @@ export const GET_COMPANY_ASSET_BY_ID = gql`
       creator {
         id
         email
+      }
+      category {
+        id
+        name
       }
       assessedDate
       dateOfPurchase

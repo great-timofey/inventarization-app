@@ -6,6 +6,7 @@ import {
   Alert,
   Image,
   FlatList,
+  StatusBar,
   CameraRoll,
   ImageBackground,
   TouchableOpacity,
@@ -17,8 +18,10 @@ import Modal from 'react-native-modal';
 import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 
+
 import assets from '~/global/assets';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import type { ModalProps, ModalState, PhotoType } from './types';
 
 import styles from './styles';
@@ -98,6 +101,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
         onBackdropPress={toggleModalCallback}
         onBackButtonPress={toggleModalCallback}
       >
+        {isAndroid && <StatusBar backgroundColor="black" />}
         <View style={styles.choosePhotoContainer}>
           {photos.length === 0 ? (
             <ActivityIndicator />

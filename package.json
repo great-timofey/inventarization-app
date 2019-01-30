@@ -46,7 +46,7 @@
     "react-native-swiper": "^1.5.14",
     "react-native-text-input-mask": "git+https://github.com/allmaxgit/react-native-text-input-mask.git#1006ea0179d6a7af0b0d40781e355622700ce422",
     "react-native-torch": "^1.1.5",
-    "react-native-vector-icons": "^6.1.0",
+    "react-native-vector-icons": "^6.2.0",
     "react-navigation": "3.0.5",
     "react-navigation-extension": "^2.0.1"
   },

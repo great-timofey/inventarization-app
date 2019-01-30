@@ -1,6 +1,9 @@
 // @flow
 
+import type { Item } from '~/global/types';
+
 export type State = {
+  item: Item | null,
   searchValue: string,
   isSortByName: boolean,
   isSearchActive: boolean,
@@ -8,7 +11,12 @@ export type State = {
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
   isDeleteModalVisible: boolean,
+  isAndroidActionsModalVisible: boolean,
   currentSelectItem: number | string | null,
+  elementPosition: {
+    x: number,
+    y: number,
+  },
 };
 
 export type Props = {

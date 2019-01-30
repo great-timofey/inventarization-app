@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 
 // $FlowFixMe
-import { assoc } from 'ramda';
+import { assoc, includes } from 'ramda';
 import { compose, graphql } from 'react-apollo';
 import {
   View,
@@ -11,6 +11,7 @@ import {
   Image,
   Keyboard,
   Animated,
+  StatusBar,
   AsyncStorage,
   TouchableOpacity,
 } from 'react-native';
@@ -142,6 +143,16 @@ class Login extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
+  setWarnings = (email, password) => {
+    this.setState({
+      warnings: {
+        count: 1,
+        email: email || '',
+        password: password || '',
+      },
+    });
+  }
+
   onSubmitForm = async () => {
     const { signInMutation, signUpMutation, navigation } = this.props;
     const { email, password, isRegForm, name: fullName, mobile: phoneNumber } = this.state;
@@ -182,22 +193,17 @@ class Login extends PureComponent<Props, State> {
 
         navigation.navigate(SCENES_NAMES.QuestionSceneName);
       } catch (error) {
+        if (!isRegForm && includes(email, error.message)) {
+          this.setWarnings(constants.warnings.unregisteredEmail, constants.warnings.userNotFound);
+        }
+        if (!isRegForm && error.message === constants.graphqlErrors.passwordIsIncorrect) {
+          this.setWarnings(constants.warnings.userNotFound, constants.warnings.userNotFound);
+        }
         if (isRegForm && error.message === constants.graphqlErrors.emailAlreadyExists) {
-          this.setState({
-            warnings: {
-              count: 1,
-              email: constants.warnings.emailAlreadyExists,
-            },
-          });
+          this.setWarnings(constants.warnings.emailAlreadyExists);
         }
         if (error.message === constants.graphqlErrors.userNotFound) {
-          this.setState({
-            warnings: {
-              count: 1,
-              email: constants.warnings.userNotFound,
-              password: constants.warnings.userNotFound,
-            },
-          });
+          this.setWarnings(constants.warnings.userNotFound, constants.warnings.userNotFound);
         }
       }
     }
@@ -238,6 +244,8 @@ class Login extends PureComponent<Props, State> {
           this.keyboardAwareScrollView = ref;
         }}
       >
+        {isAndroid && <StatusBar backgroundColor={colors.backGroundBlack} barStyle="light-content" />}
+
         <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
           <Logo isSmall />
           {isRegForm && (
