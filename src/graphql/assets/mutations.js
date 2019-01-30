@@ -56,6 +56,9 @@ export const CREATE_ASSET = gql`
         id
       }
       assessedValue
+      category {
+        id
+      }
       createdAt
       creator {
         id
@@ -152,6 +155,9 @@ export const UPDATE_ASSET = gql`
       }
     ) {
       id
+      category {
+        id
+      }
       codeData
       company {
         id

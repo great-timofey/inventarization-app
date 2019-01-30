@@ -10,6 +10,9 @@ export const GET_COMPANY_ASSETS = gql`
       status
       assessedValue
       purchasePrice
+      category {
+        id
+      }
       codeData
       company {
         id

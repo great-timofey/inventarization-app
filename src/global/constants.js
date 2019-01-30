@@ -6,7 +6,7 @@ export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
 const regExp = {
   price: /^\d+(.|,){0,2}\d/,
-  password: /^((?=\S*?[a-z,A-Z])(?=\S*?[0-9]).{7,})\S$/,
+  password: /^((?=\S*?[a-z,A-Z,0-9]).{7,})\S$/,
   email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
   // eslint-disable-next-line no-useless-escape
   mobileNumber: /^(\+7)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
@@ -125,10 +125,12 @@ const buttonTitles = {
   cancel: 'Отмена',
   save: 'Сохранить',
   update: 'Обновить',
+  delete: 'Удалить',
   defects: 'Дефекты',
   skip: 'Пропустить',
   photos: 'Фотографии',
   create: 'Да, создать',
+  edit: 'Редактировать',
   reg: 'Зарегистрироваться',
   addItem: 'Добавить предмет',
   registration: 'Регистрация',
@@ -142,6 +144,7 @@ const buttonTitles = {
   saveChanges: 'Сохранить изменения',
   enter: 'Нет, войти как пользователь',
   createCompany: 'Создать организацию',
+  editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
   addAnotherYetItem: 'Добавить ещё один предмет',
@@ -489,6 +492,17 @@ const data = {
   ],
 };
 
+const generalCategories = {
+  allCategories: {
+    name: 'Все категории',
+    icon: 'side-menu-all',
+  },
+  withoutCategories: {
+    name: 'Без категории',
+    icon: 'side-menu-all',
+  },
+};
+
 const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
@@ -497,11 +511,13 @@ const warnings = {
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  invalidPassword: 'Минимальная длинна пароля - 7 символов',
+  unregisteredEmail: 'Данный email не был зарегистрирован',
+  invalidPassword: 'Минимальная длинна пароля - 8 символов',
 };
 
 const graphqlErrors = {
   userNotFound: 'GraphQL error: User not found',
+  passwordIsIncorrect: 'GraphQL error: Password is incorrect',
   emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
 };
 
@@ -517,11 +533,11 @@ export default {
   regExp,
   headers,
   formats,
+  prefixes,
+  suffixes,
   itemForm,
   warnings,
   category,
-  suffixes,
-  prefixes,
   inputTypes,
   fieldTypes,
   buttonTitles,
@@ -534,6 +550,7 @@ export default {
   setNewPassword,
   categoryIconList,
   itemFormSections,
+  generalCategories,
   updateAssetProperties,
   uploadCreateAssetImages,
   uploadCreateCompanyImages,
