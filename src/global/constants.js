@@ -19,17 +19,6 @@ const masks = {
   mobileNumber: '+7 ([000]) [000]-[00]-[00]',
 };
 
-const suffixes = {
-  all: ['ь', 'а'],
-  everything: ['ы', 'я', 'и'],
-};
-
-const prefixes = {
-  all: 'Вся',
-  whole: 'Весь',
-  everything: 'Все',
-};
-
 const uploadCreateCompanyImages = {
   width: 110,
   height: 110,
@@ -45,6 +34,17 @@ const uploadCreateAssetImages = {
 const words = {
   yes: 'Да',
   no: 'Нет',
+};
+
+const suffixes = {
+  firstType: ['ь', 'а'],
+  secondType: ['ы', 'я', 'и'],
+};
+
+const prefixes = {
+  firstType: 'Вся',
+  secondType: 'Все',
+  thirdType: 'Весь',
 };
 
 const placeholders = {

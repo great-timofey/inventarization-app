@@ -48,6 +48,7 @@ export const CREATE_COMPANY_MUTATION = gql`
       company {
         id
         name
+        logo 
       }
       invitations {
         id
@@ -88,6 +89,7 @@ export default {
   LOG_OUT,
   SIGN_IN_MUTATION,
   SIGN_UP_MUTATION,
+  CREATE_COMPANY_MUTATION,
   RESET_PASSWORD_MUTATION,
   SET_AUTH_MUTATION_CLIENT,
   SET_USER_COMPANY_MUTATION_CLIENT,
