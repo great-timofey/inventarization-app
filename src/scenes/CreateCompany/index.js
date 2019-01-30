@@ -277,6 +277,8 @@ class CreateCompany extends PureComponent<Props, State> {
           this.keyboardAwareScrollView = ref;
         }}
       >
+        {isAndroid && <StatusBar backgroundColor="white" barStyle="dark-content" />}
+
         <Animated.View
           style={[
             styles.container,
