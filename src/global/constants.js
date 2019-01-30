@@ -517,6 +517,7 @@ const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
   emptyPassword: 'Введите пароль',
+  emptyPlace: 'Введите название места',
   invalidEmail: 'Вы указали неверный email',
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',

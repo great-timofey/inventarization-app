@@ -14,7 +14,7 @@ import colors from '~/global/colors';
 import { normalize, getPlaceholder } from '~/global/utils';
 import type { Item } from '~/global/types';
 import constants from '~/global/constants';
-import { GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
+import { GET_CURRENT_USER_PLACES } from '~/graphql/places/queries';
 
 import styles from './styles';
 import type { Props } from './types';

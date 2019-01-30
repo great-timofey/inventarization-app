@@ -30,9 +30,10 @@ import { setIsSideMenuOpen } from '~/global';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
-import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
-import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
-import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
+import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as CATEGORIES_QUERIES from '~/graphql/categories/queries';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 
 import type { Item } from '~/global/types';
 import type { Props } from './types';
@@ -193,7 +194,7 @@ class ItemsList extends PureComponent<Props> {
     } = this.props;
 
     return (
-      <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
+      <Query query={ASSETS_QUERIES.GET_COMPANY_ASSETS} variables={{ companyId }}>
         {({ data, loading, error }) => {
           if (loading) {
             return <ActivityIndicator />;
@@ -356,17 +357,17 @@ class ItemsList extends PureComponent<Props> {
 
 export default compose(
   //  $FlowFixMe
-  graphql(GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
-  graphql(GET_SELECTED_CATEGORIES, {
+  graphql(AUTH_QUERIES.GET_USER_ID_CLIENT, { props: ({ data: { id } }) => ({ userId: id }) }),
+  graphql(CATEGORIES_QUERIES.GET_SELECTED_CATEGORIES, {
     // $FlowFixMe
     props: ({ data: { saveSelectedCategories } }) => ({ saveSelectedCategories }),
   }),
-  graphql(GET_COMPANY_CATEGORIES, {
+  graphql(CATEGORIES_QUERIES.GET_COMPANY_CATEGORIES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ current }),
   }),
   /*  eslint-disable */
   //  $FlowFixMe
-  graphql(GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })
+  graphql(PLACES_QUERIES.GET_CURRENT_USER_PLACES, { props: ({ data: { current } }) => ({ currentUser: current }) })
   /*  eslint-enable */
 )(ItemsList);

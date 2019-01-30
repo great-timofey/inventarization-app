@@ -3,13 +3,16 @@ import React, { PureComponent } from 'react';
 import { View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
 
 import { includes } from 'ramda';
+import { compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
-import Button from '~/components/Button';
 import Input from '~/components/Input';
+import Button from '~/components/Button';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -49,39 +52,45 @@ class EditPlaceScene extends PureComponent<Props> {
   };
 
   onSubmitForm = async () => {
+    const { place } = this.state;
+    const { createPlace, userCompany: { company: { id: companyId } } } = this.props;
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
 
     if (!isFormInvalid) {
       try {
-        console.log('correct');
+        const response = await createPlace({ variables: { companyId, name: place.trim() } });
+        console.log(response)
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [
-              constants.warnings.placeAlreadyExists,
-            ],
+            warnings: {
+              count: 1,
+              place: constants.warnings.placeAlreadyExists,
+            },
           });
+        } else {
+          console.log(error.message)
         }
       }
     }
   };
 
   checkForErrors = () => {
-    const { warnings } = this.state;
-    return !!warnings.length;
+    const { warnings: { count } } = this.state;
+    return count > 0;
   };
 
   checkFields = () => {
-    const { address, place } = this.state;
-    const warnings = [];
-
+    const { place } = this.state;
+    const warnings = {
+      count: 0,
+      place: '',
+    };
     if (!place.trim()) {
-      warnings.push('place');
-    }
-    if (!address.trim()) {
-      warnings.push('address');
+      warnings.place = constants.warnings.emptyPlace;
+      warnings.count += 1;
     }
 
     this.setState({ warnings });
@@ -103,14 +112,13 @@ class EditPlaceScene extends PureComponent<Props> {
           <Input
             isWhite
             value={place}
-            needsNoPaddingBottom
             style={styles.input}
             blurOnSubmit={false}
             returnKeyType="done"
             customStyles={styles.input}
+            customWarning={warnings.place}
             type={constants.inputTypes.place}
             onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('place', warnings)}
             placeholder={constants.placeholders.place}
             onChangeText={text => this.onChangeField('place', text)}
           />
@@ -120,13 +128,11 @@ class EditPlaceScene extends PureComponent<Props> {
             isWhite
             value={address}
             style={styles.input}
-            needsNoPaddingBottom
             blurOnSubmit={false}
             returnKeyType="done"
             customStyles={styles.input}
             type={constants.inputTypes.address}
             onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('address', warnings)}
             placeholder={constants.placeholders.address}
             onChangeText={text => this.onChangeField('address', text)}
           />
@@ -142,4 +148,9 @@ class EditPlaceScene extends PureComponent<Props> {
   }
 }
 
-export default EditPlaceScene;
+export default compose(
+  graphql(PLACES_MUTATIONS.CREATE_PLACE, { name: 'createPlace' }),
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+)(EditPlaceScene);
