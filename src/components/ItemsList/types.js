@@ -20,9 +20,11 @@ export type Props = {
   currentUser: ?Object,
   selectItem: Function,
   isSortByName: boolean,
+  getItemPosition: Function,
   handleShowSortButton: Function,
   toggleDelModalVisible: Function,
   companyId: null | string | number,
   saveSelectedCategories: Array<string>,
+  isAndroidActionsModalVisible: boolean,
   currentSelectItem: number | string | null,
 };
