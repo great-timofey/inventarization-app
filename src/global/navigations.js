@@ -14,13 +14,13 @@ import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
 import Login from '~/scenes/Auth/Login';
 import ItemsScene from '~/scenes/Items';
-import PlacesScene from '~/scenes/Places';
 import PeopleScene from '~/scenes/People';
 import ProfileScene from '~/scenes/Profile';
 import Question from '~/scenes/Auth/Question';
 import Unorganized from '~/scenes/Unorganized';
 import ItemForm from '~/scenes/AddItem/ItemForm';
 import CreateCompany from '~/scenes/CreateCompany';
+import EditPlacesScene from '~/scenes/Places/EditPlace';
 import CategoryList from '~/scenes/Category/CategoryList';
 import CategoryEdit from '~/scenes/Category/CategoryEdit';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
@@ -59,7 +59,7 @@ const peopleStack = createStackNavigator({
   [SCENE_NAMES.PeopleSceneName]: PeopleScene,
 });
 const placesStack = createStackNavigator({
-  [SCENE_NAMES.PlacesSceneName]: PlacesScene,
+  [SCENE_NAMES.PlacesSceneName]: EditPlacesScene,
 });
 const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
@@ -79,9 +79,6 @@ const rootTabs = {
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.chair} />
       ),
-      style: {
-        backgroundColor: 'red',
-      },
     },
   },
   [SCENE_NAMES.CategoryList]: {
@@ -94,6 +91,7 @@ const rootTabs = {
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
     navigationOptions: {
+      tabBarVisible: false,
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
