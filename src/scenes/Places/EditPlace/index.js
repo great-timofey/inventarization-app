@@ -11,7 +11,7 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-import { getGeocoding, getReverseGeocoding } from '~/services/geocoding';
+import { getGeocoding } from '~/services/geocoding';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -57,8 +57,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
     if (!isFormInvalid) {
       try {
+        const { address } = this.state;
         this.setState({ loading: true });
-        const {_bodyText } = await getGeocoding(this.state.address);
+        const { _bodyText } = await getGeocoding(address);
         const { status, results } = JSON.parse(_bodyText);
         if (status !== constants.geocodingStatuses.ok) {
           Alert.alert(constants.errors.geocoding);
@@ -70,9 +71,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [
-              constants.warnings.placeAlreadyExists,
-            ],
+            warnings: [constants.warnings.placeAlreadyExists],
           });
         }
       }
