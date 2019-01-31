@@ -19,6 +19,7 @@ class Carousel extends PureComponent<Props> {
         ref={innerRef}
         showsPagination={false}
         removeClippedSubviews={false}
+        containerStyle={{ alignSelf: 'stretch' }}
       >
         {data.map(uri => (
           <Image key={uri} style={styles.photo} source={{ uri }} />
