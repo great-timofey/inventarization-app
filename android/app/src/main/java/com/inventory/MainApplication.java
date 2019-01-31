@@ -4,7 +4,6 @@ import android.app.Application;
 
 import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactApplication;
-import com.entria.views.RNViewOverflowPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.rnfs.RNFSPackage;
 import com.cmcewen.blurview.BlurViewPackage;

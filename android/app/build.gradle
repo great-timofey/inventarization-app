@@ -151,7 +151,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-view-overflow')
     implementation project(':react-native-fs')
     implementation project(':react-native-blur')
     implementation project(':react-native-svg')

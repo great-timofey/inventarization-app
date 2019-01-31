@@ -1,11 +1,9 @@
 // @flow
 import React, { PureComponent } from 'react';
-import { View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-
-import AndroidViewOverflow from 'react-native-view-overflow';
+import { View, TouchableOpacity, Image } from 'react-native';
 
 import assets from '~/global/assets';
-import { isAndroid, isSmallDevice } from '~/global/device';
+import { isSmallDevice } from '~/global/device';
 
 import styles from './styles';
 import type { Props } from './types';
@@ -16,41 +14,23 @@ class PhotoPreview extends PureComponent<Props> {
     removePictureCallback(index);
   };
 
-  // get removeButton() {
-  //   return (
-  //     <TouchableOpacity
-  //       activeOpacity={0.5}
-  //       onPress={this.removePicture}
-  //       style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-  //     >
-  //       <AndroidViewOverflow>
-  //         <Image source={assets.deletePhoto} />
-  //       </AndroidViewOverflow>
-  //     </TouchableOpacity>
-  //   );
-  // };
-  //
-  // get removeButtonAndroid() {
-  //   return (
-  //     <AndroidViewOverflow>
-  //       {this.removeButton}
-  //     </AndroidViewOverflow>
-  //   );
-  // };
+  get removeButton() {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={this.removePicture}
+        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
+      >
+        <Image source={assets.deletePhoto} />
+      </TouchableOpacity>
+    );
+  };
 
   render() {
     const { uri } = this.props;
     return (
       <View style={styles.photoContainer}>
-        <AndroidViewOverflow>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={this.removePicture}
-            style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-          >
-              <Image source={assets.deletePhoto} />
-          </TouchableOpacity>
-        </AndroidViewOverflow>
+        {this.removeButton}
         <Image style={styles.photoImage} source={{ uri }} />
       </View>
     );
