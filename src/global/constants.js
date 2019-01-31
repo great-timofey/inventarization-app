@@ -54,8 +54,10 @@ const placeholders = {
   enterPassword: 'Введите пароль',
   model: 'Введите название',
   description: 'Введите текст',
+  place: 'Введите название места',
   placeId: 'Место не указано',
   inputHeader: 'Введите название',
+  address: 'Введите адрес места',
   inventoryId: 'Введите код',
   codeData: 'Введите код',
   assessedDate: 'Не оценивалось',
@@ -90,6 +92,12 @@ const inputTypes = {
   companyName: {
     label: 'Название организации',
     warning: 'Введите название вашей организации',
+  },
+  address: {
+    label: 'Адрес',
+  },
+  place: {
+    label: 'Название',
   },
   invitees: {
     label: 'Добавьте людей:',
@@ -138,6 +146,7 @@ const buttonTitles = {
   choosePhoto: 'Выбрать фото',
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
+  createPlace: 'Добавить место',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -250,6 +259,7 @@ const headers = {
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
   addingItem: 'Добавление предмета',
+  addPlaces: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   modifyingItem: 'Редактирование предмета',
@@ -514,6 +524,7 @@ const warnings = {
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
+  placeAlreadyExists: 'Место с таким названием уже существует',
   unregisteredEmail: 'Данный email не был зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 8 символов',
 };
@@ -522,6 +533,7 @@ const graphqlErrors = {
   userNotFound: 'GraphQL error: User not found',
   passwordIsIncorrect: 'GraphQL error: Password is incorrect',
   emailAlreadyExists: 'GraphQL error: Validation failed: Email already exists',
+  placeAlreadyExists: 'GraphQL error: Validation failed: Name already exists',
 };
 
 export default {

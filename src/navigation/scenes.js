@@ -12,6 +12,7 @@ export const CategoryEdit = 'CategoryEdit';
 export const CategoryList = 'CategoryList';
 export const QuestionSceneName = 'Question';
 export const ItemFormSceneName = 'ItemForm';
+export const PlacesMainSceneName = 'MainPlaces';
 export const UnorganizedSceneName = 'Unorganized';
 export const CreateCompanySceneName = 'CreateCompany';
 export const AddItemPhotosSceneName = 'AddItemPhotos';
