@@ -7,7 +7,7 @@ import { deviceWidth } from '~/global/device';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   placesHeaderStyle: {
     marginBottom: normalize(20),

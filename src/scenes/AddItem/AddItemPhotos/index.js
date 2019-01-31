@@ -20,10 +20,12 @@ import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
+import { isIOS } from '~/global/device';
+import { isSmallDevice } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { isSmallDevice } from '~/global/utils';
+
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -137,7 +139,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
             res();
           },
           error => rej(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          { enableHighAccuracy: isIOS, timeout: 20000, maximumAge: 500 },
         );
       });
 

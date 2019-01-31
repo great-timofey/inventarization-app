@@ -11,6 +11,7 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
+import { isIOS } from '~/global/device';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -29,6 +30,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
+    headerRight: <View />,
   });
 
   state = {
@@ -92,7 +94,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
       //  eslint-disable-next-line max-len
       ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
       error => console.log(error),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      { enableHighAccuracy: isIOS, timeout: 20000, maximumAge: 500 },
     );
   }
 

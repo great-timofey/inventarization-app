@@ -21,9 +21,10 @@ import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 
+import { isIOS } from '~/global/device';
+import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
@@ -229,7 +230,7 @@ class AddItemDefects extends PureComponent<Props, State> {
             res();
           },
           error => rej(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          { enableHighAccuracy: isIOS, timeout: 20000, maximumAge: 500 },
         );
       });
 
