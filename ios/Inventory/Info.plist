@@ -39,8 +39,6 @@
 			</dict>
 		</dict>
 	</dict>
-  <key>NSPhotoLibraryAddUsageDescription</key>
-  <string>Приложение хочет добавлять фотографии в вашу библиотеку</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Приложение хочет использовать AppleMusic</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -53,6 +51,8 @@
 	<string>Приложение хочет использовать вашу геолокацию</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Приложение хочет следить за вашими движениями</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Приложение хочет добавлять фотографии в вашу библиотеку</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Приложению необходим доступ к фотографиям</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
@@ -81,8 +81,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
