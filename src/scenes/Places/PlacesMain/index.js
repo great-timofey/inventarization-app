@@ -26,8 +26,11 @@ import * as PLACES_QUERIES from '~/graphql/places/queries';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
+import { mainNavigation } from '~/global';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+
+import * as SCENE_NAMES from '~/navigation/scenes';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -205,6 +208,10 @@ getItemPosition = (itemRef, parentScrollViewRef, place) => {
   }
 }
 
+openPlace = (id, name, address, gps) => {
+  mainNavigation.navigate(SCENE_NAMES.PlacesItemsSceneName, { id, name, address, gps });
+}
+
 scrollViewRef: any;
 
 render() {
@@ -261,7 +268,7 @@ render() {
                 isPlaces
                 data={placesList}
                 userRole={userRole}
-                openItem={() => {}}
+                openPlace={this.openPlace}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
                 getItemPosition={this.getItemPosition}

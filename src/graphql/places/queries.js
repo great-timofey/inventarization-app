@@ -7,6 +7,11 @@ export const GET_COMPANY_PLACES_BY_ID = gql`
       id
       name
       address
+      assetsCount
+      gps {
+        lat,
+        lon
+      }
     }
   }
 `;

@@ -22,6 +22,7 @@ import ItemForm from '~/scenes/AddItem/ItemForm';
 import CreateCompany from '~/scenes/CreateCompany';
 import PlacesScene from '~/scenes/Places/PlacesMain';
 import EditPlacesScene from '~/scenes/Places/EditPlace';
+import PlacesItems from '~/scenes/Places/PlacesItems';
 import CategoryList from '~/scenes/Category/CategoryList';
 import CategoryEdit from '~/scenes/Category/CategoryEdit';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
@@ -62,6 +63,7 @@ const peopleStack = createStackNavigator({
 const placesStack = createStackNavigator({
   [SCENE_NAMES.PlacesMainSceneName]: PlacesScene,
   [SCENE_NAMES.PlacesSceneName]: EditPlacesScene,
+  [SCENE_NAMES.PlacesItemsSceneName]: PlacesItems,
 });
 const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
