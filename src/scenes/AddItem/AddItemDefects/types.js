@@ -8,19 +8,15 @@ export type Props = {
   setCreatedAssetsCount: Function,
 };
 
-type Photo = {
-  uri: string,
-};
-
 export type PhotosProps = {
-  item: Photo,
+  item: string,
   index: number,
 };
 
 export type State = {
   flashMode: number,
   isLoading: boolean,
-  photos: Array<Photo>,
+  photos: Array<string>,
   isHintOpened: boolean,
   ableToTakePicture: boolean,
   needToAskPermissions: boolean,

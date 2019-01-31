@@ -248,7 +248,7 @@ class AddItemDefects extends PureComponent<Props, State> {
               res(coords);
             },
             error => rej(error.message),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+            params,
           );
         });
 
@@ -274,10 +274,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       state: { photos },
     } = this;
 
-    const { uri } = photos[index];
-
     try {
-      RNFS.unlink(uri);
+      RNFS.unlink(photos[index]);
     } catch (error) {
       Alert.alert(error.message);
     }

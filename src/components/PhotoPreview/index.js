@@ -24,7 +24,7 @@ class PhotoPreview extends PureComponent<Props> {
         <Image source={assets.deletePhoto} />
       </TouchableOpacity>
     );
-  };
+  }
 
   render() {
     const { uri } = this.props;
