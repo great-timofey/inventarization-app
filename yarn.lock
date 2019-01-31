@@ -4977,13 +4977,19 @@ react-native-torch@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-native-torch/-/react-native-torch-1.1.5.tgz#165a8b22b66c2b55e188d38604318712282ca0cf"
 
-react-native-vector-icons@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.1.0.tgz#770a3f8ced692d75deb3afbb9829195ceed1eedd"
+react-native-vector-icons@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.2.0.tgz#2682b718099eb9470c0defd38da47deb844a0f9c"
+  integrity sha512-NEQeQF7RzO5OILV4Q/F8P3pSuwN45/PPbOwU8/Eocc2Kl1bH1D42WFj+WSbCLVKeEq6oo7uj3tGqmrXGLs974A==
   dependencies:
     lodash "^4.0.0"
     prop-types "^15.6.2"
     yargs "^8.0.2"
+
+react-native-view-overflow@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-view-overflow/-/react-native-view-overflow-0.0.4.tgz#36b2c00fbe7f270a0a92548eeb9ee147d2a4c3ae"
+  integrity sha512-AUci2As9lI23CPG1urS/cLC/EQWMbc0kwBhClY4ikZGgBJQF2uBkCPIC/1KY4hcIvhtdv4pxMXC9UIPrdYbwSw==
 
 react-native@0.57.8:
   version "0.57.8"
