@@ -22,6 +22,7 @@ import { all, equals, values, assoc, remove, concat } from 'ramda';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import PhotoPreview from '~/components/PhotoPreview';
 import type { Props, State, PhotosProps } from './types';
