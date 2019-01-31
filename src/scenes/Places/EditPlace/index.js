@@ -1,6 +1,6 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
+import { Alert, View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
 
 import { includes } from 'ramda';
 
@@ -10,7 +10,7 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-import { getAddressByCoords } from '~/services/geocoding';
+import { getGeocoding, getReverseGeocoding } from '~/services/geocoding';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -56,7 +56,16 @@ class EditPlaceScene extends PureComponent<Props> {
 
     if (!isFormInvalid) {
       try {
-        console.log('correct');
+        this.setState({ loading: true });
+        const {_bodyText } = await getGeocoding(this.state.address);
+        const { status, results } = JSON.parse(_bodyText);
+        if (status !== constants.geocodingStatuses.ok) {
+          Alert.alert(constants.errors.geocoding);
+        } else {
+          const { lat: latitude, lng: longitude } = results[0].geometry.location;
+          this.setState({ latitude, longitude });
+        }
+        this.setState({ loading: false });
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
@@ -78,9 +87,9 @@ class EditPlaceScene extends PureComponent<Props> {
     const { address, place } = this.state;
     const warnings = [];
 
-    if (!place.trim()) {
-      warnings.push('place');
-    }
+    // if (!place.trim()) {
+    //   warnings.push('place');
+    // }
     if (!address.trim()) {
       warnings.push('address');
     }
@@ -91,9 +100,10 @@ class EditPlaceScene extends PureComponent<Props> {
   componentDidMount() {
     this.setState({ loading: true });
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }, () => getAddressByCoords(this.state.latitude, this.state.longitude).then(response => console.log(response))),
-      error => console.log(error),
-    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
+      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
+      error => console.log(error)
+    );
+    // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
   }
 
   render() {
