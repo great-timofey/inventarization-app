@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { setIsSideMenuOpen } from '~/global';
 import { SET_SELECTED_CATEGORY } from '~/graphql/categories/mutations';
 import { GET_SELECTED_CATEGORIES } from '~/graphql/categories/queries';
 
@@ -38,6 +39,7 @@ export class SubCategory extends PureComponent<Props, State> {
     } else if (chieldsId) {
       if (chieldsId.length > 0) {
         this.saveSelectedCategories(chieldsId);
+        setIsSideMenuOpen(false);
       }
     } else {
       this.saveSelectedCategories(id.split());

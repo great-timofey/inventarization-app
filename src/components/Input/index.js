@@ -63,7 +63,6 @@ class Input extends Component<Props> {
       onSubmitEditing,
       containerCallback,
       showWarningInTitle,
-      needsNoPaddingBottom,
       isBackgroundTransparent,
       ...textInputProps
     } = this.props;
@@ -120,7 +119,7 @@ class Input extends Component<Props> {
           />
           {children}
         </View>
-        {!showWarningInTitle && !needsNoPaddingBottom && (
+        {!showWarningInTitle && (
           <Warning
             isVisible={isWarning || !!customWarning}
             title={isWarning ? type.warning : customWarning}

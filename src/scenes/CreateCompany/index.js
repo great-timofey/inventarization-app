@@ -9,10 +9,10 @@ import {
   Keyboard,
   Animated,
   StatusBar,
+  AsyncStorage,
   TouchableOpacity,
 } from 'react-native';
 
-import dayjs from 'dayjs';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { graphql, compose } from 'react-apollo';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -151,31 +151,27 @@ class CreateCompany extends PureComponent<Props, State> {
   };
 
   handleCreateCompany = async () => {
-    const { createCompany, setAuthMutationClient, setUserCompanyMutationClient } = this.props;
+    const { createCompany, navigation } = this.props;
     const { invitees, companyName: name, chosenPhotoUri } = this.state;
     const inviters = invitees.map(email => ({ email, role: 'employee' }));
     try {
-      let file = '';
+      let file;
       if (chosenPhotoUri) {
-        file = await convertToApolloUpload([{ uri: chosenPhotoUri }], '=');
+        const fileObj = { uri: chosenPhotoUri };
+        const [oneAndOnlyPhotoUpload] = await convertToApolloUpload([fileObj], '=');
+        file = oneAndOnlyPhotoUpload;
       }
 
-      const { data: { createCompany: { company } } } = await createCompany({
+      await createCompany({
         variables: { name, logo: file, inviters },
       });
 
-      const userCompany = {
-        id: '1',
-        company,
-        role: 'admin',
-        createdAt: dayjs(Date.now()).format(constants.formats.createUserCompanyDates),
-        __typename: 'UserCompany',
-      };
+      await AsyncStorage.removeItem('token');
 
-      await setUserCompanyMutationClient({ variables: { userCompany } });
-      await setAuthMutationClient({ variables: { isAuthed: true } });
+      //  go back to auth screen
+      navigation.pop(2);
     } catch (error) {
-      console.log(error.message);
+      console.dir(error);
     }
   };
 
@@ -281,6 +277,8 @@ class CreateCompany extends PureComponent<Props, State> {
           this.keyboardAwareScrollView = ref;
         }}
       >
+        {isAndroid && <StatusBar backgroundColor="white" barStyle="dark-content" />}
+
         <Animated.View
           style={[
             styles.container,

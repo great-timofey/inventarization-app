@@ -2,6 +2,7 @@
 import React, { PureComponent } from 'react';
 import { Alert, View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
 
+//  $FlowFixMe
 import { includes } from 'ramda';
 
 import Map from '~/components/Map';
@@ -16,9 +17,9 @@ import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 
 import styles from './styles';
-type Props = {};
+import type { Props, State } from './types';
 
-class EditPlaceScene extends PureComponent<Props> {
+class EditPlaceScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
     headerTitle: HeaderTitle({
@@ -87,9 +88,9 @@ class EditPlaceScene extends PureComponent<Props> {
     const { address, place } = this.state;
     const warnings = [];
 
-    // if (!place.trim()) {
-    //   warnings.push('place');
-    // }
+    if (!place.trim()) {
+      warnings.push('place');
+    }
     if (!address.trim()) {
       warnings.push('address');
     }
@@ -100,21 +101,23 @@ class EditPlaceScene extends PureComponent<Props> {
   componentDidMount() {
     this.setState({ loading: true });
     navigator.geolocation.getCurrentPosition(
+      //  eslint-disable-next-line max-len
       ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
-      error => console.log(error)
+      error => console.log(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
   }
 
   render() {
     const { place, address, warnings, loading, latitude, longitude, isNewPlaceScene } = this.state;
-    return loading ? <ActivityIndicator /> : (
+    return loading ? (
+      <ActivityIndicator />
+    ) : (
       <SafeAreaView style={styles.container}>
         <View style={styles.inputView}>
           <Input
             isWhite
             value={place}
-            needsNoPaddingBottom
             style={styles.input}
             blurOnSubmit={false}
             returnKeyType="done"
@@ -131,7 +134,6 @@ class EditPlaceScene extends PureComponent<Props> {
             isWhite
             value={address}
             style={styles.input}
-            needsNoPaddingBottom
             blurOnSubmit={false}
             returnKeyType="done"
             customStyles={styles.input}
@@ -146,7 +148,11 @@ class EditPlaceScene extends PureComponent<Props> {
         <Button
           onPress={this.onSubmitForm}
           customStyle={styles.submitButton}
-          title={isNewPlaceScene ? constants.buttonTitles.createPlace : constants.buttonTitles.saveChanges}
+          title={
+            isNewPlaceScene
+              ? constants.buttonTitles.createPlace
+              : constants.buttonTitles.saveChanges
+          }
         />
       </SafeAreaView>
     );

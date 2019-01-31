@@ -1,9 +1,12 @@
 // @flow
 
 export type State = {
-  data: Array<Object>,
   error: ?string,
   loading: boolean,
+  data: Array<Object>,
+  isDrilledDown: boolean,
+  categories: Array<Object>,
+  currentlyActiveCategoryId: ?string,
 };
 
 export type Props = {

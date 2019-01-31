@@ -11,8 +11,8 @@ import { normalize } from '~/global/utils';
 import styles from './styles';
 import type { Props } from './types';
 
-const HeaderBackButton = ({ onPress }: Props) => (
-  <TouchableOpacity style={styles.headerLeft} onPress={onPress}>
+const HeaderBackButton = ({ onPress, customStyle }: Props) => (
+  <TouchableOpacity style={[styles.headerLeft, customStyle]} onPress={onPress}>
     <Icon
       color={colors.blue}
       size={normalize(40)}

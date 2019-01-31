@@ -12,20 +12,10 @@ const deltas = {
 };
 
 class Map extends PureComponent<Props> {
-  state = {
-
-  };
-
   render() {
     const { customStyles, region, ...rest } = this.props;
     const coordsToShow = { ...region, ...deltas };
-    return (
-      <MapView
-        {...rest}
-        initialRegion={coordsToShow}
-        style={[styles.map, customStyles]}
-      />
-    );
+    return <MapView {...rest} initialRegion={coordsToShow} style={[styles.map, customStyles]} />;
   }
 }
 

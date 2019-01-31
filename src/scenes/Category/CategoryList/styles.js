@@ -2,9 +2,10 @@
 
 import { StyleSheet } from 'react-native';
 
+import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import colors from '~/global/colors';
+import { isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   container: {
@@ -21,10 +22,19 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.regular,
   },
   header: {
+    flex: 1,
+    alignSelf: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    textAlignVertical: 'center',
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
   headerStyle: {
+    elevation: 0,
     borderBottomWidth: 0,
+  },
+  backButton: {
+    marginTop: isAndroid ? normalize(5) : 0,
   },
 });
