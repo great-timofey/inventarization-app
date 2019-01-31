@@ -23,6 +23,7 @@ import Permissions from 'react-native-permissions';
 
 import assets from '~/global/assets';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 import { convertToApolloUpload } from '~/global/utils';
 import PhotoPreview from '~/components/PhotoPreview';
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -237,6 +238,9 @@ class AddItemDefects extends PureComponent<Props, State> {
       const isLocationExists = navigation.getParam('location', '');
 
       if (!isLocationExists) {
+        const params = isAndroid
+          ? undefined
+          : { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
         const locationPromise = new Promise((res, rej) => {
           navigator.geolocation.getCurrentPosition(
             ({ coords: { latitude: lat, longitude: lon } }) => {
