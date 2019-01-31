@@ -4,30 +4,28 @@ import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 
-// import { isEmpty } from 'ramda';
+import { findIndex, remove } from 'ramda';
 
-import { compose, graphql, Query } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 import InventoryIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Feather';
 
 import Map from '~/components/Map';
 import Search from '~/components/Search';
-import Input from '~/components/Input/index';
+import ItemsList from '~/components/ItemsList';
+import SortModal from '~/components/SortModal';
+import IconButton from '~/components/IconButton';
 import SearchHeader from '~/components/SearchHeader';
+import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-// import Button from '~/components/Button';
-// import SwipeableList from '~/components/Swipe';
-// import AndroidActionsModal from '~/components/AndroidActionsModal';
-
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
-// import * as PLACES_QUERIES from '~/graphql/places/queries';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 
-// import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
@@ -126,9 +124,13 @@ constructor(props: Props) {
     name,
     address,
     searchValue: '',
+    isSortByName: false,
     isSearchActive: false,
     isListViewStyle: false,
     currentSelectItem: null,
+    isSortModalVisible: false,
+    isDeleteModalVisible: false,
+    isAndroidActionsModalVisible: false,
   };
 
   navigation.setParams({
@@ -183,6 +185,13 @@ toggleSearch = () => {
   });
 };
 
+toggleActionsModal = () => {
+  const { isAndroidActionsModalVisible } = this.state;
+  this.setState({
+    isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
+  });
+}
+
 onChangeSearchField = (value: string) => {
   const { navigation } = this.props;
   navigation.setParams({
@@ -193,9 +202,52 @@ onChangeSearchField = (value: string) => {
   });
 };
 
-scrollViewRef: any;
+toggleDelModalVisible = () => {
+  const { isDeleteModalVisible } = this.state;
+  this.setState({
+    isDeleteModalVisible: !isDeleteModalVisible,
+  });
+};
 
-render() {
+toggleSortModalVisible = () => {
+  const { isSortModalVisible } = this.state;
+  this.setState({
+    isSortModalVisible: !isSortModalVisible,
+  });
+};
+
+toggleSortMethod = () => {
+  const { isSortByName } = this.state;
+  this.setState(
+    {
+      isSortByName: !isSortByName,
+    },
+    this.toggleSortModalVisible,
+  );
+};
+
+handleShowSortButton = (value: boolean) => this.setState({
+  showSortButton: value,
+});
+
+selectItem = (id: number | string) => {
+  this.setState({
+    currentSelectItem: id,
+  });
+};
+
+handleDeleteItem = async (id: number | string, android: boolean) => {
+  const { destroyAsset } = this.props;
+  await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
+  if (android) {
+    this.setState({ isAndroidActionsModalVisible: false });
+  } else {
+    this.toggleDelModalVisible();
+    this.setState({ currentSelectItem: null });
+  }
+};
+
+updateDestroyAsset = (cache: Object) => {
   const {
     props: {
       userCompany: {
@@ -205,63 +257,128 @@ render() {
       },
     },
     state: {
+      id: placeId,
+      currentSelectItem,
+    },
+  } = this;
+
+  const data = cache.readQuery({
+    query: PLACES_QUERIES.GET_COMPANY_ASSETS_IN_PLACES,
+    variables: { companyId, placeId },
+  });
+
+  const deleteIndex = findIndex(asset => asset.id === currentSelectItem, data.places[0].assets);
+  data.places[0].assets = remove(deleteIndex, 1, data.places[0].assets);
+  cache.writeQuery({
+    query: PLACES_QUERIES.GET_COMPANY_ASSETS_IN_PLACES,
+    variables: { companyId, placeId },
+    data });
+
+  const data2 = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
+  const deleteIndex2 = findIndex(asset => asset.id === currentSelectItem, data2.assets);
+  data2.assets = remove(deleteIndex2, 1, data2.assets);
+  cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data: data2 });
+};
+
+scrollViewRef: any;
+
+render() {
+  const {
+    props: {
+      navigation,
+      userCompany: {
+        role: userRole,
+        company: {
+          id: companyId,
+        },
+      },
+    },
+    state: {
+      id,
       gps,
       name,
       address,
       searchValue,
+      isSortByName,
+      showSortButton,
       isSearchActive,
+      isListViewStyle,
+      currentSelectItem,
+      isSortModalVisible,
+      isDeleteModalVisible,
+      isAndroidActionsModalVisible,
     },
   } = this;
 
-
   return (
-    <Query query={ASSETS_QUERIES.GET_COMPANY_ASSETS} variables={{ companyId }}>
-      {({ data, loading, error }) => {
-        if (loading) { return <ActivityIndicator />; }
-        if (error) {
-          return (
-            <View>
-              <Text>{error.message}</Text>
-            </View>
-          );
-        }
 
-        let assetsList = [];
-        if (data && data.assets) {
-          assetsList = data.assets;
-        }
-
-        return (
-          <Fragment>
-            <ScrollView
-              scrollEventThrottle={16}
-              onScroll={this.handleScroll}
-              ref={(ref) => { this.scrollViewRef = ref; }}
-            >
-              <Text style={styles.placeName}>{name}</Text>
-              <View style={styles.address}>
-                <Text style={styles.topText}>{constants.inputTypes.address.label}</Text>
-                <Text style={styles.botText}>{address}</Text>
-              </View>
-              <Map
-                customStyles={styles.map}
-                region={{
-                  latitude: gps.lat,
-                  longitude: gps.lon,
-                }}
-              />
-            </ScrollView>
-            {isSearchActive && (
-            <Search
-              items={assetsList}
-              searchValue={searchValue}
-              toggleSearch={this.toggleSearch}
-            />
-            )}
-          </Fragment>
-        );
-      }}
-    </Query>
+    <Fragment>
+      <ScrollView
+        scrollEventThrottle={16}
+        onScroll={this.handleScroll}
+        ref={(ref) => { this.scrollViewRef = ref; }}
+      >
+        <Text style={styles.placeName}>{name}</Text>
+        <View style={styles.address}>
+          <Text style={styles.topText}>{constants.inputTypes.address.label}</Text>
+          <Text style={styles.botText}>{address}</Text>
+        </View>
+        <Map
+          customStyles={styles.map}
+          region={{
+            latitude: gps.lat,
+            longitude: gps.lon,
+          }}
+        />
+        <ItemsList
+          placeId={id}
+          userRole={userRole}
+          companyId={companyId}
+          navigation={navigation}
+          swipeable={isListViewStyle}
+          selectItem={this.selectItem}
+          currentSelectItem={currentSelectItem}
+          isDeleteModalVisible={isDeleteModalVisible}
+          handleShowSortButton={this.handleShowSortButton}
+          toggleDelModalVisible={this.toggleDelModalVisible}
+          isAndroidActionsModalVisible={isAndroidActionsModalVisible}
+        />
+      </ScrollView>
+      <QuestionModal
+        isModalVisible={isDeleteModalVisible}
+        leftAction={this.toggleDelModalVisible}
+        data={constants.modalQuestion.itemDel}
+          //  $FlowFixMe
+        rightAction={() => this.handleDeleteItem(currentSelectItem, false)}
+      />
+      {showSortButton
+        && !isSearchActive
+        && !isSortModalVisible
+        && !isAndroidActionsModalVisible
+        && (
+          <IconButton
+            isCustomIcon
+            size={isSortByName ? 50 : 70}
+            onPress={this.toggleSortModalVisible}
+            customPosition={{ position: 'absolute', right: 30, bottom: 30 }}
+            iconName={isSortByName ? 'button-sort-name' : 'button-sort-price'}
+            customIconStyle={!isSortByName ? { top: normalize(-4), left: normalize(-6) } : {}}
+          />
+        )}
+      <SortModal
+        isSortByName={isSortByName}
+        isModalVisible={isSortModalVisible}
+        toggleSortMethod={this.toggleSortMethod}
+        toggleModalVisible={this.toggleSortModalVisible}
+      />
+      {isSearchActive && (
+        <Search
+          items={[]}
+          searchValue={searchValue}
+          toggleSearch={this.toggleSearch}
+        />
+      )}
+    </Fragment>
   );
 }
 }
@@ -271,4 +388,6 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
+  graphql(ASSETS_MUTATIONS.DESTROY_ASSET, { name: 'destroyAsset' }),
+
 )(PlacesItems);

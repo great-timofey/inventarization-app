@@ -30,6 +30,7 @@ import { setIsSideMenuOpen } from '~/global';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
@@ -177,6 +178,7 @@ class ItemsList extends PureComponent<Props> {
     const {
       userId,
       current,
+      placeId,
       userRole,
       companyId,
       swipeable,
@@ -192,8 +194,19 @@ class ItemsList extends PureComponent<Props> {
       isAndroidActionsModalVisible,
     } = this.props;
 
+    let query;
+    let variables;
+
+    if (placeId) {
+      query = PLACES_QUERIES.GET_COMPANY_ASSETS_IN_PLACES;
+      variables = { companyId, placeId };
+    } else {
+      query = GET_COMPANY_ASSETS;
+      variables = { companyId };
+    }
+
     return (
-      <Query query={GET_COMPANY_ASSETS} variables={{ companyId }}>
+      <Query query={query} variables={variables}>
         {({ data, loading, error }) => {
           if (loading) {
             return <ActivityIndicator />;
@@ -207,9 +220,16 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          // $FlowFixMe
-          const { assets: innerAssets } = data;
-          let dataToRender = innerAssets;
+          let dataToRender;
+          let innerAssets;
+
+          if (placeId) {
+            innerAssets = data.places[0].assets;
+            dataToRender = innerAssets;
+          } else {
+            innerAssets = data.assets;
+            dataToRender = innerAssets;
+          }
 
           const isUserEmployee = userRole === constants.roles.employee;
           const isUserManager = userRole === constants.roles.manager;
@@ -281,7 +301,7 @@ class ItemsList extends PureComponent<Props> {
 
           return dataToRenderIsEmpty ? (
             <View>
-              <Text style={styles.header}>{constants.headers.items}</Text>
+              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
               <Image source={assets.noItemsYet} style={styles.image} />
               <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
               <Button
@@ -302,7 +322,7 @@ class ItemsList extends PureComponent<Props> {
               ref={(ref) => { this.scrollViewRef = ref; }}
               scrollEnabled={!isAndroidActionsModalVisible}
             >
-              <Text style={styles.header}>{constants.headers.items}</Text>
+              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
               <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal

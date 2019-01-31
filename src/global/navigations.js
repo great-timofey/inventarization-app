@@ -95,7 +95,7 @@ const rootTabs = {
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
     navigationOptions: {
-      tabBarVisible: false,
+      // tabBarVisible: false,
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
