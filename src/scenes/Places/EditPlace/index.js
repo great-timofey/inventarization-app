@@ -18,8 +18,8 @@ import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 
-import type { Props, State } from './types';
 import styles from './styles';
+import type { Props, State } from './types';
 
 class EditPlaceScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
@@ -117,7 +117,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
   componentDidMount() {
     this.setState({ loading: true });
     navigator.geolocation.getCurrentPosition(
-      //  eslint-disable-next-line max-len
       ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
       error => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
