@@ -117,6 +117,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
   componentDidMount() {
     this.setState({ loading: true });
     navigator.geolocation.getCurrentPosition(
+      //  eslint-disable-next-line max-len
       ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
       error => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },

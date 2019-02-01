@@ -30,8 +30,6 @@ export const GET_CURRENT_USER_PLACES = gql`
   }
 `;
 
-
-
 export default {
   GET_COMPANY_PLACES,
   GET_CURRENT_USER_PLACES,
