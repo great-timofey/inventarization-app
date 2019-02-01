@@ -30,6 +30,7 @@ import { setIsSideMenuOpen } from '~/global';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
@@ -177,6 +178,7 @@ class ItemsList extends PureComponent<Props> {
     const {
       userId,
       current,
+      placeId,
       userRole,
       companyId,
       swipeable,
@@ -207,7 +209,6 @@ class ItemsList extends PureComponent<Props> {
             );
           }
 
-          // $FlowFixMe
           const { assets: innerAssets } = data;
           let dataToRender = innerAssets;
 
@@ -247,13 +248,6 @@ class ItemsList extends PureComponent<Props> {
             }
           }
 
-          const dataToRenderIsEmpty = dataToRender.length === 0;
-          if (dataToRenderIsEmpty) {
-            handleShowSortButton(false);
-          } else {
-            handleShowSortButton(true);
-          }
-
           let companyCategories = [];
 
           if (current != null) {
@@ -279,10 +273,27 @@ class ItemsList extends PureComponent<Props> {
               && includes(el.category.id, saveSelectedCategories));
           }
 
+          if (placeId) {
+            dataToRender = dataToRender.filter(el => el.place
+            && el.place.id
+            && includes(el.place.id, placeId));
+          }
+
+          const dataToRenderIsEmpty = dataToRender.length === 0;
+          const isSortButtonShow = dataToRender.length > 1;
+          if (isSortButtonShow) {
+            handleShowSortButton(true);
+          } else {
+            handleShowSortButton(false);
+          }
+
           return dataToRenderIsEmpty ? (
             <View>
-              <Text style={styles.header}>{constants.headers.items}</Text>
-              <Image source={assets.noItemsYet} style={styles.image} />
+              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
+              <Image
+                source={assets.noItemsYet}
+                style={[styles.image, placeId && styles.imagePlace]}
+              />
               <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
               <Button
                 isGreen
@@ -302,7 +313,7 @@ class ItemsList extends PureComponent<Props> {
               ref={(ref) => { this.scrollViewRef = ref; }}
               scrollEnabled={!isAndroidActionsModalVisible}
             >
-              <Text style={styles.header}>{constants.headers.items}</Text>
+              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
               <CategoryList openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal

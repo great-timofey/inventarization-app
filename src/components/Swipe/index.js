@@ -132,7 +132,7 @@ class SwipeableList extends PureComponent<Props, {}> {
   };
 
   renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
-    const { selectItem, openItem, getItemPosition, parentScrollViewRef } = this.props;
+    const { selectItem, openPlace, getItemPosition, parentScrollViewRef } = this.props;
 
     const swipeoutBtns = [
       {
@@ -172,7 +172,7 @@ class SwipeableList extends PureComponent<Props, {}> {
       >
         <Place
           place={place}
-          openItem={openItem}
+          openPlace={openPlace}
           getItemPosition={getItemPosition}
           parentScrollViewRef={parentScrollViewRef}
         />

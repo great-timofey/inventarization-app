@@ -12,6 +12,11 @@ import { isAndroid } from '~/global/device';
 class Place extends PureComponent<Props, {}> {
   itemRef: any;
 
+  handleOpenPlace = () => {
+    const { place, openPlace } = this.props;
+    openPlace(place.id, place.name, place.address, place.gps);
+  }
+
   render() {
     const {
       place,
@@ -21,8 +26,8 @@ class Place extends PureComponent<Props, {}> {
 
     return (
       <TouchableOpacity
-        onPress={() => {}}
         style={styles.rowItem}
+        onPress={this.handleOpenPlace}
         ref={(ref) => { this.itemRef = ref; }}
         onLongPress={isAndroid
           ? () => getItemPosition(this.itemRef, parentScrollViewRef, place)
