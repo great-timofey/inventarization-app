@@ -57,13 +57,11 @@ class Input extends Component<Props> {
       isWarning,
       isMultiline,
       onSubmitForm,
-      customStyles,
       customWarning,
       returnKeyType,
       onSubmitEditing,
       containerCallback,
       showWarningInTitle,
-      needsNoPaddingBottom,
       isBackgroundTransparent,
       ...textInputProps
     } = this.props;
@@ -88,7 +86,6 @@ class Input extends Component<Props> {
             isBackgroundTransparent && styles.transparentBackgroundContainer,
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
             isWhite && (isWarning || customWarning) && styles.invalidWhiteContainer,
-            customStyles,
           ]}
         >
           <Text
@@ -120,7 +117,7 @@ class Input extends Component<Props> {
           />
           {children}
         </View>
-        {!showWarningInTitle && !needsNoPaddingBottom && (
+        {!showWarningInTitle && (
           <Warning
             isVisible={isWarning || !!customWarning}
             title={isWarning ? type.warning : customWarning}

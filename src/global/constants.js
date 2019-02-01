@@ -522,9 +522,9 @@ const warnings = {
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  placeAlreadyExists: 'Место с таким названием уже существует',
   unregisteredEmail: 'Данный email не был зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 8 символов',
+  placeAlreadyExists: 'Место с таким названием уже существует',
 };
 
 const graphqlErrors = {
