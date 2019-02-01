@@ -1,5 +1,5 @@
 //  @flow
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Alert, View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
 
 //  $FlowFixMe
@@ -11,7 +11,7 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-import { getGeocoding } from '~/services/geocoding';
+import { getCoordsByAddress, getAddressByCoords, debounce } from '~/global/utils';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -24,7 +24,7 @@ const deltas = {
   longitudeDelta: 0.0421,
 };
 
-class EditPlaceScene extends PureComponent<Props> {
+class EditPlaceScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
     headerTitle: HeaderTitle({
@@ -39,32 +39,64 @@ class EditPlaceScene extends PureComponent<Props> {
 
   state = {
     place: '',
-    region: {},
     address: '',
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
     warnings: [],
     loading: true,
     isNewPlaceScene: true,
   };
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => this.setState({ region: { latitude, longitude, ...deltas }, loading: false }),
-      error => console.log(error),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
+    this.setInitialLocation();
   }
 
-  handleChangeRegion = (region: Object) => {
-    //  temp workaround, here will be implemented geocoding / reverse geocoding
-    this.setState({ region, address: region.latitude.toString() });
+  setInitialLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      //  eslint-disable-next-line  max-len
+      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
+      //  eslint-disable-next-line max-len
+      error => console.log(error) || this.setState({ loading: false }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
 
-  onChangeAddress = (address) => {
-    //  temp workaround, here will be implemented geocoding / reverse geocoding
-    this.setState({ address }, () => this.setState({ region: { ...this.state.region, latitude: parseFloat(address) } }), 2000);
+  getCoordsByAddressFromAPI = debounce(async () => {
+    const { address } = this.state;
+    const response = await getCoordsByAddress(address);
+    console.log(response)
+    if (response) {
+      const { latitude, longitude } = response;
+      this.setState({ latitude, longitude });
+    } else {
+      Alert.alert(constants.errors.geocoding);
+      this.setInitialLocation();
+    }
+  }, 1000);
+
+  //  eslint-disable-next-line max-len
+  getAddressByCoordsFromAPI = debounce(async () => {
+    const { latitude, longitude } = this.state;
+    const address = await getAddressByCoords(latitude, longitude);
+    if (address) {
+      this.setState({ address });
+    } else {
+      this.setState({ address: 'Ошибка определения адреса' });
+    }
+  }, 3000);
+
+  handleChangeRegion = (region: Object) => {
+    this.setState({ ...region }, this.getAddressByCoordsFromAPI);
   };
+
+  handleChangeAddress = (address: string) => {
+    this.setState({ address }, this.getCoordsByAddressFromAPI);
+  };
+
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -78,18 +110,8 @@ class EditPlaceScene extends PureComponent<Props> {
       .then(() => this.checkForErrors());
 
     if (!isFormInvalid) {
+      this.setState({ loading: true });
       try {
-        const { address } = this.state;
-        this.setState({ loading: true });
-        const { _bodyText } = await getGeocoding(address);
-        const { status, results } = JSON.parse(_bodyText);
-        if (status !== constants.geocodingStatuses.ok) {
-          Alert.alert(constants.errors.geocoding);
-        } else {
-          const { lat: latitude, lng: longitude } = results[0].geometry.location;
-          this.setState({ latitude, longitude });
-        }
-        this.setState({ loading: false });
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
@@ -98,6 +120,8 @@ class EditPlaceScene extends PureComponent<Props> {
             ],
           });
         }
+      } finally {
+        this.setState({ loading: false });
       }
     }
   };
@@ -122,7 +146,7 @@ class EditPlaceScene extends PureComponent<Props> {
   };
 
   render() {
-    const { loading, place, region, address, warnings, isNewPlaceScene } = this.state;
+    const { loading, latitude, longitude, latitudeDelta, longitudeDelta, place, address, warnings, isNewPlaceScene } = this.state;
     return (
       <SafeAreaView style={styles.container}>
         {loading ? <ActivityIndicator /> : (
@@ -154,10 +178,17 @@ class EditPlaceScene extends PureComponent<Props> {
                 onSubmitEditing={this.onSubmitEditing}
                 isWarning={includes('address', warnings)}
                 placeholder={constants.placeholders.address}
-                onChangeText={text => this.onChangeAddress(text)}
+                onChangeText={text => this.handleChangeAddress(text)}
               />
             </View>
-            <Map changeRegionCallback={this.handleChangeRegion} region={region} customStyles={styles.map} />
+            <Map
+              latitude={latitude}
+              longitude={longitude}
+              customStyles={styles.map}
+              latitudeDelta={latitudeDelta}
+              longitudeDelta={longitudeDelta}
+              changeRegionCallback={this.handleChangeRegion}
+            />
             <Button
               onPress={this.onSubmitForm}
               customStyle={styles.submitButton}
