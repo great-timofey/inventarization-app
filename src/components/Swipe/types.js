@@ -10,6 +10,7 @@ export type Props = {
   isPlaces?: boolean,
   currentUser: ?Object,
   data: Array<Item>,
+  openPlace: Function,
   openItem: Function,
   userRole: string,
   parentScrollViewRef: React.Node,

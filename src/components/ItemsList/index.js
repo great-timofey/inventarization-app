@@ -30,7 +30,6 @@ import { setIsSideMenuOpen } from '~/global';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 import InventoryIcon from '~/assets/InventoryIcon';
-import * as PLACES_QUERIES from '~/graphql/places/queries';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_SELECTED_CATEGORIES, GET_COMPANY_CATEGORIES } from '~/graphql/categories/queries';
 import { GET_USER_ID_CLIENT, GET_CURRENT_USER_PLACES } from '~/graphql/auth/queries';
@@ -208,7 +207,7 @@ class ItemsList extends PureComponent<Props> {
               </View>
             );
           }
-
+          // $FlowFixMe
           const { assets: innerAssets } = data;
           let dataToRender = innerAssets;
 

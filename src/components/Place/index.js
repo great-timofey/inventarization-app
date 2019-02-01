@@ -14,7 +14,9 @@ class Place extends PureComponent<Props, {}> {
 
   handleOpenPlace = () => {
     const { place, openPlace } = this.props;
-    openPlace(place.id, place.name, place.address, place.gps);
+    if (openPlace) {
+      openPlace(place.id, place.name, place.address, place.gps);
+    }
   }
 
   render() {

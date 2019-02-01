@@ -125,6 +125,7 @@ constructor(props: Props) {
     searchValue: '',
     isSortByName: false,
     isSearchActive: false,
+    showSortButton: false,
     isListViewStyle: false,
     currentSelectItem: null,
     isSortModalVisible: false,
@@ -249,6 +250,7 @@ handleDeleteItem = async (id: number | string, android: boolean) => {
 updateDestroyAsset = (cache: Object) => {
   const {
     props: {
+      // $FlowFixMe
       userCompany: {
         company: {
           id: companyId,
@@ -275,6 +277,7 @@ render() {
   const {
     props: {
       navigation,
+      // $FlowFixMe
       userCompany: {
         role: userRole,
         company: {
