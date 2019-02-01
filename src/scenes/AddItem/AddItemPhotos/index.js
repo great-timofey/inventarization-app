@@ -20,15 +20,14 @@ import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
+import { getCurrentLocation } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import PhotoPreview from '~/components/PhotoPreview';
+
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
-
-const necessaryPermissions = ['location', 'camera'];
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
@@ -99,7 +98,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   };
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const currentPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -113,7 +112,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       await Permissions.request('location');
     }
 
-    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const newPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -144,21 +143,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       const isLocationExists = navigation.getParam('location', '');
 
       if (!isLocationExists) {
-        const params = isAndroid
-          ? undefined
-          : { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
-        const locationPromise = new Promise((res, rej) => {
-          navigator.geolocation.getCurrentPosition(
-            ({ coords: { latitude: lat, longitude: lon } }) => {
-              const coords = { lat, lon };
-              res(coords);
-            },
-            error => rej(error.message),
-            params,
-          );
-        });
-
-        const location = await locationPromise;
+        const location = await getCurrentLocation();
         navigation.setParams({ location });
       }
 

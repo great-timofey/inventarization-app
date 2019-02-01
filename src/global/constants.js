@@ -221,6 +221,7 @@ const sort = {
   price: 'Сортировать по цене',
   close: 'Закрыть',
 };
+
 const errors = {
   login: {
     name: 'Введите имя',
@@ -244,6 +245,17 @@ const errors = {
     inventoryIdEmpty: 'Введите инвентарный номер',
     inventoryIdAlreadyInUse: 'Данный инвентарный номер уже существует',
   },
+};
+
+const permissions = {
+  photo: [
+    'camera',
+    'location',
+  ],
+};
+
+const permissionTypes = {
+  authorized: 'authorized',
 };
 
 const headers = {
@@ -552,6 +564,7 @@ export default {
   category,
   inputTypes,
   fieldTypes,
+  permissions,
   buttonTitles,
   placeholders,
   assetStatuses,
@@ -560,6 +573,7 @@ export default {
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  permissionTypes,
   categoryIconList,
   itemFormSections,
   generalCategories,
