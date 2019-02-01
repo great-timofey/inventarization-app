@@ -21,6 +21,7 @@ import Unorganized from '~/scenes/Unorganized';
 import ItemForm from '~/scenes/AddItem/ItemForm';
 import CreateCompany from '~/scenes/CreateCompany';
 import PlacesScene from '~/scenes/Places/PlacesMain';
+import EditPlacesScene from '~/scenes/Places/EditPlace';
 import CategoryList from '~/scenes/Category/CategoryList';
 import CategoryEdit from '~/scenes/Category/CategoryEdit';
 import ForgotPassword from '~/scenes/Auth/ForgotPassword';
@@ -59,7 +60,8 @@ const peopleStack = createStackNavigator({
   [SCENE_NAMES.PeopleSceneName]: PeopleScene,
 });
 const placesStack = createStackNavigator({
-  [SCENE_NAMES.PlacesSceneName]: PlacesScene,
+  [SCENE_NAMES.PlacesMainSceneName]: PlacesScene,
+  [SCENE_NAMES.PlacesSceneName]: EditPlacesScene,
 });
 const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
@@ -79,9 +81,6 @@ const rootTabs = {
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.chair} />
       ),
-      style: {
-        backgroundColor: 'red',
-      },
     },
   },
   [SCENE_NAMES.CategoryList]: {

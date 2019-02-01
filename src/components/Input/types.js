@@ -17,6 +17,7 @@ export type Props = {
   isWarning?: boolean,
   children?: React.Node,
   isMultiline?: boolean,
+  customStyles?: Object,
   onChangeText: Function,
   customWarning?: string,
   onSubmitForm?: Function,
