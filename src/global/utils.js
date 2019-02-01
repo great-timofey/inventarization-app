@@ -9,7 +9,7 @@ import { last, includes, memoizeWith, identity } from 'ramda';
 import { ReactNativeFile } from 'apollo-upload-client';
 
 import constants from '~/global/constants';
-import { deviceWidth, deviceHeight } from '~/global/device';
+import { deviceWidth, deviceHeight, isAndroid } from '~/global/device';
 import { getGeocoding, getReverseGeocoding } from '~/services/geocoding';
 
 export const getPlaceholder = (size: number) => `https://via.placeholder.com/${size}x${size}`;
@@ -75,8 +75,27 @@ export const getPrefix = (inputString: string) => {
   return prefix;
 };
 
+export const getCurrentLocation = async () => {
+  const params = isAndroid
+    ? undefined
+    : { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 };
+
+  const locationPromise = new Promise((res, rej) => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        const coords = { latitude, longitude };
+        res(coords);
+      },
+      error => rej(error.message),
+      params,
+    );
+  });
+
+  const location = await locationPromise;
+  return location;
+};
+
 export const getCoordsByAddress = memoizeWith(identity, async (address: string) => {
-  console.log(1)
   const { _bodyText } = await getGeocoding(address);
   const { status, results } = JSON.parse(_bodyText);
   if (status === constants.geocodingStatuses.ok) {
@@ -87,7 +106,6 @@ export const getCoordsByAddress = memoizeWith(identity, async (address: string) 
 });
 
 export const getAddressByCoords = memoizeWith(identity, async (lat: number, lon: number) => {
-  console.log(2)
   const { _bodyText } = await getReverseGeocoding(lat, lon);
   const { status, results } = JSON.parse(_bodyText);
   if (status === constants.geocodingStatuses.ok) {
@@ -128,5 +146,6 @@ export default {
   isValidPassword,
   getCoordsByAddress,
   getAddressByCoords,
+  getCurrentLocation,
   convertToApolloUpload,
 };

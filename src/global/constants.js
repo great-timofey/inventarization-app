@@ -221,6 +221,7 @@ const sort = {
   price: 'Сортировать по цене',
   close: 'Закрыть',
 };
+
 const errors = {
   login: {
     name: 'Введите имя',
@@ -233,6 +234,7 @@ const errors = {
     companyLogo: 'Неверный формат. Нужен .jpg или .png',
   },
   geocoding: 'Произошла ошибка. Попробуйте еще раз',
+  address: 'Ошибка определения адреса',
   search: 'Подходящих результатов не найдено',
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
@@ -245,6 +247,17 @@ const errors = {
     inventoryIdEmpty: 'Введите инвентарный номер',
     inventoryIdAlreadyInUse: 'Данный инвентарный номер уже существует',
   },
+};
+
+const permissions = {
+  photo: [
+    'camera',
+    'location',
+  ],
+};
+
+const permissionTypes = {
+  authorized: 'authorized',
 };
 
 const headers = {
@@ -560,6 +573,7 @@ export default {
   category,
   inputTypes,
   fieldTypes,
+  permissions,
   buttonTitles,
   placeholders,
   assetStatuses,
@@ -568,6 +582,7 @@ export default {
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  permissionTypes,
   categoryIconList,
   itemFormSections,
   geocodingStatuses,

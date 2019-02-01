@@ -11,18 +11,13 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-import { getCoordsByAddress, getAddressByCoords, debounce } from '~/global/utils';
+import { getCoordsByAddress, getAddressByCoords, debounce, getCurrentLocation } from '~/global/utils';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 
 import styles from './styles';
 import type { Props, State } from './types';
-
-const deltas = {
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
-};
 
 class EditPlaceScene extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
@@ -42,10 +37,10 @@ class EditPlaceScene extends PureComponent<Props, State> {
     address: '',
     latitude: 0,
     longitude: 0,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
     warnings: [],
     loading: true,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
     isNewPlaceScene: true,
   };
 
@@ -54,13 +49,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      //  eslint-disable-next-line  max-len
-      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
-      //  eslint-disable-next-line max-len
-      error => console.log(error) || this.setState({ loading: false }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
+    const location = getCurrentLocation();
+    this.setState({ ...location, loading: false });
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -85,7 +75,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     if (address) {
       this.setState({ address });
     } else {
-      this.setState({ address: 'Ошибка определения адреса' });
+      this.setState({ address: constants.errors.address });
     }
   }, 3000);
 

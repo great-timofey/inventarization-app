@@ -21,17 +21,16 @@ import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 
+import { convertToApolloUpload, getCurrentLocation } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { isSmallDevice, convertToApolloUpload } from '~/global/utils';
+import PhotoPreview from '~/components/PhotoPreview';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
-
-const necessaryPermissions = ['location', 'camera'];
 
 const HeaderFinishButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
@@ -52,7 +51,9 @@ class AddItemDefects extends PureComponent<Props, State> {
     const location = navigation.state.params && navigation.state.params.location;
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const from = navigation.state.params && navigation.state.params.from;
-    const toPass = from
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
+
+    let toPass = from
       ? { additionalDefects: defectPhotos }
       : { photos, defectPhotos, codeData, location };
 
@@ -62,20 +63,15 @@ class AddItemDefects extends PureComponent<Props, State> {
       headerStyle: styles.header,
       title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: (
-        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
-      ),
+      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
       headerRight: (
         <HeaderFinishButton
           onPress={async () => {
             if (from) {
               navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
             } else if (photos.length + defectPhotos.length) {
-              const { id, inventoryId } = await handleCreateAsset();
-              //  $FlowFixMe
-              toPass.creationId = id;
-              //  $FlowFixMe
-              toPass.inventoryId = inventoryId;
+              const response = await handleCreateAsset();
+              toPass = { ...toPass, ...response };
               navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
             } else {
               Alert.alert(constants.errors.camera.needPhoto);
@@ -103,8 +99,22 @@ class AddItemDefects extends PureComponent<Props, State> {
       StatusBar.setBarStyle('light-content');
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ defectPhotos: [], handleCreateAsset: this.handleCreateAsset });
+    navigation.setParams({
+      defectPhotos: [],
+      handleCreateAsset: this.handleCreateAsset,
+      handleGoBack: this.handleGoBack,
+    });
   }
+
+  handleGoBack = () => {
+    const { navigation } = this.props;
+    const from = navigation.getParam('from', null);
+    if (from) {
+      navigation.pop();
+    } else {
+      navigation.goBack();
+    }
+  };
 
   handleCreateAsset = async () => {
     const {
@@ -178,7 +188,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const currentPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -192,7 +202,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       await Permissions.request('location');
     }
 
-    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const newPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -222,19 +232,12 @@ class AddItemDefects extends PureComponent<Props, State> {
         this.setState({ isHintOpened: false });
       }
 
-      let location = new Promise((res, rej) => {
-        navigator.geolocation.getCurrentPosition(
-          ({ coords: { latitude: lat, longitude: lon } }) => {
-            location = { lat, lon };
-            res();
-          },
-          error => rej(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-        );
-      });
+      const isLocationExists = navigation.getParam('location', '');
 
-      await location;
-      navigation.setParams({ location });
+      if (!isLocationExists) {
+        const location = await getCurrentLocation();
+        navigation.setParams({ location });
+      }
 
       this.setState(
         state => assoc('photos', concat(state.photos, [uri]), state),
@@ -254,31 +257,25 @@ class AddItemDefects extends PureComponent<Props, State> {
       state: { photos },
     } = this;
 
-    const { uri } = photos[index];
-
     try {
-      RNFS.unlink(uri);
+      RNFS.unlink(photos[index]);
     } catch (error) {
       Alert.alert(error.message);
     }
 
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
-      () => navigation.setParams({ defectPhotos: photos }),
+      //  eslint-disable-next-line
+      () => navigation.setParams({ defectPhotos: this.state.photos }),
     );
   };
 
-  renderPhoto = ({ item: { uri }, index }: PhotosProps) => (
-    <View style={styles.photoContainer}>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-        onPress={() => this.removePicture(index)}
-      >
-        <Image source={assets.deletePhoto} />
-      </TouchableOpacity>
-      <Image style={styles.photoImage} source={{ uri }} />
-    </View>
+  renderPhoto = ({ item: uri, index }: PhotosProps) => (
+    <PhotoPreview
+      uri={uri}
+      index={index}
+      removePictureCallback={this.removePicture}
+    />
   );
 
   toggleFlash = () => {
@@ -289,11 +286,6 @@ class AddItemDefects extends PureComponent<Props, State> {
           ? RNCamera.Constants.FlashMode.on
           : RNCamera.Constants.FlashMode.off,
     });
-  };
-
-  returnBack = () => {
-    const { navigation } = this.props;
-    navigation.goBack();
   };
 
   camera: ?RNCamera;
