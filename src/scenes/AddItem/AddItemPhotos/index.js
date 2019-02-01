@@ -125,6 +125,9 @@ class AddItemPhotos extends PureComponent<Props, State> {
     if (this.camera && ableToTakePicture) {
       const options = { quality: 0.5 };
       const { uri } = await this.camera.takePictureAsync(options);
+      // const response = await this.camera.takePictureAsync(options);
+
+      // console.log(response)
 
       if (isHintOpened) {
         this.setState({ isHintOpened: false });
@@ -137,7 +140,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
             res();
           },
           error => rej(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
       });
 
@@ -147,8 +150,9 @@ class AddItemPhotos extends PureComponent<Props, State> {
       this.setState(
         state => assoc('photos', concat(state.photos, [uri]), state),
         // eslint-disable-next-line react/destructuring-assignment
-        () => navigation.setParams({ photos: this.state.photos }),
+        () => console.log(this.state.photos) || navigation.setParams({ photos: this.state.photos }),
       );
+      console.log(navigation);
     } else {
       Alert.alert(constants.errors.camera.location);
     }

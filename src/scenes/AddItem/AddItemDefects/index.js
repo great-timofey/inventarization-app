@@ -229,7 +229,7 @@ class AddItemDefects extends PureComponent<Props, State> {
             res();
           },
           error => rej(error.message),
-          { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+          // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
         );
       });
 
@@ -241,6 +241,7 @@ class AddItemDefects extends PureComponent<Props, State> {
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
+      console.log(navigation.state.params);
     } else {
       Alert.alert(constants.errors.camera.location);
     }
