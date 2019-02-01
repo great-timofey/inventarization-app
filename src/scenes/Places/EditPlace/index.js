@@ -19,7 +19,12 @@ import globalStyles from '~/global/styles';
 import styles from './styles';
 import type { Props, State } from './types';
 
-class EditPlaceScene extends PureComponent<Props, State> {
+const deltas = {
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
+class EditPlaceScene extends PureComponent<Props> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
     headerTitle: HeaderTitle({
@@ -34,15 +39,32 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
   state = {
     place: '',
+    region: {},
     address: '',
     warnings: [],
-    latitude: 0.0,
-    longitude: 0.0,
-    loading: false,
+    loading: true,
     isNewPlaceScene: true,
   };
 
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => this.setState({ region: { latitude, longitude, ...deltas }, loading: false }),
+      error => console.log(error),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
+  }
+
+  handleChangeRegion = (region: Object) => {
+    //  temp workaround, here will be implemented geocoding / reverse geocoding
+    this.setState({ region, address: region.latitude.toString() });
+  };
+
   onSubmitEditing = () => Keyboard.dismiss();
+
+  onChangeAddress = (address) => {
+    //  temp workaround, here will be implemented geocoding / reverse geocoding
+    this.setState({ address }, () => this.setState({ region: { ...this.state.region, latitude: parseFloat(address) } }), 2000);
+  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -71,7 +93,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [constants.warnings.placeAlreadyExists],
+            warnings: [
+              constants.warnings.placeAlreadyExists,
+            ],
           });
         }
       }
@@ -97,62 +121,54 @@ class EditPlaceScene extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    navigator.geolocation.getCurrentPosition(
-      //  eslint-disable-next-line max-len
-      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
-      error => console.log(error),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
-  }
-
   render() {
-    const { place, address, warnings, loading, latitude, longitude, isNewPlaceScene } = this.state;
-    return loading ? (
-      <ActivityIndicator />
-    ) : (
+    const { loading, place, region, address, warnings, isNewPlaceScene } = this.state;
+    return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.inputView}>
-          <Input
-            isWhite
-            value={place}
-            style={styles.input}
-            blurOnSubmit={false}
-            returnKeyType="done"
-            customStyles={styles.input}
-            type={constants.inputTypes.place}
-            onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('place', warnings)}
-            placeholder={constants.placeholders.place}
-            onChangeText={text => this.onChangeField('place', text)}
-          />
-        </View>
-        <View style={[styles.inputView, styles.addressInputView]}>
-          <Input
-            isWhite
-            value={address}
-            style={styles.input}
-            blurOnSubmit={false}
-            returnKeyType="done"
-            customStyles={styles.input}
-            type={constants.inputTypes.address}
-            onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('address', warnings)}
-            placeholder={constants.placeholders.address}
-            onChangeText={text => this.onChangeField('address', text)}
-          />
-        </View>
-        <Map region={{ latitude, longitude }} customStyles={styles.map} />
-        <Button
-          onPress={this.onSubmitForm}
-          customStyle={styles.submitButton}
-          title={
-            isNewPlaceScene
-              ? constants.buttonTitles.createPlace
-              : constants.buttonTitles.saveChanges
-          }
-        />
+        {loading ? <ActivityIndicator /> : (
+          <Fragment>
+            <View style={styles.inputView}>
+              <Input
+                isWhite
+                value={place}
+                style={styles.input}
+                blurOnSubmit={false}
+                returnKeyType="done"
+                customStyles={styles.input}
+                type={constants.inputTypes.place}
+                onSubmitEditing={this.onSubmitEditing}
+                isWarning={includes('place', warnings)}
+                placeholder={constants.placeholders.place}
+                onChangeText={text => this.onChangeField('place', text)}
+              />
+            </View>
+            <View style={[styles.inputView, styles.addressInputView]}>
+              <Input
+                isWhite
+                value={address}
+                style={styles.input}
+                blurOnSubmit={false}
+                returnKeyType="done"
+                customStyles={styles.input}
+                type={constants.inputTypes.address}
+                onSubmitEditing={this.onSubmitEditing}
+                isWarning={includes('address', warnings)}
+                placeholder={constants.placeholders.address}
+                onChangeText={text => this.onChangeAddress(text)}
+              />
+            </View>
+            <Map changeRegionCallback={this.handleChangeRegion} region={region} customStyles={styles.map} />
+            <Button
+              onPress={this.onSubmitForm}
+              customStyle={styles.submitButton}
+              title={
+                isNewPlaceScene
+                  ? constants.buttonTitles.createPlace
+                  : constants.buttonTitles.saveChanges
+              }
+            />
+          </Fragment>
+        )}
       </SafeAreaView>
     );
   }

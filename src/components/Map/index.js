@@ -1,22 +1,23 @@
 // @flow
-import React, { PureComponent } from 'react';
+import React, { memo } from 'react';
 
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 import type { Props } from './types';
 import styles from './styles';
 
-const deltas = {
-  latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421,
-};
+const Map = ({ customStyles, changeRegionCallback, region, ...rest }: Props) => (
+  <MapView
+    {...rest}
+    region={region}
+    showsCompass={false}
+    style={[styles.map, customStyles]}
+    onRegionChangeComplete={changeRegionCallback}
+  >
+    <Marker
+      coordinate={region}
+    />
+  </MapView>
+);
 
-class Map extends PureComponent<Props> {
-  render() {
-    const { customStyles, region, ...rest } = this.props;
-    const coordsToShow = { ...region, ...deltas };
-    return <MapView {...rest} initialRegion={coordsToShow} style={[styles.map, customStyles]} />;
-  }
-}
-
-export default Map;
+export default memo(Map);
