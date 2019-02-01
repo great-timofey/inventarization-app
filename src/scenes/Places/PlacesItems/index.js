@@ -22,7 +22,6 @@ import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
-import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 
@@ -257,27 +256,17 @@ updateDestroyAsset = (cache: Object) => {
       },
     },
     state: {
-      id: placeId,
       currentSelectItem,
     },
   } = this;
 
   const data = cache.readQuery({
-    query: PLACES_QUERIES.GET_COMPANY_ASSETS_IN_PLACES,
-    variables: { companyId, placeId },
+    query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+    variables: { companyId },
   });
-
-  const deleteIndex = findIndex(asset => asset.id === currentSelectItem, data.places[0].assets);
-  data.places[0].assets = remove(deleteIndex, 1, data.places[0].assets);
-  cache.writeQuery({
-    query: PLACES_QUERIES.GET_COMPANY_ASSETS_IN_PLACES,
-    variables: { companyId, placeId },
-    data });
-
-  const data2 = cache.readQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId } });
-  const deleteIndex2 = findIndex(asset => asset.id === currentSelectItem, data2.assets);
-  data2.assets = remove(deleteIndex2, 1, data2.assets);
-  cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data: data2 });
+  const deleteIndex = findIndex(asset => asset.id === currentSelectItem, data.assets);
+  data.assets = remove(deleteIndex, 1, data.assets);
+  cache.writeQuery({ query: ASSETS_QUERIES.GET_COMPANY_ASSETS, variables: { companyId }, data });
 };
 
 scrollViewRef: any;
@@ -323,13 +312,13 @@ render() {
           <Text style={styles.topText}>{constants.inputTypes.address.label}</Text>
           <Text style={styles.botText}>{address}</Text>
         </View>
-        <Map
+        {/* <Map
           customStyles={styles.map}
           region={{
             latitude: gps.lat,
             longitude: gps.lon,
           }}
-        />
+        /> */}
         <ItemsList
           placeId={id}
           userRole={userRole}

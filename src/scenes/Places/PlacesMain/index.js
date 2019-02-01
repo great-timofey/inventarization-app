@@ -39,9 +39,11 @@ const MainHeader = ({ toggleSearch, isTitleVisible, isSearchActive, navigateToAd
   <View style={styles.header}>
     <Icon.Button
       name="plus"
+      activeOpacity={0.5}
       size={normalize(30)}
       color={colors.accent}
       onPress={navigateToAddPlace}
+      underlayColor={colors.transparent}
       backgroundColor={colors.transparent}
     />
     <Text style={styles.headerTitle}>
