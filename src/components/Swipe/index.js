@@ -133,7 +133,7 @@ class SwipeableList extends PureComponent<Props, {}> {
 
   renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
     const {
-      openItem,
+      openPlace,
       selectItem,
       toggleDelModal,
       getItemPosition,
@@ -178,7 +178,7 @@ class SwipeableList extends PureComponent<Props, {}> {
       >
         <Place
           place={place}
-          openItem={openItem}
+          openPlace={openPlace}
           getItemPosition={getItemPosition}
           parentScrollViewRef={parentScrollViewRef}
         />

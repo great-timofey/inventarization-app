@@ -8,6 +8,10 @@ export const GET_COMPANY_PLACES = gql`
       name
       address
       assetsCount
+      gps {
+        lat,
+        lon
+      }
     }
   }
 `;

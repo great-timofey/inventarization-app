@@ -28,19 +28,25 @@ import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
+import { mainNavigation } from '~/global';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import { isAndroid } from '~/global/device';
 
+import * as SCENE_NAMES from '~/navigation/scenes';
+
 import styles from './styles';
 import type { Props, State } from './types';
 
-const MainHeader = ({ toggleSearch, isTitleVisible, isSearchActive }) => (
+const MainHeader = ({ toggleSearch, isTitleVisible, isSearchActive, navigateToAddPlace }) => (
   <View style={styles.header}>
     <Icon.Button
       name="plus"
+      activeOpacity={0.5}
       size={normalize(30)}
       color={colors.accent}
+      onPress={navigateToAddPlace}
+      underlayColor={colors.transparent}
       backgroundColor={colors.transparent}
     />
     <Text style={styles.headerTitle}>
@@ -66,6 +72,7 @@ static navigationOptions = ({ navigation }: Props) => {
   const toggleSearch = state.params && state.params.toggleSearch;
   const isTitleVisible = state.params && state.params.isTitleVisible;
   const isSearchActive = state.params && state.params.isSearchActive;
+  const navigateToAddPlace = state.params && state.params.navigateToAddPlace;
   const onChangeSearchField = state.params && state.params.onChangeSearchField;
 
   return {
@@ -80,6 +87,7 @@ static navigationOptions = ({ navigation }: Props) => {
         toggleSearch={toggleSearch}
         isSearchActive={isSearchActive}
         isTitleVisible={isTitleVisible}
+        navigateToAddPlace={navigateToAddPlace}
       />
     ),
   };
@@ -107,6 +115,7 @@ constructor(props: Props) {
     isSearchActive: false,
     isTitleVisible: false,
     toggleSearch: this.toggleSearch,
+    navigateToAddPlace: this.navigateToAddPlace,
     onChangeSearchField: this.onChangeSearchField,
   });
 }
@@ -265,6 +274,14 @@ getItemPosition = (itemRef, parentScrollViewRef, place) => {
   }
 }
 
+openPlace = (id, name, address, gps) => {
+  mainNavigation.navigate(SCENE_NAMES.PlacesItemsSceneName, { id, name, address, gps });
+}
+
+navigateToAddPlace = () => {
+  mainNavigation.navigate(SCENE_NAMES.PlacesSceneName);
+}
+
 scrollViewRef: any;
 
 render() {
@@ -322,7 +339,7 @@ render() {
                 isPlaces
                 data={placesList}
                 userRole={userRole}
-                openItem={() => {}}
+                openPlace={this.openPlace}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
                 getItemPosition={this.getItemPosition}

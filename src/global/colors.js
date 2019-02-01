@@ -17,6 +17,7 @@ export default {
   modalHints: '#B0B9C3',
   buttonGray: '#DAE4E6',
   placeholder: '#C1C1C1',
+  addressGray: '#F9F9F9',
   buttonGreen: '#1CD25A',
   invalidBorder: '#D54A0F',
   buttonInvitee: '#67B8F3',
