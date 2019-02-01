@@ -11,7 +11,12 @@ import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
-import { getCoordsByAddress, getAddressByCoords, debounce, getCurrentLocation } from '~/global/utils';
+import {
+  getCoordsByAddress,
+  getAddressByCoords,
+  debounce,
+  getCurrentLocation,
+} from '~/global/utils';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -49,8 +54,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    const location = getCurrentLocation();
-    this.setState({ ...location, loading: false });
+    //  $FlowFixMe
+    getCurrentLocation().then(location => this.setState({ ...location, loading: false }));
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -58,7 +63,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
   getCoordsByAddressFromAPI = debounce(async () => {
     const { address } = this.state;
     const response = await getCoordsByAddress(address);
-    console.log(response)
     if (response) {
       const { latitude, longitude } = response;
       this.setState({ latitude, longitude });
@@ -87,7 +91,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
     this.setState({ address }, this.getCoordsByAddressFromAPI);
   };
 
-
   onChangeField = (field: string, value: string) => {
     this.setState({
       [field]: value,
@@ -102,12 +105,11 @@ class EditPlaceScene extends PureComponent<Props, State> {
     if (!isFormInvalid) {
       this.setState({ loading: true });
       try {
+        //  create / update place mutation
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [
-              constants.warnings.placeAlreadyExists,
-            ],
+            warnings: [constants.warnings.placeAlreadyExists],
           });
         }
       } finally {
@@ -136,10 +138,22 @@ class EditPlaceScene extends PureComponent<Props, State> {
   };
 
   render() {
-    const { loading, latitude, longitude, latitudeDelta, longitudeDelta, place, address, warnings, isNewPlaceScene } = this.state;
+    const {
+      place,
+      address,
+      loading,
+      latitude,
+      warnings,
+      longitude,
+      latitudeDelta,
+      longitudeDelta,
+      isNewPlaceScene,
+    } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        {loading ? <ActivityIndicator /> : (
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
           <Fragment>
             <View style={styles.inputView}>
               <Input

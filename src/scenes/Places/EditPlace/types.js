@@ -3,10 +3,12 @@
 export type State = {
   place: string,
   address: string,
-  warnings: Array<string>,
   latitude: number,
   longitude: number,
   loading: boolean,
+  latitudeDelta: number,
+  longitudeDelta: number,
+  warnings: Array<string>,
   isNewPlaceScene: boolean,
 };
 

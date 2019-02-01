@@ -1,4 +1,6 @@
 // @flow
+
+//  $FlowFixMe
 import React, { memo } from 'react';
 
 import MapView, { Marker } from 'react-native-maps';
@@ -6,7 +8,15 @@ import MapView, { Marker } from 'react-native-maps';
 import type { Props } from './types';
 import styles from './styles';
 
-const Map = ({ customStyles, changeRegionCallback, latitude, longitude, latitudeDelta, longitudeDelta, ...rest }: Props) => (
+const Map = ({
+  latitude,
+  longitude,
+  customStyles,
+  latitudeDelta,
+  longitudeDelta,
+  changeRegionCallback,
+  ...rest
+}: Props) => (
   <MapView
     {...rest}
     region={{

@@ -114,10 +114,11 @@ export const getAddressByCoords = memoizeWith(identity, async (lat: number, lon:
   return null;
 });
 
-export const debounce = (fn, time) => {
+export const debounce = (fn: Function, time: number) => {
   let timeout;
 
-  return function() {
+  return function () {
+    //  eslint-disable-next-line
     const functionCall = () => fn.apply(this, arguments);
 
     clearTimeout(timeout);
