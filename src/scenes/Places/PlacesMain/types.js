@@ -8,11 +8,14 @@ export type State = {
   },
   searchValue: string,
   isSearchActive: boolean,
+  isDeleteModalVisible: boolean,
   isAndroidActionsModalVisible: boolean,
-  currentSelectItem: null | string | number,
+  currentSelectItem: null | string | number
+
 };
 
 export type Props = {
   navigation: Object,
   userCompany: Object,
+  destroyPlace: Function,
 };

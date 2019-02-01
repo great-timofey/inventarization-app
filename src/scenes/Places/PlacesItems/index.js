@@ -312,13 +312,13 @@ render() {
           <Text style={styles.topText}>{constants.inputTypes.address.label}</Text>
           <Text style={styles.botText}>{address}</Text>
         </View>
-        {/* <Map
+        <Map
           customStyles={styles.map}
           region={{
             latitude: gps.lat,
             longitude: gps.lon,
           }}
-        /> */}
+        />
         <ItemsList
           placeId={id}
           userRole={userRole}

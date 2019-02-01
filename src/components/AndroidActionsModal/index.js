@@ -28,12 +28,16 @@ class AndroidActionsModal extends PureComponent<Props, State> {
   };
 
   deleteItem = () => {
-    const { item, handleDeleteItem } = this.props;
+    const {
+      state: { isDeleteModalVisible },
+      props: { item, handleDeleteItem },
+    } = this;
+
     handleDeleteItem(item.id, true);
 
-    this.setState({
-      isDeleteModalVisible: false,
-    });
+    if (isDeleteModalVisible) {
+      this.toggleDelModalVisible();
+    }
   }
 
   editItem = () => {

@@ -132,7 +132,13 @@ class SwipeableList extends PureComponent<Props, {}> {
   };
 
   renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
-    const { selectItem, openPlace, getItemPosition, parentScrollViewRef } = this.props;
+    const {
+      openPlace,
+      selectItem,
+      toggleDelModal,
+      getItemPosition,
+      parentScrollViewRef,
+    } = this.props;
 
     const swipeoutBtns = [
       {
@@ -151,8 +157,8 @@ class SwipeableList extends PureComponent<Props, {}> {
           <IconButton
             size={50}
             iconName="ios-close"
-            onPress={() => {}}
             iconColor={colors.white}
+            onPress={toggleDelModal}
             customIconStyle={{ top: normalize(3) }}
             customContStyle={styles.rightSwipeButton}
           />

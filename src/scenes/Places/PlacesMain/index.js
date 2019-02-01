@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { isEmpty } from 'ramda';
+import { isEmpty, findIndex, remove } from 'ramda';
 
 import { compose, graphql, Query } from 'react-apollo';
 import InventoryIcon from '~/assets/InventoryIcon';
@@ -19,16 +19,19 @@ import Button from '~/components/Button';
 import Search from '~/components/Search';
 import SwipeableList from '~/components/Swipe';
 import SearchHeader from '~/components/SearchHeader';
+import QuestionModal from '~/components/QuestionModal';
 import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
+import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 
 import assets from '~/global/assets';
 import colors from '~/global/colors';
 import { mainNavigation } from '~/global';
 import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 
 import * as SCENE_NAMES from '~/navigation/scenes';
 
@@ -103,6 +106,7 @@ constructor(props: Props) {
     searchValue: '',
     isSearchActive: false,
     currentSelectItem: null,
+    isDeleteModalVisible: false,
     isAndroidActionsModalVisible: false,
   };
 
@@ -146,6 +150,62 @@ toggleSearch = () => {
 
   navigation.setParams({
     isSearchActive: !isSearchActive,
+  });
+};
+
+toggleDelModalVisible = () => {
+  const { isDeleteModalVisible } = this.state;
+  this.setState({
+    isDeleteModalVisible: !isDeleteModalVisible,
+  });
+};
+
+handleDeletePlace = async (id: number | string) => {
+  const {
+    props: {
+      destroyPlace,
+    },
+    state: {
+      isDeleteModalVisible,
+      isAndroidActionsModalVisible,
+    },
+  } = this;
+
+  await destroyPlace({ variables: { id }, update: this.updateDestroyPlace });
+
+  if (isDeleteModalVisible) {
+    this.toggleDelModalVisible();
+  }
+
+  if (isAndroidActionsModalVisible) {
+    this.toggleActionsModal();
+  }
+
+  this.setState({ currentSelectItem: null });
+};
+
+updateDestroyPlace = (cache: Object) => {
+  const {
+    props: {
+      userCompany: {
+        company: { id: companyId },
+      },
+    },
+    state: { currentSelectItem },
+  } = this;
+
+  const data = cache.readQuery({
+    query: PLACES_QUERIES.GET_COMPANY_PLACES,
+    variables: { companyId },
+  });
+
+  const deleteIndex = findIndex(place => place.id === currentSelectItem, data.places);
+  data.places = remove(deleteIndex, 1, data.places);
+
+  cache.writeQuery({
+    query: PLACES_QUERIES.GET_COMPANY_PLACES,
+    variables: { companyId },
+    data,
   });
 };
 
@@ -240,12 +300,13 @@ render() {
       isSearchActive,
       elementPosition,
       currentSelectItem,
+      isDeleteModalVisible,
       isAndroidActionsModalVisible,
     },
   } = this;
 
   return (
-    <Query query={PLACES_QUERIES.GET_COMPANY_PLACES_BY_ID} variables={{ companyId }}>
+    <Query query={PLACES_QUERIES.GET_COMPANY_PLACES} variables={{ companyId }}>
       {({ data, loading, error }) => {
         if (loading) { return <ActivityIndicator />; }
         if (error) {
@@ -283,6 +344,7 @@ render() {
                 extraData={{ currentSelectItem }}
                 getItemPosition={this.getItemPosition}
                 parentScrollViewRef={this.scrollViewRef}
+                toggleDelModal={this.toggleDelModalVisible}
               />
               {isNoPlaces && (
               <View style={styles.wrapper}>
@@ -304,12 +366,21 @@ render() {
               toggleSearch={this.toggleSearch}
             />
             )}
+            {!isAndroid && (
+              <QuestionModal
+                isModalVisible={isDeleteModalVisible}
+                leftAction={this.toggleDelModalVisible}
+                data={constants.modalQuestion.placeDel}
+                // $FlowFixMe
+                rightAction={() => this.handleDeletePlace(currentSelectItem)}
+              />
+            )}
             <AndroidActionsModal
               type="places"
               item={place || {}}
               handleOpenItem={() => {}}
-              handleDeleteItem={() => {}}
               elementPosition={elementPosition}
+              handleDeleteItem={this.handleDeletePlace}
               toggleActionsModal={this.toggleActionsModal}
               isModalVisible={isAndroidActionsModalVisible}
             />
@@ -326,4 +397,5 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
+  graphql(PLACES_MUTATIONS.DESTROY_PLACE, { name: 'destroyPlace' }),
 )(PlacesScene);
