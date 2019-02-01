@@ -20,16 +20,14 @@ import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
-import { isIOS } from '~/global/device';
-import { isSmallDevice } from '~/global/utils';
+import { getCurrentLocation } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import PhotoPreview from '~/components/PhotoPreview';
 
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
-
-const necessaryPermissions = ['location', 'camera'];
 
 const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
@@ -50,13 +48,13 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const location = navigation.state.params && navigation.state.params.location;
     const toPass = from ? { additionalPhotos: photos } : { photos, codeData, location };
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
+
     return {
       headerStyle: styles.header,
       title: from ? constants.headers.addPhotos : constants.headers.newItem,
       headerTitleStyle: from ? styles.headerTitleSmallStyle : styles.headerTitleStyle,
-      headerLeft: (
-        <HeaderBackButton onPress={from ? () => navigation.pop() : () => navigation.goBack()} />
-      ),
+      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
       headerRight: (
         <HeaderSkipButton
           onPress={() => navigation.navigate(
@@ -86,11 +84,21 @@ class AddItemPhotos extends PureComponent<Props, State> {
       StatusBar.setBarStyle('light-content');
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
-    navigation.setParams({ photos: [] });
+    navigation.setParams({ photos: [], handleGoBack: this.handleGoBack });
   }
 
+  handleGoBack = () => {
+    const { navigation } = this.props;
+    const from = navigation.getParam('from', null);
+    if (from) {
+      navigation.pop();
+    } else {
+      navigation.goBack();
+    }
+  };
+
   askPermissions = async () => {
-    const currentPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const currentPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(currentPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -104,7 +112,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       await Permissions.request('location');
     }
 
-    const newPermissions = await Permissions.checkMultiple(necessaryPermissions);
+    const newPermissions = await Permissions.checkMultiple(constants.permissions.photo);
 
     if (all(equals('authorized'), values(newPermissions))) {
       this.setState({ ableToTakePicture: true, needToAskPermissions: false });
@@ -132,19 +140,12 @@ class AddItemPhotos extends PureComponent<Props, State> {
         this.setState({ isHintOpened: false });
       }
 
-      let location = new Promise((res, rej) => {
-        navigator.geolocation.getCurrentPosition(
-          ({ coords: { latitude: lat, longitude: lon } }) => {
-            location = { lat, lon };
-            res();
-          },
-          error => rej(error.message),
-          { enableHighAccuracy: isIOS, timeout: 20000, maximumAge: 500 },
-        );
-      });
+      const isLocationExists = navigation.getParam('location', '');
 
-      await location;
-      navigation.setParams({ location });
+      if (!isLocationExists) {
+        const location = await getCurrentLocation();
+        navigation.setParams({ location });
+      }
 
       this.setState(
         state => assoc('photos', concat(state.photos, [uri]), state),
@@ -175,16 +176,11 @@ class AddItemPhotos extends PureComponent<Props, State> {
   };
 
   renderPhoto = ({ item: uri, index }: PhotosProps) => (
-    <View style={styles.photoContainer}>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        style={[styles.removePhotoIcon, isSmallDevice && styles.smallerIcon]}
-        onPress={() => this.removePicture(index)}
-      >
-        <Image source={assets.deletePhoto} />
-      </TouchableOpacity>
-      <Image style={styles.photoImage} source={{ uri }} />
-    </View>
+    <PhotoPreview
+      uri={uri}
+      index={index}
+      removePictureCallback={this.removePicture}
+    />
   );
 
   toggleFlash = () => {
@@ -195,11 +191,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
           ? RNCamera.Constants.FlashMode.on
           : RNCamera.Constants.FlashMode.off,
     });
-  };
-
-  returnBack = () => {
-    const { navigation } = this.props;
-    navigation.goBack();
   };
 
   camera: ?RNCamera;
