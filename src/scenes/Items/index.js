@@ -403,8 +403,8 @@ class ItemsScene extends PureComponent<Props, State> {
           rightAction={() => this.handleDeleteItem(currentSelectItem, false)}
         />
         <AndroidActionsModal
-          type="items"
           item={item || {}}
+          type={constants.types.items}
           elementPosition={elementPosition}
           isListViewStyle={isListViewStyle}
           handleOpenItem={this.handleOpenItem}
