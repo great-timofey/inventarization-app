@@ -9,10 +9,12 @@ export type State = {
   isModalVisible: boolean,
   warnings: Array<string>,
   isNewPlaceScene: boolean,
-  isEmployeeSelectActive: boolean,
-  selectedEmployeeId: null | number | string,
+  isManagerSelectActive: boolean,
+  selectedManagerId: null | number | string,
 };
 
 export type Props = {
   navigation: Object,
+  userCompany: Object,
+  createPlace: Function,
 };

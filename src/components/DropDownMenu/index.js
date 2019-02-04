@@ -14,21 +14,21 @@ import styles from './styles';
 
 type State = {
   isActive: boolean,
-  selectedEmployeeId: string | number | null,
+  selectedManagerId: string | number | null,
 }
 
 type Props = {
   data: Array<Object>,
-  callBackSelectEmployee: Function
+  callBackSelectManager: Function
 }
 
 const AddButton = () => (
   <TouchableOpacity
     onPress={() => {}}
-    style={[styles.employee, styles.last]}
+    style={[styles.manager, styles.last]}
   >
     <Text style={styles.button}>
-      {constants.buttonTitles.addNewEmployee}
+      {constants.buttonTitles.addNewManager}
     </Text>
   </TouchableOpacity>
 );
@@ -38,7 +38,7 @@ class DropDownMenu extends PureComponent<Props, State> {
 
     this.state = {
       isActive: false,
-      selectedEmployeeId: 0,
+      selectedManagerId: 0,
     };
   }
 
@@ -49,24 +49,24 @@ class DropDownMenu extends PureComponent<Props, State> {
     });
   }
 
-  selectEmployee = (id: number | string) => {
-    const { callBackSelectEmployee } = this.props;
+  selectManager = (id: number | string) => {
+    const { callBackSelectManager } = this.props;
     this.setState({
-      selectedEmployeeId: id,
+      selectedManagerId: id,
     });
-    callBackSelectEmployee(id);
+    callBackSelectManager(id);
     this.toogleMenuActive();
   }
 
   componentDidMount = () => {
-    const { data, callBackSelectEmployee } = this.props;
+    const { data, callBackSelectManager } = this.props;
 
     if (data.length > 0) {
-      const defaultEmployeeId = data[0].id;
+      const defaultManagerId = data[0].id;
       this.setState({
-        selectedEmployeeId: defaultEmployeeId,
+        selectedManagerId: defaultManagerId,
       });
-      callBackSelectEmployee(defaultEmployeeId);
+      callBackSelectManager(defaultManagerId);
     }
   }
 
@@ -77,15 +77,15 @@ class DropDownMenu extends PureComponent<Props, State> {
     return (
       <TouchableOpacity
         disabled={!isActive}
-        onPress={() => this.selectEmployee(item.id)}
+        onPress={() => this.selectManager(item.id)}
         style={[
-          styles.employee,
+          styles.manager,
           !isActive && styles.one,
           isFirstEl && styles.first,
         ]}
       >
         <View>
-          <Text style={styles.topText}>{constants.text.employee}</Text>
+          <Text style={styles.topText}>{constants.text.manager}</Text>
           <Text style={styles.botText}>{item.fullName}</Text>
         </View>
         {isFirstEl && (
@@ -110,19 +110,19 @@ class DropDownMenu extends PureComponent<Props, State> {
       },
       state: {
         isActive,
-        selectedEmployeeId,
+        selectedManagerId,
       },
     } = this;
 
     let subData;
-    let selectedEmployeeIndex;
+    let selectedManagerIndex;
 
     if (data) {
-      selectedEmployeeIndex = findIndex(user => user.id === selectedEmployeeId, data);
-      if (selectedEmployeeIndex === -1) {
-        selectedEmployeeIndex = 0;
+      selectedManagerIndex = findIndex(user => user.id === selectedManagerId, data);
+      if (selectedManagerIndex === -1) {
+        selectedManagerIndex = 0;
       } else {
-        subData = [data[selectedEmployeeIndex]];
+        subData = [data[selectedManagerIndex]];
       }
     }
 

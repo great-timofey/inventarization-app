@@ -117,11 +117,16 @@ constructor(props: Props) {
   const name = navigation.state.params && navigation.state.params.name;
   const address = navigation.state.params && navigation.state.params.address;
 
+  const defaultlGps = {
+    latitude: 55.751963,
+    longitude: 37.618470,
+  };
+
   this.state = {
     id,
-    gps,
+    gps: gps || defaultlGps,
     name,
-    address,
+    address: address || '',
     searchValue: '',
     isSortByName: false,
     isSearchActive: false,

@@ -48,6 +48,7 @@ import DelModal from '~/components/QuestionModal';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
@@ -1111,7 +1112,7 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { createdAssetsCount } }) => ({ createdAssetsCount }),
   }),
-  graphql(AUTH_QUERIES.GET_CURRENT_USER_PLACES, {
+  graphql(PLACES_QUERIES.GET_CURRENT_USER_PLACES, {
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),

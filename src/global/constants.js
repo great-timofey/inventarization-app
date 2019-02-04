@@ -147,7 +147,7 @@ const buttonTitles = {
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   createPlace: 'Добавить место',
-  setEmployee: 'Назначить завхоза',
+  setManager: 'Назначить завхоза',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -158,7 +158,7 @@ const buttonTitles = {
   editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
-  addNewEmployee: 'Добавить нового завхоза',
+  addNewManager: 'Добавить нового завхоза',
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
 
@@ -291,7 +291,7 @@ const headers = {
 };
 
 const text = {
-  employee: 'Завхоз',
+  manager: 'Завхоз',
   photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
@@ -299,6 +299,7 @@ const text = {
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
   notItemsYet: 'Пока не добавлено ни одного предмета',
   emptyPlaces: 'Пока не добавлено ни одного места',
+  placeCreated: 'Место было успешно создано',
 };
 
 const hints = {
@@ -545,13 +546,14 @@ const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
   emptyPassword: 'Введите пароль',
+  emptyPlace: 'Введите название места',
   invalidEmail: 'Вы указали неверный email',
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  placeAlreadyExists: 'Место с таким названием уже существует',
   unregisteredEmail: 'Данный email не был зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 8 символов',
+  placeAlreadyExists: 'Место с таким названием уже существует',
 };
 
 const graphqlErrors = {

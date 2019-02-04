@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
+  Alert,
   Keyboard,
   SafeAreaView,
   TouchableOpacity,
@@ -14,14 +15,15 @@ import { includes } from 'ramda';
 import { Query, compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
-import Button from '~/components/Button';
 import Input from '~/components/Input';
+import Button from '~/components/Button';
 import HeaderTitle from '~/components/HeaderTitle';
 import DropDownMenu from '~/components/DropDownMenu';
 import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 
 import colors from '~/global/colors';
 import constants from '~/global/constants';
@@ -46,14 +48,14 @@ class EditPlaceScene extends PureComponent<Props, State> {
   state = {
     place: '',
     address: '',
-    warnings: [],
+    warnings: {},
     latitude: 0.0,
     longitude: 0.0,
     loading: false,
     isNewPlaceScene: true,
     isModalVisible: false,
-    selectedEmployeeId: null,
-    isEmployeeSelectActive: false,
+    selectedManagerId: null,
+    isManagerSelectActive: false,
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -64,12 +66,12 @@ class EditPlaceScene extends PureComponent<Props, State> {
     });
   };
 
-  onToggleSelectEmployee = (isEmptyEmployeeList) => {
-    if (isEmptyEmployeeList) {
+  onToggleSelectManager = (isEmptyManagerList) => {
+    if (isEmptyManagerList) {
       this.toggleModalVisible();
     } else {
       this.setState({
-        isEmployeeSelectActive: true,
+        isManagerSelectActive: true,
       });
     }
   }
@@ -83,37 +85,70 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   onSubmitForm = async () => {
+    const {
+      place,
+      address,
+      selectedManagerId,
+    } = this.state;
+
+    const {
+      createPlace,
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
 
     if (!isFormInvalid) {
       try {
-        console.log('correct');
+        await createPlace({
+          variables: {
+            companyId,
+            name: place.trim(),
+            address: address.trim(),
+            managerId: selectedManagerId,
+          },
+        });
+        Alert.alert(constants.text.placeCreated);
+        this.setState({
+          place: '',
+          address: '',
+          warnings: {},
+        });
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [constants.warnings.placeAlreadyExists],
+            warnings: {
+              count: 1,
+              place: constants.warnings.placeAlreadyExists,
+            },
           });
+        } else {
+          console.log(error.message);
         }
       }
     }
   };
 
   checkForErrors = () => {
-    const { warnings } = this.state;
-    return !!warnings.length;
+    const {
+      warnings: { count },
+    } = this.state;
+    return count > 0;
   };
 
   checkFields = () => {
-    const { address, place } = this.state;
-    const warnings = [];
+    const { place } = this.state;
+    const warnings = {
+      count: 0,
+      place: '',
+    };
 
     if (!place.trim()) {
-      warnings.push('place');
-    }
-    if (!address.trim()) {
-      warnings.push('address');
+      warnings.place = constants.warnings.emptyPlace;
+      warnings.count += 1;
     }
 
     this.setState({ warnings });
@@ -129,9 +164,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
     );
   }
 
-  selectEmployee = (id) => {
+  selectManager = (id) => {
     this.setState({
-      selectedEmployeeId: id,
+      selectedManagerId: id,
     });
   }
 
@@ -155,7 +190,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
         longitude,
         isModalVisible,
         isNewPlaceScene,
-        isEmployeeSelectActive,
+        isManagerSelectActive,
       },
     } = this;
 
@@ -164,7 +199,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     return (
       <Query
         query={AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE}
-        variables={{ companyId, role: 'employee' }}
+        variables={{ companyId, role: 'manager' }}
       >
         {({ data, error }) => {
           if (error) {
@@ -175,21 +210,20 @@ class EditPlaceScene extends PureComponent<Props, State> {
             );
           }
 
-          let employeeList;
-          let isEmptyEmployeeList;
+          let managerList;
+          let isEmptyManagerList;
 
           // $FlowFixMe
           if (data.users) {
-            employeeList = data.users;
-            isEmptyEmployeeList = employeeList.length === 0;
+            managerList = data.users;
+            isEmptyManagerList = managerList.length === 0;
           }
-
 
           return loading ? (
             <ActivityIndicator />
           ) : (
             <SafeAreaView style={styles.container}>
-              <View style={[styles.inputView, isEmployeeSelectActive && styles.selectActive]}>
+              <View style={[styles.inputView, isManagerSelectActive && styles.selectActive]}>
                 <Input
                   isWhite
                   value={place}
@@ -205,24 +239,24 @@ class EditPlaceScene extends PureComponent<Props, State> {
                 />
                 {isUserAdmin && (
                   <TouchableOpacity
-                    onPress={() => this.onToggleSelectEmployee(isEmptyEmployeeList)}
+                    onPress={() => this.onToggleSelectManager(isEmptyManagerList)}
                   >
-                    <Text style={[styles.button, isEmployeeSelectActive && styles.hideButton]}>
-                      {constants.buttonTitles.setEmployee}
+                    <Text style={[styles.button, isManagerSelectActive && styles.hideButton]}>
+                      {constants.buttonTitles.setManager}
                     </Text>
                   </TouchableOpacity>
                 )}
               </View>
-              {isEmployeeSelectActive && (
+              {isManagerSelectActive && (
                 <DropDownMenu
-                  data={employeeList}
-                  callBackSelectEmployee={this.selectEmployee}
+                  data={managerList}
+                  callBackSelectManager={this.selectManager}
                 />
               )}
               <View style={[
                 styles.inputView,
                 styles.addressInputView,
-                isEmployeeSelectActive && styles.addressInputViewActive]}
+                isManagerSelectActive && styles.addressInputViewActive]}
               >
                 <Input
                   isWhite
@@ -261,8 +295,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
 }
 
 export default compose(
+  graphql(PLACES_MUTATIONS.CREATE_PLACE, { name: 'createPlace' }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
-    // $FlowFixMe
+    //  $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),
   }),
 )(EditPlaceScene);

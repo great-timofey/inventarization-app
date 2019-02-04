@@ -17,7 +17,7 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     width: deviceWidth - normalize(50),
   },
-  employee: {
+  manager: {
     flexDirection: 'row',
     alignItems: 'center',
     height: normalize(54),
