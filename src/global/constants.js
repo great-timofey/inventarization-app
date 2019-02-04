@@ -253,6 +253,10 @@ const errors = {
   },
 };
 
+const types = {
+  items: 'items',
+  places: 'places',
+};
 const permissions = {
   photo: [
     'camera',
@@ -285,6 +289,7 @@ const headers = {
 };
 
 const text = {
+  photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
@@ -559,6 +564,7 @@ export default {
   text,
   masks,
   words,
+  types,
   roles,
   hints,
   errors,

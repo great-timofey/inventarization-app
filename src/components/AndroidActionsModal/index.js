@@ -93,7 +93,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
         deviceHeight={deviceHeight}
         onBackdropPress={toggleActionsModal}
       >
-        {type === 'items' && !isListViewStyle && (
+        {type === constants.types.items && !isListViewStyle && (
           <View style={[styles.container,
             { top: elementPosition.y - normalize(10),
               left: elementPosition.x - normalize(10) },
@@ -117,14 +117,14 @@ class AndroidActionsModal extends PureComponent<Props, State> {
           </View>
         )}
             
-        {type === 'items' && isListViewStyle && (
+        {type === constants.types.items && isListViewStyle && (
           <View style={[styles.rowItem, { top: elementPosition.y, left: elementPosition.x }]}>
             <Image source={{ uri }} style={styles.smallImage} />
             <View style={styles.description}>
               <View>
                 <Text style={styles.topText}>{item.name}</Text>
                 <Text style={styles.botText}>
-                  {`${(smallPhotosUrls && smallPhotosUrls.length) || 0} Фото`}
+                  {`${(smallPhotosUrls && smallPhotosUrls.length) || 0} ${constants.text.photo}`}
                 </Text>
               </View>
               <View style={styles.count}>
@@ -134,7 +134,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
           </View>
           )}
 
-        {type === 'places' && (
+        {type === constants.types.places && (
             <View style={[styles.rowItem, { top: elementPosition.y, left: elementPosition.x }]}>
               <Image style={styles.pinImage} source={assets.pin} />
               <Image style={styles.image} source={assets.mapLayout} />
