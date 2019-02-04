@@ -8,6 +8,8 @@ export type State = {
   longitude: number,
   loading: boolean,
   isNewPlaceScene: boolean,
+  isEmployeeSelectActive: boolean
+  selectedEmployeeId: null | number | string
 };
 
 export type Props = {

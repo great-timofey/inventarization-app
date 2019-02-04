@@ -147,6 +147,7 @@ const buttonTitles = {
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   createPlace: 'Добавить место',
+  setEmployee: 'Назначить завхоза',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -273,6 +274,7 @@ const headers = {
 };
 
 const text = {
+  employee: 'Завхоз',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',

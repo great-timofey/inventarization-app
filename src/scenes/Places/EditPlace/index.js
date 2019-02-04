@@ -1,15 +1,26 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
+import {
+  Text,
+  View,
+  Keyboard,
+  SafeAreaView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 
 //  $FlowFixMe
 import { includes } from 'ramda';
+import { Query, compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
 import Button from '~/components/Button';
 import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
+import DropDownMenu from '~/components/DropDownMenu';
 import HeaderBackButton from '~/components/HeaderBackButton';
+
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
 
 import colors from '~/global/colors';
 import constants from '~/global/constants';
@@ -39,6 +50,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
     longitude: 0.0,
     loading: false,
     isNewPlaceScene: true,
+    selectedEmployeeId: null,
+    isEmployeeSelectActive: false,
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -48,6 +61,12 @@ class EditPlaceScene extends PureComponent<Props, State> {
       [field]: value,
     });
   };
+
+  onToggleSelectEmployee = () => {
+    this.setState({
+      isEmployeeSelectActive: true,
+    });
+  }
 
   onSubmitForm = async () => {
     const isFormInvalid = await Promise.resolve()
@@ -96,55 +115,124 @@ class EditPlaceScene extends PureComponent<Props, State> {
     );
   }
 
+  selectEmployee = (id) => {
+    this.setState({
+      selectedEmployeeId: id,
+    });
+  }
+
   render() {
-    const { place, address, warnings, loading, latitude, longitude, isNewPlaceScene } = this.state;
-    return loading ? (
-      <ActivityIndicator />
-    ) : (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.inputView}>
-          <Input
-            isWhite
-            value={place}
-            style={styles.input}
-            blurOnSubmit={false}
-            returnKeyType="done"
-            customStyles={styles.input}
-            type={constants.inputTypes.place}
-            onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('place', warnings)}
-            placeholder={constants.placeholders.place}
-            onChangeText={text => this.onChangeField('place', text)}
-          />
-        </View>
-        <View style={[styles.inputView, styles.addressInputView]}>
-          <Input
-            isWhite
-            value={address}
-            style={styles.input}
-            blurOnSubmit={false}
-            returnKeyType="done"
-            customStyles={styles.input}
-            type={constants.inputTypes.address}
-            onSubmitEditing={this.onSubmitEditing}
-            isWarning={includes('address', warnings)}
-            placeholder={constants.placeholders.address}
-            onChangeText={text => this.onChangeField('address', text)}
-          />
-        </View>
-        <Map region={{ latitude, longitude }} />
-        <Button
-          onPress={this.onSubmitForm}
-          customStyle={styles.submitButton}
-          title={
-            isNewPlaceScene
-              ? constants.buttonTitles.createPlace
-              : constants.buttonTitles.saveChanges
+    const {
+      props: {
+        // $FlowFixMe
+        userCompany: {
+          role: userRole,
+          company: {
+            id: companyId,
+          },
+        },
+      },
+      state: {
+        place,
+        address,
+        warnings,
+        loading,
+        latitude,
+        longitude,
+        isNewPlaceScene,
+        selectedEmployeeId,
+        isEmployeeSelectActive,
+      },
+    } = this;
+
+    const isUserAdmin = userRole === constants.roles.admin;
+
+    return (
+      <Query
+        query={AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE}
+        variables={{ companyId, role: 'employee' }}
+      >
+        {({ data, error }) => {
+          if (error) {
+            return (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorMessage}>{error.message}</Text>
+              </View>
+            );
           }
-        />
-      </SafeAreaView>
+          // $FlowFixMe
+          const employeeList = data.users;
+
+          return loading ? (
+            <ActivityIndicator />
+          ) : (
+            <SafeAreaView style={styles.container}>
+              <View style={[styles.inputView, isEmployeeSelectActive && styles.selectActive]}>
+                <Input
+                  isWhite
+                  value={place}
+                  style={styles.input}
+                  blurOnSubmit={false}
+                  returnKeyType="done"
+                  customStyles={styles.input}
+                  type={constants.inputTypes.place}
+                  onSubmitEditing={this.onSubmitEditing}
+                  isWarning={includes('place', warnings)}
+                  placeholder={constants.placeholders.place}
+                  onChangeText={text => this.onChangeField('place', text)}
+                />
+                {isUserAdmin && (
+                  <TouchableOpacity onPress={this.onToggleSelectEmployee}>
+                    <Text style={[styles.button, isEmployeeSelectActive && styles.hideButton]}>
+                      {constants.buttonTitles.setEmployee}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              {isEmployeeSelectActive && (
+                <DropDownMenu
+                  data={employeeList}
+                  callBackSelectEmployee={this.selectEmployee}
+                />
+              )}
+              <View style={[
+                styles.inputView,
+                styles.addressInputView,
+                isEmployeeSelectActive && styles.addressInputViewActive]}
+              >
+                <Input
+                  isWhite
+                  value={address}
+                  style={styles.input}
+                  blurOnSubmit={false}
+                  returnKeyType="done"
+                  customStyles={styles.input}
+                  type={constants.inputTypes.address}
+                  onSubmitEditing={this.onSubmitEditing}
+                  isWarning={includes('address', warnings)}
+                  placeholder={constants.placeholders.address}
+                  onChangeText={text => this.onChangeField('address', text)}
+                />
+              </View>
+              <Map region={{ latitude, longitude }} />
+              <Button
+                onPress={this.onSubmitForm}
+                customStyle={styles.submitButton}
+                title={isNewPlaceScene
+                  ? constants.buttonTitles.createPlace
+                  : constants.buttonTitles.saveChanges}
+              />
+            </SafeAreaView>
+          );
+        }}
+      </Query>
     );
   }
 }
 
-export default EditPlaceScene;
+export default compose(
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    // $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+)(EditPlaceScene);
