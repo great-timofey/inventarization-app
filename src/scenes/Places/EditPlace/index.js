@@ -18,6 +18,7 @@ import Button from '~/components/Button';
 import Input from '~/components/Input';
 import HeaderTitle from '~/components/HeaderTitle';
 import DropDownMenu from '~/components/DropDownMenu';
+import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
@@ -50,6 +51,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     longitude: 0.0,
     loading: false,
     isNewPlaceScene: true,
+    isModalVisible: false,
     selectedEmployeeId: null,
     isEmployeeSelectActive: false,
   };
@@ -62,9 +64,21 @@ class EditPlaceScene extends PureComponent<Props, State> {
     });
   };
 
-  onToggleSelectEmployee = () => {
+  onToggleSelectEmployee = (isEmptyEmployeeList) => {
+    if (isEmptyEmployeeList) {
+      this.toggleModalVisible();
+    } else {
+      this.setState({
+        isEmployeeSelectActive: true,
+      });
+    }
+  }
+
+  toggleModalVisible = () => {
+    const { isModalVisible } = this.state;
+
     this.setState({
-      isEmployeeSelectActive: true,
+      isModalVisible: !isModalVisible,
     });
   }
 
@@ -139,6 +153,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
         loading,
         latitude,
         longitude,
+        isModalVisible,
         isNewPlaceScene,
         isEmployeeSelectActive,
       },
@@ -161,6 +176,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
           }
           // $FlowFixMe
           const employeeList = data.users;
+          const isEmptyEmployeeList = employeeList.length === 0;
 
           return loading ? (
             <ActivityIndicator />
@@ -181,7 +197,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
                   onChangeText={text => this.onChangeField('place', text)}
                 />
                 {isUserAdmin && (
-                  <TouchableOpacity onPress={this.onToggleSelectEmployee}>
+                  <TouchableOpacity
+                    onPress={() => this.onToggleSelectEmployee(isEmptyEmployeeList)}
+                  >
                     <Text style={[styles.button, isEmployeeSelectActive && styles.hideButton]}>
                       {constants.buttonTitles.setEmployee}
                     </Text>
@@ -220,6 +238,12 @@ class EditPlaceScene extends PureComponent<Props, State> {
                 title={isNewPlaceScene
                   ? constants.buttonTitles.createPlace
                   : constants.buttonTitles.saveChanges}
+              />
+              <QuestionModal
+                rightAction={() => {}}
+                isModalVisible={isModalVisible}
+                leftAction={this.toggleModalVisible}
+                data={constants.modalQuestion.userNotFound}
               />
             </SafeAreaView>
           );

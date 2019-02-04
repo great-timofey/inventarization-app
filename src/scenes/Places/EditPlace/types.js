@@ -3,13 +3,14 @@
 export type State = {
   place: string,
   address: string,
-  warnings: Array<string>,
+  loading: boolean,
   latitude: number,
   longitude: number,
-  loading: boolean,
+  isModalVisible: boolean,
+  warnings: Array<string>,
   isNewPlaceScene: boolean,
-  isEmployeeSelectActive: boolean
-  selectedEmployeeId: null | number | string
+  isEmployeeSelectActive: boolean,
+  selectedEmployeeId: null | number | string,
 };
 
 export type Props = {
