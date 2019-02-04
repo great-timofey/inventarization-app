@@ -376,9 +376,10 @@ render() {
               />
             )}
             <AndroidActionsModal
-              type="places"
+              //  $FlowFixMe
               item={place || {}}
               handleOpenItem={() => {}}
+              type={constants.types.places}
               elementPosition={elementPosition}
               handleDeleteItem={this.handleDeletePlace}
               toggleActionsModal={this.toggleActionsModal}

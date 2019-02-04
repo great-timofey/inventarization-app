@@ -229,6 +229,7 @@ const sort = {
   price: 'Сортировать по цене',
   close: 'Закрыть',
 };
+
 const errors = {
   login: {
     name: 'Введите имя',
@@ -254,6 +255,21 @@ const errors = {
   },
 };
 
+const types = {
+  items: 'items',
+  places: 'places',
+};
+const permissions = {
+  photo: [
+    'camera',
+    'location',
+  ],
+};
+
+const permissionTypes = {
+  authorized: 'authorized',
+};
+
 const headers = {
   places: 'Места',
   items: 'Предметы',
@@ -276,6 +292,7 @@ const headers = {
 
 const text = {
   employee: 'Завхоз',
+  photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
@@ -550,6 +567,7 @@ export default {
   text,
   masks,
   words,
+  types,
   roles,
   hints,
   errors,
@@ -563,6 +581,7 @@ export default {
   category,
   inputTypes,
   fieldTypes,
+  permissions,
   buttonTitles,
   placeholders,
   assetStatuses,
@@ -571,6 +590,7 @@ export default {
   itemFormFields,
   forgotPassText,
   setNewPassword,
+  permissionTypes,
   categoryIconList,
   itemFormSections,
   generalCategories,
