@@ -14,6 +14,7 @@ import assets from '~/global/assets';
 import constants from '~/global/constants';
 import { capitalize, normalize, getPrefix } from '~/global/utils';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as CATEGORIES_QUERIES from '~/graphql/categories/queries';
 
 import styles from './styles';
@@ -33,7 +34,7 @@ const variables = {
 };
 
 const queries = {
-  placeId: AUTH_QUERIES.GET_COMPANY_PLACES,
+  placeId: PLACES_QUERIES.GET_COMPANY_PLACES,
   category: CATEGORIES_QUERIES.GET_COMPANY_CATEGORIES_BY_ID,
   responsibleId: AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE,
 };

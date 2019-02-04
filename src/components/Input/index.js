@@ -57,7 +57,6 @@ class Input extends Component<Props> {
       isWarning,
       isMultiline,
       onSubmitForm,
-      customStyles,
       customWarning,
       returnKeyType,
       onSubmitEditing,
@@ -87,7 +86,6 @@ class Input extends Component<Props> {
             isBackgroundTransparent && styles.transparentBackgroundContainer,
             showWarningInTitle && isWarning && styles.itemFormErrorContainer,
             isWhite && (isWarning || customWarning) && styles.invalidWhiteContainer,
-            customStyles,
           ]}
         >
           <Text
