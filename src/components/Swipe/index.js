@@ -133,6 +133,7 @@ class SwipeableList extends PureComponent<Props, {}> {
 
   renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
     const {
+      editPlace,
       openPlace,
       selectItem,
       toggleDelModal,
@@ -147,8 +148,14 @@ class SwipeableList extends PureComponent<Props, {}> {
             size={25}
             isCustomIcon
             iconName="pencil"
-            onPress={() => {}}
             customContStyle={styles.leftSwipeButton}
+            onPress={() => editPlace(
+              place.id,
+              place.name,
+              place.address,
+              place.gps,
+              place.manager,
+            )}
           />
         ),
       },

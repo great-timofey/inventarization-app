@@ -281,6 +281,7 @@ const headers = {
   mainInfo: 'Основная информация',
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
+  editPlace: 'Редактирование места',
   addingItem: 'Добавление предмета',
   addPlaces: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',

@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
-  Alert,
   Keyboard,
   SafeAreaView,
   TouchableOpacity,
@@ -23,9 +22,11 @@ import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 
 import colors from '~/global/colors';
+import { mainNavigation } from '~/global';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
 
@@ -33,30 +34,47 @@ import styles from './styles';
 import type { Props, State } from './types';
 
 class EditPlaceScene extends PureComponent<Props, State> {
-  static navigationOptions = ({ navigation }: Props) => ({
-    headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
-    headerTitle: HeaderTitle({
-      color: colors.header.createCompany,
-      title: constants.headers.addPlaces,
-    }),
-    headerTitleStyle: globalStyles.headerTitleStyle,
-    headerLeft: HeaderBackButton({
-      onPress: () => navigation.goBack(),
-    }),
-  });
+  static navigationOptions = ({ navigation }: Props) => {
+    const id = navigation.state.params && navigation.state.params.id;
 
-  state = {
-    place: '',
-    address: '',
-    warnings: {},
-    latitude: 0.0,
-    longitude: 0.0,
-    loading: false,
-    isNewPlaceScene: true,
-    isModalVisible: false,
-    selectedManagerId: null,
-    isManagerSelectActive: false,
-  };
+    return {
+      headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
+      headerTitle: HeaderTitle({
+        color: colors.header.createCompany,
+        title: id ? constants.headers.editPlace : constants.headers.addPlaces,
+      }),
+      headerTitleStyle: globalStyles.headerTitleStyle,
+      headerLeft: HeaderBackButton({
+        onPress: () => navigation.goBack(),
+      }),
+    };
+  }
+
+  constructor(props: Props) {
+    super(props);
+    const { navigation } = this.props;
+
+    const gps = navigation.state.params && navigation.state.params.gps;
+    const name = navigation.state.params && navigation.state.params.name;
+    const address = navigation.state.params && navigation.state.params.address;
+    const manager = navigation.state.params && navigation.state.params.manager;
+
+    const lat = gps && gps.lat;
+    const lon = gps && gps.lon;
+
+    this.state = {
+      warnings: {},
+      loading: false,
+      place: name || '',
+      isModalVisible: false,
+      address: address || '',
+      latitude: lat || 0.0,
+      longitude: lon || 0.0,
+      selectedManagerId: (manager && manager.id) || null,
+      isManagerSelectActive: !!(manager && manager.fullName && manager.id),
+      isNewPlaceScene: !(gps || name || address || manager),
+    };
+  }
 
   onSubmitEditing = () => Keyboard.dismiss();
 
@@ -85,38 +103,78 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   onSubmitForm = async () => {
-    const {
-      place,
-      address,
-      selectedManagerId,
-    } = this.state;
+    const { navigation } = this.props;
+
+    const id = navigation.state.params && navigation.state.params.id;
 
     const {
-      createPlace,
-      userCompany: {
-        company: { id: companyId },
+      state: {
+        place,
+        address,
+        latitude,
+        longitude,
+        isNewPlaceScene,
+        selectedManagerId,
       },
-    } = this.props;
+      props: {
+        createPlace,
+        updatePlace,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+    } = this;
+
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
 
-    if (!isFormInvalid) {
+    if (!isFormInvalid && isNewPlaceScene) {
       try {
         await createPlace({
           variables: {
             companyId,
+            gps: {
+              lat: latitude,
+              lon: longitude,
+            },
+            name: place.trim(),
+            address: address.trim(),
+            managerId: selectedManagerId,
+          },
+          update: this.updateCreatePlace,
+        });
+        mainNavigation.goBack();
+      } catch (error) {
+        if (error.message === constants.graphqlErrors.placeAlreadyExists) {
+          this.setState({
+            warnings: {
+              count: 1,
+              place: constants.warnings.placeAlreadyExists,
+            },
+          });
+        } else {
+          console.log(error.message);
+        }
+      }
+    }
+
+    if (!isFormInvalid && !isNewPlaceScene) {
+      try {
+        await updatePlace({
+          variables: {
+            id,
+            companyId,
+            gps: {
+              lat: latitude,
+              lon: longitude,
+            },
             name: place.trim(),
             address: address.trim(),
             managerId: selectedManagerId,
           },
         });
-        Alert.alert(constants.text.placeCreated);
-        this.setState({
-          place: '',
-          address: '',
-          warnings: {},
-        });
+        mainNavigation.goBack();
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
@@ -131,6 +189,16 @@ class EditPlaceScene extends PureComponent<Props, State> {
       }
     }
   };
+
+  updateCreatePlace = (cache: Object, payload: Object) => {
+    const { props: { userCompany: { company: { id: companyId } } } } = this;
+    const data = cache.readQuery({
+      query: PLACES_QUERIES.GET_COMPANY_PLACES,
+      variables: { companyId },
+    });
+    data.places = [...data.places, payload.data.createPlace];
+    cache.writeQuery({ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId }, data });
+  }
 
   checkForErrors = () => {
     const {
@@ -190,6 +258,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
         longitude,
         isModalVisible,
         isNewPlaceScene,
+        selectedManagerId,
         isManagerSelectActive,
       },
     } = this;
@@ -250,6 +319,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
               {isManagerSelectActive && (
                 <DropDownMenu
                   data={managerList}
+                  selectedManagerId={selectedManagerId}
                   callBackSelectManager={this.selectManager}
                 />
               )}
@@ -296,6 +366,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
 export default compose(
   graphql(PLACES_MUTATIONS.CREATE_PLACE, { name: 'createPlace' }),
+  graphql(PLACES_MUTATIONS.UPDATE_PLACE, { name: 'updatePlace' }),
   graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
     //  $FlowFixMe
     props: ({ data: { userCompany } }) => ({ userCompany }),

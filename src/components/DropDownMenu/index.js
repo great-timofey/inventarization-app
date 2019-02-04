@@ -19,7 +19,8 @@ type State = {
 
 type Props = {
   data: Array<Object>,
-  callBackSelectManager: Function
+  callBackSelectManager: Function,
+  selectedManagerId: string | number | null,
 }
 
 const AddButton = () => (
@@ -35,10 +36,11 @@ const AddButton = () => (
 class DropDownMenu extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    const { selectedManagerId } = this.props;
 
     this.state = {
       isActive: false,
-      selectedManagerId: 0,
+      selectedManagerId: selectedManagerId || 0,
     };
   }
 
@@ -59,9 +61,9 @@ class DropDownMenu extends PureComponent<Props, State> {
   }
 
   componentDidMount = () => {
-    const { data, callBackSelectManager } = this.props;
+    const { data, callBackSelectManager, selectedManagerId } = this.props;
 
-    if (data.length > 0) {
+    if (data && data.length > 0 && !selectedManagerId) {
       const defaultManagerId = data[0].id;
       this.setState({
         selectedManagerId: defaultManagerId,

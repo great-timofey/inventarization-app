@@ -13,6 +13,7 @@ export type Props = {
   openPlace: Function,
   openItem: Function,
   userRole: string,
+  editPlace?: Function,
   parentScrollViewRef: React.Node,
   getItemPosition: Function,
   toggleDelModal?: () => void,

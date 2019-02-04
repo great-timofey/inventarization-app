@@ -7,7 +7,7 @@ export type State = {
   latitude: number,
   longitude: number,
   isModalVisible: boolean,
-  warnings: Array<string>,
+  warnings: Object,
   isNewPlaceScene: boolean,
   isManagerSelectActive: boolean,
   selectedManagerId: null | number | string,
@@ -17,4 +17,5 @@ export type Props = {
   navigation: Object,
   userCompany: Object,
   createPlace: Function,
+  updatePlace: Function,
 };

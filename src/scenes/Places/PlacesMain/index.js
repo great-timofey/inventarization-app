@@ -274,12 +274,28 @@ getItemPosition = (itemRef, parentScrollViewRef, place) => {
   }
 }
 
+resetCurrentSelectItem = () => {
+  this.setState({
+    currentSelectItem: '',
+  });
+}
+
 openPlace = (id, name, address, gps) => {
   mainNavigation.navigate(SCENE_NAMES.PlacesItemsSceneName, { id, name, address, gps });
+  this.resetCurrentSelectItem();
 }
 
 navigateToAddPlace = () => {
   mainNavigation.navigate(SCENE_NAMES.PlacesSceneName);
+  this.resetCurrentSelectItem();
+}
+
+navigateToEditPlace = (id, name, address, gps, manager) => {
+  mainNavigation.navigate(
+    SCENE_NAMES.PlacesSceneName,
+    { id, name, address, gps, manager },
+  );
+  this.resetCurrentSelectItem();
 }
 
 scrollViewRef: any;
@@ -342,6 +358,7 @@ render() {
                 openPlace={this.openPlace}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
+                editPlace={this.navigateToEditPlace}
                 getItemPosition={this.getItemPosition}
                 parentScrollViewRef={this.scrollViewRef}
                 toggleDelModal={this.toggleDelModalVisible}
