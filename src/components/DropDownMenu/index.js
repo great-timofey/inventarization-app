@@ -14,7 +14,6 @@ import styles from './styles';
 
 type State = {
   isActive: boolean,
-  dataLength: number | null,
   selectedEmployeeId: string | number | null,
 }
 
@@ -23,15 +22,23 @@ type Props = {
   callBackSelectEmployee: Function
 }
 
+const AddButton = () => (
+  <TouchableOpacity
+    onPress={() => {}}
+    style={[styles.employee, styles.last]}
+  >
+    <Text style={styles.button}>
+      {constants.buttonTitles.addNewEmployee}
+    </Text>
+  </TouchableOpacity>
+);
 class DropDownMenu extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-    const { data } = this.props;
 
     this.state = {
       isActive: false,
       selectedEmployeeId: 0,
-      dataLength: data.length || null,
     };
   }
 
@@ -64,9 +71,8 @@ class DropDownMenu extends PureComponent<Props, State> {
   }
 
   renderRow = ({ item, index }: { item: Object, index: number }) => {
-    const { isActive, dataLength } = this.state;
+    const { isActive } = this.state;
     const isFirstEl = index === 0;
-    const isLastEl = dataLength ? index === dataLength - 1 : null;
 
     return (
       <TouchableOpacity
@@ -74,7 +80,6 @@ class DropDownMenu extends PureComponent<Props, State> {
         onPress={() => this.selectEmployee(item.id)}
         style={[
           styles.employee,
-          isLastEl && styles.last,
           !isActive && styles.one,
           isFirstEl && styles.first,
         ]}
@@ -129,6 +134,7 @@ class DropDownMenu extends PureComponent<Props, State> {
           keyExtractor={this.keyExtractor}
           data={isActive ? data : subData}
         />
+        {isActive && <AddButton />}
       </View>
     ) : (
       null

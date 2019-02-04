@@ -13,6 +13,8 @@ export default StyleSheet.create({
     left: 25,
     zIndex: 4,
     position: 'absolute',
+    borderRadius: normalize(7),
+    backgroundColor: colors.white,
     width: deviceWidth - normalize(50),
   },
   employee: {
@@ -28,8 +30,8 @@ export default StyleSheet.create({
     borderTopRightRadius: normalize(7),
   },
   last: {
-    borderBottomRightRadius: normalize(7),
     borderBottomLeftRadius: normalize(7),
+    borderBottomRightRadius: normalize(7),
   },
   one: {
     borderRadius: normalize(7),
@@ -41,6 +43,11 @@ export default StyleSheet.create({
   },
   botText: {
     color: colors.black,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.regular,
+  },
+  button: {
+    color: colors.accent,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },

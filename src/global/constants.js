@@ -158,6 +158,7 @@ const buttonTitles = {
   editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
+  addNewEmployee: 'Добавить нового завхоза',
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
 

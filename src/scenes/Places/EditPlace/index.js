@@ -140,7 +140,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
         latitude,
         longitude,
         isNewPlaceScene,
-        selectedEmployeeId,
         isEmployeeSelectActive,
       },
     } = this;
