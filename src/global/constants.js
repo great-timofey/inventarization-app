@@ -285,6 +285,7 @@ const text = {
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
   notItemsYet: 'Пока не добавлено ни одного предмета',
+  placeCreated: 'Место было успешно создано',
 };
 
 const hints = {
@@ -538,13 +539,14 @@ const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
   emptyPassword: 'Введите пароль',
+  emptyPlace: 'Введите название места',
   invalidEmail: 'Вы указали неверный email',
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  placeAlreadyExists: 'Место с таким названием уже существует',
   unregisteredEmail: 'Данный email не был зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 8 символов',
+  placeAlreadyExists: 'Место с таким названием уже существует',
 };
 
 const graphqlErrors = {

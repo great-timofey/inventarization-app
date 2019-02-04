@@ -3,7 +3,8 @@ import React, { PureComponent, Fragment } from 'react';
 import { Alert, View, ActivityIndicator, Keyboard, SafeAreaView } from 'react-native';
 
 //  $FlowFixMe
-import { includes } from 'ramda';
+import { includes, keys } from 'ramda';
+import { compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
 import Button from '~/components/Button';
@@ -12,11 +13,13 @@ import HeaderTitle from '~/components/HeaderTitle';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
 import {
+  debounce,
   getCoordsByAddress,
   getAddressByCoords,
-  debounce,
   getCurrentLocation,
 } from '~/global/utils';
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
+import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import globalStyles from '~/global/styles';
@@ -40,9 +43,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
   state = {
     place: '',
     address: '',
-    latitude: 0,
-    longitude: 0,
-    warnings: [],
+    warnings: {},
     loading: true,
     latitudeDelta: 0.1,
     longitudeDelta: 0.1,
@@ -98,6 +99,13 @@ class EditPlaceScene extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
+    const { place } = this.state;
+    const {
+      createPlace,
+      userCompany: {
+        company: { id: companyId },
+      },
+    } = this.props;
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
       .then(() => this.checkForErrors());
@@ -105,12 +113,23 @@ class EditPlaceScene extends PureComponent<Props, State> {
     if (!isFormInvalid) {
       this.setState({ loading: true });
       try {
-        //  create / update place mutation
+        await createPlace({ variables: { companyId, name: place.trim() } });
+        Alert.alert(constants.text.placeCreated);
+        this.setState({
+          place: '',
+          address: '',
+          warnings: {},
+        });
       } catch (error) {
         if (error.message === constants.graphqlErrors.placeAlreadyExists) {
           this.setState({
-            warnings: [constants.warnings.placeAlreadyExists],
+            warnings: {
+              count: 1,
+              place: constants.warnings.placeAlreadyExists,
+            },
           });
+        } else {
+          console.log(error.message);
         }
       } finally {
         this.setState({ loading: false });
@@ -119,19 +138,22 @@ class EditPlaceScene extends PureComponent<Props, State> {
   };
 
   checkForErrors = () => {
-    const { warnings } = this.state;
-    return !!warnings.length;
+    const {
+      warnings: { count },
+    } = this.state;
+    return count > 0;
   };
 
   checkFields = () => {
-    const { address, place } = this.state;
-    const warnings = [];
+    const { place } = this.state;
+    const warnings = {
+      count: 0,
+      place: '',
+    };
 
     if (!place.trim()) {
-      warnings.push('place');
-    }
-    if (!address.trim()) {
-      warnings.push('address');
+      warnings.place = constants.warnings.emptyPlace;
+      warnings.count += 1;
     }
 
     this.setState({ warnings });
@@ -159,15 +181,17 @@ class EditPlaceScene extends PureComponent<Props, State> {
               <Input
                 isWhite
                 value={place}
+                showWarningInTitle
                 style={styles.input}
                 blurOnSubmit={false}
                 returnKeyType="done"
                 customStyles={styles.input}
-                type={constants.inputTypes.place}
+                customWarning={warnings.place}
                 onSubmitEditing={this.onSubmitEditing}
-                isWarning={includes('place', warnings)}
                 placeholder={constants.placeholders.place}
+                isWarning={includes('place', keys(warnings))}
                 onChangeText={text => this.onChangeField('place', text)}
+                type={{ label: constants.inputTypes.place.label, warning: warnings.place }}
               />
             </View>
             <View style={[styles.inputView, styles.addressInputView]}>
@@ -177,10 +201,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
                 style={styles.input}
                 blurOnSubmit={false}
                 returnKeyType="done"
-                customStyles={styles.input}
                 type={constants.inputTypes.address}
                 onSubmitEditing={this.onSubmitEditing}
-                isWarning={includes('address', warnings)}
                 placeholder={constants.placeholders.address}
                 onChangeText={text => this.handleChangeAddress(text)}
               />
@@ -209,4 +231,10 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 }
 
-export default EditPlaceScene;
+export default compose(
+  graphql(PLACES_MUTATIONS.CREATE_PLACE, { name: 'createPlace' }),
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    //  $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+)(EditPlaceScene);

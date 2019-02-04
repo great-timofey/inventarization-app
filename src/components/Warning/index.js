@@ -1,6 +1,7 @@
 // @flow
 
-import React from 'react';
+//  $FlowFixMe
+import React, { memo } from 'react';
 import { View, Text } from 'react-native';
 
 import styles from './styles';
@@ -11,4 +12,5 @@ const Warning = ({ title, isVisible }: Props) => (
     <Text style={styles.errorText}>{title}</Text>
   </View>
 );
-export default Warning;
+
+export default memo(Warning);

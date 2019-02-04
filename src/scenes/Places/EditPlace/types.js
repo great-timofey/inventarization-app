@@ -3,15 +3,17 @@
 export type State = {
   place: string,
   address: string,
+  warnings: Object,
   latitude: number,
-  longitude: number,
   loading: boolean,
+  longitude: number,
   latitudeDelta: number,
   longitudeDelta: number,
-  warnings: Array<string>,
   isNewPlaceScene: boolean,
 };
 
 export type Props = {
   navigation: Object,
+  userCompany: Object,
+  createPlace: Function,
 };
