@@ -34,7 +34,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     headerStyle: [globalStyles.authHeaderStyleBig, styles.placesHeaderStyle],
     headerTitle: HeaderTitle({
       color: colors.header.createCompany,
-      title: constants.headers.places,
+      title: constants.headers.addPlaces,
     }),
     headerTitleStyle: globalStyles.headerTitleStyle,
     headerLeft: HeaderBackButton({
