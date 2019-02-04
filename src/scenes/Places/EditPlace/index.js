@@ -174,9 +174,16 @@ class EditPlaceScene extends PureComponent<Props, State> {
               </View>
             );
           }
+
+          let employeeList;
+          let isEmptyEmployeeList;
+
           // $FlowFixMe
-          const employeeList = data.users;
-          const isEmptyEmployeeList = employeeList.length === 0;
+          if (data.users) {
+            employeeList = data.users;
+            isEmptyEmployeeList = employeeList.length === 0;
+          }
+
 
           return loading ? (
             <ActivityIndicator />
