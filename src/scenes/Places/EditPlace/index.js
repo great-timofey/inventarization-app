@@ -38,6 +38,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     headerLeft: HeaderBackButton({
       onPress: () => navigation.goBack(),
     }),
+    headerRight: <View />,
   });
 
   state = {
@@ -45,6 +46,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
     address: '',
     warnings: {},
     loading: true,
+    latitude: 0.0,
+    longitude: 0.0,
     latitudeDelta: 0.1,
     longitudeDelta: 0.1,
     isNewPlaceScene: true,
@@ -73,7 +76,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
     }
   }, 1000);
 
-  //  eslint-disable-next-line max-len
   getAddressByCoordsFromAPI = debounce(async () => {
     const { latitude, longitude } = this.state;
     const address = await getAddressByCoords(latitude, longitude);
@@ -99,7 +101,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
-    const { place } = this.state;
+    const { place, address } = this.state;
     const {
       createPlace,
       userCompany: {
@@ -113,7 +115,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     if (!isFormInvalid) {
       this.setState({ loading: true });
       try {
-        await createPlace({ variables: { companyId, name: place.trim() } });
+        await createPlace({ variables: { companyId, name: place.trim(), address: address.trim() } });
         Alert.alert(constants.text.placeCreated);
         this.setState({
           place: '',
