@@ -178,7 +178,6 @@ class CategoryMenu extends PureComponent<Props, State> {
 
           const isSelectedWithoutCategory = includes(defaultCategoryId, saveSelectedCategories)
             && saveSelectedCategories.length === 1;
-          console.log(defaultCategoryId);
 
           return (
             <ScrollView
