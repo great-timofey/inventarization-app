@@ -115,7 +115,13 @@ class EditPlaceScene extends PureComponent<Props, State> {
     if (!isFormInvalid) {
       this.setState({ loading: true });
       try {
-        await createPlace({ variables: { companyId, name: place.trim(), address: address.trim() } });
+        await createPlace({
+          variables: {
+            companyId,
+            name: place.trim(),
+            address: address.trim(),
+          },
+        });
         Alert.alert(constants.text.placeCreated);
         this.setState({
           place: '',
