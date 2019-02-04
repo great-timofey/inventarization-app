@@ -348,12 +348,12 @@ render() {
               />
               {isNoPlaces && (
               <View style={styles.wrapper}>
-                <Image source={assets.emptyPlaces} />
+                <Image style={styles.image} source={assets.emptyPlaces} />
                 <Text style={styles.emptyPlacesText}>{constants.text.emptyPlaces}</Text>
                 <Button
                   isGreen
-                  onPress={() => {}}
                   customStyle={styles.button}
+                  onPress={this.navigateToAddPlace}
                   title={constants.buttonTitles.addPlace}
                 />
               </View>
