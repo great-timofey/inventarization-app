@@ -1,11 +1,14 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { findIndex } from 'ramda';
+import { Query, compose, graphql } from 'react-apollo';
 
 import Icon from 'react-native-vector-icons/Ionicons';
+
+import * as AUTH_QUERIES from '~/graphql/auth/queries';
 
 import colors from '~/global/colors';
 import constants from '~/global/constants';
@@ -18,6 +21,8 @@ type State = {
 }
 
 type Props = {
+  role: string,
+  query: Object,
   data: Array<Object>,
   callBackSelectManager: Function,
   selectedManagerId: string | number | null,
@@ -108,7 +113,15 @@ class DropDownMenu extends PureComponent<Props, State> {
   render() {
     const {
       props: {
-        data,
+        role,
+        query,
+        toggleModalVisible,
+        // $FlowFixMe
+        userCompany: {
+          company: {
+            id: companyId,
+          },
+        },
       },
       state: {
         isActive,
@@ -116,32 +129,71 @@ class DropDownMenu extends PureComponent<Props, State> {
       },
     } = this;
 
-    let subData;
-    let selectedManagerIndex;
+    const isUserAdmin = role === constants.roles.admin;
 
-    if (data) {
-      selectedManagerIndex = findIndex(user => user.id === selectedManagerId, data);
-      if (selectedManagerIndex === -1) {
-        selectedManagerIndex = 0;
-      } else {
-        subData = [data[selectedManagerIndex]];
-      }
-    }
+    return (
+      <Query query={query} variables={{ companyId, role: 'manager' }}>
+        {({ data, loading, error }) => {
+          if (error) {
+            return (
+              <View>
+                <Text>{error.message}</Text>
+              </View>
+            );
+          }
 
-    return data ? (
-      <View style={styles.container}>
-        <FlatList
-          scrollEnabled={false}
-          renderItem={this.renderRow}
-          keyExtractor={this.keyExtractor}
-          data={isActive ? data : subData}
-        />
-        {isActive && <AddButton />}
-      </View>
-    ) : (
-      null
+          if (loading) {
+            return <ActivityIndicator />;
+          }
+
+          const managerList = (data && data.users) ? data.users : [];
+          const isEmptyManagerList = managerList.length === 0;
+
+          let subData;
+          let selectedManagerIndex;
+
+          if (managerList && managerList.length > 0) {
+            selectedManagerIndex = findIndex(user => user.id === selectedManagerId, managerList);
+            if (selectedManagerIndex === -1) {
+              selectedManagerIndex = 0;
+            } else {
+              subData = [managerList[selectedManagerIndex]];
+            }
+          }
+
+          return (
+            <View style={styles.container}>
+              { isUserAdmin && !isActive && !selectedManagerId && (
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={isEmptyManagerList
+                    ? toggleModalVisible
+                    : this.toogleMenuActive
+                  }
+                >
+                  <Text style={styles.button}>
+                    {constants.buttonTitles.setManager}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <FlatList
+                scrollEnabled={false}
+                renderItem={this.renderRow}
+                keyExtractor={this.keyExtractor}
+                data={isActive ? managerList : subData}
+              />
+              {isActive && !isEmptyManagerList && <AddButton />}
+            </View>
+          );
+        }}
+      </Query>
     );
   }
 }
 
-export default DropDownMenu;
+export default compose(
+  graphql(AUTH_QUERIES.GET_CURRENT_USER_COMPANY_CLIENT, {
+    //  $FlowFixMe
+    props: ({ data: { userCompany } }) => ({ userCompany }),
+  }),
+)(DropDownMenu);

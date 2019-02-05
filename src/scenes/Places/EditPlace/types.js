@@ -11,7 +11,6 @@ export type State = {
   longitudeDelta: number,
   isModalVisible: boolean,
   isNewPlaceScene: boolean,
-  isManagerSelectActive: boolean,
   selectedManagerId: null | number | string,
 };
 
