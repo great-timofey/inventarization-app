@@ -12,6 +12,7 @@ export type PhotosProps = {
 export type Props = {
   innerRef?: any,
   userId: string,
+  placeId: string,
   current: Object,
   userRole: string,
   navigation: Object,

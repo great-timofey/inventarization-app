@@ -62,7 +62,6 @@ export default StyleSheet.create({
     height: normalize(62),
     marginRight: normalize(8),
     marginLeft: normalize(20),
-    backgroundColor: colors.darkGreen,
   },
   description: {
     flex: 1,
@@ -96,5 +95,19 @@ export default StyleSheet.create({
   countText: {
     color: colors.text.blue,
     fontSize: normalize(14),
+  },
+  image: {
+    borderRadius: 14,
+    width: normalize(62),
+    height: normalize(62),
+    marginRight: normalize(8),
+    marginLeft: normalize(20),
+  },
+  pinImage: {
+    zIndex: 2,
+    left: normalize(43),
+    width: normalize(16),
+    position: 'absolute',
+    height: normalize(26),
   },
 });

@@ -4874,7 +4874,6 @@ react-native-linear-gradient@2.5.3:
 react-native-maps@^0.23.0:
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.23.0.tgz#edbfdcad0e42190627eb1c8067eaba5965c8f81e"
-  integrity sha512-qxOIQGsDtQXQlSJdXMW1wg8pvLaVYdbiIolB7tZTTgTGgIA/hDxXwZbQZ08c4KDD6/VTk8krfd1APaHkqvh6og==
 
 react-native-modal-datetime-picker@^6.0.0:
   version "6.0.0"
@@ -4980,7 +4979,10 @@ react-native-torch@^1.1.5:
 react-native-vector-icons@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.2.0.tgz#2682b718099eb9470c0defd38da47deb844a0f9c"
+<<<<<<< HEAD
+=======
   integrity sha512-NEQeQF7RzO5OILV4Q/F8P3pSuwN45/PPbOwU8/Eocc2Kl1bH1D42WFj+WSbCLVKeEq6oo7uj3tGqmrXGLs974A==
+>>>>>>> d5351c59d2244f2eb4fd1c4da5fd0f56af878090
   dependencies:
     lodash "^4.0.0"
     prop-types "^15.6.2"

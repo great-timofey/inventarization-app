@@ -7,13 +7,14 @@ import { pluck, includes } from 'ramda';
 import { graphql } from 'react-apollo';
 import Swipeout from 'react-native-swipeout';
 
-//  $FlowFixMe
+import Place from '~/components/Place';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
-import { normalize, getPlaceholder } from '~/global/utils';
 import type { Item } from '~/global/types';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
+import { normalize, getPlaceholder } from '~/global/utils';
 import { GET_CURRENT_USER_PLACES } from '~/graphql/places/queries';
 
 import styles from './styles';
@@ -103,23 +104,26 @@ class SwipeableList extends PureComponent<Props, {}> {
         right={swipeoutBtns}
         disabled={!enableLeftSwipe}
         close={item.id !== activeRowId}
-        //  eslint-disable-next-line
-        onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(item.id) : null
+        onOpen={(sectionID, rowId, direction: string) => (direction !== undefined
+          ? selectItem(item.id)
+          : null)
         }
       >
-        <TouchableOpacity activeOpacity={1} onPress={() => openItem(item)}>
-          <View style={styles.rowItem}>
-            <Image style={styles.image} source={{ uri }} />
-            <View style={styles.description}>
-              <View>
-                <Text style={styles.topText}>{item.name}</Text>
-                <Text style={styles.botText}>
-                  {`${(item.photos && item.photos.length) || 0} Фото`}
-                </Text>
-              </View>
-              <View style={styles.count}>
-                <Text style={styles.countText}>{item.purchasePrice}</Text>
-              </View>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.rowItem}
+          onPress={() => openItem(item)}
+        >
+          <Image style={styles.image} source={{ uri }} />
+          <View style={styles.description}>
+            <View>
+              <Text style={styles.topText}>{item.name}</Text>
+              <Text style={styles.botText}>
+                {`${(item.photos && item.photos.length) || 0} Фото`}
+              </Text>
+            </View>
+            <View style={styles.count}>
+              <Text style={styles.countText}>{item.purchasePrice}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -127,10 +131,75 @@ class SwipeableList extends PureComponent<Props, {}> {
     );
   };
 
+  renderPlacesSwipeRow = (place: Object, activeRowId: any) => {
+    const {
+      openPlace,
+      selectItem,
+      toggleDelModal,
+      getItemPosition,
+      parentScrollViewRef,
+    } = this.props;
+
+    const swipeoutBtns = [
+      {
+        component: (
+          <IconButton
+            size={25}
+            isCustomIcon
+            iconName="pencil"
+            onPress={() => {}}
+            customContStyle={styles.leftSwipeButton}
+          />
+        ),
+      },
+      {
+        component: (
+          <IconButton
+            size={50}
+            iconName="ios-close"
+            iconColor={colors.white}
+            onPress={toggleDelModal}
+            customIconStyle={{ top: normalize(3) }}
+            customContStyle={styles.rightSwipeButton}
+          />
+        ),
+      },
+    ];
+
+    return (
+      <Swipeout
+        autoClose
+        right={swipeoutBtns}
+        disabled={isAndroid}
+        close={place.id !== activeRowId}
+        //  eslint-disable-next-line
+        onOpen={(sectionID, rowId, direction: string) => direction !== undefined ? selectItem(place.id) : null
+        }
+      >
+        <Place
+          place={place}
+          openPlace={openPlace}
+          getItemPosition={getItemPosition}
+          parentScrollViewRef={parentScrollViewRef}
+        />
+      </Swipeout>
+    );
+  }
+
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 
+  itemRef: any;
+
   render() {
-    const { extraData, data } = this.props;
+    const { extraData, data, isPlaces } = this.props;
+
+    let renderRow;
+
+    if (isPlaces) {
+      renderRow = this.renderPlacesSwipeRow;
+    } else {
+      renderRow = this.renderSwipeRow;
+    }
 
     return (
       <FlatList
@@ -138,7 +207,7 @@ class SwipeableList extends PureComponent<Props, {}> {
         scrollEnabled={false}
         extraData={{ extraData }}
         keyExtractor={this.keyExtractor}
-        renderItem={({ item }) => this.renderSwipeRow(item, extraData.currentSelectItem)}
+        renderItem={({ item }) => renderRow(item, extraData.currentSelectItem)}
       />
     );
   }

@@ -54,6 +54,9 @@ export default StyleSheet.create({
     alignSelf: 'center',
     marginTop: normalize(120),
   },
+  imagePlace: {
+    marginTop: normalize(10),
+  },
   categoryListContainer: {
     height: normalize(50),
     alignContent: 'center',

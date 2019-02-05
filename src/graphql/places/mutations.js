@@ -1,6 +1,14 @@
 //  @flow
 import gql from 'graphql-tag';
 
+export const DESTROY_PLACE = gql`
+  mutation DestroyPlace(
+    $id: ID!
+  ) {
+    destroyPlace( id: $id )
+  }
+`;
+
 export const CREATE_PLACE = gql`
   mutation CreatePlace(
     $companyId: ID!
@@ -84,4 +92,5 @@ export const UPDATE_PLACE = gql`
 export default {
   CREATE_PLACE,
   UPDATE_PLACE,
+  DESTROY_PLACE,
 };

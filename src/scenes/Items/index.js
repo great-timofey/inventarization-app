@@ -10,8 +10,8 @@ import ItemsList from '~/components/ItemsList';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
 import MainHeader from '~/scenes/Items/MainHeader';
+import SearchHeader from '~/components/SearchHeader';
 import QuestionModal from '~/components/QuestionModal';
-import SearchHeader from '~/scenes/Items/SearchHeader';
 import AndroidActionsModal from '~/components/AndroidActionsModal';
 
 import { normalize } from '~/global/utils';
@@ -282,7 +282,7 @@ class ItemsScene extends PureComponent<Props, State> {
             this.setState({
               elementPosition: {
                 x: px,
-                y: py - itemPositionDiff,
+                y: py - itemPositionDiff - normalize(20),
               },
             });
             setTimeout(() => {
@@ -404,6 +404,7 @@ class ItemsScene extends PureComponent<Props, State> {
         />
         <AndroidActionsModal
           item={item || {}}
+          type={constants.types.items}
           elementPosition={elementPosition}
           isListViewStyle={isListViewStyle}
           handleOpenItem={this.handleOpenItem}

@@ -267,7 +267,6 @@ class ItemForm extends Component<Props, State> {
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? constants.words.yes : constants.words.no;
 
       this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
-      // console.log(itemCopy);
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
