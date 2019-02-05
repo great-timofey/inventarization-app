@@ -2,7 +2,8 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
-import globalStyles, { fonts } from '~/global/styles';
+import { fonts } from '~/global/styles';
+import { isIphoneX, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
@@ -13,7 +14,9 @@ export default StyleSheet.create({
     borderTopColor: colors.white,
     backgroundColor: colors.white,
     justifyContent: 'space-between',
-    ...globalStyles.commonHeader,
+    paddingTop: isAndroid ? 0 : normalize(17),
+    borderTopWidth: isIphoneX ? normalize(15) : 0,
+    height: isAndroid ? normalize(45) : normalize(65),
   },
   headerTitle: {
     textAlign: 'center',

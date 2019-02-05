@@ -20,19 +20,19 @@ export default StyleSheet.create({
     color: colors.white,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
-    marginLeft: isAndroid && normalize(50),
+    marginLeft: isAndroid ? normalize(50) : 0,
   },
   backButton: {
     width: 28,
     height: 20,
     tintColor: colors.white,
-    marginLeft: isAndroid && normalize(25),
+    marginLeft: isAndroid ? normalize(25) : 0,
   },
   skipButtonText: {
     color: colors.white,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
-    marginRight: isAndroid && normalize(25),
+    marginRight: isAndroid ? normalize(25) : 0,
   },
   container: {
     flex: 1,

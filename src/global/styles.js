@@ -45,8 +45,6 @@ export default StyleSheet.create({
     marginLeft: normalize(10),
     marginRight: 0,
   },
-  addItemsPhotoHeader: {
-  },
   authHeaderStyle: {
     elevation: 0,
     height: normalize(60),

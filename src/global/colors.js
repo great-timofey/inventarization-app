@@ -34,6 +34,7 @@ export default {
   whiteOpacityStrong: 'rgba(255, 255, 255, .1)',
   blackOpacityExtraLight: 'rgba(0, 0, 0, .05)',
   whiteOpacityLight: 'rgba(255, 255, 255, 0.2)',
+  androidModalStatusBarOverlay: 'rgba(0,0,0,0.7)',
   text: {
     gray: '#BDBDBD',
     blue: '#42BCF8',
