@@ -20,7 +20,7 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.regular,
   },
   hideButton: {
-    color: colors.white
+    color: colors.white,
   },
   inputView: {
     width: deviceWidth,
