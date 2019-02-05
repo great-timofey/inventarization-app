@@ -233,6 +233,8 @@ const errors = {
     notMatch: 'Пароли не совпадают',
     companyLogo: 'Неверный формат. Нужен .jpg или .png',
   },
+  geocoding: 'Произошла ошибка. Попробуйте еще раз',
+  address: 'Ошибка определения адреса',
   search: 'Подходящих результатов не найдено',
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
@@ -283,6 +285,7 @@ const text = {
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
   notItemsYet: 'Пока не добавлено ни одного предмета',
+  placeCreated: 'Место было успешно создано',
 };
 
 const hints = {
@@ -295,6 +298,13 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
   noCategory: 'Пока не существует \n ни одной категории',
   noResponsibleId: 'Пока не существует \n ни одного ответственного',
+};
+
+const geocodingStatuses = {
+  ok: 'OK',
+  zeroResults: 'ZERO_RESULTS',
+  unknownError: 'UNKNOWN_ERROR',
+  invalidRequest: 'INVALID_REQUEST',
 };
 
 /** Form stuff */
@@ -529,13 +539,14 @@ const warnings = {
   emptyName: 'Введите имя',
   emptyEmail: 'Введите email',
   emptyPassword: 'Введите пароль',
+  emptyPlace: 'Введите название места',
   invalidEmail: 'Вы указали неверный email',
   userNotFound: 'Неверный email или пароль',
   invalidMobile: 'Не верный формат номера телефона',
   emailAlreadyExists: 'Этот email уже зарегистрирован',
-  placeAlreadyExists: 'Место с таким названием уже существует',
   unregisteredEmail: 'Данный email не был зарегистрирован',
   invalidPassword: 'Минимальная длинна пароля - 8 символов',
+  placeAlreadyExists: 'Место с таким названием уже существует',
 };
 
 const graphqlErrors = {
@@ -576,6 +587,7 @@ export default {
   permissionTypes,
   categoryIconList,
   itemFormSections,
+  geocodingStatuses,
   generalCategories,
   updateAssetProperties,
   uploadCreateAssetImages,
