@@ -8,6 +8,7 @@ export type Props = {
     y: number,
   },
   item: Object,
+  editPlace?: Function,
   isModalVisible: boolean,
   handleOpenItem: Function,
   isListViewStyle?: boolean,

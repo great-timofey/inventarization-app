@@ -291,6 +291,12 @@ navigateToAddPlace = () => {
 }
 
 navigateToEditPlace = (id, name, address, gps, manager) => {
+  const { isAndroidActionsModalVisible } = this.state;
+  if (isAndroidActionsModalVisible) {
+    this.setState({
+      isAndroidActionsModalVisible: false,
+    });
+  }
   mainNavigation.navigate(
     SCENE_NAMES.PlacesSceneName,
     { id, name, address, gps, manager },
@@ -398,6 +404,7 @@ render() {
               handleOpenItem={() => {}}
               type={constants.types.places}
               elementPosition={elementPosition}
+              editPlace={this.navigateToEditPlace}
               handleDeleteItem={this.handleDeletePlace}
               toggleActionsModal={this.toggleActionsModal}
               isModalVisible={isAndroidActionsModalVisible}
