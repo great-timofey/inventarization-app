@@ -152,7 +152,6 @@ class AddItemPhotos extends PureComponent<Props, State> {
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ photos: this.state.photos }),
       );
-      console.log(navigation);
     } else {
       Alert.alert(constants.errors.camera.location);
     }
