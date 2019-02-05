@@ -93,7 +93,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    //  $FlowFixMe
+    // eslint-disable-next-line max-len
     getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
   };
 
