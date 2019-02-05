@@ -133,7 +133,7 @@ class DropDownMenu extends PureComponent<Props, State> {
     const isUserAdmin = role === constants.roles.admin;
 
     return (
-      <Query query={query} variables={{ companyId, role: 'manager' }}>
+      <Query query={query} variables={{ companyId, role: constants.roles.manager }}>
         {({ data, loading, error }) => {
           if (error) {
             return (
