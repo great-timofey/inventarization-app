@@ -318,6 +318,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
               </View>
               {isManagerSelectActive && (
                 <DropDownMenu
+                // $FlowFixMe
                   data={managerList}
                   selectedManagerId={selectedManagerId}
                   callBackSelectManager={this.selectManager}

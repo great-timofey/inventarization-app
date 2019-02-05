@@ -149,6 +149,7 @@ class SwipeableList extends PureComponent<Props, {}> {
             isCustomIcon
             iconName="pencil"
             customContStyle={styles.leftSwipeButton}
+            // $FlowFixMe
             onPress={() => editPlace(
               place.id,
               place.name,
