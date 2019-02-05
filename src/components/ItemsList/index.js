@@ -310,6 +310,7 @@ class ItemsList extends PureComponent<Props> {
             <ScrollView
               scrollEventThrottle={16}
               onScroll={this.handleScroll}
+              overScrollMode="never"
               ref={(ref) => { this.scrollViewRef = ref; }}
               scrollEnabled={!isAndroidActionsModalVisible}
             >
