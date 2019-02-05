@@ -241,7 +241,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
   render() {
     const {
       props: {
-        // $FlowFixMe
         userCompany: {
           role: userRole,
           company: {
