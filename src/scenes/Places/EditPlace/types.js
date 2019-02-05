@@ -7,6 +7,8 @@ export type State = {
   latitude: number,
   loading: boolean,
   longitude: number,
+  latitudeDelta: number,
+  longitudeDelta: number,
   isNewPlaceScene: boolean,
 };
 
