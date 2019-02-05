@@ -245,7 +245,6 @@ class AddItemDefects extends PureComponent<Props, State> {
         // eslint-disable-next-line react/destructuring-assignment
         () => navigation.setParams({ defectPhotos: this.state.photos }),
       );
-      console.log(navigation.state.params);
     } else {
       Alert.alert(constants.errors.camera.location);
     }
