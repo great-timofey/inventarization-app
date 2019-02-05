@@ -15,11 +15,12 @@ const SearchHeader = ({ toggleSearch, onChangeSearchField, searchValue }: Props)
   <View style={styles.headerContainer}>
     <TextInput
       autoFocus
+      maxLength={20}
       autoCorrect={false}
       value={searchValue}
       returnKeyType="search"
-      onSubmitEditing={toggleSearch}
       style={styles.searchInput}
+      onSubmitEditing={toggleSearch}
       placeholderTextColor={colors.placeholder}
       placeholder={constants.placeholders.inputHeader}
       onChangeText={text => onChangeSearchField(text)}

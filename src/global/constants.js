@@ -141,6 +141,7 @@ const buttonTitles = {
   edit: 'Редактировать',
   reg: 'Зарегистрироваться',
   addItem: 'Добавить предмет',
+  addPlace: 'Добавить место',
   registration: 'Регистрация',
   choosePhoto: 'Выбрать фото',
   chooseLogo: 'Выбери \n лого',
@@ -163,6 +164,11 @@ const modalQuestion = {
   itemDel: {
     title: 'Удаление предмета',
     question: 'Вы точно хотите удалить \n предмет?',
+    button: 'Удалить',
+  },
+  placeDel: {
+    title: 'Удаление места',
+    question: 'Вы точно хотите удалить \n место?',
     button: 'Удалить',
   },
   categotyDel: {
@@ -233,6 +239,8 @@ const errors = {
     notMatch: 'Пароли не совпадают',
     companyLogo: 'Неверный формат. Нужен .jpg или .png',
   },
+  geocoding: 'Произошла ошибка. Попробуйте еще раз',
+  address: 'Ошибка определения адреса',
   search: 'Подходящих результатов не найдено',
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
@@ -247,6 +255,10 @@ const errors = {
   },
 };
 
+const types = {
+  items: 'items',
+  places: 'places',
+};
 const permissions = {
   photo: [
     'camera',
@@ -259,6 +271,7 @@ const permissionTypes = {
 };
 
 const headers = {
+  places: 'Места',
   items: 'Предметы',
   defects: 'Дефекты',
   qrscanner: 'Сканер',
@@ -269,7 +282,7 @@ const headers = {
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
   addingItem: 'Добавление предмета',
-  places: 'Добавление нового\n места',
+  addPlaces: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',
   storage: 'Принадлежность и хранение',
   modifyingItem: 'Редактирование предмета',
@@ -278,11 +291,13 @@ const headers = {
 };
 
 const text = {
+  photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
     'Вас пока не добавили к организации.\nОбратитесь к администратору или\nдождитесь приглашения.',
   qrhint: 'Поместите штрих-код или QR-код в центр экрана',
   notItemsYet: 'Пока не добавлено ни одного предмета',
+  emptyPlaces: 'Пока не добавлено ни одного места',
   placeCreated: 'Место было успешно создано',
 };
 
@@ -296,6 +311,13 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
   noCategory: 'Пока не существует \n ни одной категории',
   noResponsibleId: 'Пока не существует \n ни одного ответственного',
+};
+
+const geocodingStatuses = {
+  ok: 'OK',
+  zeroResults: 'ZERO_RESULTS',
+  unknownError: 'UNKNOWN_ERROR',
+  invalidRequest: 'INVALID_REQUEST',
 };
 
 /** Form stuff */
@@ -553,6 +575,7 @@ export default {
   text,
   masks,
   words,
+  types,
   roles,
   hints,
   errors,
@@ -578,6 +601,7 @@ export default {
   permissionTypes,
   categoryIconList,
   itemFormSections,
+  geocodingStatuses,
   generalCategories,
   updateAssetProperties,
   uploadCreateAssetImages,

@@ -2,12 +2,14 @@
 
 import { StyleSheet } from 'react-native';
 
-import colors from '../../global/colors';
+import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
+import { deviceWidth } from '~/global/device';
 
 export default StyleSheet.create({
   rowItem: {
     flexDirection: 'row',
+    width: deviceWidth,
     height: normalize(78),
     alignItems: 'center',
     backgroundColor: colors.white,
@@ -59,26 +61,5 @@ export default StyleSheet.create({
     color: colors.text.gray,
     fontSize: normalize(15),
     lineHeight: normalize(18),
-  },
-  buttonStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftSwipeButton: {
-    flex: 1,
-    borderRadius: 0,
-    width: normalize(80),
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
-  },
-  rightSwipeButton: {
-    flex: 1,
-    borderRadius: 0,
-    width: normalize(80),
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.red,
   },
 });
