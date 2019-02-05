@@ -1,18 +1,16 @@
 //  @flow
 import React, { PureComponent } from 'react';
 import {
-  Text,
   View,
   Alert,
   Keyboard,
   SafeAreaView,
-  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 
 //  $FlowFixMe
 import { includes, keys } from 'ramda';
-import { Query, compose, graphql } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
 import Input from '~/components/Input';
@@ -84,7 +82,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
       address: address || '',
       loading: isNewPlaceScene,
       selectedManagerId: (manager && manager.id) || null,
-      isManagerSelectActive: !!(manager && manager.fullName && manager.id),
     };
   }
 
@@ -138,19 +135,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
     });
   };
 
-  onToggleSelectManager = (isEmptyManagerList) => {
-    if (isEmptyManagerList) {
-      this.toggleModalVisible();
-    } else {
-      this.setState({
-        isManagerSelectActive: true,
-      });
-    }
-  }
-
   toggleModalVisible = () => {
     const { isModalVisible } = this.state;
-
     this.setState({
       isModalVisible: !isModalVisible,
     });
@@ -284,12 +270,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
   render() {
     const {
       props: {
-        // $FlowFixMe
         userCompany: {
           role: userRole,
-          company: {
-            id: companyId,
-          },
         },
       },
       state: {
@@ -304,117 +286,81 @@ class EditPlaceScene extends PureComponent<Props, State> {
         isModalVisible,
         isNewPlaceScene,
         selectedManagerId,
-        isManagerSelectActive,
       },
     } = this;
 
     const isUserAdmin = userRole === constants.roles.admin;
 
-    return (
-      <Query
-        query={AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE}
-        variables={{ companyId, role: 'manager' }}
-      >
-        {({ data, error }) => {
-          if (error) {
-            return (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorMessage}>{error.message}</Text>
-              </View>
-            );
+    return loading ? (
+      <ActivityIndicator />
+    ) : (
+      <SafeAreaView style={styles.container}>
+        <View style={[styles.inputView,
+          isUserAdmin && styles.selectActive,
+          selectedManagerId && styles.selectManager]}
+        >
+          <Input
+            isWhite
+            value={place}
+            showWarningInTitle
+            style={styles.input}
+            blurOnSubmit={false}
+            returnKeyType="done"
+            customStyles={styles.input}
+            customWarning={warnings.place}
+            onSubmitEditing={this.onSubmitEditing}
+            placeholder={constants.placeholders.place}
+            isWarning={includes('place', keys(warnings))}
+            onChangeText={text => this.onChangeField('place', text)}
+            type={{ label: constants.inputTypes.place.label, warning: warnings.place }}
+          />
+        </View>
+        <DropDownMenu
+          role={userRole}
+          selectedManagerId={selectedManagerId}
+          callBackSelectManager={this.selectManager}
+          toggleModalVisible={this.toggleModalVisible}
+          query={AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE}
+        />
+        <View style={[styles.inputView,
+          styles.addressInputView,
+          selectedManagerId && styles.addressInputViewActive]}
+        >
+          <Input
+            isWhite
+            value={address}
+            style={styles.input}
+            blurOnSubmit={false}
+            returnKeyType="done"
+            type={constants.inputTypes.address}
+            onSubmitEditing={this.onSubmitEditing}
+            onChangeText={this.handleChangeAddress}
+            placeholder={constants.placeholders.address}
+          />
+        </View>
+        <Map
+          latitude={latitude}
+          longitude={longitude}
+          customStyles={styles.map}
+          latitudeDelta={latitudeDelta}
+          longitudeDelta={longitudeDelta}
+          changeRegionCallback={this.handleChangeRegion}
+        />
+        <Button
+          onPress={this.onSubmitForm}
+          customStyle={styles.submitButton}
+          title={isNewPlaceScene
+            ? constants.buttonTitles.createPlace
+            : constants.buttonTitles.saveChanges
           }
-
-          let managerList;
-          let isEmptyManagerList;
-
-          // $FlowFixMe
-          if (data.users) {
-            managerList = data.users;
-            isEmptyManagerList = managerList.length === 0;
-          }
-
-          return loading ? (
-            <ActivityIndicator />
-          ) : (
-            <SafeAreaView style={styles.container}>
-              <View style={[styles.inputView, isManagerSelectActive && styles.selectActive]}>
-                <Input
-                  isWhite
-                  value={place}
-                  showWarningInTitle
-                  style={styles.input}
-                  blurOnSubmit={false}
-                  returnKeyType="done"
-                  customStyles={styles.input}
-                  customWarning={warnings.place}
-                  onSubmitEditing={this.onSubmitEditing}
-                  placeholder={constants.placeholders.place}
-                  isWarning={includes('place', keys(warnings))}
-                  onChangeText={text => this.onChangeField('place', text)}
-                  type={{ label: constants.inputTypes.place.label, warning: warnings.place }}
-                />
-                {isUserAdmin && (
-                  <TouchableOpacity
-                    onPress={() => this.onToggleSelectManager(isEmptyManagerList)}
-                  >
-                    <Text style={[styles.button, isManagerSelectActive && styles.hideButton]}>
-                      {constants.buttonTitles.setManager}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              {isManagerSelectActive && (
-                <DropDownMenu
-                // $FlowFixMe
-                  data={managerList}
-                  selectedManagerId={selectedManagerId}
-                  callBackSelectManager={this.selectManager}
-                />
-              )}
-              <View style={[
-                styles.inputView,
-                styles.addressInputView,
-                isManagerSelectActive && styles.addressInputViewActive]}
-              >
-                <Input
-                  isWhite
-                  value={address}
-                  style={styles.input}
-                  blurOnSubmit={false}
-                  returnKeyType="done"
-                  type={constants.inputTypes.address}
-                  onSubmitEditing={this.onSubmitEditing}
-                  onChangeText={this.handleChangeAddress}
-                  placeholder={constants.placeholders.address}
-                />
-              </View>
-              <Map
-                latitude={latitude}
-                longitude={longitude}
-                customStyles={styles.map}
-                latitudeDelta={latitudeDelta}
-                longitudeDelta={longitudeDelta}
-                changeRegionCallback={this.handleChangeRegion}
-              />
-              <Button
-                onPress={this.onSubmitForm}
-                customStyle={styles.submitButton}
-                title={
-                  isNewPlaceScene
-                    ? constants.buttonTitles.createPlace
-                    : constants.buttonTitles.saveChanges
-                }
-              />
-              <QuestionModal
-                rightAction={() => {}}
-                isModalVisible={isModalVisible}
-                leftAction={this.toggleModalVisible}
-                data={constants.modalQuestion.userNotFound}
-              />
-            </SafeAreaView>
-          );
-        }}
-      </Query>
+        />
+        <QuestionModal
+          rightAction={() => {}}
+          isModalVisible={isModalVisible}
+          leftAction={this.toggleModalVisible}
+          data={constants.modalQuestion.userNotFound}
+        />
+      </SafeAreaView>
     );
   }
 }

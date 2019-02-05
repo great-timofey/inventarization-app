@@ -31,6 +31,9 @@ export default StyleSheet.create({
   selectActive: {
     marginBottom: normalize(40),
   },
+  selectManager: {
+    marginBottom: normalize(60),
+  },
   addressInputView: {
     zIndex: 3,
     top: normalize(120),

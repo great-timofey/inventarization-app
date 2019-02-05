@@ -515,12 +515,35 @@ class ItemForm extends Component<Props, State> {
 
       try {
         await updateAsset({ variables });
+        this.updatePlaceCount(variables.placeId);
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
       }
     }
   };
+
+  updatePlaceCount = (placeId) => {
+    const {
+      client: {
+        cache,
+      },
+      userCompany: {
+        company: {
+          id: companyId,
+        },
+      },
+    } = this.props;
+
+    const data = cache.readQuery({
+      query: PLACES_QUERIES.GET_COMPANY_PLACES,
+      variables: { companyId },
+    });
+
+    const placeIndex = findIndex(place => place.id === placeId, data.places);
+    data.places[placeIndex].assetsCount += 1;
+    cache.writeQuery({ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId }, data });
+  }
 
   handleGoBack = () => {
     const {
@@ -814,8 +837,6 @@ class ItemForm extends Component<Props, State> {
       state: { showPhotos, activePreviewIndex },
     } = this;
     const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
-    // $FlowFixMe
-
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
@@ -983,7 +1004,6 @@ class ItemForm extends Component<Props, State> {
                   <NoItems
                     additional={
                       isNewItem || userCanDelete || userRole === constants.roles.admin
-                      //  $FlowFixMe
                     }
                     onPress={this.handleAddPhoto}
                   />
@@ -1081,7 +1101,6 @@ class ItemForm extends Component<Props, State> {
               onConfirm={this.handleConfirmModal}
             />
             <DelModal
-              //  $FlowFixMe
               isModalVisible={isDelModalOpened}
               data={constants.modalQuestion.itemDel}
               //  $FlowFixMe
@@ -1116,6 +1135,5 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
-  // $FlowFixMe
   withApollo,
 )(ItemForm);

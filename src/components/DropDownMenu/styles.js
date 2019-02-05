@@ -51,4 +51,8 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
+  addButton: {
+    marginTop: 5,
+    marginLeft: 20,
+  },
 });
