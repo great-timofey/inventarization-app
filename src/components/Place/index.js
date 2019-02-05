@@ -39,7 +39,7 @@ class Place extends Component<Props, {}> {
         <Image style={styles.pinImage} source={assets.pin} />
         <Image style={styles.image} source={assets.mapLayout} />
         <View style={styles.description}>
-          <View>
+          <View style={styles.wrapper}>
             <Text style={styles.topText}>{place.name}</Text>
             <Text style={styles.botText}>
               {place.address}

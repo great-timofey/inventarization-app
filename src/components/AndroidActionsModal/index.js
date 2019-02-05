@@ -140,7 +140,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
               <Image style={styles.pinImage} source={assets.pin} />
               <Image style={styles.image} source={assets.mapLayout} />
               <View style={styles.description}>
-                <View>
+                <View style={styles.wrapper}>
                   <Text style={styles.topText}>{item.name}</Text>
                   <Text style={styles.botText}>
                     {item.address}
