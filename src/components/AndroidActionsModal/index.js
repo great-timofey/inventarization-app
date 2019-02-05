@@ -1,6 +1,6 @@
 //  @flow
 import React, { PureComponent } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StatusBar } from 'react-native';
 
 import Modal from 'react-native-modal';
 
@@ -93,6 +93,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
         deviceHeight={deviceHeight}
         onBackdropPress={toggleActionsModal}
       >
+        <StatusBar backgroundColor="rgba(0,0,0,0.7)" barStyle="light-content"/>
         {type === constants.types.items && !isListViewStyle && (
           <View style={[styles.container,
             { top: elementPosition.y - normalize(10),

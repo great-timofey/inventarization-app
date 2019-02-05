@@ -217,6 +217,7 @@ class ItemForm extends Component<Props, State> {
 
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
+      StatusBar.setBackgroundColor(colors.white);
     });
 
     navigation.setParams({

@@ -1,6 +1,6 @@
 // @flow
 
-import { Platform } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 
 // $FlowFixMe
 import ImageResizer from 'react-native-image-resizer';

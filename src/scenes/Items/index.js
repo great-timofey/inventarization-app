@@ -14,8 +14,9 @@ import SearchHeader from '~/components/SearchHeader';
 import QuestionModal from '~/components/QuestionModal';
 import AndroidActionsModal from '~/components/AndroidActionsModal';
 
-import { normalize } from '~/global/utils';
+import colors from '~/global/colors';
 import constants from '~/global/constants';
+import { normalize } from '~/global/utils';
 import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
@@ -183,7 +184,7 @@ class ItemsScene extends PureComponent<Props, State> {
     this.setState({
       isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
     });
-  }
+  };
 
   handleOpenItem = (item: Object, inEditMode: boolean) => {
     const { navigation } = this.props;
@@ -318,6 +319,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
+      StatusBar.setBackgroundColor(colors.white);
     });
   }
 
@@ -353,7 +355,6 @@ class ItemsScene extends PureComponent<Props, State> {
 
     return (
       <Fragment>
-        {isAndroid && <StatusBar backgroundColor="white" barStyle="dark-content" />}
         <ItemsList
           userRole={userRole}
           companyId={companyId}

@@ -22,6 +22,7 @@ import { all, assoc, remove, concat, values, equals } from 'ramda';
 import Permissions from 'react-native-permissions';
 
 import { convertToApolloUpload, getCurrentLocation } from '~/global/utils';
+import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import PhotoPreview from '~/components/PhotoPreview';
@@ -97,6 +98,7 @@ class AddItemDefects extends PureComponent<Props, State> {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({
@@ -104,6 +106,10 @@ class AddItemDefects extends PureComponent<Props, State> {
       handleCreateAsset: this.handleCreateAsset,
       handleGoBack: this.handleGoBack,
     });
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
   }
 
   handleGoBack = () => {

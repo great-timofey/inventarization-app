@@ -5,6 +5,7 @@ import { View, Text, StatusBar } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
 
+import colors from '~/global/colors';
 import Logo from '~/components/Logo';
 import Styles from '~/global/styles';
 import Button from '~/components/Button';
@@ -31,6 +32,7 @@ class Question extends PureComponent<Props, {}> {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
   }
 

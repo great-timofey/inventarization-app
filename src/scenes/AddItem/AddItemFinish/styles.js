@@ -3,33 +3,45 @@
 import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
-import { fonts } from '~/global/styles';
+import globalStyles, { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
+import { deviceHeight, deviceWidth, isIphoneX, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
     borderBottomWidth: 0,
     backgroundColor: colors.black,
-    marginHorizontal: normalize(15),
+    paddingTop: isAndroid ? 0 : normalize(17),
+    borderTopWidth: isIphoneX ? normalize(15) : 0,
+    marginHorizontal: isAndroid ? 0 : normalize(15),
+    height: isAndroid ? normalize(45) : normalize(65),
   },
   headerTitleStyle: {
-    color: colors.green,
+    color: colors.white,
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
+    marginLeft: isAndroid && normalize(50),
+  },
+  headerTitleSmallStyle: {
+    color: colors.white,
+    fontSize: normalize(16),
+    fontFamily: fonts.proDisplay.medium,
+    marginLeft: isAndroid && normalize(50),
   },
   backButton: {
     width: 28,
     height: 20,
     tintColor: colors.white,
+    marginLeft: isAndroid && normalize(25),
+  },
+  skipButtonText: {
+    color: colors.white,
+    fontSize: normalize(18),
+    fontFamily: fonts.proDisplay.medium,
+    marginRight: isAndroid && normalize(25),
   },
   preview: {
     flex: 1,
-  },
-  skipButtonText: {
-    fontSize: 18,
-    color: colors.white,
-    fontFamily: fonts.proDisplay.medium,
   },
   container: {
     flex: 1,

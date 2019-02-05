@@ -15,21 +15,22 @@ import ScannerMarker from '~/components/ScannerMarker';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
+import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
-import * as SCENE_NAMES from '~/navigation/scenes';
+
 import type { Props, State } from './types';
 import styles from './styles';
-
-const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
-  <TouchableOpacity onPress={onPress}>
-    <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
-  </TouchableOpacity>
-);
 
 const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
+  </TouchableOpacity>
+);
+
+const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
   </TouchableOpacity>
 );
 
@@ -60,6 +61,7 @@ class QRCode extends PureComponent<Props, State> {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
   }
 

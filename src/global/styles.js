@@ -2,9 +2,9 @@
 
 import { StyleSheet } from 'react-native';
 
-import colors from './colors';
-import { deviceWidth, deviceHeight } from './device';
-import { normalize } from './utils';
+import colors from '~/global/colors';
+import { normalize } from '~/global/utils';
+import { deviceWidth, deviceHeight, isAndroid, isIphoneX } from '~/global/device';
 
 import type { Styles } from '~/types';
 
@@ -16,10 +16,10 @@ export const stylesObject: Styles = {
     position: 'absolute',
     top: -containerOffset,
     left: -containerOffset,
-    width: deviceWidth + containerBorderRadius,
-    height: deviceHeight + containerBorderRadius,
     backgroundColor: colors.white,
     borderRadius: containerBorderRadius,
+    width: deviceWidth + containerBorderRadius,
+    height: deviceHeight + containerBorderRadius,
   },
 };
 
@@ -44,6 +44,8 @@ export default StyleSheet.create({
     height: normalize(28),
     marginLeft: normalize(10),
     marginRight: 0,
+  },
+  addItemsPhotoHeader: {
   },
   authHeaderStyle: {
     elevation: 0,

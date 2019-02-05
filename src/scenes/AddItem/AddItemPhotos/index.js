@@ -21,6 +21,7 @@ import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
 import { getCurrentLocation } from '~/global/utils';
+import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
@@ -82,9 +83,14 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({ photos: [], handleGoBack: this.handleGoBack });
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
   }
 
   handleGoBack = () => {
