@@ -82,8 +82,8 @@ export const getCurrentLocation = async () => {
 
   const locationPromise = new Promise((res, rej) => {
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => {
-        const coords = { latitude, longitude };
+      ({ coords: { latitude: lat, longitude: lon } }) => {
+        const coords = { lat, lon };
         res(coords);
       },
       error => rej(error.message),
