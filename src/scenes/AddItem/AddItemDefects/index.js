@@ -126,6 +126,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       },
       createdAssetsCount: oldCreatedAssetsCount,
     } = this.props;
+
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
 
