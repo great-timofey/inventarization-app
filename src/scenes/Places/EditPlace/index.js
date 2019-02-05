@@ -94,7 +94,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
   setInitialLocation = () => {
     //  $FlowFixMe
-    getCurrentLocation().then(location => this.setState({ ...location, loading: false }));
+    getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -339,6 +339,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
           />
         </View>
         <Map
+          showMarker
           latitude={latitude}
           longitude={longitude}
           customStyles={styles.map}

@@ -11,6 +11,7 @@ import styles from './styles';
 const Map = ({
   latitude,
   longitude,
+  showMarker,
   customStyles,
   latitudeDelta,
   longitudeDelta,
@@ -29,14 +30,16 @@ const Map = ({
     style={[styles.map, customStyles]}
     onRegionChangeComplete={changeRegionCallback}
   >
-    <Marker
-      coordinate={{
-        latitude,
-        longitude,
-        latitudeDelta,
-        longitudeDelta,
-      }}
-    />
+    {showMarker && (
+      <Marker
+        coordinate={{
+          latitude,
+          longitude,
+          latitudeDelta,
+          longitudeDelta,
+        }}
+      />
+    )}
   </MapView>
 );
 

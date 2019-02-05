@@ -110,33 +110,32 @@ static navigationOptions = ({ navigation }: Props) => {
 
 constructor(props: Props) {
   super(props);
+
   const { navigation } = this.props;
 
-  const id = navigation.state.params && navigation.state.params.id;
-  const gps = navigation.state.params && navigation.state.params.gps;
-  const name = navigation.state.params && navigation.state.params.name;
-  const address = navigation.state.params && navigation.state.params.address;
-  console.log(gps);
+  const gps = navigation.getParam('gps', null);
 
-  const defaultGps = {
-    latitude: 55.751963,
-    longitude: 37.618470,
-  };
+  const defaultGps = { lat: 55.018803, lon: -82.933952 };
+
+  const id = navigation.getParam('id', 'ID');
+  const name = navigation.getParam('name', '');
+  const address = navigation.getParam('address', '');
 
   this.state = {
     id,
-    gps: gps || defaultGps,
     name,
-    address: address || '',
     searchValue: '',
     isSortByName: false,
     isSearchActive: false,
     showSortButton: false,
+    gps: gps || defaultGps,
+    showDefaultPlace: !gps,
     isListViewStyle: false,
     currentSelectItem: null,
     isSortModalVisible: false,
     isDeleteModalVisible: false,
     isAndroidActionsModalVisible: false,
+    address: address || constants.hints.placeAddressEmpty,
   };
 
   navigation.setParams({
@@ -301,6 +300,7 @@ render() {
       showSortButton,
       isSearchActive,
       isListViewStyle,
+      showDefaultPlace,
       currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
@@ -309,7 +309,6 @@ render() {
   } = this;
 
   return (
-
     <Fragment>
       <ScrollView
         scrollEventThrottle={16}
@@ -324,9 +323,10 @@ render() {
         <Map
           latitude={gps.lat}
           longitude={gps.lon}
-          customStyles={styles.map}
           latitudeDelta={0.1}
           longitudeDelta={0.1}
+          customStyles={styles.map}
+          showMarker={!showDefaultPlace}
         />
         <ItemsList
           placeId={id}
