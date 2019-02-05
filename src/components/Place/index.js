@@ -1,6 +1,6 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 
 import styles from './styles';
@@ -9,7 +9,7 @@ import type { Props } from './types';
 import assets from '~/global/assets';
 import { isAndroid } from '~/global/device';
 
-class Place extends PureComponent<Props, {}> {
+class Place extends Component<Props, {}> {
   itemRef: any;
 
   handleOpenPlace = () => {
