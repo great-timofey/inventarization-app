@@ -167,7 +167,7 @@ class AddItemDefects extends PureComponent<Props, State> {
           createAsset: { id, inventoryId },
         },
       } = await createAsset({ variables, update: this.updateCreateAsset });
-      return { id, inventoryId };
+      return { creationId: id, inventoryId };
     } catch (error) {
       console.log(error.message);
       return {};
