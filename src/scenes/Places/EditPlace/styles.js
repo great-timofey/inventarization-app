@@ -2,12 +2,12 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
-import { deviceWidth } from '~/global/device';
+import { deviceWidth, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   placesHeaderStyle: {
     marginBottom: normalize(20),
@@ -29,6 +29,6 @@ export default StyleSheet.create({
     width: '85%',
     alignSelf: 'center',
     position: 'absolute',
-    bottom: normalize(30),
+    bottom: isAndroid ? normalize(45) : normalize(30),
   },
 });
