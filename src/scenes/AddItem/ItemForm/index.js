@@ -837,8 +837,6 @@ class ItemForm extends Component<Props, State> {
       state: { showPhotos, activePreviewIndex },
     } = this;
     const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
-    // $FlowFixMe
-
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
@@ -1006,7 +1004,6 @@ class ItemForm extends Component<Props, State> {
                   <NoItems
                     additional={
                       isNewItem || userCanDelete || userRole === constants.roles.admin
-                      //  $FlowFixMe
                     }
                     onPress={this.handleAddPhoto}
                   />
@@ -1104,7 +1101,6 @@ class ItemForm extends Component<Props, State> {
               onConfirm={this.handleConfirmModal}
             />
             <DelModal
-              //  $FlowFixMe
               isModalVisible={isDelModalOpened}
               data={constants.modalQuestion.itemDel}
               //  $FlowFixMe
@@ -1139,6 +1135,5 @@ export default compose(
     // $FlowFixMe
     props: ({ data: { current } }) => ({ currentUser: current }),
   }),
-  // $FlowFixMe
   withApollo,
 )(ItemForm);

@@ -24,6 +24,7 @@ type Props = {
   role: string,
   query: Object,
   data: Array<Object>,
+  toggleModalVisible: Function,
   callBackSelectManager: Function,
   selectedManagerId: string | number | null,
 }
