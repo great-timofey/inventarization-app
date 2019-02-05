@@ -116,15 +116,16 @@ constructor(props: Props) {
   const gps = navigation.state.params && navigation.state.params.gps;
   const name = navigation.state.params && navigation.state.params.name;
   const address = navigation.state.params && navigation.state.params.address;
+  console.log(gps);
 
-  const defaultlGps = {
+  const defaultGps = {
     latitude: 55.751963,
     longitude: 37.618470,
   };
 
   this.state = {
     id,
-    gps: gps || defaultlGps,
+    gps: gps || defaultGps,
     name,
     address: address || '',
     searchValue: '',
@@ -321,11 +322,11 @@ render() {
           <Text style={styles.botText}>{address}</Text>
         </View>
         <Map
+          latitude={gps.lat}
+          longitude={gps.lon}
           customStyles={styles.map}
-          region={{
-            latitude: gps.lat,
-            longitude: gps.lon,
-          }}
+          latitudeDelta={0.1}
+          longitudeDelta={0.1}
         />
         <ItemsList
           placeId={id}
