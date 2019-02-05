@@ -5,11 +5,12 @@ import { Platform } from 'react-native';
 // $FlowFixMe
 import ImageResizer from 'react-native-image-resizer';
 //  $FlowFixMe
-import { last, includes } from 'ramda';
+import { last, includes, memoizeWith, identity } from 'ramda';
 import { ReactNativeFile } from 'apollo-upload-client';
 
 import constants from '~/global/constants';
 import { deviceWidth, deviceHeight, isAndroid } from '~/global/device';
+import { getGeocoding, getReverseGeocoding } from '~/services/geocoding';
 
 export const getPlaceholder = (size: number) => `https://via.placeholder.com/${size}x${size}`;
 
@@ -94,6 +95,38 @@ export const getCurrentLocation = async () => {
   return location;
 };
 
+export const getCoordsByAddress = memoizeWith(identity, async (address: string) => {
+  const { _bodyText } = await getGeocoding(address);
+  const { status, results } = JSON.parse(_bodyText);
+  if (status === constants.geocodingStatuses.ok) {
+    const { lat: latitude, lng: longitude } = results[0].geometry.location;
+    return { latitude, longitude };
+  }
+  return null;
+});
+
+export const getAddressByCoords = memoizeWith(identity, async (lat: number, lon: number) => {
+  const { _bodyText } = await getReverseGeocoding(lat, lon);
+  const { status, results } = JSON.parse(_bodyText);
+  if (status === constants.geocodingStatuses.ok) {
+    return results[0].formatted_address;
+  }
+  return null;
+});
+
+export const debounce = (fn: Function, time: number) => {
+  let timeout;
+
+  //  eslint-disable-next-line
+  return function () {
+    //  eslint-disable-next-line
+    const functionCall = () => fn.apply(this, arguments);
+
+    clearTimeout(timeout);
+    timeout = setTimeout(functionCall, time);
+  };
+};
+
 export const designWidth = 375;
 export const designHeight = 667;
 
@@ -104,6 +137,7 @@ export const normalizeInt = (value: number) => Math.round(value * scale);
 
 export default {
   isValid,
+  debounce,
   normalize,
   getPrefix,
   capitalize,
@@ -112,6 +146,8 @@ export default {
   getPlaceholder,
   platformSelect,
   isValidPassword,
+  getCoordsByAddress,
+  getAddressByCoords,
   getCurrentLocation,
   convertToApolloUpload,
 };

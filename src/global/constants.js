@@ -241,6 +241,8 @@ const errors = {
     notMatch: 'Пароли не совпадают',
     companyLogo: 'Неверный формат. Нужен .jpg или .png',
   },
+  geocoding: 'Произошла ошибка. Попробуйте еще раз',
+  address: 'Ошибка определения адреса',
   search: 'Подходящих результатов не найдено',
   qrcode: 'По отсканированному предмету\n нет информации',
   camera: {
@@ -313,6 +315,13 @@ const hints = {
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
   noCategory: 'Пока не существует \n ни одной категории',
   noResponsibleId: 'Пока не существует \n ни одного ответственного',
+};
+
+const geocodingStatuses = {
+  ok: 'OK',
+  zeroResults: 'ZERO_RESULTS',
+  unknownError: 'UNKNOWN_ERROR',
+  invalidRequest: 'INVALID_REQUEST',
 };
 
 /** Form stuff */
@@ -596,6 +605,7 @@ export default {
   permissionTypes,
   categoryIconList,
   itemFormSections,
+  geocodingStatuses,
   generalCategories,
   updateAssetProperties,
   uploadCreateAssetImages,
