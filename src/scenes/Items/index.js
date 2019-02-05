@@ -18,6 +18,7 @@ import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';

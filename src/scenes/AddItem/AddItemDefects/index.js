@@ -26,6 +26,7 @@ import assets from '~/global/assets';
 import constants from '~/global/constants';
 import PhotoPreview from '~/components/PhotoPreview';
 import * as SCENE_NAMES from '~/navigation/scenes';
+import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
