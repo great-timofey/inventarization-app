@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import {
   Text,
   View,
+  Alert,
   Keyboard,
   SafeAreaView,
   TouchableOpacity,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 
 //  $FlowFixMe
-import { includes } from 'ramda';
+import { includes, keys } from 'ramda';
 import { Query, compose, graphql } from 'react-apollo';
 
 import Map from '~/components/Map';
@@ -21,6 +22,12 @@ import DropDownMenu from '~/components/DropDownMenu';
 import QuestionModal from '~/components/QuestionModal';
 import HeaderBackButton from '~/components/HeaderBackButton';
 
+import {
+  debounce,
+  getCoordsByAddress,
+  getAddressByCoords,
+  getCurrentLocation,
+} from '~/global/utils';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as PLACES_MUTATIONS from '~/graphql/places/mutations';
@@ -47,6 +54,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
       headerLeft: HeaderBackButton({
         onPress: () => navigation.goBack(),
       }),
+      headerRight: <View />,
     };
   }
 
@@ -62,21 +70,67 @@ class EditPlaceScene extends PureComponent<Props, State> {
     const lat = gps && gps.lat;
     const lon = gps && gps.lon;
 
+    const isNewPlaceScene = !(gps || name || address || manager);
+
     this.state = {
       warnings: {},
-      loading: false,
+      isNewPlaceScene,
       place: name || '',
-      isModalVisible: false,
-      address: address || '',
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
       latitude: lat || 0.0,
+      isModalVisible: false,
       longitude: lon || 0.0,
+      address: address || '',
+      loading: isNewPlaceScene,
       selectedManagerId: (manager && manager.id) || null,
       isManagerSelectActive: !!(manager && manager.fullName && manager.id),
-      isNewPlaceScene: !(gps || name || address || manager),
     };
   }
 
+  componentDidMount() {
+    const { isNewPlaceScene } = this.state;
+    if (isNewPlaceScene) {
+      this.setInitialLocation();
+    }
+  }
+
+  setInitialLocation = () => {
+    //  $FlowFixMe
+    getCurrentLocation().then(location => this.setState({ ...location, loading: false }));
+  };
+
   onSubmitEditing = () => Keyboard.dismiss();
+
+  getCoordsByAddressFromAPI = debounce(async () => {
+    const { address } = this.state;
+    const response = await getCoordsByAddress(address);
+    if (response) {
+      const { latitude, longitude } = response;
+      this.setState({ latitude, longitude });
+    } else {
+      Alert.alert(constants.errors.geocoding);
+      this.setInitialLocation();
+    }
+  }, 1000);
+
+  getAddressByCoordsFromAPI = debounce(async () => {
+    const { latitude, longitude } = this.state;
+    const address = await getAddressByCoords(latitude, longitude);
+    if (address) {
+      this.setState({ address });
+    } else {
+      this.setState({ address: constants.errors.address });
+    }
+  }, 3000);
+
+  handleChangeRegion = (region: Object) => {
+    this.setState({ ...region }, this.getAddressByCoordsFromAPI);
+  };
+
+  handleChangeAddress = (address: string) => {
+    this.setState({ address }, this.getCoordsByAddressFromAPI);
+  };
 
   onChangeField = (field: string, value: string) => {
     this.setState({
@@ -103,10 +157,6 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   onSubmitForm = async () => {
-    const { navigation } = this.props;
-
-    const id = navigation.state.params && navigation.state.params.id;
-
     const {
       state: {
         place,
@@ -117,6 +167,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
         selectedManagerId,
       },
       props: {
+        navigation,
         createPlace,
         updatePlace,
         userCompany: {
@@ -124,6 +175,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
         },
       },
     } = this;
+
+    const id = navigation.state.params && navigation.state.params.id;
 
     const isFormInvalid = await Promise.resolve()
       .then(() => this.checkFields())
@@ -222,21 +275,11 @@ class EditPlaceScene extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    navigator.geolocation.getCurrentPosition(
-      //  eslint-disable-next-line max-len
-      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude, loading: false }),
-      error => console.log(error),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
-  }
-
   selectManager = (id) => {
     this.setState({
       selectedManagerId: id,
     });
-  }
+  };
 
   render() {
     const {
@@ -252,10 +295,12 @@ class EditPlaceScene extends PureComponent<Props, State> {
       state: {
         place,
         address,
-        warnings,
         loading,
         latitude,
+        warnings,
         longitude,
+        latitudeDelta,
+        longitudeDelta,
         isModalVisible,
         isNewPlaceScene,
         selectedManagerId,
@@ -296,15 +341,17 @@ class EditPlaceScene extends PureComponent<Props, State> {
                 <Input
                   isWhite
                   value={place}
+                  showWarningInTitle
                   style={styles.input}
                   blurOnSubmit={false}
                   returnKeyType="done"
                   customStyles={styles.input}
-                  type={constants.inputTypes.place}
+                  customWarning={warnings.place}
                   onSubmitEditing={this.onSubmitEditing}
-                  isWarning={includes('place', warnings)}
                   placeholder={constants.placeholders.place}
+                  isWarning={includes('place', keys(warnings))}
                   onChangeText={text => this.onChangeField('place', text)}
+                  type={{ label: constants.inputTypes.place.label, warning: warnings.place }}
                 />
                 {isUserAdmin && (
                   <TouchableOpacity
@@ -334,21 +381,28 @@ class EditPlaceScene extends PureComponent<Props, State> {
                   style={styles.input}
                   blurOnSubmit={false}
                   returnKeyType="done"
-                  customStyles={styles.input}
                   type={constants.inputTypes.address}
                   onSubmitEditing={this.onSubmitEditing}
-                  isWarning={includes('address', warnings)}
+                  onChangeText={this.handleChangeAddress}
                   placeholder={constants.placeholders.address}
-                  onChangeText={text => this.onChangeField('address', text)}
                 />
               </View>
-              <Map region={{ latitude, longitude }} />
+              <Map
+                latitude={latitude}
+                longitude={longitude}
+                customStyles={styles.map}
+                latitudeDelta={latitudeDelta}
+                longitudeDelta={longitudeDelta}
+                changeRegionCallback={this.handleChangeRegion}
+              />
               <Button
                 onPress={this.onSubmitForm}
                 customStyle={styles.submitButton}
-                title={isNewPlaceScene
-                  ? constants.buttonTitles.createPlace
-                  : constants.buttonTitles.saveChanges}
+                title={
+                  isNewPlaceScene
+                    ? constants.buttonTitles.createPlace
+                    : constants.buttonTitles.saveChanges
+                }
               />
               <QuestionModal
                 rightAction={() => {}}
