@@ -11,33 +11,36 @@ import styles from './styles';
 const Map = ({
   latitude,
   longitude,
+  showMarker,
   customStyles,
   latitudeDelta,
   longitudeDelta,
   changeRegionCallback,
   ...rest
 }: Props) => (
-  <MapView
-    {...rest}
-    region={{
-      latitude,
-      longitude,
-      latitudeDelta,
-      longitudeDelta,
-    }}
-    showsCompass={false}
-    style={[styles.map, customStyles]}
-    onRegionChangeComplete={changeRegionCallback}
-  >
-    <Marker
-      coordinate={{
+    <MapView
+      {...rest}
+      region={{
         latitude,
         longitude,
         latitudeDelta,
         longitudeDelta,
       }}
-    />
-  </MapView>
+      showsCompass={false}
+      style={[styles.map, customStyles]}
+      onRegionChangeComplete={changeRegionCallback}
+    >
+      {showMarker && (
+        <Marker
+          coordinate={{
+            latitude,
+            longitude,
+            latitudeDelta,
+            longitudeDelta,
+          }}
+        />
+      )}
+    </MapView>
 );
 
 export default memo(Map);

@@ -306,6 +306,7 @@ const hints = {
   addPhoto: 'Добавить фото',
   noPhotos: 'Нет фотографий',
   enterName: 'Введите название',
+  placeAddressEmpty: 'Адрес места не был указан',
   makePhotos: 'Сделайте фотографии вашего предмета',
   noPlaceId: 'Пока не существует \n ни одного места',
   makeDefectsPhotos: 'Сделайте фотографии всех дефектов',
