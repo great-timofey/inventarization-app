@@ -29,10 +29,8 @@ export const isValid = (value: string, reg: RegExp) => {
 export const capitalize = (string: string) => string[0].toUpperCase().concat(string.slice(1));
 
 export const convertToApolloUpload = async (photos: Array<Object>, typeSeparator: string) => {
-  // console.log(1)
   const photosPromises = photos.map(({ uri }) => {
     const type = uri.slice(uri.lastIndexOf(typeSeparator) + 1).toUpperCase();
-    // const alreadyUploaded = uri.startsWith('https');
     return ImageResizer.createResizedImage(
       uri,
       constants.uploadCreateAssetImages.width,
@@ -40,7 +38,6 @@ export const convertToApolloUpload = async (photos: Array<Object>, typeSeparator
       type === 'JPG' ? 'JPEG' : type,
       constants.uploadCreateAssetImages.quality,
     ).then((photoUrlPromise) => {
-      console.log(photoUrlPromise);
       const file = new ReactNativeFile({
         name: photoUrlPromise.uri.slice(-10),
         uri: isAndroid ? photoUrlPromise.uri : photoUrlPromise.uri.replace('file://', ''),
