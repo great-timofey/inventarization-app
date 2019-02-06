@@ -40,8 +40,9 @@ import type { Props } from './types';
 
 import styles from './styles';
 
-const CategoryList = ({ children, openSideMenu }) => (
+const CategoryList = ({ children, openSideMenu, isPlaceScreen }) => (
   <View style={styles.categoryListContainer}>
+    {!isPlaceScreen && (
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
         name="menu"
@@ -55,6 +56,7 @@ const CategoryList = ({ children, openSideMenu }) => (
         backgroundColor={colors.transparent}
       />
     </View>
+    )}
     {children}
   </View>
 );
@@ -287,6 +289,8 @@ class ItemsList extends PureComponent<Props> {
             handleShowSortButton(false);
           }
 
+          const isPlaceScreen = !!placeId;
+
           return dataToRenderIsEmpty ? (
             <View>
               {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
@@ -314,7 +318,7 @@ class ItemsList extends PureComponent<Props> {
               scrollEnabled={!isAndroidActionsModalVisible}
             >
               {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <CategoryList openSideMenu={this.openSideMenu}>
+              <CategoryList isPlaceScreen={isPlaceScreen} openSideMenu={this.openSideMenu}>
                 <FlatList
                   horizontal
                   data={categoryTabData}
