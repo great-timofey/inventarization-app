@@ -63,6 +63,9 @@ export default StyleSheet.create({
     paddingLeft: normalize(20),
     marginBottom: normalize(10),
   },
+  categoryEmpty: {
+    height: 0,
+  },
   categoryButton: {
     zIndex: 2,
     borderRadius: 25,

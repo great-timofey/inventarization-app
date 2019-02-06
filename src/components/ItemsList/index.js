@@ -40,8 +40,11 @@ import type { Props } from './types';
 
 import styles from './styles';
 
-const CategoryList = ({ children, openSideMenu, isPlaceScreen }) => (
-  <View style={styles.categoryListContainer}>
+const CategoryList = ({ children, openSideMenu, isPlaceScreen, isCategoryListEmpty }) => (
+  <View style={[
+    styles.categoryListContainer,
+    isCategoryListEmpty && isPlaceScreen && styles.categoryEmpty]}
+  >
     {!isPlaceScreen && (
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
@@ -290,6 +293,7 @@ class ItemsList extends PureComponent<Props> {
           }
 
           const isPlaceScreen = !!placeId;
+          const isCategoryListEmpty = categoryTabData.length === 0;
 
           return dataToRenderIsEmpty ? (
             <View>
@@ -318,7 +322,11 @@ class ItemsList extends PureComponent<Props> {
               scrollEnabled={!isAndroidActionsModalVisible}
             >
               {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <CategoryList isPlaceScreen={isPlaceScreen} openSideMenu={this.openSideMenu}>
+              <CategoryList
+                isPlaceScreen={isPlaceScreen}
+                openSideMenu={this.openSideMenu}
+                isCategoryListEmpty={isCategoryListEmpty}
+              >
                 <FlatList
                   horizontal
                   data={categoryTabData}
