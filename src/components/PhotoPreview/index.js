@@ -30,8 +30,8 @@ class PhotoPreview extends PureComponent<Props> {
     const { uri } = this.props;
     return (
       <View style={styles.photoContainer}>
-        {this.removeButton}
         <Image style={styles.photoImage} source={{ uri }} />
+        {this.removeButton}
       </View>
     );
   }
