@@ -303,16 +303,18 @@ class ItemsList extends PureComponent<Props> {
                 style={[styles.image, placeId && styles.imagePlace]}
               />
               <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
-              <Button
-                isGreen
-                customStyle={styles.button}
-                title={constants.buttonTitles.addItem}
-                onPress={
-                  userRole !== constants.roles.observer
-                    ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
-                    : () => {}
-                }
-              />
+              {!isPlaceScreen && (
+                <Button
+                  isGreen
+                  customStyle={styles.button}
+                  title={constants.buttonTitles.addItem}
+                  onPress={
+                    userRole !== constants.roles.observer
+                      ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+                      : () => {}
+                  }
+                />
+              )}
             </View>
           ) : (
             <ScrollView
