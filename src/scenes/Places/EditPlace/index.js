@@ -93,8 +93,10 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    // eslint-disable-next-line max-len
+    /** eslint-disable */
+    //  $FlowFixMe
     getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
+    /** eslint-enable */
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -169,17 +171,16 @@ class EditPlaceScene extends PureComponent<Props, State> {
       .then(() => this.checkForErrors());
 
     if (!isFormInvalid && isNewPlaceScene) {
+      this.setState({ loading: true });
+      const gps = { lat: latitude, lon: longitude }
       try {
         await createPlace({
           variables: {
+            gps,
             companyId,
-            gps: {
-              lat: latitude,
-              lon: longitude,
-            },
             name: place.trim(),
-            address: address.trim(),
             managerId: selectedManagerId,
+            address: address !== constants.errors.address ? address.trim() : null,
           },
           update: this.updateCreatePlace,
         });
@@ -261,7 +262,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     this.setState({ warnings });
   };
 
-  selectManager = (id) => {
+  selectManager = (id: string) => {
     this.setState({
       selectedManagerId: id,
     });
