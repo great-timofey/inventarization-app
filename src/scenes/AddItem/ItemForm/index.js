@@ -526,7 +526,7 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  handleGoBack = (afterDeletion: boolean) => {
+  handleGoBack = (afterDeletion: ?boolean) => {
     const {
       state: { name },
       props: { navigation },

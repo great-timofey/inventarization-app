@@ -36,7 +36,7 @@ const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
+const HeaderBackButton = ({ onPress }: { onPress: ?Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
   </TouchableOpacity>
@@ -59,10 +59,11 @@ class AddItemPhotos extends PureComponent<Props, State> {
       headerLeft: <HeaderBackButton onPress={!isLoading ? handleGoBack : null} />,
       headerRight: (
         <HeaderSkipButton
-          onPress={() => !isLoading && navigation.navigate(
-            from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
-            toPass,
-          )
+          onPress={() => !isLoading
+            && navigation.navigate(
+              from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
+              toPass,
+            )
           }
         />
       ),
@@ -183,11 +184,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   };
 
   renderPhoto = ({ item: uri, index }: PhotosProps) => (
-    <PhotoPreview
-      uri={uri}
-      index={index}
-      removePictureCallback={this.removePicture}
-    />
+    <PhotoPreview uri={uri} index={index} removePictureCallback={this.removePicture} />
   );
 
   toggleFlash = () => {

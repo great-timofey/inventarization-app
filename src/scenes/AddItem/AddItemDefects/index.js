@@ -39,7 +39,7 @@ const HeaderFinishButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
+const HeaderBackButton = ({ onPress }: { onPress: ?Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
   </TouchableOpacity>
@@ -82,7 +82,10 @@ class AddItemDefects extends PureComponent<Props, State> {
                 }
               }
             } catch (error) {
-              if (error.message === constants.errors.development.navigationPhotosHaveNotLoadedYet.errorMessage) {
+              if (
+                error.message
+                === constants.errors.development.navigationPhotosHaveNotLoadedYet.errorMessage
+              ) {
                 console.log(constants.errors.development.navigationPhotosHaveNotLoadedYet.response);
               } else {
                 console.log(error);
@@ -288,16 +291,12 @@ class AddItemDefects extends PureComponent<Props, State> {
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
       //  eslint-disable-next-line
-      () => navigation.setParams({ defectPhotos: this.state.photos }),
+      () => navigation.setParams({ defectPhotos: this.state.photos })
     );
   };
 
   renderPhoto = ({ item: uri, index }: PhotosProps) => (
-    <PhotoPreview
-      uri={uri}
-      index={index}
-      removePictureCallback={this.removePicture}
-    />
+    <PhotoPreview uri={uri} index={index} removePictureCallback={this.removePicture} />
   );
 
   toggleFlash = () => {

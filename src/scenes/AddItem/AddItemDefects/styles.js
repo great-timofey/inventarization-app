@@ -3,7 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
-import globalStyles, { fonts } from '~/global/styles';
+import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX, isAndroid } from '~/global/device';
 

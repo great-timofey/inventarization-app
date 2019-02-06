@@ -10,7 +10,7 @@ import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props, State } from './types';
+import type { Props } from './types';
 import styles from './styles';
 
 const HeaderExitButton = ({ onPress }: { onPress: Function }) => (
@@ -25,7 +25,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-class AddItemFinish extends PureComponent<Props, State> {
+class AddItemFinish extends PureComponent<Props> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: styles.header,
     title: constants.headers.itemReady,

@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
 import { normalize } from '~/global/utils';
-import { deviceWidth, deviceHeight, isAndroid, isIphoneX } from '~/global/device';
+import { deviceWidth, deviceHeight } from '~/global/device';
 
 import type { Styles } from '~/types';
 

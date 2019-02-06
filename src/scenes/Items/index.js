@@ -17,7 +17,6 @@ import AndroidActionsModal from '~/components/AndroidActionsModal';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
 import { normalize } from '~/global/utils';
-import { isAndroid } from '~/global/device';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import { DESTROY_ASSET } from '~/graphql/assets/mutations';
 import { GET_COMPANY_ASSETS } from '~/graphql/assets/queries';
