@@ -84,6 +84,14 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     bottom: isIphoneX ? normalize(140) : normalize(120),
   },
+  activityIndicatorView: {
+    zIndex: 3,
+    alignItems: 'center',
+    position: 'absolute',
+    justifyContent: 'center',
+    backgroundColor: colors.blackOpacityExtraLight,
+    ...StyleSheet.absoluteFillObject,
+  },
   makePhotoButtonImage: {
     width: normalize(36),
     height: normalize(41),

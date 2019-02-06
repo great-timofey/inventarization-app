@@ -48,6 +48,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     const photos = navigation.state.params && navigation.state.params.photos;
     const codeData = navigation.state.params && navigation.state.params.codeData;
     const location = navigation.state.params && navigation.state.params.location;
+    const isLoading = navigation.state.params && navigation.state.params.isLoading;
     const toPass = from ? { additionalPhotos: photos } : { photos, codeData, location };
     const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
 
@@ -55,10 +56,10 @@ class AddItemPhotos extends PureComponent<Props, State> {
       headerStyle: styles.header,
       title: from ? constants.headers.addPhotos : constants.headers.newItem,
       headerTitleStyle: from ? styles.headerTitleSmallStyle : styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
+      headerLeft: <HeaderBackButton onPress={!isLoading ? handleGoBack : null} />,
       headerRight: (
         <HeaderSkipButton
-          onPress={() => navigation.navigate(
+          onPress={() => !isLoading && navigation.navigate(
             from ? SCENE_NAMES.ItemFormSceneName : SCENE_NAMES.AddItemDefectsSceneName,
             toPass,
           )
@@ -130,7 +131,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   takePicture = async () => {
     const { navigation } = this.props;
     const { isHintOpened, needToAskPermissions } = this.state;
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true }, () => navigation.setParams({ isLoading: true }));
 
     if (needToAskPermissions) {
       await this.askPermissions();
@@ -162,7 +163,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
       Alert.alert(constants.errors.camera.location);
     }
 
-    this.setState({ isLoading: false });
+    this.setState({ isLoading: false }, () => navigation.setParams({ isLoading: false }));
   };
 
   removePicture = async (index: number) => {
@@ -206,12 +207,12 @@ class AddItemPhotos extends PureComponent<Props, State> {
     return (
       <SafeAreaView style={styles.container}>
         <Fragment>
-          <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
+          <View style={[styles.hint, (!isHintOpened || isLoading) && { opacity: 0 }]}>
             <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
           </View>
           {isLoading && (
-            <View style={styles.hint}>
-              <ActivityIndicator />
+            <View style={styles.activityIndicatorView}>
+              <ActivityIndicator size="large" />
             </View>
           )}
           <RNCamera

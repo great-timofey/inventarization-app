@@ -47,11 +47,12 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
+    const from = navigation.state.params && navigation.state.params.from;
     const photos = navigation.state.params && navigation.state.params.photos;
-    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
     const location = navigation.state.params && navigation.state.params.location;
     const codeData = navigation.state.params && navigation.state.params.codeData;
-    const from = navigation.state.params && navigation.state.params.from;
+    const isLoading = navigation.state.params && navigation.state.params.isLoading;
+    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
     const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
 
     let toPass = from
@@ -64,18 +65,28 @@ class AddItemDefects extends PureComponent<Props, State> {
       headerStyle: styles.header,
       title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
+      headerLeft: <HeaderBackButton onPress={!isLoading ? handleGoBack : null} />,
       headerRight: (
         <HeaderFinishButton
           onPress={async () => {
-            if (from) {
-              navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
-            } else if (photos.length + defectPhotos.length) {
-              const response = await handleCreateAsset();
-              toPass = { ...toPass, ...response };
-              navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
-            } else {
-              Alert.alert(constants.errors.camera.needPhoto);
+            try {
+              if (!isLoading) {
+                if (from) {
+                  navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
+                } else if (photos.length + defectPhotos.length) {
+                  const response = await handleCreateAsset();
+                  toPass = { ...toPass, ...response };
+                  navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
+                } else {
+                  Alert.alert(constants.errors.camera.needPhoto);
+                }
+              }
+            } catch (error) {
+              if (error.message === constants.errors.development.navigationPhotosHaveNotLoadedYet.errorMessage) {
+                console.log(constants.errors.development.navigationPhotosHaveNotLoadedYet.response);
+              } else {
+                console.log(error);
+              }
             }
           }}
         />
@@ -133,6 +144,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       createdAssetsCount: oldCreatedAssetsCount,
     } = this.props;
 
+    this.setState({ isLoading: true }, () => navigation.setParams({ isLoading: true }));
+
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
 
@@ -177,6 +190,8 @@ class AddItemDefects extends PureComponent<Props, State> {
     } catch (error) {
       console.log(error.message);
       return {};
+    } finally {
+      this.setState({ isLoading: false }, () => navigation.setParams({ isLoading: false }));
     }
   };
 
@@ -223,7 +238,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       props: { navigation },
     } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true }, () => navigation.setParams({ isLoading: true }));
 
     if (needToAskPermissions) {
       await this.askPermissions();
@@ -255,7 +270,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(constants.errors.camera.location);
     }
 
-    this.setState({ isLoading: false });
+    this.setState({ isLoading: false }, () => navigation.setParams({ isLoading: false }));
   };
 
   removePicture = async (index: number) => {
@@ -302,12 +317,12 @@ class AddItemDefects extends PureComponent<Props, State> {
     return (
       <SafeAreaView style={styles.container}>
         <Fragment>
-          <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
+          <View style={[styles.hint, (!isHintOpened || isLoading) && { opacity: 0 }]}>
             <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
           </View>
           {isLoading && (
-            <View style={styles.hint}>
-              <ActivityIndicator />
+            <View style={styles.activityIndicatorView}>
+              <ActivityIndicator size="large" />
             </View>
           )}
           <RNCamera

@@ -57,6 +57,14 @@ export default StyleSheet.create({
     left: deviceWidth / 2 - normalize(242) / 2,
     top: deviceHeight / 2 - normalize(114) / 2 - normalize(80),
   },
+  activityIndicatorView: {
+    zIndex: 3,
+    alignItems: 'center',
+    position: 'absolute',
+    justifyContent: 'center',
+    backgroundColor: colors.blackOpacityExtraLight,
+    ...StyleSheet.absoluteFillObject,
+  },
   hintText: {
     color: colors.white,
     textAlign: 'center',
