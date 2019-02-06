@@ -77,7 +77,7 @@ const addItemStack = createStackNavigator({
   [SCENE_NAMES.ItemFormSceneName]: ItemForm,
 });
 
-const noTabBarScenes = [SCENE_NAMES.PlacesItemsSceneName, SCENE_NAMES.PlacesSceneName];
+const noTabBarScenes = [SCENE_NAMES.PlacesSceneName];
 
 const rootTabs = {
   [SCENE_NAMES.ItemsSceneName]: {
