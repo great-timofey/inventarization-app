@@ -115,8 +115,6 @@ constructor(props: Props) {
 
   const gps = navigation.getParam('gps', null);
 
-  console.log(!gps)
-
   const defaultGps = { lat: 55.018803, lon: -82.933952 };
 
   const id = navigation.getParam('id', 'ID');

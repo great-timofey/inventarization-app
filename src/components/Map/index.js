@@ -18,29 +18,29 @@ const Map = ({
   changeRegionCallback,
   ...rest
 }: Props) => (
-    <MapView
-      {...rest}
-      region={{
+  <MapView
+    {...rest}
+    region={{
+      latitude,
+      longitude,
+      latitudeDelta,
+      longitudeDelta,
+    }}
+    showsCompass={false}
+    style={[styles.map, customStyles]}
+    onRegionChangeComplete={changeRegionCallback}
+  >
+    {!hideMarker && (
+    <Marker
+      coordinate={{
         latitude,
         longitude,
         latitudeDelta,
         longitudeDelta,
       }}
-      showsCompass={false}
-      style={[styles.map, customStyles]}
-      onRegionChangeComplete={changeRegionCallback}
-    >
-      {!hideMarker && (
-        <Marker
-          coordinate={{
-            latitude,
-            longitude,
-            latitudeDelta,
-            longitudeDelta,
-          }}
-        />
-      )}
-    </MapView>
+    />
+    )}
+  </MapView>
 );
 
 export default memo(Map);
