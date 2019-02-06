@@ -64,6 +64,31 @@ const CategoryList = ({ children, openSideMenu, isPlaceScreen, isCategoryListEmp
   </View>
 );
 
+const NoItem = ({ navigation, placeId, userRole }) => {
+  const isPlaceScreen = !!placeId;
+  return isPlaceScreen ? (
+    <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+  ) : (
+    <View>
+      <Text style={styles.header}>{constants.headers.items}</Text>
+      <Image
+        source={assets.noItemsYet}
+        style={[styles.image, placeId && styles.imagePlace]}
+      />
+      <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+      <Button
+        isGreen
+        customStyle={styles.button}
+        title={constants.buttonTitles.addItem}
+        onPress={
+          userRole !== constants.roles.observer
+            ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+            : () => {}
+        }
+      />
+    </View>
+  );
+};
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const {
@@ -296,26 +321,11 @@ class ItemsList extends PureComponent<Props> {
           const isCategoryListEmpty = categoryTabData.length === 0;
 
           return dataToRenderIsEmpty ? (
-            <View>
-              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <Image
-                source={assets.noItemsYet}
-                style={[styles.image, placeId && styles.imagePlace]}
-              />
-              <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
-              {!isPlaceScreen && (
-                <Button
-                  isGreen
-                  customStyle={styles.button}
-                  title={constants.buttonTitles.addItem}
-                  onPress={
-                    userRole !== constants.roles.observer
-                      ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
-                      : () => {}
-                  }
-                />
-              )}
-            </View>
+            <NoItem
+              placeId={placeId}
+              userRole={userRole}
+              navigation={navigation}
+            />
           ) : (
             <ScrollView
               scrollEventThrottle={16}
