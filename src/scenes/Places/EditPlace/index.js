@@ -121,7 +121,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
             gps,
             companyId,
             name: place.trim(),
-            address: address.trim(),
+            address: address !== constants.errors.address ? address.trim() : null,
           },
         });
         Alert.alert(constants.text.placeCreated);
