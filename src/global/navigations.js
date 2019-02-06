@@ -9,6 +9,7 @@ import {
 } from 'react-navigation';
 import SideMenu from 'react-native-side-menu';
 import { createNavigatiorSetter } from 'react-navigation-extension';
+import { last, includes } from 'ramda';
 
 import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
@@ -76,6 +77,8 @@ const addItemStack = createStackNavigator({
   [SCENE_NAMES.ItemFormSceneName]: ItemForm,
 });
 
+const noTabBarScenes = [SCENE_NAMES.PlacesItemsSceneName, SCENE_NAMES.PlacesSceneName];
+
 const rootTabs = {
   [SCENE_NAMES.ItemsSceneName]: {
     screen: itemsStack,
@@ -88,17 +91,18 @@ const rootTabs = {
   [SCENE_NAMES.CategoryList]: {
     screen: categoryStack,
     navigationOptions: {
-      tabBarButtonComponent: () => <View />,
       tabBarVisible: false,
+      tabBarButtonComponent: () => <View />,
     },
   },
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
-    navigationOptions: {
+    navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
-    },
+      tabBarVisible: !includes(last(navigation.state.routes).routeName, noTabBarScenes),
+    }),
   },
   [SCENE_NAMES.AddItemSceneName]: {
     screen: addItemStack,
