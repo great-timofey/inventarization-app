@@ -93,10 +93,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    /** eslint-disable */
-    //  $FlowFixMe
+    // eslint-disable-next-line max-len
     getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
-    /** eslint-enable */
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -172,7 +170,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
     if (!isFormInvalid && isNewPlaceScene) {
       this.setState({ loading: true });
-      const gps = { lat: latitude, lon: longitude }
+      const gps = { lat: latitude, lon: longitude };
       try {
         await createPlace({
           variables: {
