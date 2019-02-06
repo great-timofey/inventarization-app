@@ -58,8 +58,10 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
+    /* eslint-disable */
     //  $FlowFixMe
-    getCurrentLocation().then(location => this.setState({ ...location, loading: false }));
+    getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
+    /* eslint-enable */
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
@@ -101,7 +103,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
   };
 
   onSubmitForm = async () => {
-    const { place, address } = this.state;
+    const { place, address, latitude, longitude } = this.state;
     const {
       createPlace,
       userCompany: {
@@ -114,12 +116,14 @@ class EditPlaceScene extends PureComponent<Props, State> {
 
     if (!isFormInvalid) {
       this.setState({ loading: true });
+      const gps = { lat: latitude, lon: longitude };
       try {
         await createPlace({
           variables: {
+            gps,
             companyId,
             name: place.trim(),
-            address: address.trim(),
+            address: address !== constants.errors.address ? address.trim() : null,
           },
         });
         Alert.alert(constants.text.placeCreated);
@@ -216,6 +220,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
               />
             </View>
             <Map
+              showMarker
               latitude={latitude}
               longitude={longitude}
               customStyles={styles.map}
