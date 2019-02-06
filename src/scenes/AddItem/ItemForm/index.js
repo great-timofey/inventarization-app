@@ -526,20 +526,21 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  handleGoBack = () => {
+  handleGoBack = (afterDeletion: boolean) => {
     const {
       state: { name },
       props: { navigation },
     } = this;
     const fromItemsScene = navigation.getParam('item', null);
+
+    if (afterDeletion) {
+      navigation.popToTop({});
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     //  $FlowFixMe
-    if (!name.trim() && !fromItemsScene) {
+    } else if (!name.trim() && !fromItemsScene) {
       Alert.alert(constants.errors.createItem.name);
     } else if (fromItemsScene) {
       navigation.pop();
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    } else {
-      navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     }
   };
@@ -789,7 +790,7 @@ class ItemForm extends Component<Props, State> {
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      this.handleGoBack();
+      this.handleGoBack(true);
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();
