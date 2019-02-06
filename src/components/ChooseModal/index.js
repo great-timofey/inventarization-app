@@ -1,6 +1,6 @@
 // @flow
 import React, { Fragment, PureComponent } from 'react';
-import { Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, StatusBar, View, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 // $FlowFixMe
 import { keys, includes, find, prop, propEq, filter, head, length } from 'ramda';
@@ -8,11 +8,12 @@ import { withApollo } from 'react-apollo';
 import Modal from 'react-native-modal';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
+import { isAndroid } from '~/global/device';
+import { capitalize, normalize, getPrefix } from '~/global/utils';
 import CustomIcon from '~/assets/InventoryIcon';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
-import { capitalize, normalize, getPrefix } from '~/global/utils';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as CATEGORIES_QUERIES from '~/graphql/categories/queries';
@@ -21,22 +22,22 @@ import styles from './styles';
 import type { Props, State } from './types';
 
 const variables = {
-  responsibleId: {
-    companyId: '',
-    role: constants.roles.admin,
-  },
   placeId: {
     companyId: '',
   },
   category: {
     companyId: '',
   },
+  responsibleId: {
+    companyId: '',
+    role: constants.roles.admin,
+  },
 };
 
 const queries = {
   placeId: PLACES_QUERIES.GET_COMPANY_PLACES,
-  category: CATEGORIES_QUERIES.GET_COMPANY_CATEGORIES_BY_ID,
   responsibleId: AUTH_QUERIES.GET_COMPANY_USERS_BY_ROLE,
+  category: CATEGORIES_QUERIES.GET_COMPANY_CATEGORIES_BY_ID,
 };
 
 const valuesToDisplay = {
@@ -206,6 +207,7 @@ class ChooseModal extends PureComponent<Props, State> {
         onModalHide={this.clearData}
         onModalShow={this.initFields}
       >
+        {isAndroid && <StatusBar backgroundColor={colors.androidModalStatusBarOverlay} barStyle="light-content" />}
         <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
           {loading && <ActivityIndicator />}
           {data.length ? (
