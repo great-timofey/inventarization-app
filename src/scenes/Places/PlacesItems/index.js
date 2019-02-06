@@ -129,7 +129,6 @@ constructor(props: Props) {
     isSearchActive: false,
     showSortButton: false,
     gps: gps || defaultGps,
-    showDefaultPlace: !gps,
     isListViewStyle: false,
     currentSelectItem: null,
     isSortModalVisible: false,
@@ -300,7 +299,6 @@ render() {
       showSortButton,
       isSearchActive,
       isListViewStyle,
-      showDefaultPlace,
       currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
@@ -326,7 +324,6 @@ render() {
           latitudeDelta={0.1}
           longitudeDelta={0.1}
           customStyles={styles.map}
-          showMarker={!showDefaultPlace}
         />
         <ItemsList
           placeId={id}

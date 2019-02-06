@@ -93,8 +93,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
   }
 
   setInitialLocation = () => {
-    // eslint-disable-next-line max-len
+    /* eslint-disable */
     getCurrentLocation().then(({ lat, lon }) => this.setState({ latitude: lat, longitude: lon, loading: false }));
+    /* eslint-enable */
   };
 
   onSubmitEditing = () => Keyboard.dismiss();
