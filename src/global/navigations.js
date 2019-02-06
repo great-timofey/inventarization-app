@@ -9,6 +9,7 @@ import {
 } from 'react-navigation';
 import SideMenu from 'react-native-side-menu';
 import { createNavigatiorSetter } from 'react-navigation-extension';
+// $FlowFixMe
 import { last, includes } from 'ramda';
 
 import Camera from '~/scenes/Camera';

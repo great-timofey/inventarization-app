@@ -11,7 +11,6 @@ export type State = {
   showSortButton: boolean,
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
-  showDefaultPlace: boolean,
   isDeleteModalVisible: boolean,
   isAndroidActionsModalVisible: boolean,
   currentSelectItem: null | string | number,
