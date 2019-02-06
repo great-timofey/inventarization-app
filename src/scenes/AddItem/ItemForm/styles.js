@@ -36,6 +36,7 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingBottom: isAndroid ? normalize(20) : 0,
   },
   headerRightButtonsContainer: {
     flexDirection: 'row',
