@@ -24,16 +24,6 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: normalize(20),
     backgroundColor: colors.input.whiteBG,
-  },
-  first: {
-    borderTopLeftRadius: normalize(7),
-    borderTopRightRadius: normalize(7),
-  },
-  last: {
-    borderBottomLeftRadius: normalize(7),
-    borderBottomRightRadius: normalize(7),
-  },
-  one: {
     borderRadius: normalize(7),
   },
   topText: {

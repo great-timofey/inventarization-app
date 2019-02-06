@@ -29,16 +29,6 @@ type Props = {
   selectedManagerId: string | number | null,
 }
 
-const AddButton = () => (
-  <TouchableOpacity
-    onPress={() => {}}
-    style={[styles.manager, styles.last]}
-  >
-    <Text style={styles.button}>
-      {constants.buttonTitles.addNewManager}
-    </Text>
-  </TouchableOpacity>
-);
 class DropDownMenu extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -66,18 +56,6 @@ class DropDownMenu extends PureComponent<Props, State> {
     this.toogleMenuActive();
   }
 
-  componentDidMount = () => {
-    const { data, callBackSelectManager, selectedManagerId } = this.props;
-
-    if (data && data.length > 0 && !selectedManagerId) {
-      const defaultManagerId = data[0].id;
-      this.setState({
-        selectedManagerId: defaultManagerId,
-      });
-      callBackSelectManager(defaultManagerId);
-    }
-  }
-
   renderRow = ({ item, index }: { item: Object, index: number }) => {
     const { isActive } = this.state;
     const isFirstEl = index === 0;
@@ -86,11 +64,7 @@ class DropDownMenu extends PureComponent<Props, State> {
       <TouchableOpacity
         disabled={!isActive}
         onPress={() => this.selectManager(item.id)}
-        style={[
-          styles.manager,
-          !isActive && styles.one,
-          isFirstEl && styles.first,
-        ]}
+        style={styles.manager}
       >
         <View>
           <Text style={styles.topText}>{constants.text.manager}</Text>
@@ -183,7 +157,6 @@ class DropDownMenu extends PureComponent<Props, State> {
                 keyExtractor={this.keyExtractor}
                 data={isActive ? managerList : subData}
               />
-              {isActive && !isEmptyManagerList && <AddButton />}
             </View>
           );
         }}
