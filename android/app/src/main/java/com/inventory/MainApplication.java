@@ -18,6 +18,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
           new SvgPackage(),
           new SplashScreenReactPackage(),
           new RNTextInputMaskPackage(),
+          new ImageResizerPackage(),
           new RNDeviceInfo(),
           new ImagePickerPackage(),
           new LinearGradientPackage(),
