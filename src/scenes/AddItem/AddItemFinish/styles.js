@@ -3,7 +3,7 @@
 import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
-import globalStyles, { fonts } from '~/global/styles';
+import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX, isAndroid } from '~/global/device';
 
@@ -48,6 +48,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     backgroundColor: colors.black,
+    paddingBottom: isAndroid ? normalize(20) : 0,
   },
   hint: {
     zIndex: 1,

@@ -3,7 +3,6 @@
 import React, { PureComponent } from 'react';
 import { Text, StatusBar, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
-import { graphql } from 'react-apollo';
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 
@@ -11,7 +10,6 @@ import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_CREATED_ASSETS_COUNT_CLIENT } from '~/graphql/assets/queries';
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -111,4 +109,4 @@ class AddItemFinish extends PureComponent<Props, State> {
   }
 }
 
-export default graphql(GET_CREATED_ASSETS_COUNT_CLIENT)(AddItemFinish);
+export default AddItemFinish;

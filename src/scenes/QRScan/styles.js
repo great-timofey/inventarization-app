@@ -39,6 +39,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     backgroundColor: colors.black,
+    paddingBottom: isAndroid ? normalize(20) : 0,
   },
   hintContainer: {
     height: normalize(80),

@@ -44,6 +44,7 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: colors.black,
+    paddingBottom: isAndroid ? normalize(20) : 0,
   },
   hint: {
     zIndex: 2,
