@@ -72,6 +72,7 @@ class QRCode extends PureComponent<Props, State> {
       this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showScanner: true }));
       this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showScanner: false }));
     }
+    //  eslint-disable-next-line max-len
     navigation.setParams({ handleGoBack: this.handleGoBack, handleGoFurther: this.handleGoFurther });
   }
 
