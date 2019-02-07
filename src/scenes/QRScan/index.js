@@ -38,15 +38,17 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 class QRCode extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const checkMode = navigation.state.params && navigation.state.params.checkMode;
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
+    const handleGoFurther = navigation.state.params && navigation.state.params.handleGoFurther;
     return {
       title: constants.headers.qrscanner,
       headerTitleStyle: styles.headerTitleStyle,
       headerStyle: styles.header,
       headerLeft: (
-        <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+        <HeaderBackButton onPress={handleGoBack} />
       ),
       headerRight: checkMode ? null : (
-        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
+        <HeaderSkipButton onPress={handleGoFurther} />
       ),
     };
   };
@@ -70,6 +72,7 @@ class QRCode extends PureComponent<Props, State> {
       this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showScanner: true }));
       this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showScanner: false }));
     }
+    navigation.setParams({ handleGoBack: this.handleGoBack, handleGoFurther: this.handleGoFurther });
   }
 
   componentWillUnmount() {
@@ -79,6 +82,16 @@ class QRCode extends PureComponent<Props, State> {
       this.navListenerBlurAndroid.remove();
     }
   }
+
+  handleGoBack = () => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.ItemsSceneName);
+  };
+
+  handleGoFurther = () => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName);
+  };
 
   handleScan = async (event) => {
     try {
