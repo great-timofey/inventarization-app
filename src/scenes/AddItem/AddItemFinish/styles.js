@@ -6,7 +6,6 @@ import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
-import {isAndroid} from "../../../global/device";
 
 export default StyleSheet.create({
   header: {
