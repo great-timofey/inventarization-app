@@ -2,6 +2,7 @@
 
 export type State = {
   isTorchOn: boolean,
+  showScanner: boolean,
   showNoMatchError: boolean,
 };
 

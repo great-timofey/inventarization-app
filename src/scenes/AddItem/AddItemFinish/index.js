@@ -6,11 +6,13 @@ import { Text, StatusBar, SafeAreaView, View, Image, TouchableOpacity } from 're
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 
+import { isAndroid, isIOS } from '~/global/device';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import type { Props } from './types';
+
+import type { Props, State } from './types';
 import styles from './styles';
 
 const HeaderExitButton = ({ onPress }: { onPress: Function }) => (
@@ -25,7 +27,7 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-class AddItemFinish extends PureComponent<Props> {
+class AddItemFinish extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => ({
     headerStyle: styles.header,
     title: constants.headers.itemReady,
@@ -41,7 +43,13 @@ class AddItemFinish extends PureComponent<Props> {
     ),
   });
 
+  state = {
+    showCamera: isIOS,
+  };
+
   navListener: any;
+  navListenerFocusAndroid: any;
+  navListenerBlurAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -49,6 +57,18 @@ class AddItemFinish extends PureComponent<Props> {
       StatusBar.setBarStyle('light-content');
       StatusBar.setBackgroundColor(colors.black);
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
+      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showCamera: false }));
+    }
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleGoToItemForm = async () => {
@@ -78,17 +98,21 @@ class AddItemFinish extends PureComponent<Props> {
   camera: ?RNCamera;
 
   render() {
+    const { showCamera } = this.state;
     return (
       <SafeAreaView style={styles.container}>
+        {showCamera && (
+          <RNCamera
+            ref={(ref) => {
+              this.camera = ref;
+            }}
+            style={styles.preview}
+          />
+        )}
+        <View style={styles.overlay} />
         <View style={styles.hint}>
           <Image source={assets.checkCircled} style={styles.checkImage} />
         </View>
-        <RNCamera
-          ref={(ref) => {
-            this.camera = ref;
-          }}
-          style={styles.preview}
-        />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={this.handleGoToItemForm}

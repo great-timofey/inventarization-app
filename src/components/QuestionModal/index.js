@@ -18,7 +18,7 @@ const QuestionModal = ({
   isModalVisible,
 }: Props) => (
   <Modal isVisible={isModalVisible} style={styles.modal}>
-    {isAndroid && <StatusBar backgroundColor={colors.androidModalStatusBarOverlay} barStyle="light-content" />}
+    {isAndroid && <StatusBar backgroundColor={colors.androidDeleteModalStatusBarOverlay} barStyle="light-content" />}
     <View style={styles.container}>
       <Text style={styles.title}>{data.title}</Text>
       <Text style={styles.question}>{data.question}</Text>

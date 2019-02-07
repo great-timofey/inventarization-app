@@ -186,7 +186,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
     return (
       <SafeAreaView style={styles.container}>
         {loading ? (
-          <ActivityIndicator />
+          <ActivityIndicator size="large" color={colors.accent} />
         ) : (
           <Fragment>
             <View style={styles.inputView}>

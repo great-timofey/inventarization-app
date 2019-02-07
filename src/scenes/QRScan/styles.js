@@ -53,6 +53,12 @@ export default StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
   },
+  loadingView: {
+    zIndex: -1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...StyleSheet.absoluteFillObject,
+  },
   scannerCameraStyle: {
     flex: 1,
     alignSelf: 'center',

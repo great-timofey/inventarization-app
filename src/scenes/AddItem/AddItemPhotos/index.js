@@ -20,6 +20,7 @@ import RNFS from 'react-native-fs';
 import { RNCamera } from 'react-native-camera';
 import { all, equals, values, assoc, remove, concat } from 'ramda';
 
+import { isAndroid, isIOS } from '~/global/device';
 import { getCurrentLocation } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
@@ -73,6 +74,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
   state = {
     photos: [],
     isLoading: false,
+    showCamera: isIOS,
     isHintOpened: true,
     ableToTakePicture: false,
     needToAskPermissions: true,
@@ -80,6 +82,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
   };
 
   navListener: any;
+  navListenerBlurAndroid: any;
+  navListenerFocusAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -88,11 +92,19 @@ class AddItemPhotos extends PureComponent<Props, State> {
       StatusBar.setBackgroundColor(colors.black);
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
+      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showCamera: false }));
+    }
     navigation.setParams({ photos: [], handleGoBack: this.handleGoBack });
   }
 
   componentWillUnmount() {
     this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleGoBack = () => {
@@ -200,38 +212,40 @@ class AddItemPhotos extends PureComponent<Props, State> {
   camera: ?RNCamera;
 
   render() {
-    const { flashMode, isHintOpened, photos, isLoading } = this.state;
+    const { flashMode, isHintOpened, photos, isLoading, showCamera } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <Fragment>
-          <View style={[styles.hint, (!isHintOpened || isLoading) && { opacity: 0 }]}>
-            <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
+        <View style={[styles.hint, (!isHintOpened || isLoading) && { opacity: 0 }]}>
+          <Text style={styles.hintText}>{constants.hints.makePhotos}</Text>
+        </View>
+        {(isLoading || !showCamera) && (
+          <View style={styles.hint}>
+            <ActivityIndicator size="large" color={colors.accent} />
           </View>
-          {isLoading && (
-            <View style={styles.activityIndicatorView}>
-              <ActivityIndicator size="large" />
-            </View>
-          )}
-          <RNCamera
-            ref={(ref) => {
-              this.camera = ref;
-            }}
-            flashMode={flashMode}
-            style={styles.preview}
-          />
-          <TouchableOpacity
-            onPress={this.toggleFlash}
-            style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
-          >
-            <Image
-              source={flashMode ? assets.flashOff : assets.flashOn}
-              style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+        )}
+        {showCamera && (
+          <Fragment>
+            <RNCamera
+              ref={(ref) => {
+                this.camera = ref;
+              }}
+              flashMode={flashMode}
+              style={styles.preview}
             />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
-            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>
-        </Fragment>
+            <TouchableOpacity
+              onPress={this.toggleFlash}
+              style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
+            >
+              <Image
+                source={flashMode ? assets.flashOff : assets.flashOn}
+                style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
+              <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+            </TouchableOpacity>
+          </Fragment>
+        )}
         <View style={styles.bottomSection}>
           <FlatList
             horizontal

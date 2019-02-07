@@ -308,7 +308,7 @@ render() {
   return (
     <Query query={PLACES_QUERIES.GET_COMPANY_PLACES} variables={{ companyId }}>
       {({ data, loading, error }) => {
-        if (loading) { return <ActivityIndicator />; }
+        if (loading) { return <ActivityIndicator size="large" color={colors.accent} />; }
         if (error) {
           return (
             <View>

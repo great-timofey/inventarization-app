@@ -209,7 +209,7 @@ class ChooseModal extends PureComponent<Props, State> {
       >
         {isAndroid && <StatusBar backgroundColor={colors.androidModalStatusBarOverlay} barStyle="light-content" />}
         <View style={[styles.modalContainer, !data.length && styles.modalContainerWithoutData]}>
-          {loading && <ActivityIndicator />}
+          {loading && <ActivityIndicator size="large" color={colors.accent} />}
           {data.length ? (
             <FlatList
               data={data}

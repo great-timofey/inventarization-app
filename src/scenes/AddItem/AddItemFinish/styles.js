@@ -40,15 +40,21 @@ export default StyleSheet.create({
     fontFamily: fonts.proDisplay.medium,
     marginRight: isAndroid ? normalize(25) : 0,
   },
-  preview: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
     backgroundColor: colors.black,
     paddingBottom: isAndroid ? normalize(20) : 0,
+  },
+  preview: {
+    zIndex: -10,
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    zIndex: -5,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.8)',
   },
   hint: {
     zIndex: 1,
