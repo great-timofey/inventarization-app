@@ -19,7 +19,7 @@ export default StyleSheet.create({
     position: 'absolute',
     padding: normalize(10),
     width: normalize(178),
-    height: normalize(238),
+    height: normalize(228),
     borderRadius: normalize(17),
     backgroundColor: colors.white,
   },
