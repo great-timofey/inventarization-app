@@ -2,7 +2,7 @@
 
 import { StyleSheet } from 'react-native';
 
-import { normalize } from '~/global/utils';
+import { normalize, isSmallDevice } from '~/global/utils';
 
 export default StyleSheet.create({
   photoContainer: {
@@ -10,7 +10,7 @@ export default StyleSheet.create({
     width: normalize(84),
     position: 'relative',
     height: normalize(83),
-    marginRight: normalize(2),
+    marginRight: isSmallDevice ? normalize(8) : normalize(2),
   },
   photoImage: {
     top: 6,
