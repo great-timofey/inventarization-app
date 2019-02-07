@@ -198,7 +198,7 @@ class ItemsList extends PureComponent<Props> {
       <Query query={ASSETS_QUERIES.GET_COMPANY_ASSETS} variables={{ companyId }}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <ActivityIndicator />;
+            return <ActivityIndicator size="large" color={colors.accent} />;
           }
 
           if (error) {

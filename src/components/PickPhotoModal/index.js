@@ -18,7 +18,7 @@ import Modal from 'react-native-modal';
 import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-picker';
 
-
+import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import { isAndroid } from '~/global/device';
@@ -104,7 +104,7 @@ class PickPhotoModal extends PureComponent<ModalProps, ModalState> {
         {isAndroid && <StatusBar backgroundColor="black" />}
         <View style={styles.choosePhotoContainer}>
           {photos.length === 0 ? (
-            <ActivityIndicator />
+            <ActivityIndicator size="large" color={colors.accent} />
           ) : (
             <View>
               <FlatList

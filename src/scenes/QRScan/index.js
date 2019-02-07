@@ -1,7 +1,7 @@
 // @flow
 
-import React, { PureComponent } from 'react';
-import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
+import React, { PureComponent, Fragment } from 'react';
+import { View, Text, ActivityIndicator, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import { assoc } from 'ramda';
 //  $FlowFixMe
@@ -12,12 +12,14 @@ import { withApollo, compose, graphql } from 'react-apollo';
 
 import ScannerMarker from '~/components/ScannerMarker';
 
+import { isAndroid, isIOS } from '~/global/device';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -51,20 +53,31 @@ class QRCode extends PureComponent<Props, State> {
 
   state = {
     isTorchOn: true,
+    showScanner: isIOS,
     showNoMatchError: false,
   };
 
   navListener: any;
+  navListenerBlurAndroid: any;
+  navListenerFocusAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showScanner: true }));
+      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showScanner: false }));
+    }
   }
 
   componentWillUnmount() {
     this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleScan = async (event) => {
@@ -119,35 +132,45 @@ class QRCode extends PureComponent<Props, State> {
 
   render() {
     const {
-      state: { isTorchOn, showNoMatchError },
+      state: { isTorchOn, showNoMatchError, showScanner },
       props: { navigation },
     } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
       <View style={styles.container}>
-        <QRCodeScanner
-          reactivate
-          showMarker
-          reactivateTimeout={1000}
-          onRead={this.handleScan}
-          cameraStyle={styles.scannerCameraStyle}
-          customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
-        />
-        <TouchableOpacity
-          style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
-          onPress={this.toggleTorch}
-        >
-          <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
-        </TouchableOpacity>
-        {!checkMode && (
-          <TouchableOpacity style={styles.makePhotoButton} disabled>
-            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>
+        {showScanner && (
+          <Fragment>
+            <QRCodeScanner
+              reactivate
+              showMarker
+              reactivateTimeout={1000}
+              onRead={this.handleScan}
+              cameraStyle={styles.scannerCameraStyle}
+              customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
+            />
+            <TouchableOpacity
+              style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
+              onPress={this.toggleTorch}
+            >
+              <Image
+                source={isTorchOn ? assets.torchOn : assets.torchOff}
+                style={styles.torchIcon}
+              />
+            </TouchableOpacity>
+            {!checkMode && (
+              <TouchableOpacity style={styles.makePhotoButton} disabled>
+                <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+              </TouchableOpacity>
+            )}
+            <View style={styles.hintContainer}>
+              <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
+                {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
+              </Text>
+            </View>
+          </Fragment>
         )}
-        <View style={styles.hintContainer}>
-          <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
-            {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
-          </Text>
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </View>
     );

@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { deviceWidth, deviceHeight } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
@@ -44,6 +45,12 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontSize: normalize(18),
     fontFamily: fonts.proDisplay.regular,
+  },
+  loadingView: {
+    zIndex: -1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...StyleSheet.absoluteFillObject,
   },
   scannerCameraStyle: {
     flex: 1,

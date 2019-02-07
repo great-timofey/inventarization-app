@@ -6,6 +6,7 @@ import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
 import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
+import {isAndroid} from "../../../global/device";
 
 export default StyleSheet.create({
   header: {
@@ -23,9 +24,6 @@ export default StyleSheet.create({
     height: 20,
     tintColor: colors.white,
   },
-  preview: {
-    flex: 1,
-  },
   skipButtonText: {
     fontSize: 18,
     color: colors.white,
@@ -35,7 +33,15 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    backgroundColor: colors.black,
+  },
+  preview: {
+    zIndex: -10,
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    zIndex: -5,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.8)',
   },
   hint: {
     zIndex: 1,

@@ -21,6 +21,8 @@ import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 
+import colors from '~/global/colors';
+import { isAndroid, isIOS } from '~/global/device';
 import { convertToApolloUpload, getCurrentLocation } from '~/global/utils';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
@@ -29,6 +31,7 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
+
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -85,6 +88,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   state = {
     photos: [],
     isLoading: false,
+    showCamera: isIOS,
     isHintOpened: true,
     ableToTakePicture: false,
     needToAskPermissions: true,
@@ -92,6 +96,8 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   navListener: any;
+  navListenerBlurAndroid: any;
+  navListenerFocusAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -101,9 +107,21 @@ class AddItemDefects extends PureComponent<Props, State> {
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({
       defectPhotos: [],
-      handleCreateAsset: this.handleCreateAsset,
       handleGoBack: this.handleGoBack,
+      handleCreateAsset: this.handleCreateAsset,
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
+      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showCamera: false }));
+    }
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleGoBack = () => {
@@ -292,38 +310,40 @@ class AddItemDefects extends PureComponent<Props, State> {
   camera: ?RNCamera;
 
   render() {
-    const { flashMode, isHintOpened, photos, isLoading } = this.state;
+    const { flashMode, isHintOpened, photos, isLoading, showCamera } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <Fragment>
-          <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
+        <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
+          <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
+        </View>
+        {(isLoading || !showCamera) && (
+          <View style={styles.hint}>
+            <ActivityIndicator size="large" color={colors.accent} />
           </View>
-          {isLoading && (
-            <View style={styles.hint}>
-              <ActivityIndicator />
-            </View>
-          )}
-          <RNCamera
-            ref={(ref) => {
-              this.camera = ref;
-            }}
-            flashMode={flashMode}
-            style={styles.preview}
-          />
-          <TouchableOpacity
-            onPress={this.toggleFlash}
-            style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
-          >
-            <Image
-              source={flashMode ? assets.flashOff : assets.flashOn}
-              style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+        )}
+        {showCamera && (
+          <Fragment>
+            <RNCamera
+              ref={(ref) => {
+                this.camera = ref;
+              }}
+              flashMode={flashMode}
+              style={styles.preview}
             />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
-            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>
-        </Fragment>
+            <TouchableOpacity
+              onPress={this.toggleFlash}
+              style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
+            >
+              <Image
+                source={flashMode ? assets.flashOff : assets.flashOn}
+                style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
+              <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+            </TouchableOpacity>
+          </Fragment>
+        )}
         <View style={styles.bottomSection}>
           <FlatList
             horizontal
