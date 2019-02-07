@@ -15,6 +15,7 @@ import constants from '~/global/constants';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -108,7 +109,12 @@ class QRCode extends PureComponent<Props, State> {
     }
   };
 
-  toggleTorch = () => this.setState(({ flashMode }) => ({ flashMode: flashMode === constants.torchModeTypes.on ? constants.torchModeTypes.off : constants.torchModeTypes.on }));
+  toggleTorch = () => this.setState(({ flashMode }) => ({
+    flashMode:
+        flashMode === constants.torchModeTypes.on
+          ? constants.torchModeTypes.off
+          : constants.torchModeTypes.on,
+  }));
 
   render() {
     const {
@@ -131,7 +137,10 @@ class QRCode extends PureComponent<Props, State> {
           style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
           onPress={this.toggleTorch}
         >
-          <Image source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
+          <Image
+            source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
+            style={styles.torchIcon}
+          />
         </TouchableOpacity>
         {!checkMode && (
           <TouchableOpacity style={styles.makePhotoButton} disabled>

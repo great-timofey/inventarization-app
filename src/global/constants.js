@@ -1,6 +1,7 @@
 // @flow
 
 import { pick, slice, keys } from 'ramda';
+//  $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
@@ -266,10 +267,7 @@ const types = {
   places: 'places',
 };
 const permissions = {
-  photo: [
-    'camera',
-    'location',
-  ],
+  photo: ['camera', 'location'],
 };
 
 const permissionTypes = {
