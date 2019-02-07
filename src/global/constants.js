@@ -1,6 +1,7 @@
 // @flow
 
 import { pick, slice, keys } from 'ramda';
+import { RNCamera } from 'react-native-camera';
 
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
@@ -34,6 +35,11 @@ const uploadCreateAssetImages = {
 const words = {
   yes: 'Да',
   no: 'Нет',
+};
+
+const torchModeTypes = {
+  on: RNCamera.Constants.FlashMode.torch,
+  off: RNCamera.Constants.FlashMode.off,
 };
 
 const suffixes = {
@@ -598,6 +604,7 @@ export default {
   modalQuestion,
   itemFormFields,
   forgotPassText,
+  torchModeTypes,
   setNewPassword,
   permissionTypes,
   categoryIconList,
