@@ -310,6 +310,8 @@ class ItemsList extends PureComponent<Props> {
           }
 
           const dataToRenderIsEmpty = dataToRender.length === 0;
+          const noSelectedCategory = saveSelectedCategories.length === 0;
+
           const isSortButtonShow = dataToRender.length > 1;
           if (isSortButtonShow) {
             handleShowSortButton(true);
@@ -320,7 +322,7 @@ class ItemsList extends PureComponent<Props> {
           const isPlaceScreen = !!placeId;
           const isCategoryListEmpty = categoryTabData.length === 0;
 
-          return dataToRenderIsEmpty ? (
+          return dataToRenderIsEmpty && noSelectedCategory ? (
             <NoItem
               placeId={placeId}
               userRole={userRole}
