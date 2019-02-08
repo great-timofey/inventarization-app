@@ -30,7 +30,7 @@ const uploadCreateCompanyImages = {
 const uploadCreateAssetImages = {
   width: 375,
   height: 375,
-  quality: 0.5,
+  quality: 75,
 };
 
 const words = {
