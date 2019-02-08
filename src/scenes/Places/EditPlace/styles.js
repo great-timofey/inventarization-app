@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceWidth, isAndroid } from '~/global/device';
+import { deviceWidth } from '~/global/device';
 
 export default StyleSheet.create({
   container: {
