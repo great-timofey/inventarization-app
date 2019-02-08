@@ -27,6 +27,7 @@ export const CREATE_PLACE = gql`
       }
     ) {
       id
+      address
       assetsCount
       company {
         id
@@ -51,6 +52,7 @@ export const CREATE_PLACE = gql`
 
 export const UPDATE_PLACE = gql`
   mutation UpdatePlace(
+    $id: ID!
     $companyId: ID!
     $name: String!
     $gps: GpsAttr
@@ -58,6 +60,7 @@ export const UPDATE_PLACE = gql`
     $managerId: ID
   ) {
     updatePlace(
+      id: $id
       attributes: {
         companyId: $companyId
         name: $name
@@ -67,6 +70,7 @@ export const UPDATE_PLACE = gql`
       }
     ) {
       id
+      address
       assetsCount
       company {
         id

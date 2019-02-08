@@ -41,11 +41,12 @@ class AndroidActionsModal extends PureComponent<Props, State> {
   }
 
   editItem = () => {
-    const { handleOpenItem, item } = this.props;
-    this.setState({
-      isDeleteModalVisible: false,
-    });
-    handleOpenItem(item, true);
+    const { handleOpenItem, editPlace, item } = this.props;
+    if (editPlace) {
+      editPlace(item.id, item.name, item.address, item.gps, item.manager);
+    } else {
+      handleOpenItem(item, true);
+    }
   }
 
   render() {
@@ -139,7 +140,7 @@ class AndroidActionsModal extends PureComponent<Props, State> {
               <Image style={styles.pinImage} source={assets.pin} />
               <Image style={styles.image} source={assets.mapLayout} />
               <View style={styles.description}>
-                <View>
+                <View style={styles.wrapper}>
                   <Text style={styles.topText}>{item.name}</Text>
                   <Text style={styles.botText}>
                     {item.address}

@@ -7,6 +7,8 @@ export type State = {
   password: string,
   warnings: Object,
   isRegForm: boolean,
+  marginTop: Object,
+  marginBottom: Object,
   isKeyboardActive: boolean,
   isPasswordHidden: boolean,
 };

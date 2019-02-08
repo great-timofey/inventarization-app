@@ -9,6 +9,8 @@ import {
 } from 'react-navigation';
 import SideMenu from 'react-native-side-menu';
 import { createNavigatiorSetter } from 'react-navigation-extension';
+// $FlowFixMe
+import { last, includes } from 'ramda';
 
 import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
@@ -42,7 +44,7 @@ import { deviceWidth, isAndroid } from '~/global/device';
 
 import styles, { containerOffset, stylesObject } from './styles';
 import assets from './assets';
-import { normalize } from './utils';
+import { normalize, isSmallDevice } from './utils';
 
 type iconType = {
   focused: Boolean,
@@ -76,6 +78,8 @@ const addItemStack = createStackNavigator({
   [SCENE_NAMES.ItemFormSceneName]: ItemForm,
 });
 
+const noTabBarScenes = [SCENE_NAMES.PlacesSceneName];
+
 const rootTabs = {
   [SCENE_NAMES.ItemsSceneName]: {
     screen: itemsStack,
@@ -88,17 +92,18 @@ const rootTabs = {
   [SCENE_NAMES.CategoryList]: {
     screen: categoryStack,
     navigationOptions: {
-      tabBarButtonComponent: () => <View />,
       tabBarVisible: false,
+      tabBarButtonComponent: () => <View />,
     },
   },
   [SCENE_NAMES.PlacesSceneName]: {
     screen: placesStack,
-    navigationOptions: {
+    navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }: iconType) => (
         <Image style={!focused && { opacity: 0.5 }} source={assets.location} />
       ),
-    },
+      tabBarVisible: !includes(last(navigation.state.routes).routeName, noTabBarScenes),
+    }),
   },
   [SCENE_NAMES.AddItemSceneName]: {
     screen: addItemStack,
@@ -183,7 +188,7 @@ const authNavigator = createStackNavigator(authStack, authConfig);
 
 export const RootContainer = createAppContainer(rootNavigator);
 
-const openMenuOffset = 300;
+const openMenuOffset = isSmallDevice ? 250 : 300;
 const targetScale = 0.9;
 const targetContainerTranslateX = (
   openMenuOffset - (((deviceWidth) * (1 - targetScale)) / 2)

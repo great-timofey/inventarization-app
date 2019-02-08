@@ -34,8 +34,11 @@ export default StyleSheet.create({
     marginBottom: normalize(0),
   },
   wrapper: {
-    alignItems: 'center',
+    alignSelf: 'center',
     width: normalize(200),
+  },
+  image: {
+    alignSelf: 'center',
   },
   emptyPlacesText: {
     textAlign: 'center',

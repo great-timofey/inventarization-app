@@ -5,40 +5,22 @@ import { Keyboard, Animated } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { normalize, isSmallDevice } from '~/global/utils';
-
-import { isIphoneX, isAndroid } from '~/global/device';
-
 import styles from './styles';
 import type { Props, State } from './types';
 
 class ScrollViewContainer extends PureComponent<Props, State> {
   keyboardPadding = new Animated.Value(0);
-  paddingContainer = new Animated.Value(isAndroid ? normalize(10) : normalize(30));
 
   componentDidMount() {
-    const { keyboardPadding, paddingContainer } = this;
+    const { keyboardPadding } = this;
     const listenerShow = 'keyboardWillShow';
     const listenerHide = 'keyboardWillHide';
-    let bottomOffset = 0;
-
-    if (isIphoneX) {
-      bottomOffset = 60;
-    } else if (isSmallDevice) {
-      bottomOffset = 57;
-    } else {
-      bottomOffset = 30;
-    }
 
     Keyboard.addListener(listenerShow, (event) => {
       Animated.parallel([
         Animated.timing(keyboardPadding, {
           duration: 250,
           toValue: -event.endCoordinates.height,
-        }),
-        Animated.timing(paddingContainer, {
-          duration: 250,
-          toValue: normalize(bottomOffset),
         }),
       ]).start();
     });
@@ -48,17 +30,20 @@ class ScrollViewContainer extends PureComponent<Props, State> {
           duration: 250,
           toValue: 0,
         }),
-        Animated.timing(paddingContainer, {
-          duration: 250,
-          toValue: normalize(30),
-        }),
       ]).start();
     });
   }
 
   render() {
-    const { children, fieldRef, bgColor, ...rest } = this.props;
-    const { keyboardPadding, paddingContainer } = this;
+    const {
+      keyboardPadding,
+      props: {
+        children,
+        fieldRef,
+        bgColor,
+        ...rest
+      },
+    } = this;
 
     return (
       <KeyboardAwareScrollView
@@ -78,7 +63,6 @@ class ScrollViewContainer extends PureComponent<Props, State> {
                 },
               ],
             },
-            { paddingVertical: paddingContainer },
           ]}
         >
           {children}

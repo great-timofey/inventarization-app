@@ -112,4 +112,7 @@ export default StyleSheet.create({
     position: 'absolute',
     height: normalize(26),
   },
+  wrapper: {
+    width: deviceWidth - normalize(130),
+  },
 });
