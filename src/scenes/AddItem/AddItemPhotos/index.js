@@ -94,7 +94,7 @@ class AddItemPhotos extends PureComponent<Props, State> {
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     if (isAndroid) {
       this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
-      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showCamera: false }));
+      this.navListenerBlurAndroid = navigation.addListener('didBlur', () => this.setState({ showCamera: false }));
     }
     navigation.setParams({ photos: [], handleGoBack: this.handleGoBack });
   }

@@ -59,7 +59,7 @@ class AddItemFinish extends PureComponent<Props, State> {
     });
     if (isAndroid) {
       this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
-      this.navListenerBlurAndroid = navigation.addListener('willBlur', () => this.setState({ showCamera: false }));
+      this.navListenerBlurAndroid = navigation.addListener('didBlur', () => this.setState({ showCamera: false }));
     }
   }
 
