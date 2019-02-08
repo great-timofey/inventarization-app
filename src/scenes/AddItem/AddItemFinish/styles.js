@@ -22,7 +22,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     marginHorizontal: 0,
-    color: colors.white,
+    color: colors.green,
     fontSize: normalize(18),
     justifyContent: 'center',
     textAlignVertical: 'center',
