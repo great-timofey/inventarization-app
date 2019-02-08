@@ -154,6 +154,7 @@ const buttonTitles = {
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   createPlace: 'Добавить место',
+  setManager: 'Назначить завхоза',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -164,6 +165,7 @@ const buttonTitles = {
   editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
+  addNewManager: 'Добавить нового завхоза',
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
 
@@ -285,6 +287,7 @@ const headers = {
   mainInfo: 'Основная информация',
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
+  editPlace: 'Редактирование места',
   addingItem: 'Добавление предмета',
   addPlaces: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',
@@ -295,6 +298,7 @@ const headers = {
 };
 
 const text = {
+  manager: 'Завхоз',
   photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:

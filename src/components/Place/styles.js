@@ -62,4 +62,7 @@ export default StyleSheet.create({
     fontSize: normalize(15),
     lineHeight: normalize(18),
   },
+  wrapper: {
+    width: deviceWidth - normalize(130),
+  },
 });
