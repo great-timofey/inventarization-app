@@ -111,6 +111,13 @@ export default StyleSheet.create({
     fontSize: normalize(14),
     fontFamily: fonts.proDisplay.regular,
   },
+  addPhotoBarButtonWrapper: {
+    overflow: 'visible',
+    width: normalize(84),
+    position: 'relative',
+    height: normalize(83),
+    marginRight: normalize(2),
+  },
   previewPhotoBar: {
     height: normalize(90),
     paddingLeft: normalize(22),
@@ -124,6 +131,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   addPhotoBarButton: {
+    top: 6,
     borderRadius: 15,
     alignItems: 'center',
     width: normalize(76),
