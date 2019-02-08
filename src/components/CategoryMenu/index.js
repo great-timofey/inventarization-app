@@ -66,15 +66,15 @@ class CategoryMenu extends PureComponent<Props, State> {
     let chieldsIdList = [];
 
     if (companyCategories
-      && data.chields
-      && data.chields.length > 0
+      && data.childs
+      && data.childs.length > 0
       && companyCategories.length > 0
     ) {
-      chieldsIdList = data.chields.map(x => x.id);
+      chieldsIdList = data.childs.map(x => x.id);
     } else if (isSubCategoryView) {
       const parentIndex = findIndex(el => el.name === selectedCategory, companyCategories);
-      if (companyCategories[parentIndex] && companyCategories[parentIndex].chields) {
-        chieldsIdList = companyCategories[parentIndex].chields.map(el => el.id);
+      if (companyCategories[parentIndex] && companyCategories[parentIndex].childs) {
+        chieldsIdList = companyCategories[parentIndex].childs.map(el => el.id);
       }
     }
 
@@ -88,9 +88,9 @@ class CategoryMenu extends PureComponent<Props, State> {
     if (!isSubCategoryView) {
       if (isAllCategoriesSelected) {
         isCategorySelect = false;
-      } else if (data.chields && data.chields.length === 0) {
+      } else if (data.childs && data.childs.length === 0) {
         isCategorySelect = includes(data.id, saveSelectedCategories);
-      } else if (data.chields && data.chields.length > 0) {
+      } else if (data.childs && data.childs.length > 0) {
         isCategorySelect = !!intersection(chieldsIdList, saveSelectedCategories).length;
       }
     }
@@ -161,9 +161,9 @@ class CategoryMenu extends PureComponent<Props, State> {
             if (isSubCategoryView) {
               const parent = companyCategories.filter(i => i.name === selectedCategory)[0];
 
-              if (parent.chields && parent.chields.length > 0) {
-                subCategoryList = { ...parent.chields };
-                IdList = parent.chields.map(x => x.id);
+              if (parent.childs && parent.childs.length > 0) {
+                subCategoryList = { ...parent.childs };
+                IdList = parent.childs.map(x => x.id);
               }
             }
             const defaultCategoryIndex = findIndex(el => el.isDefault === true, companyCategories);
