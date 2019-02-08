@@ -1,7 +1,7 @@
 // @flow
 
-import React, { PureComponent } from 'react';
-import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
+import React, { PureComponent, Fragment } from 'react';
+import { View, Text, ActivityIndicator, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
@@ -9,21 +9,16 @@ import { withApollo, compose, graphql } from 'react-apollo';
 
 import ScannerMarker from '~/components/ScannerMarker';
 
+import { isAndroid, isIOS } from '~/global/device';
+import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
-import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
 
 import type { Props, State } from './types';
 import styles from './styles';
-
-const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
-  <TouchableOpacity onPress={onPress}>
-    <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
-  </TouchableOpacity>
-);
 
 const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   <TouchableOpacity onPress={onPress}>
@@ -31,39 +26,71 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
+const HeaderSkipButton = ({ onPress }: { onPress: Function }) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text style={styles.skipButtonText}>{constants.buttonTitles.skip}</Text>
+  </TouchableOpacity>
+);
+
 class QRCode extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
     const checkMode = navigation.state.params && navigation.state.params.checkMode;
+    const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
+    const handleGoFurther = navigation.state.params && navigation.state.params.handleGoFurther;
     return {
       title: constants.headers.qrscanner,
       headerTitleStyle: styles.headerTitleStyle,
       headerStyle: styles.header,
       headerLeft: (
-        <HeaderBackButton onPress={() => navigation.navigate(SCENE_NAMES.ItemsSceneName)} />
+        <HeaderBackButton onPress={handleGoBack} />
       ),
       headerRight: checkMode ? null : (
-        <HeaderSkipButton onPress={() => navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName)} />
+        <HeaderSkipButton onPress={handleGoFurther} />
       ),
     };
   };
 
   state = {
+    showScanner: isIOS,
     showNoMatchError: false,
     flashMode: constants.torchModeTypes.off,
   };
 
   navListener: any;
+  navListenerBlurAndroid: any;
+  navListenerFocusAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showScanner: true }));
+      this.navListenerBlurAndroid = navigation.addListener('didBlur', () => this.setState({ showScanner: false }));
+    }
+    //  eslint-disable-next-line max-len
+    navigation.setParams({ handleGoBack: this.handleGoBack, handleGoFurther: this.handleGoFurther });
   }
 
   componentWillUnmount() {
     this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
+
+  handleGoBack = () => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.ItemsSceneName);
+  };
+
+  handleGoFurther = () => {
+    const { navigation } = this.props;
+    navigation.navigate(SCENE_NAMES.AddItemPhotosSceneName);
+  };
 
   handleScan = async (event) => {
     try {
@@ -119,38 +146,46 @@ class QRCode extends PureComponent<Props, State> {
   render() {
     const {
       props: { navigation },
-      state: { flashMode, showNoMatchError },
+      state: { showNoMatchError, showScanner, flashMode },
     } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
       <View style={styles.container}>
-        <QRCodeScanner
-          reactivate
-          showMarker
-          reactivateTimeout={1000}
-          onRead={this.handleScan}
-          cameraProps={{ flashMode }}
-          cameraStyle={styles.scannerCameraStyle}
-          customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
-        />
-        <TouchableOpacity
-          style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
-          onPress={this.toggleTorch}
-        >
-          <Image
-            source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
-            style={styles.torchIcon}
-          />
-        </TouchableOpacity>
-        {!checkMode && (
-          <TouchableOpacity style={styles.makePhotoButton} disabled>
-            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>
+        {showScanner && (
+          <Fragment>
+            <QRCodeScanner
+              reactivate
+              showMarker
+              reactivateTimeout={1000}
+              onRead={this.handleScan}
+              cameraProps={{ flashMode }}
+              cameraStyle={styles.scannerCameraStyle}
+              customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
+            />
+            <TouchableOpacity
+              style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
+              onPress={this.toggleTorch}
+            >
+              <Image
+                style={styles.torchIcon}
+                //  eslint-disable-next-line  max-len
+                source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
+              />
+            </TouchableOpacity>
+            {!checkMode && (
+              <TouchableOpacity style={styles.makePhotoButton} disabled>
+                <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+              </TouchableOpacity>
+            )}
+            <View style={styles.hintContainer}>
+              <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
+                {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
+              </Text>
+            </View>
+          </Fragment>
         )}
-        <View style={styles.hintContainer}>
-          <Text style={[styles.hintText, showNoMatchError && { color: 'red' }]}>
-            {showNoMatchError ? constants.errors.qrcode : constants.text.qrhint}
-          </Text>
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </View>
     );

@@ -11,6 +11,7 @@ export type PhotosProps = {
 
 export type State = {
   flashMode: number,
+  showCamera: boolean,
   isLoading: boolean,
   photos: Array<string>,
   isHintOpened: boolean,

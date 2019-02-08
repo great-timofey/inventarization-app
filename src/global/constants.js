@@ -237,6 +237,8 @@ const sort = {
   close: 'Закрыть',
 };
 
+const developmentErrorPrefix = 'ВЫ ВИДИТЕ ЭТУ ОШИБКУ, ТАК КАК НАХОДИТЕСЬ В РЕЖИМЕ РАЗРАБОТКИ';
+
 const errors = {
   login: {
     name: 'Введите имя',
@@ -262,7 +264,14 @@ const errors = {
     inventoryIdEmpty: 'Введите инвентарный номер',
     inventoryIdAlreadyInUse: 'Данный инвентарный номер уже существует',
   },
+  development: {
+    navigationPhotosHaveNotLoadedYet: {
+      errorMessage: "Cannot read property 'length' of undefined",
+      response: `${developmentErrorPrefix}: Фотографии предмета еще не доступны внутри react-navigation. Нажмите на Готово еще раз.`,
+    },
+  },
 };
+
 
 const types = {
   items: 'items',

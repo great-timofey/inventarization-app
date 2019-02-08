@@ -2,6 +2,7 @@
 
 export type State = {
   flashMode: boolean,
+  showScanner: boolean,
   showNoMatchError: boolean,
 };
 

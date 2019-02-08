@@ -15,6 +15,7 @@ import { compose, graphql, Query } from 'react-apollo';
 import HeaderBackButton from '~/components/HeaderBackButton';
 import SortableCategory from '~/components/SortableCategory';
 
+import colors from '~/global/colors';
 import constants from '~/global/constants';
 import type { Categories } from '~/types';
 import { setIsSideMenuOpen } from '~/global';
@@ -114,7 +115,7 @@ class CategoryList extends PureComponent<Props, {}> {
     return (
       <Query query={GET_COMPANY_CATEGORIES_BY_ID} variables={{ companyId }}>
         {({ data, loading, error }) => {
-          if (loading) { return <ActivityIndicator />; }
+          if (loading) { return <ActivityIndicator size="large" color={colors.accent} />; }
           if (error) {
             return (
               <View>

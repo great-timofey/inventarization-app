@@ -85,7 +85,8 @@ class CreateCompany extends PureComponent<Props, State> {
     const listenerHide = 'keyboardWillHide';
 
     this.navListener = navigation.addListener('didFocus', () => {
-      StatusBar.setBarStyle('dark-content');
+      StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
 
     Keyboard.addListener(listenerShow, (event) => {

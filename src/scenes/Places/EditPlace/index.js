@@ -192,15 +192,17 @@ class EditPlaceScene extends PureComponent<Props, State> {
               place: constants.warnings.placeAlreadyExists,
             },
           });
-          this.setState({ loading: false });
         } else {
           console.log(error.message);
         }
+      } finally {
+        this.setState({ loading: false });
       }
     }
 
     if (!isFormInvalid && !isNewPlaceScene) {
       try {
+        this.setState({ loading: true });
         await updatePlace({
           variables: {
             id,
@@ -226,6 +228,8 @@ class EditPlaceScene extends PureComponent<Props, State> {
         } else {
           console.log(error.message);
         }
+      } finally {
+        this.setState({ loading: false });
       }
     }
   };

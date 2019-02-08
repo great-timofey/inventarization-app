@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 
 import colors from '~/global/colors';
-import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { fonts } from '~/global/styles';
 import { isIphoneX, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({

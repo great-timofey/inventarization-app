@@ -5,33 +5,52 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
-import { deviceHeight, deviceWidth, isIphoneX } from '~/global/device';
+import { deviceHeight, deviceWidth, isIphoneX, isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   header: {
     borderBottomWidth: 0,
     backgroundColor: colors.black,
-    marginHorizontal: normalize(15),
+    paddingTop: isAndroid ? 0 : normalize(17),
+    borderTopWidth: isIphoneX ? normalize(15) : 0,
+    marginHorizontal: isAndroid ? 0 : normalize(15),
+    height: isAndroid ? normalize(45) : normalize(65),
   },
   headerTitleStyle: {
+    flex: 1,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginHorizontal: 0,
     color: colors.white,
     fontSize: normalize(18),
+    justifyContent: 'center',
+    textAlignVertical: 'center',
     fontFamily: fonts.proDisplay.medium,
+  },
+  headerTitleSmallStyle: {
+    color: colors.white,
+    fontSize: normalize(16),
+    fontFamily: fonts.proDisplay.medium,
+    marginLeft: isAndroid ? normalize(50) : 0,
   },
   backButton: {
     width: 28,
     height: 20,
     tintColor: colors.white,
+    marginLeft: isAndroid ? normalize(25) : 0,
   },
   skipButtonText: {
-    fontSize: 18,
     color: colors.white,
+    fontSize: normalize(18),
     fontFamily: fonts.proDisplay.medium,
+    marginRight: isAndroid ? normalize(25) : 0,
   },
   container: {
     flex: 1,
     flexDirection: 'column',
     backgroundColor: colors.black,
+    paddingBottom: isAndroid ? normalize(20) : 0,
   },
   hint: {
     zIndex: 2,
@@ -72,6 +91,14 @@ export default StyleSheet.create({
     borderRadius: normalize(33),
     backgroundColor: colors.white,
     bottom: isIphoneX ? normalize(140) : normalize(120),
+  },
+  activityIndicatorView: {
+    zIndex: 3,
+    alignItems: 'center',
+    position: 'absolute',
+    justifyContent: 'center',
+    backgroundColor: colors.blackOpacityExtraLight,
+    ...StyleSheet.absoluteFillObject,
   },
   makePhotoButtonImage: {
     width: normalize(36),

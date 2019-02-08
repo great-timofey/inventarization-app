@@ -6,7 +6,9 @@ import { name as appName } from './app.json';
 
 YellowBox.ignoreWarnings([
   'unknown call: "relay:check"',
+  '`setBackgroundColor` is only available on Android',
   "Warning: Can't perform a React state update on an unmounted component.",
   'Warning: Cannot update during an existing state transition (such as within `render`).',
 ]);
+
 AppRegistry.registerComponent(appName, () => App);

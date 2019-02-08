@@ -21,7 +21,9 @@ import { all, assoc, remove, concat, values, equals } from 'ramda';
 // $FlowFixMe
 import Permissions from 'react-native-permissions';
 
+import { isAndroid, isIOS } from '~/global/device';
 import { convertToApolloUpload, getCurrentLocation } from '~/global/utils';
+import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import PhotoPreview from '~/components/PhotoPreview';
@@ -29,6 +31,7 @@ import * as SCENE_NAMES from '~/navigation/scenes';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
+
 import type { Props, State, PhotosProps } from './types';
 import styles from './styles';
 
@@ -38,7 +41,7 @@ const HeaderFinishButton = ({ onPress }: { onPress: Function }) => (
   </TouchableOpacity>
 );
 
-const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
+const HeaderBackButton = ({ onPress }: { onPress: ?Function }) => (
   <TouchableOpacity onPress={onPress}>
     <Image source={assets.headerBackArrow} style={styles.backButton} />
   </TouchableOpacity>
@@ -46,11 +49,12 @@ const HeaderBackButton = ({ onPress }: { onPress: Function }) => (
 
 class AddItemDefects extends PureComponent<Props, State> {
   static navigationOptions = ({ navigation }: Props) => {
+    const from = navigation.state.params && navigation.state.params.from;
     const photos = navigation.state.params && navigation.state.params.photos;
-    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
     const location = navigation.state.params && navigation.state.params.location;
     const codeData = navigation.state.params && navigation.state.params.codeData;
-    const from = navigation.state.params && navigation.state.params.from;
+    const isLoading = navigation.state.params && navigation.state.params.isLoading;
+    const defectPhotos = navigation.state.params && navigation.state.params.defectPhotos;
     const handleGoBack = navigation.state.params && navigation.state.params.handleGoBack;
 
     let toPass = from
@@ -63,18 +67,31 @@ class AddItemDefects extends PureComponent<Props, State> {
       headerStyle: styles.header,
       title: constants.headers.defects,
       headerTitleStyle: styles.headerTitleStyle,
-      headerLeft: <HeaderBackButton onPress={handleGoBack} />,
+      headerLeft: <HeaderBackButton onPress={!isLoading ? handleGoBack : null} />,
       headerRight: (
         <HeaderFinishButton
           onPress={async () => {
-            if (from) {
-              navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
-            } else if (photos.length + defectPhotos.length) {
-              const response = await handleCreateAsset();
-              toPass = { ...toPass, ...response };
-              navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
-            } else {
-              Alert.alert(constants.errors.camera.needPhoto);
+            try {
+              if (!isLoading) {
+                if (from) {
+                  navigation.navigate(SCENE_NAMES.ItemFormSceneName, toPass);
+                } else if (photos.length + defectPhotos.length) {
+                  const response = await handleCreateAsset();
+                  toPass = { ...toPass, ...response };
+                  navigation.navigate(SCENE_NAMES.AddItemFinishSceneName, toPass);
+                } else {
+                  Alert.alert(constants.errors.camera.needPhoto);
+                }
+              }
+            } catch (error) {
+              if (
+                error.message
+                === constants.errors.development.navigationPhotosHaveNotLoadedYet.errorMessage
+              ) {
+                console.log(constants.errors.development.navigationPhotosHaveNotLoadedYet.response);
+              } else {
+                console.log(error);
+              }
             }
           }}
         />
@@ -85,6 +102,7 @@ class AddItemDefects extends PureComponent<Props, State> {
   state = {
     photos: [],
     isLoading: false,
+    showCamera: isIOS,
     isHintOpened: true,
     ableToTakePicture: false,
     needToAskPermissions: true,
@@ -92,18 +110,33 @@ class AddItemDefects extends PureComponent<Props, State> {
   };
 
   navListener: any;
+  navListenerBlurAndroid: any;
+  navListenerFocusAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
     setTimeout(() => this.setState({ isHintOpened: false }), 3000);
     navigation.setParams({
       defectPhotos: [],
-      handleCreateAsset: this.handleCreateAsset,
       handleGoBack: this.handleGoBack,
+      handleCreateAsset: this.handleCreateAsset,
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
+      this.navListenerBlurAndroid = navigation.addListener('didBlur', () => this.setState({ showCamera: false }));
+    }
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleGoBack = () => {
@@ -126,6 +159,8 @@ class AddItemDefects extends PureComponent<Props, State> {
       },
       createdAssetsCount: oldCreatedAssetsCount,
     } = this.props;
+
+    this.setState({ isLoading: true }, () => navigation.setParams({ isLoading: true }));
 
     const photos = navigation.getParam('photos', []);
     const defectPhotos = navigation.getParam('defectPhotos', []);
@@ -167,10 +202,12 @@ class AddItemDefects extends PureComponent<Props, State> {
           createAsset: { id, inventoryId },
         },
       } = await createAsset({ variables, update: this.updateCreateAsset });
-      return { id, inventoryId };
+      return { creationId: id, inventoryId };
     } catch (error) {
       console.log(error.message);
       return {};
+    } finally {
+      this.setState({ isLoading: false }, () => navigation.setParams({ isLoading: false }));
     }
   };
 
@@ -217,7 +254,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       props: { navigation },
     } = this;
     const { isHintOpened, needToAskPermissions } = this.state;
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true }, () => navigation.setParams({ isLoading: true }));
 
     if (needToAskPermissions) {
       await this.askPermissions();
@@ -249,7 +286,7 @@ class AddItemDefects extends PureComponent<Props, State> {
       Alert.alert(constants.errors.camera.location);
     }
 
-    this.setState({ isLoading: false });
+    this.setState({ isLoading: false }, () => navigation.setParams({ isLoading: false }));
   };
 
   removePicture = async (index: number) => {
@@ -267,16 +304,12 @@ class AddItemDefects extends PureComponent<Props, State> {
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
       //  eslint-disable-next-line
-      () => navigation.setParams({ defectPhotos: this.state.photos }),
+      () => navigation.setParams({ defectPhotos: this.state.photos })
     );
   };
 
   renderPhoto = ({ item: uri, index }: PhotosProps) => (
-    <PhotoPreview
-      uri={uri}
-      index={index}
-      removePictureCallback={this.removePicture}
-    />
+    <PhotoPreview uri={uri} index={index} removePictureCallback={this.removePicture} />
   );
 
   toggleFlash = () => {
@@ -292,38 +325,40 @@ class AddItemDefects extends PureComponent<Props, State> {
   camera: ?RNCamera;
 
   render() {
-    const { flashMode, isHintOpened, photos, isLoading } = this.state;
+    const { flashMode, isHintOpened, photos, isLoading, showCamera } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <Fragment>
-          <View style={[styles.hint, !isHintOpened && { display: 'none' }]}>
-            <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
+        <View style={[styles.hint, (!isHintOpened || isLoading) && { opacity: 0 }]}>
+          <Text style={styles.hintText}>{constants.hints.makeDefectsPhotos}</Text>
+        </View>
+        {(isLoading || !showCamera) && (
+          <View style={styles.hint}>
+            <ActivityIndicator size="large" color={colors.accent} />
           </View>
-          {isLoading && (
-            <View style={styles.hint}>
-              <ActivityIndicator />
-            </View>
-          )}
-          <RNCamera
-            ref={(ref) => {
-              this.camera = ref;
-            }}
-            flashMode={flashMode}
-            style={styles.preview}
-          />
-          <TouchableOpacity
-            onPress={this.toggleFlash}
-            style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
-          >
-            <Image
-              source={flashMode ? assets.flashOff : assets.flashOn}
-              style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+        )}
+        {showCamera && (
+          <Fragment>
+            <RNCamera
+              ref={(ref) => {
+                this.camera = ref;
+              }}
+              flashMode={flashMode}
+              style={styles.preview}
             />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
-            <Image source={assets.logo} style={styles.makePhotoButtonImage} />
-          </TouchableOpacity>
-        </Fragment>
+            <TouchableOpacity
+              onPress={this.toggleFlash}
+              style={[styles.flashButton, flashMode ? styles.flashOn : styles.flashOff]}
+            >
+              <Image
+                source={flashMode ? assets.flashOff : assets.flashOn}
+                style={flashMode ? styles.flashIconOff : styles.flashIconOn}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.takePicture} style={styles.makePhotoButton}>
+              <Image source={assets.logo} style={styles.makePhotoButtonImage} />
+            </TouchableOpacity>
+          </Fragment>
+        )}
         <View style={styles.bottomSection}>
           <FlatList
             horizontal

@@ -1,10 +1,12 @@
 //  @flow
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { StatusBar, View, Text, TouchableOpacity } from 'react-native';
 
 import Modal from 'react-native-modal';
 
+import colors from '~/global/colors';
 import constants from '~/global/constants';
+import { isAndroid } from '~/global/device';
 
 import styles from './styles';
 import type { Props } from './types';
@@ -16,6 +18,7 @@ const QuestionModal = ({
   isModalVisible,
 }: Props) => (
   <Modal isVisible={isModalVisible} style={styles.modal}>
+    {isAndroid && <StatusBar backgroundColor={colors.androidDeleteModalStatusBarOverlay} barStyle="light-content" />}
     <View style={styles.container}>
       <Text style={styles.title}>{data.title}</Text>
       <Text style={styles.question}>{data.question}</Text>

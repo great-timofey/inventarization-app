@@ -3,14 +3,15 @@
 import React, { PureComponent } from 'react';
 import { Text, StatusBar, SafeAreaView, View, Image, TouchableOpacity } from 'react-native';
 
-import { graphql } from 'react-apollo';
 // $FlowFixMe
 import { RNCamera } from 'react-native-camera';
 
+import { isAndroid, isIOS } from '~/global/device';
+import colors from '~/global/colors';
 import assets from '~/global/assets';
 import constants from '~/global/constants';
 import * as SCENE_NAMES from '~/navigation/scenes';
-import { GET_CREATED_ASSETS_COUNT_CLIENT } from '~/graphql/assets/queries';
+
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -42,13 +43,32 @@ class AddItemFinish extends PureComponent<Props, State> {
     ),
   });
 
+  state = {
+    showCamera: isIOS,
+  };
+
   navListener: any;
+  navListenerFocusAndroid: any;
+  navListenerBlurAndroid: any;
 
   componentDidMount() {
     const { navigation } = this.props;
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('light-content');
+      StatusBar.setBackgroundColor(colors.black);
     });
+    if (isAndroid) {
+      this.navListenerFocusAndroid = navigation.addListener('willFocus', () => this.setState({ showCamera: true }));
+      this.navListenerBlurAndroid = navigation.addListener('didBlur', () => this.setState({ showCamera: false }));
+    }
+  }
+
+  componentWillUnmount() {
+    this.navListener.remove();
+    if (isAndroid) {
+      this.navListenerFocusAndroid.remove();
+      this.navListenerBlurAndroid.remove();
+    }
   }
 
   handleGoToItemForm = async () => {
@@ -78,17 +98,21 @@ class AddItemFinish extends PureComponent<Props, State> {
   camera: ?RNCamera;
 
   render() {
+    const { showCamera } = this.state;
     return (
       <SafeAreaView style={styles.container}>
+        {showCamera && (
+          <RNCamera
+            ref={(ref) => {
+              this.camera = ref;
+            }}
+            style={styles.preview}
+          />
+        )}
+        <View style={styles.overlay} />
         <View style={styles.hint}>
           <Image source={assets.checkCircled} style={styles.checkImage} />
         </View>
-        <RNCamera
-          ref={(ref) => {
-            this.camera = ref;
-          }}
-          style={styles.preview}
-        />
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={this.handleGoToItemForm}
@@ -109,4 +133,4 @@ class AddItemFinish extends PureComponent<Props, State> {
   }
 }
 
-export default graphql(GET_CREATED_ASSETS_COUNT_CLIENT)(AddItemFinish);
+export default AddItemFinish;

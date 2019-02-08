@@ -44,12 +44,12 @@ import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
 import { isIphoneX } from '~/global/device';
-import DelModal from '~/components/QuestionModal';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import * as PLACES_QUERIES from '~/graphql/places/queries';
 import * as ASSETS_MUTATIONS from '~/graphql/assets/mutations';
+import DelModal from '~/components/QuestionModal';
 import ChooseModal from '~/components/ChooseModal';
 import InventoryIcon from '~/assets/InventoryIcon';
 import DateTimePicker from '~/components/DateTimePicker';
@@ -217,6 +217,7 @@ class ItemForm extends Component<Props, State> {
 
     this.navListener = navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
+      StatusBar.setBackgroundColor(colors.white);
     });
 
     navigation.setParams({
@@ -411,7 +412,7 @@ class ItemForm extends Component<Props, State> {
       variables.companyId = companyId;
       // $FlowFixMe
       variables.name = variables.name.trim();
-      variables.onTheBalanceSheet = variables.onTheBalanceSheet === 'Да';
+      variables.onTheBalanceSheet = variables.onTheBalanceSheet === constants.words.yes;
 
       if (variables.description) {
         // $FlowFixMe
@@ -519,11 +520,32 @@ class ItemForm extends Component<Props, State> {
 
       try {
         await updateAsset({ variables });
-        this.updatePlaceCount(variables.placeId);
+        if (variables.placeId) {
+          this.updatePlaceCount(variables.placeId);
+        }
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
       }
+    }
+  };
+
+  handleGoBack = (afterDeletion: ?boolean) => {
+    const {
+      state: { name },
+      props: { navigation },
+    } = this;
+    const fromItemsScene = navigation.getParam('item', null);
+
+    if (afterDeletion) {
+      navigation.popToTop({});
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
+    //  $FlowFixMe
+    } else if (!name.trim() && !fromItemsScene) {
+      Alert.alert(constants.errors.createItem.name);
+    } else if (fromItemsScene) {
+      navigation.pop();
+      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     }
   };
 
@@ -547,24 +569,6 @@ class ItemForm extends Component<Props, State> {
     const placeIndex = findIndex(place => place.id === placeId, data.places);
     data.places[placeIndex].assetsCount += 1;
     cache.writeQuery({ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId }, data });
-  }
-
-  handleGoBack = () => {
-    const {
-      state: { name },
-      props: { navigation },
-    } = this;
-    const fromItemsScene = navigation.getParam('item', null);
-    //  $FlowFixMe
-    if (!name.trim() && !fromItemsScene) {
-      Alert.alert(constants.errors.createItem.name);
-    } else if (fromItemsScene) {
-      navigation.pop();
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    } else {
-      navigation.popToTop({});
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
-    }
   };
 
   updateDestroyAsset = (cache: Object) => {
@@ -814,7 +818,7 @@ class ItemForm extends Component<Props, State> {
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      this.handleGoBack();
+      this.handleGoBack(true);
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();

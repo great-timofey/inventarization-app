@@ -27,6 +27,7 @@ import {
   GET_COMPANY_CATEGORIES_BY_ID,
 } from '~/graphql/categories/queries';
 
+import colors from '~/global/colors';
 import constants from '~/global/constants';
 import {
   mainNavigation,
@@ -134,7 +135,7 @@ class CategoryMenu extends PureComponent<Props, State> {
     return (
       <Query query={GET_COMPANY_CATEGORIES_BY_ID} variables={{ companyId }}>
         {({ data, loading, error }) => {
-          if (loading) { return <ActivityIndicator />; }
+          if (loading) { return <ActivityIndicator size="large" color={colors.accent} />; }
           if (error) {
             return (
               <View>
