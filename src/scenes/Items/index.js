@@ -67,6 +67,7 @@ class ItemsScene extends PureComponent<Props, State> {
       currentSelectItem: null,
       isSortModalVisible: false,
       isDeleteModalVisible: false,
+      isMarginBottomActive: false,
       isAndroidActionsModalVisible: false,
       elementPosition: {
         x: 0,
@@ -182,6 +183,7 @@ class ItemsScene extends PureComponent<Props, State> {
     const { isAndroidActionsModalVisible } = this.state;
     this.setState({
       isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
+      isMarginBottomActive: !isAndroidActionsModalVisible,
     });
   }
 
@@ -205,6 +207,7 @@ class ItemsScene extends PureComponent<Props, State> {
         y: 0,
       },
       item,
+      isMarginBottomActive: true,
     });
 
     if (itemRef && !isListViewStyle) {
@@ -337,6 +340,7 @@ class ItemsScene extends PureComponent<Props, State> {
       currentSelectItem,
       isSortModalVisible,
       isDeleteModalVisible,
+      isMarginBottomActive,
       isAndroidActionsModalVisible,
     } = this.state;
 
@@ -363,6 +367,7 @@ class ItemsScene extends PureComponent<Props, State> {
           selectItem={this.selectItem}
           currentSelectItem={currentSelectItem}
           getItemPosition={this.getItemPosition}
+          isMarginBottomActive={isMarginBottomActive}
           isDeleteModalVisible={isDeleteModalVisible}
           handleShowSortButton={this.handleShowSortButton}
           toggleDelModalVisible={this.toggleDelModalVisible}
