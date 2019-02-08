@@ -47,6 +47,6 @@ export default StyleSheet.create({
     width: '85%',
     alignSelf: 'center',
     position: 'absolute',
-    bottom: isAndroid ? normalize(20) : normalize(30),
+    bottom: normalize(30),
   },
 });
