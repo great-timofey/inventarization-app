@@ -94,7 +94,7 @@ class CategoryEdit extends PureComponent {
 
     if (id) {
       const parentIndex = findIndex(item => item.id === id, categories);
-      subCategoryList = [...categories[parentIndex].chields];
+      subCategoryList = [...categories[parentIndex].childs];
     }
 
     this.state = {
@@ -319,9 +319,9 @@ class CategoryEdit extends PureComponent {
         item => item.id === payload.data.createCategory.parent.id,
         data.categories,
       );
-      if (data.categories[parentIndex].chields) {
-        data.categories[parentIndex].chields = [
-          ...data.categories[parentIndex].chields,
+      if (data.categories[parentIndex].childs) {
+        data.categories[parentIndex].childs = [
+          ...data.categories[parentIndex].childs,
           payload.data.createCategory,
         ];
       }
@@ -371,13 +371,13 @@ class CategoryEdit extends PureComponent {
       const parentIndex = findIndex(
         item => item.id === selectCategoryId, data.categories,
       );
-      if (data.categories[parentIndex].chields) {
+      if (data.categories[parentIndex].childs) {
         const deleteIndex = findIndex(
           subCategory => subCategory.id === delSubcategoryId,
-          data.categories[parentIndex].chields,
+          data.categories[parentIndex].childs,
         );
-        data.categories[parentIndex].chields = remove(
-          deleteIndex, 1, data.categories[parentIndex].chields,
+        data.categories[parentIndex].childs = remove(
+          deleteIndex, 1, data.categories[parentIndex].childs,
         );
       }
       cache.writeQuery({ query: GET_COMPANY_CATEGORIES_BY_ID, variables: { companyId }, data });

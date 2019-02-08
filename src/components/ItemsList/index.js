@@ -219,6 +219,7 @@ class ItemsList extends PureComponent<Props> {
       getItemPosition,
       currentSelectItem,
       handleShowSortButton,
+      isMarginBottomActive,
       toggleDelModalVisible,
       saveSelectedCategories,
       isAndroidActionsModalVisible,
@@ -378,7 +379,10 @@ class ItemsList extends PureComponent<Props> {
                   data={dataToRender}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
-                  contentContainerStyle={styles.grid}
+                  contentContainerStyle={[
+                    styles.grid,
+                    isMarginBottomActive && { marginBottom: 200 },
+                  ]}
                   scrollEnabled={!isAndroidActionsModalVisible}
                   extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
                 />

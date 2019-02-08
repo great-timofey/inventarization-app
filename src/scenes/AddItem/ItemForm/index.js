@@ -7,13 +7,12 @@ import {
   Image,
   Alert,
   FlatList,
+  Keyboard,
   StatusBar,
   TextInput,
-  ScrollView,
   SectionList,
   SafeAreaView,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 
 import { compose, graphql, withApollo } from 'react-apollo';
@@ -36,14 +35,15 @@ import RNFS from 'react-native-fs';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { isIphoneX } from '~/global/device';
 import { isSmallDevice, normalize, convertToApolloUpload } from '~/global/utils';
 import colors from '~/global/colors';
 import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
+import { isIphoneX } from '~/global/device';
 import DelModal from '~/components/QuestionModal';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
@@ -393,7 +393,8 @@ class ItemForm extends Component<Props, State> {
       .then(() => this.checkForErrors());
 
     if (isFormInvalid) {
-      this.keyboardRef.scrollTo({ x: 0, y: normalize(390), animated: true });
+      Keyboard.dismiss();
+      this.keyboardRef.scrollToPosition(0, normalize(390), true);
     } else {
       const {
         userCompany: {
@@ -775,11 +776,19 @@ class ItemForm extends Component<Props, State> {
     }
 
     return showAddPhotoButton ? (
-      <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
-        <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
-      </TouchableOpacity>
+      <View style={styles.addPhotoBarButtonWrapper}>
+        <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+          <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
+        </TouchableOpacity>
+      </View>
     ) : (
       <View style={styles.photoContainer}>
+        <TouchableOpacity
+          style={styles.photoImageContainer}
+          onPress={() => this.handleSetIndexPreview(index)}
+        >
+          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
+        </TouchableOpacity>
         {showRemoveButton && (
           <TouchableOpacity
             activeOpacity={0.5}
@@ -789,12 +798,6 @@ class ItemForm extends Component<Props, State> {
             <Image source={assets.deletePhoto} />
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-          style={styles.photoImageContainer}
-          onPress={() => this.handleSetIndexPreview(index)}
-        >
-          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
-        </TouchableOpacity>
       </View>
     );
   };
@@ -837,6 +840,7 @@ class ItemForm extends Component<Props, State> {
       state: { showPhotos, activePreviewIndex },
     } = this;
     const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
+
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
@@ -976,139 +980,131 @@ class ItemForm extends Component<Props, State> {
 
     return (
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-          behavior="padding"
-          style={styles.container}
-          keyboardVerticalOffset={isIphoneX ? 85 : 60}
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          extraScrollHeight={isIphoneX ? 20 : 0}
+          ref={(ref) => {
+            this.keyboardRef = ref;
+          }}
         >
-          <ScrollView
-            ref={(ref) => {
-              this.keyboardRef = ref;
-            }}
-          >
-            <View style={styles.preview}>
-              <View style={styles.previewModeButtons}>
-                <PreviewModeButton
-                  isActive={showPhotos}
-                  onPress={this.showPhotos}
-                  title={constants.buttonTitles.photos}
-                />
-                <PreviewModeButton
-                  isActive={!showPhotos}
-                  onPress={this.showDefects}
-                  title={constants.buttonTitles.defects}
-                />
-              </View>
-              <Fragment>
-                {currentTypeIsEmpty ? (
-                  <NoItems
-                    additional={
-                      isNewItem || userCanDelete || userRole === constants.roles.admin
-                    }
-                    onPress={this.handleAddPhoto}
-                  />
-                ) : (
-                  <Carousel
-                    innerRef={(ref) => {
-                      this.carousel = ref;
-                    }}
-                    index={activePreviewIndex}
-                    // $FlowFixMe
-                    data={showPhotos ? photosUrls : photosOfDamagesUrls}
-                    onIndexChanged={this.handleSwipePreview}
-                    //  use custom key for correct rerendering of carousel component
-                    key={
-                      (showPhotos ? photosUrls : photosOfDamagesUrls).length
-                      + (showPhotos ? 'p' : 'd')
-                    }
-                  />
-                )}
-                <View style={styles.previewInfo}>
-                  <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
-                  <Text style={styles.previewInfoText}>
-                    {currentTypeIsEmpty
-                      ? '0/0'
-                      : `${activePreviewIndex + 1} / ${
-                        showPhotos ? photosUrls.length : photosOfDamagesUrls.length
-                      }`}
-                  </Text>
-                </View>
-              </Fragment>
-            </View>
-            <FlatList
-              horizontal
-              style={styles.photosOuter}
-              keyExtractor={this.keyExtractor}
-              showsHorizontalScrollIndicator={false}
-              // $FlowFixMe
-              renderItem={this.renderPreviewPhotoBarItem}
-              contentContainerStyle={[
-                styles.photosInner,
-                styles.previewPhotoBar,
-                isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
-              ]}
-              data={
-                showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')
-              }
-            />
-            <View
-              style={styles.formContainer}
-              pointerEvents={formIsEditable === false ? 'none' : undefined}
-            >
-              <View style={styles.formName}>
-                <View style={styles.formNameTitleContainer}>
-                  <Text style={styles.formNameHint}>{constants.hints.name}</Text>
-                  <Text
-                    style={[styles.formNameError, includes('name', keys(warnings)) && styles.show]}
-                  >
-                    {constants.errors.createItem.name}
-                  </Text>
-                </View>
-                <TextInput
-                  value={name}
-                  style={styles.formNameInput}
-                  placeholder={constants.hints.enterName}
-                  onChangeText={text => this.handleChangeField('name', text)}
-                />
-              </View>
-              <SectionList
-                sections={sections}
-                keyExtractor={({ key }) => key}
-                renderItem={this.renderFormField}
-                renderSectionHeader={this.renderFormSectionHeader}
-                contentContainerStyle={styles.formSectionListContainer}
+          <View style={styles.preview}>
+            <View style={styles.previewModeButtons}>
+              <PreviewModeButton
+                isActive={showPhotos}
+                onPress={this.showPhotos}
+                title={constants.buttonTitles.photos}
+              />
+              <PreviewModeButton
+                isActive={!showPhotos}
+                onPress={this.showDefects}
+                title={constants.buttonTitles.defects}
               />
             </View>
-            {(showSaveButton || isNewItem) && (
-              <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
-                <Text style={styles.saveItemText}>
-                  {isNewItem ? constants.buttonTitles.saveItem : constants.buttonTitles.saveChanges}
+            <Fragment>
+              {currentTypeIsEmpty ? (
+                <NoItems
+                  additional={isNewItem || userCanDelete || userRole === constants.roles.admin}
+                  onPress={this.handleAddPhoto}
+                />
+              ) : (
+                <Carousel
+                  innerRef={(ref) => {
+                    this.carousel = ref;
+                  }}
+                  index={activePreviewIndex}
+                  // $FlowFixMe
+                  data={showPhotos ? photosUrls : photosOfDamagesUrls}
+                  onIndexChanged={this.handleSwipePreview}
+                  //  use custom key for correct rerendering of carousel component
+                  key={
+                    (showPhotos ? photosUrls : photosOfDamagesUrls).length
+                    + (showPhotos ? 'p' : 'd')
+                  }
+                />
+              )}
+              <View style={styles.previewInfo}>
+                <InventoryIcon size={16} name="photo" {...iconProps} color={colors.black} />
+                <Text style={styles.previewInfoText}>
+                  {currentTypeIsEmpty
+                    ? '0/0'
+                    : `${activePreviewIndex + 1} / ${
+                      showPhotos ? photosUrls.length : photosOfDamagesUrls.length
+                    }`}
                 </Text>
-              </TouchableOpacity>
-            )}
-            <DateTimePicker
-              onConfirm={this.handleChooseDate}
-              isVisible={isDateTimePickerOpened}
-              onCancel={this.handleCloseDateTimePicker}
+              </View>
+            </Fragment>
+          </View>
+          <FlatList
+            horizontal
+            style={styles.photosOuter}
+            keyExtractor={this.keyExtractor}
+            showsHorizontalScrollIndicator={false}
+            // $FlowFixMe
+            renderItem={this.renderPreviewPhotoBarItem}
+            contentContainerStyle={[
+              styles.photosInner,
+              styles.previewPhotoBar,
+              isEmpty(showPhotos ? photosUrls : photosOfDamagesUrls) && styles.hide,
+            ]}
+            data={showPhotos ? photosUrls.concat('preview') : photosOfDamagesUrls.concat('preview')}
+          />
+          <View
+            style={styles.formContainer}
+            pointerEvents={formIsEditable === false ? 'none' : undefined}
+          >
+            <View style={styles.formName}>
+              <View style={styles.formNameTitleContainer}>
+                <Text style={styles.formNameHint}>{constants.hints.name}</Text>
+                <Text
+                  style={[styles.formNameError, includes('name', keys(warnings)) && styles.show]}
+                >
+                  {constants.errors.createItem.name}
+                </Text>
+              </View>
+              <TextInput
+                value={name}
+                style={styles.formNameInput}
+                placeholder={constants.hints.enterName}
+                onChangeText={text => this.handleChangeField('name', text)}
+              />
+            </View>
+            <SectionList
+              sections={sections}
+              keyExtractor={({ key }) => key}
+              renderItem={this.renderFormField}
+              renderSectionHeader={this.renderFormSectionHeader}
+              contentContainerStyle={styles.formSectionListContainer}
             />
-            {/* $FlowFixMe */}
-            <ChooseModal
-              companyId={companyId}
-              isVisible={isModalOpened}
-              // $FlowFixMe
-              type={currentlyEditableField}
-              onCancel={this.handleCloseModal}
-              onConfirm={this.handleConfirmModal}
-            />
-            <DelModal
-              isModalVisible={isDelModalOpened}
-              data={constants.modalQuestion.itemDel}
-              //  $FlowFixMe
-              rightAction={this.handleDeleteItem}
-              leftAction={this.handleToggleDelModal}
-            />
-          </ScrollView>
-        </KeyboardAvoidingView>
+          </View>
+          {(showSaveButton || isNewItem) && (
+            <TouchableOpacity style={styles.saveItem} onPress={this.handleSubmitForm}>
+              <Text style={styles.saveItemText}>
+                {isNewItem ? constants.buttonTitles.saveItem : constants.buttonTitles.saveChanges}
+              </Text>
+            </TouchableOpacity>
+          )}
+          <DateTimePicker
+            onConfirm={this.handleChooseDate}
+            isVisible={isDateTimePickerOpened}
+            onCancel={this.handleCloseDateTimePicker}
+          />
+          {/* $FlowFixMe */}
+          <ChooseModal
+            companyId={companyId}
+            isVisible={isModalOpened}
+            // $FlowFixMe
+            type={currentlyEditableField}
+            onCancel={this.handleCloseModal}
+            onConfirm={this.handleConfirmModal}
+          />
+          <DelModal
+            isModalVisible={isDelModalOpened}
+            data={constants.modalQuestion.itemDel}
+            //  $FlowFixMe
+            rightAction={this.handleDeleteItem}
+            leftAction={this.handleToggleDelModal}
+          />
+        </KeyboardAwareScrollView>
       </SafeAreaView>
     );
   }

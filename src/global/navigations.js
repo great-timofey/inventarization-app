@@ -44,7 +44,7 @@ import { deviceWidth, isAndroid } from '~/global/device';
 
 import styles, { containerOffset, stylesObject } from './styles';
 import assets from './assets';
-import { normalize } from './utils';
+import { normalize, isSmallDevice } from './utils';
 
 type iconType = {
   focused: Boolean,
@@ -188,7 +188,7 @@ const authNavigator = createStackNavigator(authStack, authConfig);
 
 export const RootContainer = createAppContainer(rootNavigator);
 
-const openMenuOffset = 300;
+const openMenuOffset = isSmallDevice ? 250 : 300;
 const targetScale = 0.9;
 const targetContainerTranslateX = (
   openMenuOffset - (((deviceWidth) * (1 - targetScale)) / 2)
