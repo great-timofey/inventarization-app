@@ -26,10 +26,10 @@ import assets from '~/global/assets';
 import Styles from '~/global/styles';
 import colors from '~/global/colors';
 import constants from '~/global/constants';
-import { isAndroid } from '~/global/device';
 import * as SCENES_NAMES from '~/navigation/scenes';
 import { isValid, normalize } from '~/global/utils';
 import * as MUTATIONS from '~/graphql/auth/mutations';
+import { isAndroid, isIphoneX } from '~/global/device';
 
 import styles from './styles';
 import type { Props, State } from './types';
@@ -41,8 +41,10 @@ const initialState = {
   warnings: {},
   password: '',
   isRegForm: false,
-  isKeyboardActive: false,
   isPasswordHidden: true,
+  isKeyboardActive: false,
+  marginBottom: new Animated.Value(normalize(100)),
+  marginTop: new Animated.Value(normalize(0)),
 };
 
 const AdditionalButton = ({ title, onPress }: { title: string, onPress: Function }) => (
@@ -209,7 +211,6 @@ class Login extends PureComponent<Props, State> {
     }
   };
 
-
   focusField = (ref: Object) => {
     if (ref) {
       if (isAndroid) {
@@ -223,6 +224,50 @@ class Login extends PureComponent<Props, State> {
     }
   }
 
+  componentDidUpdate() {
+    const { marginTop, marginBottom, isRegForm } = this.state;
+    const listenerShow = 'keyboardWillShow';
+    const listenerHide = 'keyboardWillHide';
+
+    let marginTopValue;
+    let marginBottomValue;
+
+    if (isRegForm) {
+      marginTopValue = isIphoneX ? 70 : 70;
+      marginBottomValue = isIphoneX ? 50 : 0;
+    } else {
+      marginTopValue = isIphoneX ? 100 : 100;
+      marginBottomValue = isIphoneX ? 80 : 30;
+    }
+
+    Keyboard.addListener(listenerShow, () => {
+      this.setState({ isKeyboardActive: true });
+      Animated.parallel([
+        Animated.timing(marginBottom, {
+          duration: 250,
+          toValue: normalize(marginBottomValue),
+        }),
+        Animated.timing(marginTop, {
+          duration: 250,
+          toValue: normalize(marginTopValue),
+        }),
+      ]).start();
+    });
+    Keyboard.addListener(listenerHide, () => {
+      this.setState({ isKeyboardActive: false });
+      Animated.parallel([
+        Animated.timing(marginBottom, {
+          duration: 250,
+          toValue: normalize(100),
+        }),
+        Animated.timing(marginTop, {
+          duration: 250,
+          toValue: normalize(0),
+        }),
+      ]).start();
+    });
+  }
+
   nameRef: any;
 
   emailRef: any;
@@ -234,8 +279,23 @@ class Login extends PureComponent<Props, State> {
   keyboardAwareScrollView: any;
 
   render() {
-    const { navigation } = this.props;
-    const { name, email, mobile, password, warnings, isRegForm, isPasswordHidden } = this.state;
+    const {
+      props: {
+        navigation,
+      },
+      state: {
+        name,
+        email,
+        mobile,
+        password,
+        warnings,
+        isRegForm,
+        marginBottom,
+        isPasswordHidden,
+        isKeyboardActive,
+        marginTop,
+      },
+    } = this;
 
     return (
       <ScrollViewContainer
@@ -246,7 +306,12 @@ class Login extends PureComponent<Props, State> {
       >
         {isAndroid && <StatusBar backgroundColor={colors.backGroundBlack} barStyle="light-content" />}
 
-        <Animated.View style={[styles.regForm, (isRegForm || warnings.length) && styles.form]}>
+        <Animated.View style={[
+          styles.regForm,
+          (isRegForm || warnings.length) && styles.form,
+          isKeyboardActive && { marginBottom, marginTop },
+        ]}
+        >
           <Logo isSmall />
           {isRegForm && (
             <Input
