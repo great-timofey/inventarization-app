@@ -341,7 +341,7 @@ class ItemForm extends Component<Props, State> {
           company: { id: companyId },
         },
       },
-      state: { name, inventoryId, id },
+      state: { name, inventoryId, id, isNewItem },
     } = this;
 
     const warnings = {};
@@ -356,14 +356,17 @@ class ItemForm extends Component<Props, State> {
       warnings.inventoryId = 'empty';
     }
 
-    const data = client.cache.readQuery({
-      query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
-      variables: { companyId },
-    });
-    const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
+    if (!isNewItem) {
+      //  check for existing inventoryId
+      const data = client.cache.readQuery({
+        query: ASSETS_QUERIES.GET_COMPANY_ASSETS,
+        variables: { companyId },
+      });
+      const match = data.assets.find(asset => asset.id !== id && inventoryId === asset.inventoryId);
 
-    if (match) {
-      warnings.inventoryId = 'inUse';
+      if (match) {
+        warnings.inventoryId = 'inUse';
+      }
     }
 
     this.setState({ warnings });
