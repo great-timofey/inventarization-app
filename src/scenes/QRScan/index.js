@@ -146,7 +146,7 @@ class QRCode extends PureComponent<Props, State> {
   render() {
     const {
       props: { navigation },
-      state: { showNoMatchError, showScanner, flashMode, },
+      state: { showNoMatchError, showScanner, flashMode },
     } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
@@ -167,8 +167,9 @@ class QRCode extends PureComponent<Props, State> {
               onPress={this.toggleTorch}
             >
               <Image
-                source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
                 style={styles.torchIcon}
+                //  eslint-disable-next-line  max-len
+                source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
               />
             </TouchableOpacity>
             {!checkMode && (
@@ -182,10 +183,10 @@ class QRCode extends PureComponent<Props, State> {
               </Text>
             </View>
           </Fragment>
-          )}
-          <View style={styles.loadingView}>
-            <ActivityIndicator size="large" color={colors.accent} />
-          </View>
+        )}
+        <View style={styles.loadingView}>
+          <ActivityIndicator size="large" color={colors.accent} />
+        </View>
       </View>
     );
   }

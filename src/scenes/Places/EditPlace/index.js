@@ -194,9 +194,9 @@ class EditPlaceScene extends PureComponent<Props, State> {
           });
         } else {
           console.log(error.message);
-        } finally  {
-          this.setState({ loading: false });
         }
+      } finally {
+        this.setState({ loading: false });
       }
     }
 
@@ -228,7 +228,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
         } else {
           console.log(error.message);
         }
-      } finally  {
+      } finally {
         this.setState({ loading: false });
       }
     }
