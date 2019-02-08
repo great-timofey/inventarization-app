@@ -192,6 +192,7 @@ class EditPlaceScene extends PureComponent<Props, State> {
               place: constants.warnings.placeAlreadyExists,
             },
           });
+          this.setState({ loading: false });
         } else {
           console.log(error.message);
         }
