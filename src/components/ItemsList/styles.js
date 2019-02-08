@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native';
 import colors from '~/global/colors';
 import { fonts } from '~/global/styles';
 import { normalize } from '~/global/utils';
+import { isAndroid } from '~/global/device';
 
 export default StyleSheet.create({
   tabContainer: {
@@ -14,6 +15,7 @@ export default StyleSheet.create({
     marginRight: normalize(10),
     paddingHorizontal: normalize(10),
     backgroundColor: colors.darkGreen,
+    paddingBottom: isAndroid ? normalize(4) : 0,
   },
   tabText: {
     fontSize: 14,
@@ -62,6 +64,9 @@ export default StyleSheet.create({
     alignContent: 'center',
     paddingLeft: normalize(20),
     marginBottom: normalize(10),
+  },
+  categoryEmpty: {
+    height: 0,
   },
   categoryButton: {
     zIndex: 2,

@@ -6,7 +6,6 @@ import Modal from 'react-native-modal';
 import IconButton from '~/components/IconButton';
 
 import colors from '~/global/colors';
-import { normalize } from '~/global/utils';
 import constants from '~/global/constants';
 
 import styles from './styles';
@@ -36,7 +35,7 @@ class SortModal extends PureComponent<Props, {}> {
             isDisabled={!isSortByName}
             iconName="button-sort-price"
             onPress={toggleSortMethod}
-            customIconStyle={{ top: normalize(-4), left: normalize(-6) }}
+            customIconStyle={styles.middleButton}
             iconColor={!isSortByName ? colors.white : colors.whiteOpacity}
           />
         </View>
@@ -47,8 +46,8 @@ class SortModal extends PureComponent<Props, {}> {
             iconName="ios-close"
             iconColor={colors.button.close}
             onPress={() => toggleModalVisible()}
-            customIconStyle={{ top: normalize(2) }}
-            customContStyle={{ backgroundColor: colors.white }}
+            customIconStyle={styles.bottomButton}
+            customContStyle={styles.bottomButtonContainer}
           />
         </View>
       </Modal>

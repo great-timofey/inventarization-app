@@ -21,6 +21,7 @@ export default {
   buttonGreen: '#1CD25A',
   invalidBorder: '#D54A0F',
   buttonInvitee: '#67B8F3',
+  arrowDownGray: '#AEAEAE',
   backGroundBlack: '#0D0D0D',
   transparent: 'transparent',
   buttonChooseLogo: '#EFEFEF',

@@ -3,9 +3,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { View, Text, ActivityIndicator, Image, StatusBar, TouchableOpacity } from 'react-native';
 
-import { assoc } from 'ramda';
-//  $FlowFixMe
-import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import { withApollo, compose, graphql } from 'react-apollo';
@@ -54,9 +51,9 @@ class QRCode extends PureComponent<Props, State> {
   };
 
   state = {
-    isTorchOn: true,
     showScanner: isIOS,
     showNoMatchError: false,
+    flashMode: constants.torchModeTypes.off,
   };
 
   navListener: any;
@@ -139,16 +136,17 @@ class QRCode extends PureComponent<Props, State> {
     }
   };
 
-  toggleTorch = () => {
-    const { isTorchOn } = this.state;
-    this.setState(state => assoc('isTorchOn', !state.isTorchOn, state));
-    Torch.switchState(isTorchOn);
-  };
+  toggleTorch = () => this.setState(({ flashMode }) => ({
+    flashMode:
+        flashMode === constants.torchModeTypes.on
+          ? constants.torchModeTypes.off
+          : constants.torchModeTypes.on,
+  }));
 
   render() {
     const {
       props: { navigation },
-      state: { isTorchOn, showNoMatchError, showScanner },
+      state: { showNoMatchError, showScanner, flashMode, },
     } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
@@ -160,6 +158,7 @@ class QRCode extends PureComponent<Props, State> {
               showMarker
               reactivateTimeout={1000}
               onRead={this.handleScan}
+              cameraProps={{ flashMode }}
               cameraStyle={styles.scannerCameraStyle}
               customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
             />
@@ -168,7 +167,7 @@ class QRCode extends PureComponent<Props, State> {
               onPress={this.toggleTorch}
             >
               <Image
-                source={isTorchOn ? assets.torchOn : assets.torchOff}
+                source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
                 style={styles.torchIcon}
               />
             </TouchableOpacity>
@@ -183,10 +182,10 @@ class QRCode extends PureComponent<Props, State> {
               </Text>
             </View>
           </Fragment>
-        )}
-        <View style={styles.loadingView}>
-          <ActivityIndicator size="large" color={colors.accent} />
-        </View>
+          )}
+          <View style={styles.loadingView}>
+            <ActivityIndicator size="large" color={colors.accent} />
+          </View>
       </View>
     );
   }

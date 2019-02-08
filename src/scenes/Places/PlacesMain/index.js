@@ -274,12 +274,34 @@ getItemPosition = (itemRef, parentScrollViewRef, place) => {
   }
 }
 
+resetCurrentSelectItem = () => {
+  this.setState({
+    currentSelectItem: '',
+  });
+}
+
 openPlace = (id, name, address, gps) => {
   mainNavigation.navigate(SCENE_NAMES.PlacesItemsSceneName, { id, name, address, gps });
+  this.resetCurrentSelectItem();
 }
 
 navigateToAddPlace = () => {
   mainNavigation.navigate(SCENE_NAMES.PlacesSceneName);
+  this.resetCurrentSelectItem();
+}
+
+navigateToEditPlace = (id, name, address, gps, manager) => {
+  const { isAndroidActionsModalVisible } = this.state;
+  if (isAndroidActionsModalVisible) {
+    this.setState({
+      isAndroidActionsModalVisible: false,
+    });
+  }
+  mainNavigation.navigate(
+    SCENE_NAMES.PlacesSceneName,
+    { id, name, address, gps, manager },
+  );
+  this.resetCurrentSelectItem();
 }
 
 scrollViewRef: any;
@@ -342,18 +364,19 @@ render() {
                 openPlace={this.openPlace}
                 selectItem={this.selectItem}
                 extraData={{ currentSelectItem }}
+                editPlace={this.navigateToEditPlace}
                 getItemPosition={this.getItemPosition}
                 parentScrollViewRef={this.scrollViewRef}
                 toggleDelModal={this.toggleDelModalVisible}
               />
               {isNoPlaces && (
               <View style={styles.wrapper}>
-                <Image source={assets.emptyPlaces} />
+                <Image style={styles.image} source={assets.emptyPlaces} />
                 <Text style={styles.emptyPlacesText}>{constants.text.emptyPlaces}</Text>
                 <Button
                   isGreen
-                  onPress={() => {}}
                   customStyle={styles.button}
+                  onPress={this.navigateToAddPlace}
                   title={constants.buttonTitles.addPlace}
                 />
               </View>
@@ -381,6 +404,7 @@ render() {
               handleOpenItem={() => {}}
               type={constants.types.places}
               elementPosition={elementPosition}
+              editPlace={this.navigateToEditPlace}
               handleDeleteItem={this.handleDeletePlace}
               toggleActionsModal={this.toggleActionsModal}
               isModalVisible={isAndroidActionsModalVisible}

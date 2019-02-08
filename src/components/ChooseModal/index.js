@@ -127,8 +127,8 @@ class ChooseModal extends PureComponent<Props, State> {
 
   getDown = (index: number) => {
     const { categories } = this.state;
-    const { name, id, chields } = categories[index];
-    const toShow = [{ name }, { name: `${getPrefix(name)} ${name}` }, ...chields];
+    const { name, id, childs } = categories[index];
+    const toShow = [{ name }, { name: `${getPrefix(name)} ${name}` }, ...childs];
     this.setState({ data: toShow, isDrilledDown: true, currentlyActiveCategoryId: id });
   };
 
@@ -137,7 +137,7 @@ class ChooseModal extends PureComponent<Props, State> {
     const { onConfirm } = this.props;
     const { categories, isDrilledDown, currentlyActiveCategoryId } = this.state;
 
-    const getChildren = prop('chields');
+    const getChildren = prop('childs');
     const haveChildren = length(getChildren(categories[index])) > 0;
 
     let onPress = () => onConfirm(item);

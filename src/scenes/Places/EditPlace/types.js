@@ -9,11 +9,14 @@ export type State = {
   longitude: number,
   latitudeDelta: number,
   longitudeDelta: number,
+  isModalVisible: boolean,
   isNewPlaceScene: boolean,
+  selectedManagerId: null | number | string,
 };
 
 export type Props = {
   navigation: Object,
   userCompany: Object,
   createPlace: Function,
+  updatePlace: Function,
 };

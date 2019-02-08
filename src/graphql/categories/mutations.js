@@ -23,7 +23,7 @@ export const CREATE_CATEGORY = gql`
         id
         name
       }
-      chields {
+      childs {
         id
         name
       }

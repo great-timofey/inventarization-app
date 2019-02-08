@@ -1,6 +1,8 @@
 // @flow
 
 import { pick, slice, keys } from 'ramda';
+//  $FlowFixMe
+import { RNCamera } from 'react-native-camera';
 
 export const inventoryApiUrl = 'https://api.staging.inventoryapp.info/graphql';
 
@@ -34,6 +36,11 @@ const uploadCreateAssetImages = {
 const words = {
   yes: 'Да',
   no: 'Нет',
+};
+
+const torchModeTypes = {
+  on: RNCamera.Constants.FlashMode.torch,
+  off: RNCamera.Constants.FlashMode.off,
 };
 
 const suffixes = {
@@ -147,6 +154,7 @@ const buttonTitles = {
   chooseLogo: 'Выбери \n лого',
   saveItem: 'Сохранить предмет',
   createPlace: 'Добавить место',
+  setManager: 'Назначить завхоза',
   forgotPassword: 'Забыли пароль?',
   addCategory: 'Добавить категорию',
   setNewPass: 'Задать новый пароль',
@@ -157,6 +165,7 @@ const buttonTitles = {
   editCategory: 'Редактировать категории',
   addSubCategory: 'Добавить подкатегорию',
   fillItemForm: 'Заполнить анкету предмета',
+  addNewManager: 'Добавить нового завхоза',
   addAnotherYetItem: 'Добавить ещё один предмет',
 };
 
@@ -269,10 +278,7 @@ const types = {
   places: 'places',
 };
 const permissions = {
-  photo: [
-    'camera',
-    'location',
-  ],
+  photo: ['camera', 'location'],
 };
 
 const permissionTypes = {
@@ -290,6 +296,7 @@ const headers = {
   mainInfo: 'Основная информация',
   categoryList: 'Список категорий',
   addPhotos: 'Добавить фотографии',
+  editPlace: 'Редактирование места',
   addingItem: 'Добавление предмета',
   addPlaces: 'Добавление нового\n места',
   priceAndValue: 'Покупка и стоимость',
@@ -300,6 +307,7 @@ const headers = {
 };
 
 const text = {
+  manager: 'Завхоз',
   photo: 'Фото',
   question: 'Вы хотите создать \n аккаунт организации?',
   organisation:
@@ -607,6 +615,7 @@ export default {
   modalQuestion,
   itemFormFields,
   forgotPassText,
+  torchModeTypes,
   setNewPassword,
   permissionTypes,
   categoryIconList,
