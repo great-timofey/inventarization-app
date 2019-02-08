@@ -753,9 +753,11 @@ class ItemForm extends Component<Props, State> {
     }
 
     return showAddPhotoButton ? (
-      <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
-        <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
-      </TouchableOpacity>
+      <View style={styles.addPhotoBarButtonWrapper}>
+        <TouchableOpacity style={styles.addPhotoBarButton} onPress={this.handleAddPhoto}>
+          <IonIcon size={26} {...iconProps} name="ios-add-circle" color={colors.border} />
+        </TouchableOpacity>
+      </View>
     ) : (
       <View style={styles.photoContainer}>
         <TouchableOpacity
