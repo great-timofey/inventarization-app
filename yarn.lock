@@ -3495,10 +3495,6 @@ js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.9.0:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-jsbarcode@^3.8.0:
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/jsbarcode/-/jsbarcode-3.11.0.tgz#20623e008b101ef45d0cce9c8022cdf49be28547"
-
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
@@ -4810,12 +4806,6 @@ react-native-animatable@^1.2.4:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-barcode-builder@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-barcode-builder/-/react-native-barcode-builder-1.0.5.tgz#dcc93b6afeec56148b8b3c4e5fb9136a532f7883"
-  dependencies:
-    jsbarcode "^3.8.0"
-
 react-native-blur@3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-native-blur/-/react-native-blur-3.2.2.tgz#5bfb50638d148982c9560436554ed01d77d6d07d"
@@ -4972,17 +4962,10 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   version "0.8.0"
   resolved "git+https://github.com/allmaxgit/react-native-text-input-mask.git#1006ea0179d6a7af0b0d40781e355622700ce422"
 
-react-native-torch@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/react-native-torch/-/react-native-torch-1.1.5.tgz#165a8b22b66c2b55e188d38604318712282ca0cf"
-
 react-native-vector-icons@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.2.0.tgz#2682b718099eb9470c0defd38da47deb844a0f9c"
-<<<<<<< HEAD
-=======
   integrity sha512-NEQeQF7RzO5OILV4Q/F8P3pSuwN45/PPbOwU8/Eocc2Kl1bH1D42WFj+WSbCLVKeEq6oo7uj3tGqmrXGLs974A==
->>>>>>> d5351c59d2244f2eb4fd1c4da5fd0f56af878090
   dependencies:
     lodash "^4.0.0"
     prop-types "^15.6.2"

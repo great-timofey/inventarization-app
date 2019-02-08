@@ -40,8 +40,12 @@ import type { Props } from './types';
 
 import styles from './styles';
 
-const CategoryList = ({ children, openSideMenu }) => (
-  <View style={styles.categoryListContainer}>
+const CategoryList = ({ children, openSideMenu, isPlaceScreen, isCategoryListEmpty }) => (
+  <View style={[
+    styles.categoryListContainer,
+    isCategoryListEmpty && isPlaceScreen && styles.categoryEmpty]}
+  >
+    {!isPlaceScreen && (
     <View style={styles.categoryButton}>
       <InventoryIcon.Button
         name="menu"
@@ -55,10 +59,36 @@ const CategoryList = ({ children, openSideMenu }) => (
         backgroundColor={colors.transparent}
       />
     </View>
+    )}
     {children}
   </View>
 );
 
+const NoItem = ({ navigation, placeId, userRole }) => {
+  const isPlaceScreen = !!placeId;
+  return isPlaceScreen ? (
+    <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+  ) : (
+    <View>
+      <Text style={styles.header}>{constants.headers.items}</Text>
+      <Image
+        source={assets.noItemsYet}
+        style={[styles.image, placeId && styles.imagePlace]}
+      />
+      <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
+      <Button
+        isGreen
+        customStyle={styles.button}
+        title={constants.buttonTitles.addItem}
+        onPress={
+          userRole !== constants.roles.observer
+            ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
+            : () => {}
+        }
+      />
+    </View>
+  );
+};
 class ItemsList extends PureComponent<Props> {
   renderItem = ({ item }: { item: Item }) => {
     const {
@@ -189,6 +219,7 @@ class ItemsList extends PureComponent<Props> {
       getItemPosition,
       currentSelectItem,
       handleShowSortButton,
+      isMarginBottomActive,
       toggleDelModalVisible,
       saveSelectedCategories,
       isAndroidActionsModalVisible,
@@ -280,6 +311,8 @@ class ItemsList extends PureComponent<Props> {
           }
 
           const dataToRenderIsEmpty = dataToRender.length === 0;
+          const noSelectedCategory = saveSelectedCategories.length === 0;
+
           const isSortButtonShow = dataToRender.length > 1;
           if (isSortButtonShow) {
             handleShowSortButton(true);
@@ -287,25 +320,15 @@ class ItemsList extends PureComponent<Props> {
             handleShowSortButton(false);
           }
 
-          return dataToRenderIsEmpty ? (
-            <View>
-              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <Image
-                source={assets.noItemsYet}
-                style={[styles.image, placeId && styles.imagePlace]}
-              />
-              <Text style={styles.notItemsText}>{constants.text.notItemsYet}</Text>
-              <Button
-                isGreen
-                customStyle={styles.button}
-                title={constants.buttonTitles.addItem}
-                onPress={
-                  userRole !== constants.roles.observer
-                    ? () => navigation.navigate(SCENE_NAMES.QRScanSceneName)
-                    : () => {}
-                }
-              />
-            </View>
+          const isPlaceScreen = !!placeId;
+          const isCategoryListEmpty = categoryTabData.length === 0;
+
+          return dataToRenderIsEmpty && noSelectedCategory ? (
+            <NoItem
+              placeId={placeId}
+              userRole={userRole}
+              navigation={navigation}
+            />
           ) : (
             <ScrollView
               scrollEventThrottle={16}
@@ -314,7 +337,11 @@ class ItemsList extends PureComponent<Props> {
               scrollEnabled={!isAndroidActionsModalVisible}
             >
               {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <CategoryList openSideMenu={this.openSideMenu}>
+              <CategoryList
+                isPlaceScreen={isPlaceScreen}
+                openSideMenu={this.openSideMenu}
+                isCategoryListEmpty={isCategoryListEmpty}
+              >
                 <FlatList
                   horizontal
                   data={categoryTabData}
@@ -352,7 +379,10 @@ class ItemsList extends PureComponent<Props> {
                   data={dataToRender}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
-                  contentContainerStyle={styles.grid}
+                  contentContainerStyle={[
+                    styles.grid,
+                    isMarginBottomActive && { marginBottom: 200 },
+                  ]}
                   scrollEnabled={!isAndroidActionsModalVisible}
                   extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
                 />

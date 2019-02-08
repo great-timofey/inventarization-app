@@ -7,7 +7,7 @@ export const GET_COMPANY_CATEGORIES_BY_ID = gql`
       id
       icon
       name
-      chields{
+      childs{
         id
         name
       }
@@ -32,7 +32,7 @@ export const GET_COMPANY_CATEGORIES = gql`
             id
             name
           }
-          chields{
+          childs{
             id
             name
             parent{

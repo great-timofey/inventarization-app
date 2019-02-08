@@ -3,9 +3,6 @@
 import React, { PureComponent } from 'react';
 import { View, Text, Image, StatusBar, TouchableOpacity } from 'react-native';
 
-import { assoc } from 'ramda';
-//  $FlowFixMe
-import Torch from 'react-native-torch';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import { withApollo, compose, graphql } from 'react-apollo';
@@ -18,6 +15,7 @@ import constants from '~/global/constants';
 import * as ASSETS_QUERIES from '~/graphql/assets/queries';
 import { GET_CURRENT_USER_COMPANY_CLIENT } from '~/graphql/auth/queries';
 import * as SCENE_NAMES from '~/navigation/scenes';
+
 import type { Props, State } from './types';
 import styles from './styles';
 
@@ -50,8 +48,8 @@ class QRCode extends PureComponent<Props, State> {
   };
 
   state = {
-    isTorchOn: true,
     showNoMatchError: false,
+    flashMode: constants.torchModeTypes.off,
   };
 
   navListener: any;
@@ -111,16 +109,17 @@ class QRCode extends PureComponent<Props, State> {
     }
   };
 
-  toggleTorch = () => {
-    const { isTorchOn } = this.state;
-    this.setState(state => assoc('isTorchOn', !state.isTorchOn, state));
-    Torch.switchState(isTorchOn);
-  };
+  toggleTorch = () => this.setState(({ flashMode }) => ({
+    flashMode:
+        flashMode === constants.torchModeTypes.on
+          ? constants.torchModeTypes.off
+          : constants.torchModeTypes.on,
+  }));
 
   render() {
     const {
-      state: { isTorchOn, showNoMatchError },
       props: { navigation },
+      state: { flashMode, showNoMatchError },
     } = this;
     const checkMode = navigation.getParam('checkMode', false);
     return (
@@ -130,6 +129,7 @@ class QRCode extends PureComponent<Props, State> {
           showMarker
           reactivateTimeout={1000}
           onRead={this.handleScan}
+          cameraProps={{ flashMode }}
           cameraStyle={styles.scannerCameraStyle}
           customMarker={<ScannerMarker opacity={0.4} color={colors.black} />}
         />
@@ -137,7 +137,10 @@ class QRCode extends PureComponent<Props, State> {
           style={[styles.torchButton, checkMode && styles.torchButtonCentered]}
           onPress={this.toggleTorch}
         >
-          <Image source={isTorchOn ? assets.torchOn : assets.torchOff} style={styles.torchIcon} />
+          <Image
+            source={flashMode === constants.torchModeTypes.on ? assets.torchOn : assets.torchOff}
+            style={styles.torchIcon}
+          />
         </TouchableOpacity>
         {!checkMode && (
           <TouchableOpacity style={styles.makePhotoButton} disabled>
