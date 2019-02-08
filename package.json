@@ -23,7 +23,6 @@
     "react": "16.6.3",
     "react-apollo": "^2.3.2",
     "react-native": "0.57.8",
-    "react-native-barcode-builder": "^1.0.5",
     "react-native-blur": "3.2.2",
     "react-native-camera": "1.6.4",
     "react-native-device-info": "0.24.3",
@@ -45,7 +44,6 @@
     "react-native-swipeout": "^2.3.6",
     "react-native-swiper": "^1.5.14",
     "react-native-text-input-mask": "git+https://github.com/allmaxgit/react-native-text-input-mask.git#1006ea0179d6a7af0b0d40781e355622700ce422",
-    "react-native-torch": "^1.1.5",
     "react-native-vector-icons": "^6.2.0",
     "react-navigation": "3.0.5",
     "react-navigation-extension": "^2.0.1"

@@ -11,14 +11,14 @@ export default StyleSheet.create({
       marginBottom: normalize(100),
     }
     : {
-      marginBottom: isIphoneX ? normalize(150) : normalize(96),
+      marginBottom: isIphoneX ? normalize(180) : normalize(130),
     },
   form: isAndroid
     ? {
       marginBottom: normalize(20),
     }
     : {
-      marginBottom: isIphoneX ? normalize(69) : normalize(15),
+      marginBottom: isIphoneX ? normalize(99) : normalize(49),
     },
   additionalButtons: {
     flexDirection: 'row',

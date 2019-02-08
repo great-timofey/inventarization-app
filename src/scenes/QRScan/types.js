@@ -1,7 +1,7 @@
 // @flow
 
 export type State = {
-  isTorchOn: boolean,
+  flashMode: boolean,
   showNoMatchError: boolean,
 };
 

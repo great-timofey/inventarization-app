@@ -22,6 +22,7 @@ export type Props = {
   selectItem: Function,
   isSortByName: boolean,
   getItemPosition: Function,
+  isMarginBottomActive: boolean,
   handleShowSortButton: Function,
   toggleDelModalVisible: Function,
   companyId: null | string | number,
