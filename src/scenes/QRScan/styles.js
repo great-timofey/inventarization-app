@@ -17,10 +17,16 @@ export default StyleSheet.create({
     height: isAndroid ? normalize(45) : normalize(65),
   },
   headerTitleStyle: {
+    flex: 1,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginHorizontal: 0,
     color: colors.white,
     fontSize: normalize(18),
+    justifyContent: 'center',
+    textAlignVertical: 'center',
     fontFamily: fonts.proDisplay.medium,
-    marginLeft: isAndroid ? normalize(50) : 0,
   },
   backButton: {
     width: 28,
