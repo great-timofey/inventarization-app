@@ -43,6 +43,7 @@ import assets from '~/global/assets';
 import Input from '~/components/Input';
 import constants from '~/global/constants';
 import Carousel from '~/components/Carousel';
+import { isIphoneX } from '~/global/device';
 import DelModal from '~/components/QuestionModal';
 import * as SCENE_NAMES from '~/navigation/scenes';
 import * as AUTH_QUERIES from '~/graphql/auth/queries';
@@ -956,6 +957,7 @@ class ItemForm extends Component<Props, State> {
       <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView
           enableOnAndroid
+          extraScrollHeight={isIphoneX ? 20 : 0}
           ref={(ref) => {
             this.keyboardRef = ref;
           }}
