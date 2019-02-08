@@ -12,6 +12,10 @@ export const GET_COMPANY_PLACES = gql`
         lat
         lon
       }
+      manager {
+        id
+        fullName
+      }
     }
   }
 `;

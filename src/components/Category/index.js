@@ -29,9 +29,9 @@ export class Category extends PureComponent<Props, {}> {
       allSubCategoryList,
     } = this.props;
 
-    if (item.chields && item.chields.length > 0) {
+    if (item.childs && item.childs.length > 0) {
       selectCategory(item.name);
-    } else if (item.chields && item.chields.length === 0) {
+    } else if (item.childs && item.childs.length === 0) {
       this.saveSelectedCategories([item.id]);
     }
 

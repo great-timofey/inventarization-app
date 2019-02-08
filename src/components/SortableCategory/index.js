@@ -64,8 +64,8 @@ class SortableCategory extends PureComponent<Props, {}> {
   }
 
   navigateToEdit = () => {
-    const { data: { id, icon, name, chields }, navigateToEdit } = this.props;
-    navigateToEdit(id, icon, name, chields);
+    const { data: { id, icon, name, childs }, navigateToEdit } = this.props;
+    navigateToEdit(id, icon, name, childs);
   }
 
   render() {
