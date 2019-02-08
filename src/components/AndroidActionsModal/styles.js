@@ -18,8 +18,10 @@ export default StyleSheet.create({
   container: {
     position: 'absolute',
     padding: normalize(10),
-    backgroundColor: 'white',
+    width: normalize(178),
+    height: normalize(228),
     borderRadius: normalize(17),
+    backgroundColor: colors.white,
   },
   photo: {
     borderRadius: 10,

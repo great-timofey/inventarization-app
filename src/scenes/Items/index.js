@@ -198,7 +198,7 @@ class ItemsScene extends PureComponent<Props, State> {
   getItemPosition = (itemRef, parentScrollViewRef, item) => {
     const itemHeight = normalize(220);
     const headerPosition = normalize(65);
-    const bottomPosition = normalize(480);
+    const bottomPosition = normalize(460);
     const { isListViewStyle } = this.state;
 
     this.setState({
