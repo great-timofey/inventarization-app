@@ -10,6 +10,7 @@ export type State = {
   showSortButton: boolean,
   isListViewStyle: boolean,
   isSortModalVisible: boolean,
+  isMarginBottomActive: boolean,
   isDeleteModalVisible: boolean,
   isAndroidActionsModalVisible: boolean,
   currentSelectItem: number | string | null,

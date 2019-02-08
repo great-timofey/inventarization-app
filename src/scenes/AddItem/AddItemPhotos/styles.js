@@ -78,7 +78,8 @@ export default StyleSheet.create({
   },
   bottomSection: {
     overflow: 'visible',
-    height: normalize(80),
+    height: normalize(96),
+    paddingLeft: normalize(10),
     backgroundColor: colors.black,
   },
   makePhotoButton: {
