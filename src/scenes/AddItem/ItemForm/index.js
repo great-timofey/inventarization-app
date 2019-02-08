@@ -757,6 +757,12 @@ class ItemForm extends Component<Props, State> {
       </TouchableOpacity>
     ) : (
       <View style={styles.photoContainer}>
+        <TouchableOpacity
+          style={styles.photoImageContainer}
+          onPress={() => this.handleSetIndexPreview(index)}
+        >
+          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
+        </TouchableOpacity>
         {showRemoveButton && (
           <TouchableOpacity
             activeOpacity={0.5}
@@ -766,12 +772,6 @@ class ItemForm extends Component<Props, State> {
             <Image source={assets.deletePhoto} />
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-          style={styles.photoImageContainer}
-          onPress={() => this.handleSetIndexPreview(index)}
-        >
-          {!isPreview && <Image style={styles.photoImage} source={{ uri }} />}
-        </TouchableOpacity>
       </View>
     );
   };

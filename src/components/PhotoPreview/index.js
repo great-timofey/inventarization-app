@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 
 import assets from '~/global/assets';
-import { isSmallDevice } from '~/global/device';
+import { isSmallDevice } from '~/global/utils';
 
 import styles from './styles';
 import type { Props } from './types';
@@ -30,8 +30,8 @@ class PhotoPreview extends PureComponent<Props> {
     const { uri } = this.props;
     return (
       <View style={styles.photoContainer}>
-        {this.removeButton}
         <Image style={styles.photoImage} source={{ uri }} />
+        {this.removeButton}
       </View>
     );
   }
