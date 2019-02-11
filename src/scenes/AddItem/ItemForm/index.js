@@ -519,10 +519,7 @@ class ItemForm extends Component<Props, State> {
       delete variables.photosOfDamagesToAdd;
 
       try {
-        await updateAsset({ variables });
-        if (variables.placeId) {
-          this.updatePlaceCount(variables.placeId);
-        }
+        await updateAsset({ variables, refetchQueries: [{ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId } }] });
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
@@ -547,28 +544,6 @@ class ItemForm extends Component<Props, State> {
       navigation.pop();
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     }
-  };
-
-  updatePlaceCount = (placeId) => {
-    const {
-      client: {
-        cache,
-      },
-      userCompany: {
-        company: {
-          id: companyId,
-        },
-      },
-    } = this.props;
-
-    const data = cache.readQuery({
-      query: PLACES_QUERIES.GET_COMPANY_PLACES,
-      variables: { companyId },
-    });
-
-    const placeIndex = findIndex(place => place.id === placeId, data.places);
-    data.places[placeIndex].assetsCount += 1;
-    cache.writeQuery({ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId }, data });
   };
 
   updateDestroyAsset = (cache: Object) => {
