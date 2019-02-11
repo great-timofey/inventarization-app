@@ -9,6 +9,7 @@ export type State = {
   searchValue: string,
   isSearchActive: boolean,
   isDeleteModalVisible: boolean,
+  isMarginBottomActive: boolean,
   isAndroidActionsModalVisible: boolean,
   currentSelectItem: null | string | number
 

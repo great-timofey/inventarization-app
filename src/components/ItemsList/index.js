@@ -371,6 +371,7 @@ class ItemsList extends PureComponent<Props> {
                   keyExtractor={this.keyExtractor}
                   renderItem={this.renderAndroidRow}
                   scrollEnabled={!isAndroidActionsModalVisible}
+                  contentContainerStyle={[isMarginBottomActive && styles.paddingBot]}
                   extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
                 />
               )}
@@ -380,12 +381,9 @@ class ItemsList extends PureComponent<Props> {
                   data={dataToRender}
                   renderItem={this.renderItem}
                   keyExtractor={this.keyExtractor}
-                  contentContainerStyle={[
-                    styles.grid,
-                    isMarginBottomActive && { marginBottom: 200 },
-                  ]}
                   scrollEnabled={!isAndroidActionsModalVisible}
                   extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
+                  contentContainerStyle={[styles.grid, isMarginBottomActive && styles.marginBot]}
                 />
               )}
             </ScrollView>

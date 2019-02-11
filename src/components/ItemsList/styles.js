@@ -108,4 +108,10 @@ export default StyleSheet.create({
     color: colors.red,
     fontFamily: fonts.proDisplay.bold,
   },
+  paddingBot: {
+    paddingBottom: normalize(200),
+  },
+  marginBot: {
+    marginBottom: 200,
+  },
 });
