@@ -399,7 +399,6 @@ class ItemsList extends PureComponent<Props> {
                   items={dataToRender}
                   searchValue={searchValue}
                   toggleSearch={toggleSearch}
-                  // $FlowFixMe
                   handleOpenItem={this.handleOpenItem}
                 />
               )}

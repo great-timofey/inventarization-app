@@ -276,7 +276,9 @@ const errors = {
 const types = {
   items: 'items',
   places: 'places',
+  place: 'Place',
 };
+
 const permissions = {
   photo: ['camera', 'location'],
 };
@@ -438,22 +440,6 @@ const formats = {
   createUserCompanyDates: 'YYYY-MM-DDTHH:MM:ss[Z]',
 };
 
-const category = [
-  'Новое',
-  'Мебель',
-  'Компьютеры',
-  'Мебель',
-  'Компьютеры',
-  'Мебель',
-  'Новое',
-  'Мебель',
-  'Новое',
-  'Компьютеры',
-  'Мебель',
-  'Новое',
-  'Мебель',
-];
-
 const categoryIconList = [
   {
     id: 1,
@@ -505,56 +491,6 @@ const categoryIconList = [
   },
 ];
 
-const data = {
-  assets: [
-    {
-      id: '1',
-      name: 'iPhone 6s',
-      purchasePrice: 55000,
-    },
-    {
-      id: '2',
-      name: 'iPhone X',
-      purchasePrice: 4,
-    },
-    {
-      id: '3',
-      name: 'MacBook Pro 13 Late',
-      purchasePrice: 1700,
-    },
-    {
-      id: '4',
-      name: 'iPhone 5c',
-      purchasePrice: 8000,
-    },
-    {
-      id: '5',
-      name: 'iPhone 4S',
-      purchasePrice: 67000,
-    },
-    {
-      id: '6',
-      name: 'iPhone xs Max',
-      purchasePrice: 900000,
-    },
-    {
-      id: '7',
-      name: 'iPad Pro 12 2017',
-      purchasePrice: 6000,
-    },
-    {
-      id: '8',
-      name: 'Apple AirPods',
-      purchasePrice: 30000,
-    },
-    {
-      id: '9',
-      name: 'Apple Watch Series 3',
-      purchasePrice: 78000,
-    },
-  ],
-};
-
 const generalCategories = {
   allCategories: {
     name: 'Все категории',
@@ -588,7 +524,6 @@ const graphqlErrors = {
 };
 
 export default {
-  data,
   sort,
   text,
   masks,
@@ -604,7 +539,6 @@ export default {
   suffixes,
   itemForm,
   warnings,
-  category,
   inputTypes,
   fieldTypes,
   permissions,

@@ -13,7 +13,6 @@ import InventoryIcon from '~/assets/InventoryIcon';
 import Icon from 'react-native-vector-icons/Feather';
 
 import Map from '~/components/Map';
-import Search from '~/components/Search';
 import ItemsList from '~/components/ItemsList';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
@@ -314,7 +313,7 @@ render() {
         ref={(ref) => { this.scrollViewRef = ref; }}
       >
         <Text style={styles.placeName}>{name}</Text>
-        <View style={styles.address}>
+        <View style={[styles.address, isSearchActive && styles.hiddenAddress]}>
           <Text style={styles.topText}>{constants.inputTypes.address.label}</Text>
           <Text style={styles.botText}>{address}</Text>
         </View>
@@ -330,8 +329,11 @@ render() {
           userRole={userRole}
           companyId={companyId}
           navigation={navigation}
+          searchValue={searchValue}
           swipeable={isListViewStyle}
           selectItem={this.selectItem}
+          isSearchActive={isSearchActive}
+          toggleSearch={this.toggleSearch}
           currentSelectItem={currentSelectItem}
           isDeleteModalVisible={isDeleteModalVisible}
           handleShowSortButton={this.handleShowSortButton}
@@ -366,13 +368,6 @@ render() {
         toggleSortMethod={this.toggleSortMethod}
         toggleModalVisible={this.toggleSortModalVisible}
       />
-      {isSearchActive && (
-        <Search
-          items={[]}
-          searchValue={searchValue}
-          toggleSearch={this.toggleSearch}
-        />
-      )}
     </Fragment>
   );
 }

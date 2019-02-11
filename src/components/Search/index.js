@@ -12,10 +12,14 @@ import type { Props } from './types';
 
 class Search extends PureComponent<Props, {}> {
   openItem = (item: Object) => {
-    const { handleOpenItem, toggleSearch } = this.props;
+    const { handleOpenItem, toggleSearch, handleOpenPlace } = this.props;
     toggleSearch();
-    // $FlowFixMe
-    handleOpenItem(item, false);
+    // eslint-disable-next-line no-underscore-dangle
+    if (item.__typename === constants.types.place && handleOpenPlace) {
+      handleOpenPlace(item.id, item.name, item.address, item.gps);
+    } else if (handleOpenItem) {
+      handleOpenItem(item, false);
+    }
   }
 
   searchResult = ({ item }: Object) => (
