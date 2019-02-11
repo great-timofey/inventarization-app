@@ -48,6 +48,9 @@ export default StyleSheet.create({
     width: deviceWidth - normalize(60),
     backgroundColor: colors.addressGray,
   },
+  hiddenAddress: {
+    display: 'none',
+  },
   topText: {
     fontSize: normalize(13),
     color: colors.input.whiteTitle,

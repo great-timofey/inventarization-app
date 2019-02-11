@@ -1,6 +1,6 @@
 // @flow
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Text,
   View,
@@ -16,6 +16,7 @@ import { pluck, filter, includes } from 'ramda';
 import { Query, graphql, compose } from 'react-apollo';
 import LinearGradient from 'react-native-linear-gradient';
 
+import Search from '~/components/Search';
 import Button from '~/components/Button';
 import ListItem from '~/components/ListItem';
 import ItemComponent from '~/components/Item';
@@ -214,8 +215,11 @@ class ItemsList extends PureComponent<Props> {
       swipeable,
       navigation,
       selectItem,
+      searchValue,
       currentUser,
       isSortByName,
+      toggleSearch,
+      isSearchActive,
       getItemPosition,
       currentSelectItem,
       handleShowSortButton,
@@ -330,65 +334,75 @@ class ItemsList extends PureComponent<Props> {
               navigation={navigation}
             />
           ) : (
-            <ScrollView
-              scrollEventThrottle={16}
-              onScroll={this.handleScroll}
-              overScrollMode="never"
-              ref={(ref) => { this.scrollViewRef = ref; }}
-              scrollEnabled={!isAndroidActionsModalVisible}
-            >
-              {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
-              <CategoryList
-                isPlaceScreen={isPlaceScreen}
-                openSideMenu={this.openSideMenu}
-                isCategoryListEmpty={isCategoryListEmpty}
+            <Fragment>
+              <ScrollView
+                scrollEventThrottle={16}
+                onScroll={this.handleScroll}
+                overScrollMode="never"
+                ref={(ref) => { this.scrollViewRef = ref; }}
+                scrollEnabled={!isAndroidActionsModalVisible}
               >
-                <FlatList
-                  horizontal
-                  data={categoryTabData}
-                  renderItem={this.renderTab}
-                  keyExtractor={this.keyExtractor}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.horizontalFlatList}
-                />
-              </CategoryList>
-              {swipeable && !isAndroid && (
-                <SwipeableList
-                  userId={userId}
-                  data={dataToRender}
-                  userRole={userRole}
-                  selectItem={selectItem}
-                  openItem={this.handleOpenItem}
-                  getItemPosition={getItemPosition}
-                  toggleDelModal={toggleDelModalVisible}
-                  parentScrollViewRef={this.scrollViewRef}
-                  extraData={{ currentSelectItem, isSortByName }}
+                {placeId ? null : <Text style={styles.header}>{constants.headers.items}</Text>}
+                <CategoryList
+                  isPlaceScreen={isPlaceScreen}
+                  openSideMenu={this.openSideMenu}
+                  isCategoryListEmpty={isCategoryListEmpty}
+                >
+                  <FlatList
+                    horizontal
+                    data={categoryTabData}
+                    renderItem={this.renderTab}
+                    keyExtractor={this.keyExtractor}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.horizontalFlatList}
+                  />
+                </CategoryList>
+                {swipeable && !isAndroid && (
+                  <SwipeableList
+                    userId={userId}
+                    data={dataToRender}
+                    userRole={userRole}
+                    selectItem={selectItem}
+                    openItem={this.handleOpenItem}
+                    getItemPosition={getItemPosition}
+                    toggleDelModal={toggleDelModalVisible}
+                    parentScrollViewRef={this.scrollViewRef}
+                    extraData={{ currentSelectItem, isSortByName }}
+                  />
+                )}
+                {swipeable && isAndroid && (
+                  <FlatList
+                    data={dataToRender}
+                    keyExtractor={this.keyExtractor}
+                    renderItem={this.renderAndroidRow}
+                    scrollEnabled={!isAndroidActionsModalVisible}
+                    extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
+                  />
+                )}
+                {!swipeable && (
+                  <FlatList
+                    numColumns={2}
+                    data={dataToRender}
+                    renderItem={this.renderItem}
+                    keyExtractor={this.keyExtractor}
+                    contentContainerStyle={[
+                      styles.grid,
+                      isMarginBottomActive && { marginBottom: 200 },
+                    ]}
+                    scrollEnabled={!isAndroidActionsModalVisible}
+                    extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
+                  />
+                )}
+              </ScrollView>
+              {isSearchActive && (
+                <Search
+                  items={dataToRender}
+                  searchValue={searchValue}
+                  toggleSearch={toggleSearch}
+                  handleOpenItem={this.handleOpenItem}
                 />
               )}
-              {swipeable && isAndroid && (
-                <FlatList
-                  data={dataToRender}
-                  keyExtractor={this.keyExtractor}
-                  renderItem={this.renderAndroidRow}
-                  scrollEnabled={!isAndroidActionsModalVisible}
-                  extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
-                />
-              )}
-              {!swipeable && (
-                <FlatList
-                  numColumns={2}
-                  data={dataToRender}
-                  renderItem={this.renderItem}
-                  keyExtractor={this.keyExtractor}
-                  contentContainerStyle={[
-                    styles.grid,
-                    isMarginBottomActive && { marginBottom: 200 },
-                  ]}
-                  scrollEnabled={!isAndroidActionsModalVisible}
-                  extraData={{ currentSelectItem, isSortByName, isAndroidActionsModalVisible }}
-                />
-              )}
-            </ScrollView>
+            </Fragment>
           );
         }}
       </Query>
