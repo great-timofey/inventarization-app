@@ -519,6 +519,7 @@ class ItemForm extends Component<Props, State> {
       delete variables.photosOfDamagesToAdd;
 
       try {
+        //  eslint-disable-next-line max-len
         await updateAsset({ variables, refetchQueries: [{ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId } }] });
         this.handleGoBack();
       } catch (error) {
@@ -851,6 +852,7 @@ class ItemForm extends Component<Props, State> {
       //  $FlowFixMe
       const id = nth(-2, urlsParts);
 
+      //  $FlowFixMe
       this.setState(currentState => ({
         showSaveButton: true,
         [toShow]: without([uri], currentState[toShow]),
