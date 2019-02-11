@@ -191,7 +191,8 @@ class AddItemPhotos extends PureComponent<Props, State> {
 
     this.setState(
       state => assoc('photos', remove(index, 1, state.photos), state),
-      () => navigation.setParams({ photos }),
+      // eslint-disable-next-line react/destructuring-assignment
+      () => navigation.setParams({ photos: this.state.photos }),
     );
   };
 

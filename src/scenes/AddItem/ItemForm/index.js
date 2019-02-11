@@ -505,7 +505,7 @@ class ItemForm extends Component<Props, State> {
               photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
             } else {
               const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosOfDamagesObjs, '.');
-              photos.push(oneAndOnlyUploadPhoto);
+              photosOfDamages.push(oneAndOnlyUploadPhoto);
             }
           } catch (error) {
             console.log(error.message);
@@ -532,12 +532,12 @@ class ItemForm extends Component<Props, State> {
 
   handleGoBack = (afterDeletion: ?boolean) => {
     const {
-      state: { name },
       props: { navigation },
+      state: { name, isNewItem },
     } = this;
     const fromItemsScene = navigation.getParam('item', null);
 
-    if (afterDeletion) {
+    if (afterDeletion || isNewItem) {
       navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     //  $FlowFixMe
