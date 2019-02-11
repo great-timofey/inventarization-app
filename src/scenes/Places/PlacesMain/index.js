@@ -145,11 +145,13 @@ toggleSearch = () => {
   const { isSearchActive } = this.state;
 
   this.setState({
+    searchValue: '',
     currentSelectItem: null,
     isSearchActive: !isSearchActive,
   });
 
   navigation.setParams({
+    searchValue: '',
     isSearchActive: !isSearchActive,
   });
 };
@@ -392,6 +394,7 @@ render() {
               items={placesList}
               searchValue={searchValue}
               toggleSearch={this.toggleSearch}
+              handleOpenPlace={this.openPlace}
             />
             )}
             {!isAndroid && (
