@@ -17,6 +17,7 @@ import {
 
 import { compose, graphql, withApollo } from 'react-apollo';
 import {
+  nth,
   prop,
   keys,
   drop,
@@ -843,9 +844,8 @@ class ItemForm extends Component<Props, State> {
     isLocalFile: boolean,
   ) => {
     const {
-      state,
-      state: { showPhotos, activePreviewIndex },
-    } = this;
+      showPhotos, activePreviewIndex,
+    } = this.state;
     const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
 
     if (isLocalFile) {
@@ -854,6 +854,7 @@ class ItemForm extends Component<Props, State> {
 
         this.setState(currentState => ({
           showSaveButton: true,
+          photosToAdd: without([uri], currentState.photosToAdd),
           [toShow]: without([uri], currentState[toShow]),
           activePreviewIndex:
             removedIndex <= activePreviewIndex && activePreviewIndex > 0
@@ -864,17 +865,14 @@ class ItemForm extends Component<Props, State> {
         Alert.alert(error.message);
       }
     } else {
-      const {
-        //  $FlowFixMe
-        photos: { nodes: photosNodes },
-        //  $FlowFixMe
-        photosOfDamages: { nodes: photosOfDamagesNodes },
-      } = state;
+      const { photosUrls, photosOfDamagesUrls } = this.state;
 
-      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(
-        ({ photo }) => photo === uri,
+      const match = (showPhotos ? photosUrls : photosOfDamagesUrls).find(
+        photo => photo === uri,
       );
-      const id = prop('id', match);
+
+      const urlsParts = match.split('/');
+      const id = nth(-2, urlsParts);
 
       this.setState(currentState => ({
         showSaveButton: true,
