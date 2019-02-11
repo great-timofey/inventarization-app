@@ -11,19 +11,23 @@ import styles from './styles';
 import type { Props } from './types';
 
 class Search extends PureComponent<Props, {}> {
-  searchResult = ({ item }: Object) => {
-    const { toggleSearch } = this.props;
-    return (
-      <TouchableOpacity
-        onPress={toggleSearch}
-        style={styles.searchResultContainer}
-      >
-        <Text style={styles.searchResultText}>
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
+  openItem = (item: Object) => {
+    const { handleOpenItem, toggleSearch } = this.props;
+    toggleSearch();
+    // $FlowFixMe
+    handleOpenItem(item, false);
   }
+
+  searchResult = ({ item }: Object) => (
+    <TouchableOpacity
+      onPress={() => this.openItem(item)}
+      style={styles.searchResultContainer}
+    >
+      <Text style={styles.searchResultText}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  )
 
   keyExtractor = (el: any, index: number) => `${el.id || index}`;
 

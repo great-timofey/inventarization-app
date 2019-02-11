@@ -5,7 +5,6 @@ import { StatusBar, UIManager } from 'react-native';
 
 import { findIndex, remove } from 'ramda';
 import { graphql, compose } from 'react-apollo';
-import Search from '~/components/Search';
 import ItemsList from '~/components/ItemsList';
 import SortModal from '~/components/SortModal';
 import IconButton from '~/components/IconButton';
@@ -362,9 +361,12 @@ class ItemsScene extends PureComponent<Props, State> {
           userRole={userRole}
           companyId={companyId}
           navigation={navigation}
+          searchValue={searchValue}
           swipeable={isListViewStyle}
           isSortByName={isSortByName}
           selectItem={this.selectItem}
+          isSearchActive={isSearchActive}
+          toggleSearch={this.toggleSearch}
           currentSelectItem={currentSelectItem}
           getItemPosition={this.getItemPosition}
           isMarginBottomActive={isMarginBottomActive}
@@ -373,13 +375,6 @@ class ItemsScene extends PureComponent<Props, State> {
           toggleDelModalVisible={this.toggleDelModalVisible}
           isAndroidActionsModalVisible={isAndroidActionsModalVisible}
         />
-        {isSearchActive && (
-          <Search
-            searchValue={searchValue}
-            items={constants.data.assets}
-            toggleSearch={this.toggleSearch}
-          />
-        )}
         {showSortButton
         && !isSearchActive
         && !isSortModalVisible
