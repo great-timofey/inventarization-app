@@ -18,7 +18,6 @@ import {
 import { compose, graphql, withApollo } from 'react-apollo';
 import {
   nth,
-  prop,
   keys,
   drop,
   pick,
@@ -852,6 +851,7 @@ class ItemForm extends Component<Props, State> {
       try {
         RNFS.unlink(uri);
 
+        //  $FlowFixMe
         this.setState(currentState => ({
           showSaveButton: true,
           photosToAdd: without([uri], currentState.photosToAdd),
@@ -871,7 +871,9 @@ class ItemForm extends Component<Props, State> {
         photo => photo === uri,
       );
 
+      //  $FlowFixMe
       const urlsParts = match.split('/');
+      //  $FlowFixMe
       const id = nth(-2, urlsParts);
 
       this.setState(currentState => ({
