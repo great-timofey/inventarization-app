@@ -532,12 +532,12 @@ class ItemForm extends Component<Props, State> {
 
   handleGoBack = (afterDeletion: ?boolean) => {
     const {
-      state: { name },
       props: { navigation },
+      state: { name, isNewItem },
     } = this;
     const fromItemsScene = navigation.getParam('item', null);
 
-    if (afterDeletion) {
+    if (afterDeletion || isNewItem) {
       navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     //  $FlowFixMe
