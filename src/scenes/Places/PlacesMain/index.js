@@ -107,6 +107,7 @@ constructor(props: Props) {
     isSearchActive: false,
     currentSelectItem: null,
     isDeleteModalVisible: false,
+    isMarginBottomActive: false,
     isAndroidActionsModalVisible: false,
   };
 
@@ -214,6 +215,7 @@ updateDestroyPlace = (cache: Object) => {
 toggleActionsModal = () => {
   const { isAndroidActionsModalVisible } = this.state;
   this.setState({
+    isMarginBottomActive: !isAndroidActionsModalVisible,
     isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
   });
 }
@@ -238,6 +240,7 @@ getItemPosition = (itemRef, parentScrollViewRef, place) => {
       y: 0,
     },
     place,
+    isMarginBottomActive: true,
   });
 
   if (itemRef) {
@@ -325,6 +328,7 @@ render() {
       elementPosition,
       currentSelectItem,
       isDeleteModalVisible,
+      isMarginBottomActive,
       isAndroidActionsModalVisible,
     },
   } = this;
@@ -355,6 +359,7 @@ render() {
               onScroll={this.handleScroll}
               ref={(ref) => { this.scrollViewRef = ref; }}
               scrollEnabled={!isAndroidActionsModalVisible}
+              contentContainerStyle={[isMarginBottomActive && { paddingBottom: 200 }]}
             >
               <Text style={[styles.noPlacesTitle, !isNoPlaces && styles.title]}>
                 {constants.headers.places}

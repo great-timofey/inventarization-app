@@ -181,8 +181,8 @@ class ItemsScene extends PureComponent<Props, State> {
   toggleActionsModal = () => {
     const { isAndroidActionsModalVisible } = this.state;
     this.setState({
-      isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
       isMarginBottomActive: !isAndroidActionsModalVisible,
+      isAndroidActionsModalVisible: !isAndroidActionsModalVisible,
     });
   };
 
