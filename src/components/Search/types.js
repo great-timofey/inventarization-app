@@ -3,5 +3,7 @@
 export type Props = {
   searchValue: string,
   items: Array<Object>,
-  toggleSearch: () => void,
+  toggleSearch: Function,
+  handleOpenItem?: Function,
+  handleOpenPlace?: Function,
 };
