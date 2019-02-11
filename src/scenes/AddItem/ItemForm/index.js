@@ -505,7 +505,7 @@ class ItemForm extends Component<Props, State> {
               photosOfDamages = await convertToApolloUpload(photosOfDamagesObjs, '.');
             } else {
               const [oneAndOnlyUploadPhoto] = await convertToApolloUpload(photosOfDamagesObjs, '.');
-              photos.push(oneAndOnlyUploadPhoto);
+              photosOfDamages.push(oneAndOnlyUploadPhoto);
             }
           } catch (error) {
             console.log(error.message);
