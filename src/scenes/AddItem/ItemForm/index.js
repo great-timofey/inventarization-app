@@ -146,8 +146,8 @@ class ItemForm extends Component<Props, State> {
             <HeaderPencilButton
               onPress={() => {
                 navigation.setParams({
-                  headerText: constants.headers.modifyingItem,
                   userCanEdit: false,
+                  headerText: constants.headers.modifyingItem,
                 });
                 toggleEditMode();
               }}
@@ -175,7 +175,7 @@ class ItemForm extends Component<Props, State> {
     // $FlowFixMe
     photosToAdd: [],
     inventoryId: '',
-    isNewItem: true,
+    isNewItem: false,
     showPhotos: true,
     manufacture: null,
     assessedDate: null,
@@ -267,7 +267,7 @@ class ItemForm extends Component<Props, State> {
         : constants.placeholders.status.accepted;
       itemCopy.onTheBalanceSheet = onTheBalanceSheet ? constants.words.yes : constants.words.no;
 
-      this.setState(state => ({ ...state, ...itemCopy, isNewItem: false }));
+      this.setState(state => ({ ...state, ...itemCopy }));
     } else {
       navigation.setParams({ userCanDelete: true, headerText: constants.headers.addingItem });
 
@@ -290,6 +290,7 @@ class ItemForm extends Component<Props, State> {
         codeData,
         photosUrls,
         inventoryId,
+        isNewItem: true,
         photosOfDamagesUrls,
         showSaveButton: true,
         formIsEditable: true,
@@ -304,7 +305,8 @@ class ItemForm extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { navigation } = this.props;
     if (
-      prevProps.navigation.state.params.additionalPhotos
+      prevProps.navigation.state.params
+      && prevProps.navigation.state.params.additionalPhotos
       !== navigation.state.params.additionalPhotos
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
@@ -315,7 +317,8 @@ class ItemForm extends Component<Props, State> {
         photosToAdd: photosToAdd.concat(navigation.state.params.additionalPhotos),
       }));
     } else if (
-      prevProps.navigation.state.params.additionalDefects
+      prevProps.navigation.state.params
+      && prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
@@ -530,21 +533,17 @@ class ItemForm extends Component<Props, State> {
     }
   };
 
-  handleGoBack = (afterDeletion: ?boolean) => {
+  handleGoBack = () => {
     const {
       props: { navigation },
       state: { name, isNewItem },
     } = this;
-    const fromItemsScene = navigation.getParam('item', null);
 
-    if (afterDeletion || isNewItem) {
-      navigation.popToTop({});
-      navigation.navigate(SCENE_NAMES.ItemsSceneName);
     //  $FlowFixMe
-    } else if (!name.trim() && !fromItemsScene) {
+    if (isNewItem && !name.trim()) {
       Alert.alert(constants.errors.createItem.name);
-    } else if (fromItemsScene) {
-      navigation.pop();
+    } else {
+      navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     }
   };
@@ -818,7 +817,7 @@ class ItemForm extends Component<Props, State> {
     try {
       await destroyAsset({ variables: { id }, update: this.updateDestroyAsset });
       this.handleToggleDelModal();
-      this.handleGoBack(true);
+      this.handleGoBack();
     } catch (error) {
       Alert.alert(error.message);
       this.handleToggleDelModal();

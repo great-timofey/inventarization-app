@@ -1,4 +1,6 @@
 export const AuthSceneName = 'Auth';
+export const PlaceholderSceneName = 'Placeholder';
+export const ItemsStackName = 'ItemsStack';
 export const ItemsSceneName = 'Items';
 export const LoginSceneName = 'Login';
 export const PeopleSceneName = 'People';
