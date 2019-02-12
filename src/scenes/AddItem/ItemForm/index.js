@@ -17,7 +17,7 @@ import {
 
 import { compose, graphql, withApollo } from 'react-apollo';
 import {
-  prop,
+  nth,
   keys,
   drop,
   pick,
@@ -522,10 +522,8 @@ class ItemForm extends Component<Props, State> {
       delete variables.photosOfDamagesToAdd;
 
       try {
-        await updateAsset({ variables });
-        if (variables.placeId) {
-          this.updatePlaceCount(variables.placeId);
-        }
+        //  eslint-disable-next-line max-len
+        await updateAsset({ variables, refetchQueries: [{ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId } }] });
         this.handleGoBack();
       } catch (error) {
         Alert.alert(error.message);
@@ -546,28 +544,6 @@ class ItemForm extends Component<Props, State> {
       navigation.popToTop({});
       navigation.navigate(SCENE_NAMES.ItemsSceneName);
     }
-  };
-
-  updatePlaceCount = (placeId) => {
-    const {
-      client: {
-        cache,
-      },
-      userCompany: {
-        company: {
-          id: companyId,
-        },
-      },
-    } = this.props;
-
-    const data = cache.readQuery({
-      query: PLACES_QUERIES.GET_COMPANY_PLACES,
-      variables: { companyId },
-    });
-
-    const placeIndex = findIndex(place => place.id === placeId, data.places);
-    data.places[placeIndex].assetsCount += 1;
-    cache.writeQuery({ query: PLACES_QUERIES.GET_COMPANY_PLACES, variables: { companyId }, data });
   };
 
   updateDestroyAsset = (cache: Object) => {
@@ -842,17 +818,18 @@ class ItemForm extends Component<Props, State> {
     isLocalFile: boolean,
   ) => {
     const {
-      state,
-      state: { showPhotos, activePreviewIndex },
-    } = this;
+      showPhotos, activePreviewIndex,
+    } = this.state;
     const toShow = showPhotos ? 'photosUrls' : 'photosOfDamagesUrls';
 
     if (isLocalFile) {
       try {
         RNFS.unlink(uri);
 
+        //  $FlowFixMe
         this.setState(currentState => ({
           showSaveButton: true,
+          photosToAdd: without([uri], currentState.photosToAdd),
           [toShow]: without([uri], currentState[toShow]),
           activePreviewIndex:
             removedIndex <= activePreviewIndex && activePreviewIndex > 0
@@ -863,18 +840,18 @@ class ItemForm extends Component<Props, State> {
         Alert.alert(error.message);
       }
     } else {
-      const {
-        //  $FlowFixMe
-        photos: { nodes: photosNodes },
-        //  $FlowFixMe
-        photosOfDamages: { nodes: photosOfDamagesNodes },
-      } = state;
+      const { photosUrls, photosOfDamagesUrls } = this.state;
 
-      const match = (showPhotos ? photosNodes : photosOfDamagesNodes).find(
-        ({ photo }) => photo === uri,
+      const match = (showPhotos ? photosUrls : photosOfDamagesUrls).find(
+        photo => photo === uri,
       );
-      const id = prop('id', match);
 
+      //  $FlowFixMe
+      const urlsParts = match.split('/');
+      //  $FlowFixMe
+      const id = nth(-2, urlsParts);
+
+      //  $FlowFixMe
       this.setState(currentState => ({
         showSaveButton: true,
         [toShow]: without([uri], currentState[toShow]),
