@@ -1,14 +1,11 @@
 //  @flow
 
-import React, { PureComponent } from 'react';
+import React from 'react';
 import {
   View,
 } from 'react-native';
 
-class Placeholder extends PureComponent {
-  render() {
-    return <View />;
-  }
-}
+
+const Placeholder = () =>  <View />;
 
 export default Placeholder;
