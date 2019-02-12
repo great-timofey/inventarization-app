@@ -93,6 +93,7 @@ class AddItemFinish extends PureComponent<Props, State> {
   handleAddMoreItems = () => {
     const { navigation } = this.props;
     navigation.popToTop({});
+    navigation.navigate(SCENE_NAMES.QRScanSceneName);
   };
 
   camera: ?RNCamera;
