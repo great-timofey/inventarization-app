@@ -6,6 +6,6 @@ import {
 } from 'react-native';
 
 
-const Placeholder = () =>  <View />;
+const Placeholder = () => <View />;
 
 export default Placeholder;

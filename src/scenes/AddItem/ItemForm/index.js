@@ -305,8 +305,8 @@ class ItemForm extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { navigation } = this.props;
     if (
-      prevProps.navigation.state.params &&
-      prevProps.navigation.state.params.additionalPhotos
+      prevProps.navigation.state.params
+      && prevProps.navigation.state.params.additionalPhotos
       !== navigation.state.params.additionalPhotos
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
@@ -317,8 +317,8 @@ class ItemForm extends Component<Props, State> {
         photosToAdd: photosToAdd.concat(navigation.state.params.additionalPhotos),
       }));
     } else if (
-      prevProps.navigation.state.params &&
-      prevProps.navigation.state.params.additionalDefects
+      prevProps.navigation.state.params
+      && prevProps.navigation.state.params.additionalDefects
       !== navigation.state.params.additionalDefects
     ) {
       // eslint-disable-next-line react/no-did-update-set-state
@@ -538,6 +538,8 @@ class ItemForm extends Component<Props, State> {
       props: { navigation },
       state: { name, isNewItem },
     } = this;
+
+    //  $FlowFixMe
     if (isNewItem && !name.trim()) {
       Alert.alert(constants.errors.createItem.name);
     } else {
