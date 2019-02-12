@@ -12,6 +12,7 @@ import { createNavigatiorSetter } from 'react-navigation-extension';
 // $FlowFixMe
 import { last, includes } from 'ramda';
 
+import Placeholder from '~/scenes/AddItem/Placeholder';
 import Camera from '~/scenes/Camera';
 import QRScene from '~/scenes/QRScan';
 import Login from '~/scenes/Auth/Login';
@@ -71,6 +72,7 @@ const profileStack = createStackNavigator({
   [SCENE_NAMES.ProfileSceneName]: ProfileScene,
 });
 const addItemStack = createStackNavigator({
+  [SCENE_NAMES.PlaceholderSceneName]: Placeholder,
   [SCENE_NAMES.QRScanSceneName]: QRScene,
   [SCENE_NAMES.AddItemPhotosSceneName]: AddItemPhotos,
   [SCENE_NAMES.AddItemFinishSceneName]: AddItemFinish,
@@ -81,7 +83,7 @@ const addItemStack = createStackNavigator({
 const noTabBarScenes = [SCENE_NAMES.PlacesSceneName];
 
 const rootTabs = {
-  [SCENE_NAMES.ItemsSceneName]: {
+  [SCENE_NAMES.ItemsStackName]: {
     screen: itemsStack,
     navigationOptions: {
       tabBarIcon: ({ focused }: iconType) => (
@@ -110,6 +112,7 @@ const rootTabs = {
     navigationOptions: {
       tabBarVisible: false,
       tabBarIcon: () => <Image style={styles.logo} source={assets.logo} />,
+      tabBarOnPress: ({ navigation }) => navigation.navigate(SCENE_NAMES.QRScanSceneName),
     },
   },
   [SCENE_NAMES.PeopleSceneName]: {
